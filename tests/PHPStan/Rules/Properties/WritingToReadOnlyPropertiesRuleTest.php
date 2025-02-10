@@ -107,4 +107,14 @@ class WritingToReadOnlyPropertiesRuleTest extends RuleTestCase
 		]);
 	}
 
+	public function testBug12553(): void
+	{
+		if (PHP_VERSION_ID < 80400) {
+			$this->markTestSkipped('Test requires PHP 8.4.');
+		}
+
+		$this->checkThisOnly = false;
+		$this->analyse([__DIR__ . '/../Variables/data/bug-12553.php'], []);
+	}
+
 }
