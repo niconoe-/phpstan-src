@@ -20,7 +20,13 @@ final class ChangedTypeMethodReflection implements ExtendedMethodReflection
 	 * @param list<ExtendedParametersAcceptor> $variants
 	 * @param list<ExtendedParametersAcceptor>|null $namedArgumentsVariants
 	 */
-	public function __construct(private ClassReflection $declaringClass, private ExtendedMethodReflection $reflection, private array $variants, private ?array $namedArgumentsVariants)
+	public function __construct(
+		private ClassReflection $declaringClass,
+		private ExtendedMethodReflection $reflection,
+		private array $variants,
+		private ?array $namedArgumentsVariants,
+		private ?Type $selfOutType,
+	)
 	{
 	}
 
@@ -126,7 +132,7 @@ final class ChangedTypeMethodReflection implements ExtendedMethodReflection
 
 	public function getSelfOutType(): ?Type
 	{
-		return $this->reflection->getSelfOutType();
+		return $this->selfOutType;
 	}
 
 	public function returnsByReference(): TrinaryLogic
