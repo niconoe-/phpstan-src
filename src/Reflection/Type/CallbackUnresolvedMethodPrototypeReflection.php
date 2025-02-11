@@ -10,7 +10,9 @@ use PHPStan\Reflection\ExtendedParameterReflection;
 use PHPStan\Reflection\ExtendedParametersAcceptor;
 use PHPStan\Reflection\Php\ExtendedDummyParameter;
 use PHPStan\Reflection\ResolvedMethodReflection;
+use PHPStan\Type\ThisType;
 use PHPStan\Type\Type;
+use PHPStan\Type\TypeCombinator;
 use function array_map;
 
 final class CallbackUnresolvedMethodPrototypeReflection implements UnresolvedMethodPrototypeReflection
@@ -82,32 +84,42 @@ final class CallbackUnresolvedMethodPrototypeReflection implements UnresolvedMet
 
 	private function transformMethodWithStaticType(ClassReflection $declaringClass, ExtendedMethodReflection $method): ExtendedMethodReflection
 	{
-		$variantFn = fn (ExtendedParametersAcceptor $acceptor): ExtendedParametersAcceptor => new ExtendedFunctionVariant(
-			$acceptor->getTemplateTypeMap(),
-			$acceptor->getResolvedTemplateTypeMap(),
-			array_map(
-				fn (ExtendedParameterReflection $parameter): ExtendedParameterReflection => new ExtendedDummyParameter(
-					$parameter->getName(),
-					$this->transformStaticType($parameter->getType()),
-					$parameter->isOptional(),
-					$parameter->passedByReference(),
-					$parameter->isVariadic(),
-					$parameter->getDefaultValue(),
-					$parameter->getNativeType(),
-					$this->transformStaticType($parameter->getPhpDocType()),
-					$parameter->getOutType() !== null ? $this->transformStaticType($parameter->getOutType()) : null,
-					$parameter->isImmediatelyInvokedCallable(),
-					$parameter->getClosureThisType() !== null ? $this->transformStaticType($parameter->getClosureThisType()) : null,
-					$parameter->getAttributes(),
+		$selfOutType = $method->getSelfOutType() !== null ? $this->transformStaticType($method->getSelfOutType()) : null;
+		$variantFn = function (ExtendedParametersAcceptor $acceptor) use (&$selfOutType): ExtendedParametersAcceptor {
+			$originalReturnType = $acceptor->getReturnType();
+			if ($originalReturnType instanceof ThisType && $selfOutType !== null) {
+				$returnType = TypeCombinator::intersect($selfOutType, $this->transformStaticType($originalReturnType));
+				$selfOutType = $returnType;
+			} else {
+				$returnType = $this->transformStaticType($originalReturnType);
+			}
+			return new ExtendedFunctionVariant(
+				$acceptor->getTemplateTypeMap(),
+				$acceptor->getResolvedTemplateTypeMap(),
+				array_map(
+					fn (ExtendedParameterReflection $parameter): ExtendedParameterReflection => new ExtendedDummyParameter(
+						$parameter->getName(),
+						$this->transformStaticType($parameter->getType()),
+						$parameter->isOptional(),
+						$parameter->passedByReference(),
+						$parameter->isVariadic(),
+						$parameter->getDefaultValue(),
+						$parameter->getNativeType(),
+						$this->transformStaticType($parameter->getPhpDocType()),
+						$parameter->getOutType() !== null ? $this->transformStaticType($parameter->getOutType()) : null,
+						$parameter->isImmediatelyInvokedCallable(),
+						$parameter->getClosureThisType() !== null ? $this->transformStaticType($parameter->getClosureThisType()) : null,
+						$parameter->getAttributes(),
+					),
+					$acceptor->getParameters(),
 				),
-				$acceptor->getParameters(),
-			),
-			$acceptor->isVariadic(),
-			$this->transformStaticType($acceptor->getReturnType()),
-			$this->transformStaticType($acceptor->getPhpDocReturnType()),
-			$this->transformStaticType($acceptor->getNativeReturnType()),
-			$acceptor->getCallSiteVarianceMap(),
-		);
+				$acceptor->isVariadic(),
+				$returnType,
+				$this->transformStaticType($acceptor->getPhpDocReturnType()),
+				$this->transformStaticType($acceptor->getNativeReturnType()),
+				$acceptor->getCallSiteVarianceMap(),
+			);
+		};
 		$variants = array_map($variantFn, $method->getVariants());
 		$namedArgumentVariants = $method->getNamedArgumentsVariants();
 		$namedArgumentVariants = $namedArgumentVariants !== null
@@ -119,7 +131,7 @@ final class CallbackUnresolvedMethodPrototypeReflection implements UnresolvedMet
 			$method,
 			$variants,
 			$namedArgumentVariants,
-			$method->getSelfOutType() !== null ? $this->transformStaticType($method->getSelfOutType()) : null,
+			$selfOutType,
 		);
 	}
 

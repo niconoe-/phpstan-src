@@ -30,6 +30,28 @@ class Foo
 class Bar extends Foo
 {
 
+	public function doFoo(): void
+	{
+		assertType('$this(Bug12575\Bar<T of object (class Bug12575\Bar, argument)>)&static(Bug12575\Bar<Bug12575\A&T of object (class Bug12575\Bar, argument)>)', $this->add(A::class));
+		assertType('$this(Bug12575\Bar<T of object (class Bug12575\Bar, argument)>)&static(Bug12575\Bar<Bug12575\A&T of object (class Bug12575\Bar, argument)>)', $this);
+		assertType('T of object (class Bug12575\Bar, argument)', $this->getT());
+	}
+
+	public function doBar(): void
+	{
+		$this->add(B::class);
+		assertType('$this(Bug12575\Bar<T of object (class Bug12575\Bar, argument)>)&static(Bug12575\Bar<Bug12575\B&T of object (class Bug12575\Bar, argument)>)', $this);
+		assertType('T of object (class Bug12575\Bar, argument)', $this->getT());
+	}
+
+	/**
+	 * @return T
+	 */
+	public function getT()
+	{
+
+	}
+
 }
 
 interface A
@@ -49,6 +71,7 @@ interface B
 function doFoo(Bar $bar): void {
 	assertType('Bug12575\\Bar<Bug12575\\A&Bug12575\\B>', $bar->add(B::class));
 	assertType('Bug12575\\Bar<Bug12575\\A&Bug12575\\B>', $bar);
+	assertType('Bug12575\A&Bug12575\B', $bar->getT());
 };
 
 /**
@@ -58,4 +81,5 @@ function doFoo(Bar $bar): void {
 function doBar(Bar $bar): void {
 	$bar->add(B::class);
 	assertType('Bug12575\\Bar<Bug12575\\A&Bug12575\\B>', $bar);
+	assertType('Bug12575\A&Bug12575\B', $bar->getT());
 };
