@@ -87,14 +87,6 @@ class ArrayUnpackingRuleTest extends RuleTestCase
 				18,
 			],
 			[
-				'Array unpacking cannot be used on an array with potential string keys: array<string>',
-				40,
-			],
-			[
-				'Array unpacking cannot be used on an array with potential string keys: array<string>',
-				52,
-			],
-			[
 				'Array unpacking cannot be used on an array with string keys: array{foo: string, bar: int}',
 				63,
 			],
