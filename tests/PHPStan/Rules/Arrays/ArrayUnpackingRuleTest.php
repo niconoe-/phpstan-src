@@ -52,11 +52,11 @@ class ArrayUnpackingRuleTest extends RuleTestCase
 				29,
 			],
 			[
-				'Array unpacking cannot be used on an array with potential string keys: array<int|string, string>',
+				'Array unpacking cannot be used on an array with potential string keys: array<string>',
 				40,
 			],
 			[
-				'Array unpacking cannot be used on an array with potential string keys: array<int|string, string>',
+				'Array unpacking cannot be used on an array with potential string keys: array<string>',
 				52,
 			],
 			[
@@ -87,11 +87,11 @@ class ArrayUnpackingRuleTest extends RuleTestCase
 				18,
 			],
 			[
-				'Array unpacking cannot be used on an array with potential string keys: array<int|string, string>',
+				'Array unpacking cannot be used on an array with potential string keys: array<string>',
 				40,
 			],
 			[
-				'Array unpacking cannot be used on an array with potential string keys: array<int|string, string>',
+				'Array unpacking cannot be used on an array with potential string keys: array<string>',
 				52,
 			],
 			[
