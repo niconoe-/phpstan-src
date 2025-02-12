@@ -366,7 +366,8 @@ class ConstantStringType extends StringType implements ConstantScalarType
 	public function hasOffsetValueType(Type $offsetType): TrinaryLogic
 	{
 		if ($offsetType->isInteger()->yes()) {
-			$strLenType = IntegerRangeType::fromInterval(0, strlen($this->value) - 1);
+			$strlen = strlen($this->value);
+			$strLenType = IntegerRangeType::fromInterval(-$strlen, $strlen - 1);
 			return $strLenType->isSuperTypeOf($offsetType);
 		}
 
@@ -376,15 +377,17 @@ class ConstantStringType extends StringType implements ConstantScalarType
 	public function getOffsetValueType(Type $offsetType): Type
 	{
 		if ($offsetType->isInteger()->yes()) {
+			$strlen = strlen($this->value);
+			$strLenType = IntegerRangeType::fromInterval(-$strlen, $strlen - 1);
+
 			if ($offsetType instanceof ConstantIntegerType) {
-				if ($offsetType->getValue() < strlen($this->value)) {
+				if ($strLenType->isSuperTypeOf($offsetType)->yes()) {
 					return new self($this->value[$offsetType->getValue()]);
 				}
 
 				return new ErrorType();
 			}
 
-			$strLenType = IntegerRangeType::fromInterval(0, strlen($this->value) - 1);
 			$intersected = TypeCombinator::intersect($strLenType, $offsetType);
 			if ($intersected instanceof IntegerRangeType) {
 				$finiteTypes = $intersected->getFiniteTypes();
