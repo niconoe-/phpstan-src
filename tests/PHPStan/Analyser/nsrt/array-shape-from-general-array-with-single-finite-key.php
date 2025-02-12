@@ -12,7 +12,7 @@ class Foo
 	 */
 	public function doFoo(array $a): void
 	{
-		assertType('array{}|array{1: string}', $a);
+		assertType('array{1?: string}', $a);
 	}
 
 	/**

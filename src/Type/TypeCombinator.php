@@ -1216,6 +1216,28 @@ final class TypeCombinator
 						continue 2;
 					}
 
+					if (
+						$types[$i] instanceof ConstantArrayType
+						&& count($types[$i]->getKeyTypes()) === 1
+						&& $types[$j] instanceof NonEmptyArrayType
+					) {
+						$types[$i] = $types[$i]->makeOffsetRequired($types[$i]->getKeyTypes()[0]);
+						array_splice($types, $j--, 1);
+						$typesCount--;
+						continue;
+					}
+
+					if (
+						$types[$j] instanceof ConstantArrayType
+						&& count($types[$j]->getKeyTypes()) === 1
+						&& $types[$i] instanceof NonEmptyArrayType
+					) {
+						$types[$j] = $types[$j]->makeOffsetRequired($types[$j]->getKeyTypes()[0]);
+						array_splice($types, $i--, 1);
+						$typesCount--;
+						continue 2;
+					}
+
 					if ($types[$i] instanceof ConstantArrayType && $types[$j] instanceof HasOffsetValueType) {
 						$offsetType = $types[$j]->getOffsetType();
 						$valueType = $types[$j]->getValueType();

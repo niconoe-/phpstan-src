@@ -674,8 +674,8 @@ final class TypeNodeResolver
 					&& ($finiteTypes[0] instanceof ConstantStringType || $finiteTypes[0] instanceof ConstantIntegerType)
 				) {
 					$arrayBuilder = ConstantArrayTypeBuilder::createEmpty();
-					$arrayBuilder->setOffsetValueType($finiteTypes[0], $genericTypes[1]);
-					$arrayType = TypeCombinator::union($arrayBuilder->getArray(), ConstantArrayTypeBuilder::createEmpty()->getArray());
+					$arrayBuilder->setOffsetValueType($finiteTypes[0], $genericTypes[1], true);
+					$arrayType = $arrayBuilder->getArray();
 				} else {
 					$arrayType = new ArrayType($keyType, $genericTypes[1]);
 				}
