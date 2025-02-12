@@ -45,7 +45,7 @@ class Foo
 		/** @var array<17, int> $otherArrs */
 		assertType('array<17, string>', array_intersect_key($arr, $otherArrs));
 		/** @var array<null, int> $otherArrs */
-		assertType('array{}', array_intersect_key($arr, $otherArrs));
+		assertType('array<\'\', string>', array_intersect_key($arr, $otherArrs));
 
 		if (array_key_exists(17, $arr2)) {
 			assertType('non-empty-array<17, string>&hasOffset(17)', array_intersect_key($arr2, [17 => 'bar']));

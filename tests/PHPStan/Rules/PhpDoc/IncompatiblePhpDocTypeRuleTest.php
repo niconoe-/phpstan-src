@@ -216,10 +216,6 @@ class IncompatiblePhpDocTypeRuleTest extends RuleTestCase
 				'PHPDoc tag @param for parameter $foo contains unresolvable type.',
 				20,
 			],
-			[
-				'PHPDoc tag @param for parameter $bars contains unresolvable type.',
-				28,
-			],
 		]);
 	}
 
@@ -290,10 +286,6 @@ class IncompatiblePhpDocTypeRuleTest extends RuleTestCase
 			[
 				'Parameter $i for PHPDoc tag @param-out is not passed by reference.',
 				37,
-			],
-			[
-				'PHPDoc tag @param-out for parameter $i contains unresolvable type.',
-				44,
 			],
 			[
 				'PHPDoc tag @param-out for parameter $i contains generic type Exception<int, float> but class Exception is not generic.',

@@ -48,7 +48,7 @@ function foo4(array $arr): void
 function foo5(array $arr): void
 {
 	$arrSpread = [...$arr];
-	assertType('non-empty-array<int|string, bool|int>', $arrSpread);
+	assertType('non-empty-array<bool|int>', $arrSpread);
 }
 
 /**

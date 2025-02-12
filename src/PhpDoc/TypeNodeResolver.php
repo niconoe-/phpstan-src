@@ -664,11 +664,21 @@ final class TypeNodeResolver
 			if (count($genericTypes) === 1) { // array<ValueType>
 				$arrayType = new ArrayType(new BenevolentUnionType([new IntegerType(), new StringType()]), $genericTypes[0]);
 			} elseif (count($genericTypes) === 2) { // array<KeyType, ValueType>
-				$keyType = TypeCombinator::intersect($genericTypes[0], new UnionType([
+				$keyType = TypeCombinator::intersect($genericTypes[0]->toArrayKey(), new UnionType([
 					new IntegerType(),
 					new StringType(),
-				]));
-				$arrayType = new ArrayType($keyType->toArrayKey(), $genericTypes[1]);
+				]))->toArrayKey();
+				$finiteTypes = $keyType->getFiniteTypes();
+				if (
+					count($finiteTypes) === 1
+					&& ($finiteTypes[0] instanceof ConstantStringType || $finiteTypes[0] instanceof ConstantIntegerType)
+				) {
+					$arrayBuilder = ConstantArrayTypeBuilder::createEmpty();
+					$arrayBuilder->setOffsetValueType($finiteTypes[0], $genericTypes[1]);
+					$arrayType = TypeCombinator::union($arrayBuilder->getArray(), ConstantArrayTypeBuilder::createEmpty()->getArray());
+				} else {
+					$arrayType = new ArrayType($keyType, $genericTypes[1]);
+				}
 			} else {
 				return new ErrorType();
 			}
