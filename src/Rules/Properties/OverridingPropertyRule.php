@@ -74,13 +74,18 @@ final class OverridingPropertyRule implements Rule
 				))->identifier('property.readWrite')->nonIgnorable()->build();
 			}
 		} elseif ($node->isReadOnly()) {
-			$errors[] = RuleErrorBuilder::message(sprintf(
-				'Readonly property %s::$%s overrides readwrite property %s::$%s.',
-				$classReflection->getDisplayName(),
-				$node->getName(),
-				$prototype->getDeclaringClass()->getDisplayName(),
-				$node->getName(),
-			))->identifier('property.readOnly')->nonIgnorable()->build();
+			if (
+				!$this->phpVersion->supportsPropertyHooks()
+				|| $prototype->isWritable()
+			) {
+				$errors[] = RuleErrorBuilder::message(sprintf(
+					'Readonly property %s::$%s overrides readwrite property %s::$%s.',
+					$classReflection->getDisplayName(),
+					$node->getName(),
+					$prototype->getDeclaringClass()->getDisplayName(),
+					$node->getName(),
+				))->identifier('property.readOnly')->nonIgnorable()->build();
+			}
 		}
 
 		if ($prototype->isPublic()) {

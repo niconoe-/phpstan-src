@@ -253,4 +253,14 @@ class OverridingPropertyRuleTest extends RuleTestCase
 		]);
 	}
 
+	public function testBug12586(): void
+	{
+		if (PHP_VERSION_ID < 80400) {
+			$this->markTestSkipped('Test requires PHP 8.4.');
+		}
+
+		$this->reportMaybes = true;
+		$this->analyse([__DIR__ . '/data/bug-12586.php'], []);
+	}
+
 }
