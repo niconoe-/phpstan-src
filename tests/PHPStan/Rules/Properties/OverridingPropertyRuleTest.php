@@ -260,7 +260,12 @@ class OverridingPropertyRuleTest extends RuleTestCase
 		}
 
 		$this->reportMaybes = true;
-		$this->analyse([__DIR__ . '/data/bug-12586.php'], []);
+		$this->analyse([__DIR__ . '/data/bug-12586.php'], [
+			[
+				'Readonly property Bug12586\FooImpl::$baz overrides readwrite property Bug12586\Foo::$baz.',
+				23,
+			],
+		]);
 	}
 
 }
