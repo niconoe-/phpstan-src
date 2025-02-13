@@ -216,6 +216,18 @@ class OverridingPropertyRuleTest extends RuleTestCase
 				'Type string of property Bug12466\Bar::$a is not the same as type int of overridden property Bug12466\Foo::$a.',
 				15,
 			],
+			[
+				'Property Bug12466\TestMoreProps::$a overriding writable property Bug12466\MoreProps::$a also has to be writable.',
+				34,
+			],
+			[
+				'Property Bug12466\TestMoreProps::$b overriding readable property Bug12466\MoreProps::$b also has to be readable.',
+				41,
+			],
+			[
+				'Property Bug12466\TestMoreProps::$c overriding writable property Bug12466\MoreProps::$c also has to be writable.',
+				48,
+			],
 		]);
 	}
 

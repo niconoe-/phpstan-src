@@ -88,6 +88,32 @@ final class OverridingPropertyRule implements Rule
 			}
 		}
 
+		$propertyReflection = $classReflection->getNativeProperty($node->getName());
+		if ($this->phpVersion->supportsPropertyHooks()) {
+			if ($prototype->isReadable()) {
+				if (!$propertyReflection->isReadable()) {
+					$errors[] = RuleErrorBuilder::message(sprintf(
+						'Property %s::$%s overriding readable property %s::$%s also has to be readable.',
+						$classReflection->getDisplayName(),
+						$node->getName(),
+						$prototype->getDeclaringClass()->getDisplayName(),
+						$node->getName(),
+					))->identifier('property.notReadable')->nonIgnorable()->build();
+				}
+			}
+			if ($prototype->isWritable()) {
+				if (!$propertyReflection->isWritable()) {
+					$errors[] = RuleErrorBuilder::message(sprintf(
+						'Property %s::$%s overriding writable property %s::$%s also has to be writable.',
+						$classReflection->getDisplayName(),
+						$node->getName(),
+						$prototype->getDeclaringClass()->getDisplayName(),
+						$node->getName(),
+					))->identifier('property.notWritable')->nonIgnorable()->build();
+				}
+			}
+		}
+
 		if ($prototype->isPublic()) {
 			if (!$node->isPublic()) {
 				$errors[] = RuleErrorBuilder::message(sprintf(
@@ -198,7 +224,6 @@ final class OverridingPropertyRule implements Rule
 			return $errors;
 		}
 
-		$propertyReflection = $classReflection->getNativeProperty($node->getName());
 		if ($prototype->getReadableType()->equals($propertyReflection->getReadableType())) {
 			return $errors;
 		}
