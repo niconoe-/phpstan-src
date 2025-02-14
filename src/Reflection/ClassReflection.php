@@ -144,6 +144,9 @@ final class ClassReflection
 	/** @var array<string, bool> */
 	private array $hasMethodCache = [];
 
+	/** @var array<string, bool> */
+	private array $hasPropertyCache = [];
+
 	/**
 	 * @param PropertiesClassReflectionExtension[] $propertiesClassReflectionExtensions
 	 * @param MethodsClassReflectionExtension[] $methodsClassReflectionExtensions
@@ -454,8 +457,12 @@ final class ClassReflection
 
 	public function hasProperty(string $propertyName): bool
 	{
+		if (array_key_exists($propertyName, $this->hasPropertyCache)) {
+			return $this->hasPropertyCache[$propertyName];
+		}
+
 		if ($this->isEnum()) {
-			return $this->hasNativeProperty($propertyName);
+			return $this->hasPropertyCache[$propertyName] = $this->hasNativeProperty($propertyName);
 		}
 
 		foreach ($this->propertiesClassReflectionExtensions as $i => $extension) {
@@ -463,15 +470,15 @@ final class ClassReflection
 				break;
 			}
 			if ($extension->hasProperty($this, $propertyName)) {
-				return true;
+				return $this->hasPropertyCache[$propertyName] = true;
 			}
 		}
 
 		if ($this->requireExtendsPropertiesClassReflectionExtension->hasProperty($this, $propertyName)) {
-			return true;
+			return $this->hasPropertyCache[$propertyName] = true;
 		}
 
-		return false;
+		return $this->hasPropertyCache[$propertyName] = false;
 	}
 
 	public function hasMethod(string $methodName): bool
