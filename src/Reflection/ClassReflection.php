@@ -482,21 +482,15 @@ final class ClassReflection
 
 		foreach ($this->methodsClassReflectionExtensions as $extension) {
 			if ($extension->hasMethod($this, $methodName)) {
-				$this->hasMethodCache[$methodName] = true;
-
-				return true;
+				return $this->hasMethodCache[$methodName] = true;
 			}
 		}
 
 		if ($this->requireExtendsMethodsClassReflectionExtension->hasMethod($this, $methodName)) {
-			$this->hasMethodCache[$methodName] = true;
-
-			return true;
+			return $this->hasMethodCache[$methodName] = true;
 		}
 
-		$this->hasMethodCache[$methodName] = false;
-
-		return false;
+		return $this->hasMethodCache[$methodName] = false;
 	}
 
 	public function getMethod(string $methodName, ClassMemberAccessAnswerer $scope): ExtendedMethodReflection
