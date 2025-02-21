@@ -43,7 +43,7 @@ final class DependencyResolver
 		$dependenciesReflections = [];
 
 		if ($node instanceof Node\Stmt\Class_) {
-			if ($node->namespacedName !== null) {
+			if (isset($node->namespacedName)) {
 				$this->addClassToDependencies($node->namespacedName->toString(), $dependenciesReflections);
 			}
 			if ($node->extends !== null) {

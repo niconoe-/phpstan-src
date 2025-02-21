@@ -6323,7 +6323,7 @@ final class NodeScopeResolver
 			$declaringClass = $methodReflection->getDeclaringClass();
 			if (
 				$node instanceof Node\Stmt\Class_
-				&& $node->namespacedName !== null
+				&& isset($node->namespacedName)
 				&& $declaringClass->getName() === (string) $node->namespacedName
 				&& $declaringClass->getNativeReflection()->getStartLine() === $node->getStartLine()
 			) {
