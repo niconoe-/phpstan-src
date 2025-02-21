@@ -19,6 +19,7 @@ final class AnalyserResultFinalizer
 
 	public function __construct(
 		private RuleRegistry $ruleRegistry,
+		private IgnoreErrorExtensionProvider $ignoreErrorExtensionProvider,
 		private RuleErrorTransformer $ruleErrorTransformer,
 		private ScopeFactory $scopeFactory,
 		private LocalIgnoresProcessor $localIgnoresProcessor,
@@ -88,7 +89,17 @@ final class AnalyserResultFinalizer
 			}
 
 			foreach ($ruleErrors as $ruleError) {
-				$tempCollectorErrors[] = $this->ruleErrorTransformer->transform($ruleError, $scope, $nodeType, $node->getStartLine());
+				$error = $this->ruleErrorTransformer->transform($ruleError, $scope, $nodeType, $node->getStartLine());
+
+				if ($error->canBeIgnored()) {
+					foreach ($this->ignoreErrorExtensionProvider->getExtensions() as $ignoreErrorExtension) {
+						if ($ignoreErrorExtension->shouldIgnore($error, $node, $scope)) {
+							continue 2;
+						}
+					}
+				}
+
+				$tempCollectorErrors[] = $error;
 			}
 		}
 

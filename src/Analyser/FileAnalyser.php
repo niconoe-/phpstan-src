@@ -51,6 +51,7 @@ final class FileAnalyser
 		private NodeScopeResolver $nodeScopeResolver,
 		private Parser $parser,
 		private DependencyResolver $dependencyResolver,
+		private IgnoreErrorExtensionProvider $ignoreErrorExtensionProvider,
 		private RuleErrorTransformer $ruleErrorTransformer,
 		private LocalIgnoresProcessor $localIgnoresProcessor,
 	)
@@ -142,7 +143,17 @@ final class FileAnalyser
 						}
 
 						foreach ($ruleErrors as $ruleError) {
-							$temporaryFileErrors[] = $this->ruleErrorTransformer->transform($ruleError, $scope, $nodeType, $node->getStartLine());
+							$error = $this->ruleErrorTransformer->transform($ruleError, $scope, $nodeType, $node->getStartLine());
+
+							if ($error->canBeIgnored()) {
+								foreach ($this->ignoreErrorExtensionProvider->getExtensions() as $ignoreErrorExtension) {
+									if ($ignoreErrorExtension->shouldIgnore($error, $node, $scope)) {
+										continue 2;
+									}
+								}
+							}
+
+							$temporaryFileErrors[] = $error;
 						}
 					}
 
