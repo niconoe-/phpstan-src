@@ -132,6 +132,10 @@ final class UnusedPrivatePropertyRule implements Rule
 						$methodReflection instanceof PhpMethodFromParserNodeReflection
 						&& $methodReflection->isPropertyHook()
 						&& $methodReflection->getHookedPropertyName() === $propertyName
+						&& (
+							$methodReflection->getPropertyHookName() === 'set'
+							|| $usage instanceof PropertyRead
+						)
 					) {
 						continue;
 					}

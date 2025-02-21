@@ -387,4 +387,16 @@ class UnusedPrivatePropertyRuleTest extends RuleTestCase
 		]);
 	}
 
+	public function testBug12621(): void
+	{
+		if (PHP_VERSION_ID < 80400) {
+			$this->markTestSkipped('Test requires PHP 8.4.');
+		}
+
+		$this->alwaysWrittenTags = [];
+		$this->alwaysReadTags = [];
+
+		$this->analyse([__DIR__ . '/data/bug-12621.php'], []);
+	}
+
 }
