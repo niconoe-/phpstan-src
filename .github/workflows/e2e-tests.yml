@@ -243,6 +243,10 @@ jobs:
               echo "$OUTPUT"
               ../bashunit -a matches "Note: Using configuration file .+phpstan.neon." "$OUTPUT"
               ../bashunit -a contains 'Result cache not used because the metadata do not match: metaExtensions' "$OUTPUT"
+          - script: |
+              cd e2e/bug-12606
+              export CONFIGTEST=test
+              ../../bin/phpstan
 
     steps:
       - name: "Checkout"

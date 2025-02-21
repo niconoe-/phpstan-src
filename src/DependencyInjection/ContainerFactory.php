@@ -136,11 +136,11 @@ final class ContainerFactory
 			'generateBaselineFile' => $generateBaselineFile,
 			'usedLevel' => $usedLevel,
 			'cliAutoloadFile' => $cliAutoloadFile,
+			'env' => getenv(),
 		]);
 		$configurator->addDynamicParameters([
 			'analysedPaths' => $analysedPaths,
 			'analysedPathsFromConfig' => $analysedPathsFromConfig,
-			'env' => getenv(),
 		]);
 		$configurator->addConfig($this->configDirectory . '/config.neon');
 		foreach ($additionalConfigFiles as $additionalConfigFile) {
