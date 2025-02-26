@@ -420,4 +420,19 @@ class ClassConstantRuleTest extends RuleTestCase
 		]);
 	}
 
+	public function testClassConstantAccessedOnTrait(): void
+	{
+		if (PHP_VERSION_ID < 80200) {
+			$this->markTestSkipped('Test requires PHP 8.2.');
+		}
+
+		$this->phpVersion = PHP_VERSION_ID;
+		$this->analyse([__DIR__ . '/data/class-constant-accessed-on-trait.php'], [
+			[
+				'Cannot access constant TEST on trait ClassConstantAccessedOnTrait\Foo.',
+				16,
+			],
+		]);
+	}
+
 }

@@ -111,9 +111,24 @@ final class ClassConstantRule implements Rule
 					];
 				}
 
-				$messages = $this->classCheck->checkClassNames([new ClassNameNodePair($className, $class)]);
-
 				$classType = $scope->resolveTypeByName($class);
+				if (strtolower($constantName) !== 'class') {
+					foreach ($classType->getObjectClassReflections() as $classTypeReflection) {
+						if (!$classTypeReflection->isTrait()) {
+							continue;
+						}
+
+						return [
+							RuleErrorBuilder::message(sprintf(
+								'Cannot access constant %s on trait %s.',
+								$constantName,
+								$classTypeReflection->getDisplayName(),
+							))->identifier('classConstant.onTrait')->build(),
+						];
+					}
+				}
+
+				$messages = $this->classCheck->checkClassNames([new ClassNameNodePair($className, $class)]);
 			}
 
 			if (strtolower($constantName) === 'class') {
