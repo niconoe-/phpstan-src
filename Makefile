@@ -101,6 +101,12 @@ lint:
 		--exclude tests/PHPStan/Rules/Properties/data/existing-classes-property-hooks.php \
 		--exclude tests/PHPStan/Rules/Properties/data/set-property-hook-parameter.php \
 		--exclude tests/PHPStan/Rules/Properties/data/overriding-final-property.php \
+		--exclude tests/PHPStan/Rules/Properties/data/private-final-property-hooks.php \
+		--exclude tests/PHPStan/Rules/Properties/data/abstract-final-property-hook.php \
+		--exclude tests/PHPStan/Rules/Properties/data/final-property-hooks-in-interface.php \
+		--exclude tests/PHPStan/Rules/Properties/data/final-property-hooks.php \
+		--exclude tests/PHPStan/Rules/Properties/data/final-properties.php \
+		--exclude tests/PHPStan/Rules/Properties/data/property-in-interface-explicit-abstract.php \
 		src tests
 
 cs:
