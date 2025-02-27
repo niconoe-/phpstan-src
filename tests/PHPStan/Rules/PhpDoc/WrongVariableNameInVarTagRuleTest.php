@@ -207,7 +207,6 @@ class WrongVariableNameInVarTagRuleTest extends RuleTestCase
 
 	public function testBug11015(): void
 	{
-		$this->checkTypeAgainstNativeType = true;
 		$this->checkTypeAgainstPhpDocType = true;
 		$this->strictWideningCheck = true;
 
@@ -216,7 +215,6 @@ class WrongVariableNameInVarTagRuleTest extends RuleTestCase
 
 	public function testBug10861(): void
 	{
-		$this->checkTypeAgainstNativeType = true;
 		$this->checkTypeAgainstPhpDocType = true;
 		$this->strictWideningCheck = true;
 
@@ -225,7 +223,6 @@ class WrongVariableNameInVarTagRuleTest extends RuleTestCase
 
 	public function testBug11535(): void
 	{
-		$this->checkTypeAgainstNativeType = true;
 		$this->checkTypeAgainstPhpDocType = true;
 		$this->strictWideningCheck = true;
 
