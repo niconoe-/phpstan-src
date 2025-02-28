@@ -5,6 +5,7 @@ namespace PHPStan\Rules\Variables;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\IdentifierRuleError;
+use PHPStan\Rules\Properties\PropertyReflectionFinder;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\VerbosityLevel;
@@ -16,6 +17,12 @@ use function sprintf;
  */
 final class UnsetRule implements Rule
 {
+
+	public function __construct(
+		private PropertyReflectionFinder $propertyReflectionFinder,
+	)
+	{
+	}
 
 	public function getNodeType(): string
 	{
@@ -69,6 +76,33 @@ final class UnsetRule implements Rule
 			}
 
 			return $this->canBeUnset($node->var, $scope);
+		} elseif (
+			$node instanceof Node\Expr\PropertyFetch
+			&& $node->name instanceof Node\Identifier
+		) {
+			$foundPropertyReflection = $this->propertyReflectionFinder->findPropertyReflectionFromNode($node, $scope);
+			if ($foundPropertyReflection === null) {
+				return null;
+			}
+
+			$propertyReflection = $foundPropertyReflection->getNativeReflection();
+			if ($propertyReflection === null) {
+				return null;
+			}
+
+			if ($propertyReflection->isReadOnly() || $propertyReflection->isReadOnlyByPhpDoc()) {
+				return RuleErrorBuilder::message(
+					sprintf(
+						'Cannot unset %s %s::$%s property.',
+						$propertyReflection->isReadOnly() ? 'readonly' : '@readonly',
+						$propertyReflection->getDeclaringClass()->getDisplayName(),
+						$foundPropertyReflection->getName(),
+					),
+				)
+					->line($node->getStartLine())
+					->identifier($propertyReflection->isReadOnly() ? 'unset.readOnlyProperty' : 'unset.readOnlyPropertyByPhpDoc')
+					->build();
+			}
 		}
 
 		return null;

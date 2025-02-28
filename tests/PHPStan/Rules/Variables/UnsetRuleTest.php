@@ -2,6 +2,7 @@
 
 namespace PHPStan\Rules\Variables;
 
+use PHPStan\Rules\Properties\PropertyReflectionFinder;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
 
@@ -13,7 +14,7 @@ class UnsetRuleTest extends RuleTestCase
 
 	protected function getRule(): Rule
 	{
-		return new UnsetRule();
+		return new UnsetRule(self::getContainer()->getByType(PropertyReflectionFinder::class));
 	}
 
 	public function testUnsetRule(): void
@@ -89,6 +90,36 @@ class UnsetRuleTest extends RuleTestCase
 	public function testBug4565(): void
 	{
 		$this->analyse([__DIR__ . '/../../Analyser/nsrt/bug-4565.php'], []);
+	}
+
+	public function testBug12421(): void
+	{
+		$this->analyse([__DIR__ . '/data/bug-12421.php'], [
+			[
+				'Cannot unset readonly Bug12421\NativeReadonlyClass::$y property.',
+				11,
+			],
+			[
+				'Cannot unset readonly Bug12421\NativeReadonlyProperty::$y property.',
+				15,
+			],
+			[
+				'Cannot unset @readonly Bug12421\PhpdocReadonlyClass::$y property.',
+				19,
+			],
+			[
+				'Cannot unset @readonly Bug12421\PhpdocReadonlyProperty::$y property.',
+				23,
+			],
+			[
+				'Cannot unset @readonly Bug12421\PhpdocImmutableClass::$y property.',
+				27,
+			],
+			[
+				'Cannot unset readonly Bug12421\NativeReadonlyProperty::$y property.',
+				34,
+			],
+		]);
 	}
 
 }
