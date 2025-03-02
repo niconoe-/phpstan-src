@@ -2,9 +2,12 @@
 
 namespace PHPStan\Rules\Variables;
 
+use PHPStan\Php\PhpVersion;
 use PHPStan\Rules\Properties\PropertyReflectionFinder;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
+use function array_merge;
+use const PHP_VERSION_ID;
 
 /**
  * @extends RuleTestCase<UnsetRule>
@@ -14,7 +17,10 @@ class UnsetRuleTest extends RuleTestCase
 
 	protected function getRule(): Rule
 	{
-		return new UnsetRule(self::getContainer()->getByType(PropertyReflectionFinder::class));
+		return new UnsetRule(
+			self::getContainer()->getByType(PropertyReflectionFinder::class),
+			self::getContainer()->getByType(PhpVersion::class),
+		);
 	}
 
 	public function testUnsetRule(): void
@@ -55,7 +61,18 @@ class UnsetRuleTest extends RuleTestCase
 
 	public function testBug4289(): void
 	{
-		$this->analyse([__DIR__ . '/data/bug-4289.php'], []);
+		$errors = [];
+
+		if (PHP_VERSION_ID >= 80400) {
+			$errors = [
+				[
+					'Cannot unset property Bug4289\BaseClass::$fields because it might have hooks in a subclass.',
+					25,
+				],
+			];
+		}
+
+		$this->analyse([__DIR__ . '/data/bug-4289.php'], $errors);
 	}
 
 	public function testBug5223(): void
@@ -94,7 +111,15 @@ class UnsetRuleTest extends RuleTestCase
 
 	public function testBug12421(): void
 	{
-		$this->analyse([__DIR__ . '/data/bug-12421.php'], [
+		$errors = [];
+		if (PHP_VERSION_ID >= 80400) {
+			$errors[] = [
+				'Cannot unset property Bug12421\RegularProperty::$y because it might have hooks in a subclass.',
+				7,
+			];
+		}
+
+		$errors = array_merge($errors, [
 			[
 				'Cannot unset readonly Bug12421\NativeReadonlyClass::$y property.',
 				11,
@@ -118,6 +143,38 @@ class UnsetRuleTest extends RuleTestCase
 			[
 				'Cannot unset readonly Bug12421\NativeReadonlyProperty::$y property.',
 				34,
+			],
+		]);
+
+		$this->analyse([__DIR__ . '/data/bug-12421.php'], $errors);
+	}
+
+	public function testUnsetHookedProperty(): void
+	{
+		if (PHP_VERSION_ID < 80400) {
+			$this->markTestSkipped('Test requires PHP 8.4 or later.');
+		}
+
+		$this->analyse([__DIR__ . '/data/unset-hooked-property.php'], [
+			[
+				'Cannot unset hooked UnsetHookedProperty\User::$name property.',
+				6,
+			],
+			[
+				'Cannot unset hooked UnsetHookedProperty\User::$fullName property.',
+				7,
+			],
+			[
+				'Cannot unset hooked UnsetHookedProperty\Foo::$ii property.',
+				9,
+			],
+			[
+				'Cannot unset hooked UnsetHookedProperty\Foo::$iii property.',
+				10,
+			],
+			[
+				'Cannot unset property UnsetHookedProperty\NonFinalClass::$publicProperty because it might have hooks in a subclass.',
+				13,
 			],
 		]);
 	}
