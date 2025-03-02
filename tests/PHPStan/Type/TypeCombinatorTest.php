@@ -1562,6 +1562,34 @@ class TypeCombinatorTest extends PHPStanTestCase
 			],
 			[
 				[
+					IntegerRangeType::fromInterval(4, 9),
+					IntegerRangeType::fromInterval(16, 81),
+					IntegerRangeType::fromInterval(8, 27),
+				],
+				IntegerRangeType::class,
+				'int<4, 81>',
+			],
+			[
+				[
+					IntegerRangeType::fromInterval(8, 27),
+					IntegerRangeType::fromInterval(4, 6),
+					new ConstantIntegerType(7),
+					IntegerRangeType::fromInterval(16, 81),
+				],
+				IntegerRangeType::class,
+				'int<4, 81>',
+			],
+			[
+				[
+					new IntegerType(),
+					IntegerRangeType::fromInterval(null, -1),
+					IntegerRangeType::fromInterval(1, null),
+				],
+				IntegerType::class,
+				'int',
+			],
+			[
+				[
 					IntegerRangeType::fromInterval(1, 3),
 					new ConstantIntegerType(3),
 				],
