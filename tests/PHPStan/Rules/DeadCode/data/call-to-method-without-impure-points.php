@@ -42,7 +42,6 @@ function (): void {
 };
 
 function (y $xy, finalX $finalX): void {
-	$xy = new y();
 	if (rand(0,1)) {
 		$xy = $finalX;
 	}
