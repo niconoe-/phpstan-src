@@ -226,7 +226,12 @@ class WrongVariableNameInVarTagRuleTest extends RuleTestCase
 		$this->checkTypeAgainstPhpDocType = true;
 		$this->strictWideningCheck = true;
 
-		$this->analyse([__DIR__ . '/data/bug-11535.php'], []);
+		$this->analyse([__DIR__ . '/data/bug-11535.php'], [
+			[
+				'PHPDoc tag @var with type Closure(string): array<int> is not subtype of native type Closure(string): array{1, 2, 3}.',
+				6,
+			],
+		]);
 	}
 
 	public function testEnums(): void
@@ -559,6 +564,13 @@ class WrongVariableNameInVarTagRuleTest extends RuleTestCase
 				22,
 			],
 		]);
+	}
+
+	public function testNewIsAlwaysFinalClass(): void
+	{
+		$this->checkTypeAgainstPhpDocType = true;
+		$this->strictWideningCheck = true;
+		$this->analyse([__DIR__ . '/data/new-is-always-final-var-tag-type.php'], []);
 	}
 
 }

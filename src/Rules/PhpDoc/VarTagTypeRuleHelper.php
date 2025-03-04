@@ -240,7 +240,7 @@ final class VarTagTypeRuleHelper
 			$scope->isInClass() ? $scope->getClassReflection()->getName() : null,
 			$scope->isInTrait() ? $scope->getTraitReflection()->getName() : null,
 			$function !== null ? $function->getName() : null,
-		);
+		)->withoutNamespaceAndUses();
 	}
 
 }
