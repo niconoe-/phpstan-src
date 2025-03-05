@@ -506,11 +506,31 @@ class ImpossibleInstanceOfRuleTest extends RuleTestCase
 
 	public function testNewIsAlwaysFinalClass(): void
 	{
+		if (PHP_VERSION_ID < 80000) {
+			$this->markTestSkipped('This test needs PHP 8.0.');
+		}
+
 		$this->treatPhpDocTypesAsCertain = true;
 		$this->analyse([__DIR__ . '/data/impossible-instanceof-new-is-always-final.php'], [
 			[
 				'Instanceof between ImpossibleInstanceofNewIsAlwaysFinal\Bar and ImpossibleInstanceofNewIsAlwaysFinal\Foo will always evaluate to false.',
 				17,
+			],
+			[
+				'Instanceof between ImpossibleInstanceofNewIsAlwaysFinal\Bar and ImpossibleInstanceofNewIsAlwaysFinal\Foo will always evaluate to false.',
+				33,
+			],
+			[
+				'Instanceof between ImpossibleInstanceofNewIsAlwaysFinal\Bar and ImpossibleInstanceofNewIsAlwaysFinal\Foo will always evaluate to false.',
+				43,
+			],
+			[
+				'Instanceof between ImpossibleInstanceofNewIsAlwaysFinal\Bar and ImpossibleInstanceofNewIsAlwaysFinal\Foo will always evaluate to false.',
+				53,
+			],
+			[
+				'Instanceof between ImpossibleInstanceofNewIsAlwaysFinal\Bar and ImpossibleInstanceofNewIsAlwaysFinal\Foo will always evaluate to false.',
+				63,
 			],
 		]);
 	}

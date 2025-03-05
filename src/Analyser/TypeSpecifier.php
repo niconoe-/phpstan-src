@@ -2205,6 +2205,14 @@ final class TypeSpecifier
 			&& in_array(strtolower($unwrappedLeftExpr->name->toString()), ['get_class', 'get_debug_type'], true)
 			&& isset($unwrappedLeftExpr->getArgs()[0])
 		) {
+			if ($rightType instanceof ConstantStringType && $this->reflectionProvider->hasClass($rightType->getValue())) {
+				return $this->create(
+					$unwrappedLeftExpr->getArgs()[0]->value,
+					new ObjectType($rightType->getValue(), null, $this->reflectionProvider->getClass($rightType->getValue())->asFinal()),
+					$context,
+					$scope,
+				)->unionWith($this->create($leftExpr, $rightType, $context, $scope))->setRootExpr($expr);
+			}
 			if ($rightType->getClassStringObjectType()->isObject()->yes()) {
 				return $this->create(
 					$unwrappedLeftExpr->getArgs()[0]->value,
@@ -2215,7 +2223,6 @@ final class TypeSpecifier
 			}
 		}
 
-		// get_class($a) === 'Foo'
 		if (
 			$context->truthy()
 			&& $unwrappedLeftExpr instanceof FuncCall
@@ -2305,6 +2312,14 @@ final class TypeSpecifier
 			$rightType->getValue() !== '' &&
 			strtolower($unwrappedLeftExpr->name->toString()) === 'class'
 		) {
+			if ($this->reflectionProvider->hasClass($rightType->getValue())) {
+				return $this->create(
+					$unwrappedLeftExpr->class,
+					new ObjectType($rightType->getValue(), null, $this->reflectionProvider->getClass($rightType->getValue())->asFinal()),
+					$context,
+					$scope,
+				)->unionWith($this->create($leftExpr, $rightType, $context, $scope))->setRootExpr($expr);
+			}
 			return $this->specifyTypesInCondition(
 				$scope,
 				new Instanceof_(
@@ -2328,6 +2343,15 @@ final class TypeSpecifier
 			$leftType->getValue() !== '' &&
 			strtolower($unwrappedRightExpr->name->toString()) === 'class'
 		) {
+			if ($this->reflectionProvider->hasClass($leftType->getValue())) {
+				return $this->create(
+					$unwrappedRightExpr->class,
+					new ObjectType($leftType->getValue(), null, $this->reflectionProvider->getClass($leftType->getValue())->asFinal()),
+					$context,
+					$scope,
+				)->unionWith($this->create($rightExpr, $leftType, $context, $scope)->setRootExpr($expr));
+			}
+
 			return $this->specifyTypesInCondition(
 				$scope,
 				new Instanceof_(
