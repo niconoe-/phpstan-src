@@ -532,6 +532,10 @@ class ImpossibleInstanceOfRuleTest extends RuleTestCase
 				'Instanceof between ImpossibleInstanceofNewIsAlwaysFinal\Bar and ImpossibleInstanceofNewIsAlwaysFinal\Foo will always evaluate to false.',
 				63,
 			],
+			[
+				'Instanceof between ImpossibleInstanceofNewIsAlwaysFinal\Bar|null and ImpossibleInstanceofNewIsAlwaysFinal\Foo will always evaluate to false.',
+				73,
+			],
 		]);
 	}
 
