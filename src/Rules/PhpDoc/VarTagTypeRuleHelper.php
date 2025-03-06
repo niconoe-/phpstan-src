@@ -10,6 +10,7 @@ use PHPStan\Node\Expr\GetOffsetValueTypeExpr;
 use PHPStan\PhpDoc\NameScopeAlreadyBeingCreatedException;
 use PHPStan\PhpDoc\Tag\VarTag;
 use PHPStan\PhpDoc\TypeNodeResolver;
+use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\ArrayType;
@@ -31,6 +32,7 @@ final class VarTagTypeRuleHelper
 	public function __construct(
 		private TypeNodeResolver $typeNodeResolver,
 		private FileTypeMapper $fileTypeMapper,
+		private ReflectionProvider $reflectionProvider,
 		private bool $checkTypeAgainstPhpDocType,
 		private bool $strictWideningCheck,
 	)
@@ -125,8 +127,13 @@ final class VarTagTypeRuleHelper
 	private function containsPhpStanType(Type $type): bool
 	{
 		$classReflections = TypeUtils::toBenevolentUnion($type)->getObjectClassReflections();
+		if (!$this->reflectionProvider->hasClass(Type::class)) {
+			return false;
+		}
+
+		$typeClass = $this->reflectionProvider->getClass(Type::class);
 		foreach ($classReflections as $classReflection) {
-			if (!$classReflection->isSubclassOf(Type::class)) {
+			if (!$classReflection->isSubclassOfClass($typeClass)) {
 				continue;
 			}
 

@@ -837,20 +837,33 @@ final class ClassReflection
 		return $this->getName() === $className || $this->isSubclassOf($className);
 	}
 
+	/**
+	 * @deprecated Use isSubclassOfClass instead.
+	 */
 	public function isSubclassOf(string $className): bool
 	{
-		if (isset($this->subclasses[$className])) {
-			return $this->subclasses[$className];
+		if (!$this->reflectionProvider->hasClass($className)) {
+			return false;
 		}
 
-		if (!$this->reflectionProvider->hasClass($className)) {
-			return $this->subclasses[$className] = false;
+		return $this->isSubclassOfClass($this->reflectionProvider->getClass($className));
+	}
+
+	public function isSubclassOfClass(self $class): bool
+	{
+		$cacheKey = $class->getCacheKey();
+		if (isset($this->subclasses[$cacheKey])) {
+			return $this->subclasses[$cacheKey];
+		}
+
+		if ($class->isFinal() || $class->isAnonymous()) {
+			return $this->subclasses[$cacheKey] = false;
 		}
 
 		try {
-			return $this->subclasses[$className] = $this->reflection->isSubclassOf($className);
+			return $this->subclasses[$cacheKey] = $this->reflection->isSubclassOf($class->getName());
 		} catch (ReflectionException) {
-			return $this->subclasses[$className] = false;
+			return $this->subclasses[$cacheKey] = false;
 		}
 	}
 

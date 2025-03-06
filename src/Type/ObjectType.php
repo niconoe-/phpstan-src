@@ -414,11 +414,11 @@ class ObjectType implements TypeWithClassName, SubtractableType
 			return self::$superTypes[$thisDescription][$description] = $transformResult(IsSuperTypeOfResult::createYes());
 		}
 
-		if ($thatClassReflection->isSubclassOf($thisClassName)) {
+		if ($thatClassReflection->isSubclassOfClass($thisClassReflection)) {
 			return self::$superTypes[$thisDescription][$description] = $transformResult(IsSuperTypeOfResult::createYes());
 		}
 
-		if ($thisClassReflection->isSubclassOf($thatClassNames[0])) {
+		if ($thisClassReflection->isSubclassOfClass($thatClassReflection)) {
 			return self::$superTypes[$thisDescription][$description] = IsSuperTypeOfResult::createMaybe();
 		}
 
@@ -485,7 +485,7 @@ class ObjectType implements TypeWithClassName, SubtractableType
 		}
 
 		return AcceptsResult::createFromBoolean(
-			$thatReflection->isSubclassOf($thisReflection->getName()),
+			$thatReflection->isSubclassOfClass($thisReflection),
 		);
 	}
 
@@ -1127,10 +1127,7 @@ class ObjectType implements TypeWithClassName, SubtractableType
 		}
 
 		foreach (self::EXTRA_OFFSET_CLASSES as $extraOffsetClass) {
-			if ($classReflection->getName() === $extraOffsetClass) {
-				return TrinaryLogic::createYes();
-			}
-			if ($classReflection->isSubclassOf($extraOffsetClass)) {
+			if ($classReflection->is($extraOffsetClass)) {
 				return TrinaryLogic::createYes();
 			}
 		}
@@ -1370,7 +1367,7 @@ class ObjectType implements TypeWithClassName, SubtractableType
 			return TrinaryLogic::createMaybe();
 		}
 
-		if ($classReflection->getName() === $className || $classReflection->isSubclassOf($className)) {
+		if ($classReflection->is($className)) {
 			return TrinaryLogic::createYes();
 		}
 

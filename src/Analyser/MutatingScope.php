@@ -5447,22 +5447,22 @@ final class MutatingScope implements Scope
 			return $this->canAccessClassMember($propertyReflection);
 		}
 
-		$classReflectionName = $propertyReflection->getDeclaringClass()->getName();
-		$canAccessClassMember = static function (ClassReflection $classReflection) use ($propertyReflection, $classReflectionName) {
+		$propertyDeclaringClass = $propertyReflection->getDeclaringClass();
+		$canAccessClassMember = static function (ClassReflection $classReflection) use ($propertyReflection, $propertyDeclaringClass) {
 			if ($propertyReflection->isPrivateSet()) {
-				return $classReflection->getName() === $classReflectionName;
+				return $classReflection->getName() === $propertyDeclaringClass->getName();
 			}
 
 			// protected set
 
 			if (
-				$classReflection->getName() === $classReflectionName
-				|| $classReflection->isSubclassOf($classReflectionName)
+				$classReflection->getName() === $propertyDeclaringClass->getName()
+				|| $classReflection->isSubclassOfClass($propertyDeclaringClass)
 			) {
 				return true;
 			}
 
-			return $propertyReflection->getDeclaringClass()->isSubclassOf($classReflection->getName());
+			return $propertyReflection->getDeclaringClass()->isSubclassOfClass($classReflection);
 		};
 
 		foreach ($this->inClosureBindScopeClasses as $inClosureBindScopeClass) {
@@ -5504,22 +5504,22 @@ final class MutatingScope implements Scope
 			return true;
 		}
 
-		$classReflectionName = $classMemberReflection->getDeclaringClass()->getName();
-		$canAccessClassMember = static function (ClassReflection $classReflection) use ($classMemberReflection, $classReflectionName) {
+		$classMemberDeclaringClass = $classMemberReflection->getDeclaringClass();
+		$canAccessClassMember = static function (ClassReflection $classReflection) use ($classMemberReflection, $classMemberDeclaringClass) {
 			if ($classMemberReflection->isPrivate()) {
-				return $classReflection->getName() === $classReflectionName;
+				return $classReflection->getName() === $classMemberDeclaringClass->getName();
 			}
 
 			// protected
 
 			if (
-				$classReflection->getName() === $classReflectionName
-				|| $classReflection->isSubclassOf($classReflectionName)
+				$classReflection->getName() === $classMemberDeclaringClass->getName()
+				|| $classReflection->isSubclassOfClass($classMemberDeclaringClass)
 			) {
 				return true;
 			}
 
-			return $classMemberReflection->getDeclaringClass()->isSubclassOf($classReflection->getName());
+			return $classMemberReflection->getDeclaringClass()->isSubclassOfClass($classReflection);
 		};
 
 		foreach ($this->inClosureBindScopeClasses as $inClosureBindScopeClass) {

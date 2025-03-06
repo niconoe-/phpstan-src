@@ -301,6 +301,15 @@ parameters:
 			path: src/Reflection/BetterReflection/SourceLocator/SkipClassAliasSourceLocator.php
 
 		-
+			message: '''
+				#^Call to deprecated method isSubclassOf\(\) of class PHPStan\\Reflection\\ClassReflection\:
+				Use isSubclassOfClass instead\.$#
+			'''
+			identifier: method.deprecated
+			count: 1
+			path: src/Reflection/ClassReflection.php
+
+		-
 			message: '#^Doing instanceof PHPStan\\Type\\Generic\\GenericObjectType is error\-prone and deprecated\.$#'
 			identifier: phpstanApi.instanceofType
 			count: 3
@@ -1318,12 +1327,6 @@ parameters:
 			path: src/Type/IntegerType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Accessory\\AccessoryType is error\-prone and deprecated\. Use methods on PHPStan\\Type\\Type instead\.$#'
-			identifier: phpstanApi.instanceofType
-			count: 3
-			path: src/Type/IntersectionType.php
-
-		-
 			message: '#^Doing instanceof PHPStan\\Type\\ArrayType is error\-prone and deprecated\. Use Type\:\:isArray\(\) or Type\:\:getArrays\(\) instead\.$#'
 			identifier: phpstanApi.instanceofType
 			count: 4
@@ -1648,12 +1651,6 @@ parameters:
 			path: src/Type/StringType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Accessory\\AccessoryType is error\-prone and deprecated\. Use methods on PHPStan\\Type\\Type instead\.$#'
-			identifier: phpstanApi.instanceofType
-			count: 1
-			path: src/Type/TypeCombinator.php
-
-		-
 			message: '#^Doing instanceof PHPStan\\Type\\ArrayType is error\-prone and deprecated\. Use Type\:\:isArray\(\) or Type\:\:getArrays\(\) instead\.$#'
 			identifier: phpstanApi.instanceofType
 			count: 5
@@ -1814,12 +1811,6 @@ parameters:
 			identifier: phpstanApi.varTagAssumption
 			count: 1
 			path: src/Type/UnionType.php
-
-		-
-			message: '#^Doing instanceof PHPStan\\Type\\Accessory\\AccessoryType is error\-prone and deprecated\. Use methods on PHPStan\\Type\\Type instead\.$#'
-			identifier: phpstanApi.instanceofType
-			count: 3
-			path: src/Type/UnionTypeHelper.php
 
 		-
 			message: '#^Doing instanceof PHPStan\\Type\\CallableType is error\-prone and deprecated\. Use Type\:\:isCallable\(\) and Type\:\:getCallableParametersAcceptors\(\) instead\.$#'

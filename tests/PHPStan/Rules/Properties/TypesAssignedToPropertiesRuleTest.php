@@ -330,7 +330,7 @@ class TypesAssignedToPropertiesRuleTest extends RuleTestCase
 					45,
 				],
 				[
-					'Property AppendedArrayItem\Baz::$staticProperty (array<AppendedArrayItem\Lorem>) does not accept array<AppendedArrayItem\Baz>.',
+					'Property AppendedArrayItem\Baz::$staticProperty (array<AppendedArrayItem\Lorem>) does not accept array<AppendedArrayItem\Baz|AppendedArrayItem\Lorem>.',
 					79,
 				],
 			],

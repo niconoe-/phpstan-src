@@ -2970,10 +2970,7 @@ final class NodeScopeResolver
 				&& $scopeFunction instanceof MethodReflection
 				&& !$scopeFunction->isStatic()
 				&& $scope->isInClass()
-				&& (
-					$scope->getClassReflection()->getName() === $methodReflection->getDeclaringClass()->getName()
-					|| $scope->getClassReflection()->isSubclassOf($methodReflection->getDeclaringClass()->getName())
-				)
+				&& $scope->getClassReflection()->is($methodReflection->getDeclaringClass()->getName())
 			) {
 				$scope = $scope->invalidateExpression(new Variable('this'), true);
 			}
@@ -2985,7 +2982,7 @@ final class NodeScopeResolver
 				&& $scopeFunction instanceof MethodReflection
 				&& !$scopeFunction->isStatic()
 				&& $scope->isInClass()
-				&& $scope->getClassReflection()->isSubclassOf($methodReflection->getDeclaringClass()->getName())
+				&& $scope->getClassReflection()->isSubclassOfClass($methodReflection->getDeclaringClass())
 			) {
 				$thisType = $scope->getType(new Variable('this'));
 				$methodClassReflection = $methodReflection->getDeclaringClass();
@@ -4215,7 +4212,7 @@ final class NodeScopeResolver
 				return ThrowPoint::createExplicit($scope, $throwType, $new, true);
 			}
 		} elseif ($this->implicitThrows) {
-			if ($classReflection->getName() !== Throwable::class && !$classReflection->isSubclassOf(Throwable::class)) {
+			if (!$classReflection->is(Throwable::class)) {
 				return ThrowPoint::createImplicit($scope, $methodCall);
 			}
 		}

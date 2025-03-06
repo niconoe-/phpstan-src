@@ -74,3 +74,18 @@ function (): void {
 
 	}
 };
+
+class Baz extends Bar
+{
+
+}
+
+function (): void {
+	$bar = null;
+	if (rand(0,1)===1) {
+		$bar = new Bar();
+	}
+	if ($bar instanceof Baz) {
+
+	}
+};
