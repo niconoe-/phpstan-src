@@ -59,8 +59,8 @@ final class UnusedPrivatePropertyRule implements Rule
 				continue;
 			}
 
-			$alwaysRead = false;
-			$alwaysWritten = false;
+			$alwaysRead = !$property->isReadable();
+			$alwaysWritten = !$property->isWritable();
 			if ($property->getPhpDoc() !== null) {
 				$text = $property->getPhpDoc();
 				foreach ($this->alwaysReadTags as $tag) {

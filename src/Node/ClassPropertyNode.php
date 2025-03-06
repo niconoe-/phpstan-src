@@ -170,4 +170,14 @@ final class ClassPropertyNode extends NodeAbstract implements VirtualNode
 		return $this->classReflection->getNativeProperty($this->name)->isVirtual()->yes();
 	}
 
+	public function isWritable(): bool
+	{
+		return $this->classReflection->getNativeProperty($this->name)->isWritable();
+	}
+
+	public function isReadable(): bool
+	{
+		return $this->classReflection->getNativeProperty($this->name)->isReadable();
+	}
+
 }
