@@ -1283,7 +1283,7 @@ final class ClassReflection
 
 	public function hasFinalByKeywordOverride(): bool
 	{
-		return $this->isClass() && $this->finalByKeywordOverride !== null;
+		return $this->finalByKeywordOverride !== null;
 	}
 
 	public function isFinalByKeyword(): bool
@@ -1292,7 +1292,7 @@ final class ClassReflection
 			return true;
 		}
 
-		if ($this->isClass() && $this->finalByKeywordOverride !== null) {
+		if ($this->finalByKeywordOverride !== null) {
 			return $this->finalByKeywordOverride;
 		}
 
@@ -1598,6 +1598,12 @@ final class ClassReflection
 			return $this;
 		}
 		if ($this->finalByKeywordOverride === true) {
+			return $this;
+		}
+		if (!$this->isClass()) {
+			return $this;
+		}
+		if ($this->isAbstract()) {
 			return $this;
 		}
 
