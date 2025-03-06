@@ -182,7 +182,7 @@ class ObjectType implements TypeWithClassName, SubtractableType
 		} else {
 			$canAccessProperty = $scope->getClassReflection()->getName();
 		}
-		$description = $this->describeCache();
+		$description = $this->describe(VerbosityLevel::cache());
 
 		if (isset(self::$properties[$description][$propertyName][$canAccessProperty])) {
 			return self::$properties[$description][$propertyName][$canAccessProperty];
@@ -321,14 +321,8 @@ class ObjectType implements TypeWithClassName, SubtractableType
 			return IsSuperTypeOfResult::createNo();
 		}
 
-		$thisDescription = $this->describeCache();
-
-		if ($type instanceof self) {
-			$description = $type->describeCache();
-		} else {
-			$description = $type->describe(VerbosityLevel::cache());
-		}
-
+		$thisDescription = $this->describe(VerbosityLevel::cache());
+		$description = $type->describe(VerbosityLevel::cache());
 		if (isset(self::$superTypes[$thisDescription][$description])) {
 			return self::$superTypes[$thisDescription][$description];
 		}
@@ -516,15 +510,33 @@ class ObjectType implements TypeWithClassName, SubtractableType
 			$preciseNameCallback,
 			$preciseWithSubtracted,
 			function () use ($preciseWithSubtracted): string {
-				$reflection = $this->classReflection;
-				$line = '';
-				if ($reflection !== null) {
-					$line .= '-';
-					$line .= (string) $reflection->getNativeReflection()->getStartLine();
-					$line .= '-';
+				if ($this->cachedDescription !== null) {
+					return $this->cachedDescription;
 				}
 
-				return $preciseWithSubtracted() . '-' . static::class . '-' . $line . $this->describeAdditionalCacheKey();
+				$description = $preciseWithSubtracted();
+
+				if ($this instanceof GenericObjectType) {
+					$description .= '<';
+					$typeDescriptions = [];
+					foreach ($this->getTypes() as $type) {
+						$typeDescriptions[] = $type->describe(VerbosityLevel::cache());
+					}
+					$description .= '<' . implode(', ', $typeDescriptions) . '>';
+				}
+
+				$reflection = $this->classReflection;
+				if ($reflection !== null) {
+					$description .= '-';
+					$description .= (string) $reflection->getNativeReflection()->getStartLine();
+					$description .= '-';
+
+					if ($reflection->hasFinalByKeywordOverride()) {
+						$description .= 'f=' . ($reflection->isFinalByKeyword() ? 't' : 'f');
+					}
+				}
+
+				return $this->cachedDescription = $description . $this->describeAdditionalCacheKey();
 			},
 		);
 	}
@@ -532,47 +544,6 @@ class ObjectType implements TypeWithClassName, SubtractableType
 	protected function describeAdditionalCacheKey(): string
 	{
 		return '';
-	}
-
-	private function describeCache(): string
-	{
-		if ($this->cachedDescription !== null) {
-			return $this->cachedDescription;
-		}
-
-		if (static::class !== self::class) {
-			return $this->cachedDescription = $this->describe(VerbosityLevel::cache());
-		}
-
-		$description = $this->className;
-
-		if ($this instanceof GenericObjectType) {
-			$description .= '<';
-			$typeDescriptions = [];
-			foreach ($this->getTypes() as $type) {
-				$typeDescriptions[] = $type->describe(VerbosityLevel::cache());
-			}
-			$description .= '<' . implode(', ', $typeDescriptions) . '>';
-		}
-
-		if ($this->subtractedType !== null) {
-			$description .= $this->subtractedType instanceof UnionType
-				? sprintf('~(%s)', $this->subtractedType->describe(VerbosityLevel::cache()))
-				: sprintf('~%s', $this->subtractedType->describe(VerbosityLevel::cache()));
-		}
-
-		$reflection = $this->classReflection;
-		if ($reflection !== null) {
-			$description .= '-';
-			$description .= (string) $reflection->getNativeReflection()->getStartLine();
-			$description .= '-';
-
-			if ($reflection->hasFinalByKeywordOverride()) {
-				$description .= 'f=' . ($reflection->isFinalByKeyword() ? 't' : 'f');
-			}
-		}
-
-		return $this->cachedDescription = $description;
 	}
 
 	public function toNumber(): Type
@@ -777,7 +748,7 @@ class ObjectType implements TypeWithClassName, SubtractableType
 		} else {
 			$canCallMethod = $scope->getClassReflection()->getName();
 		}
-		$description = $this->describeCache();
+		$description = $this->describe(VerbosityLevel::cache());
 		if (isset(self::$methods[$description][$methodName][$canCallMethod])) {
 			return self::$methods[$description][$methodName][$canCallMethod];
 		}
@@ -1266,7 +1237,7 @@ class ObjectType implements TypeWithClassName, SubtractableType
 			return [];
 		}
 
-		$cacheKey = $this->describeCache();
+		$cacheKey = $this->describe(VerbosityLevel::cache());
 		if (array_key_exists($cacheKey, self::$enumCases)) {
 			return self::$enumCases[$cacheKey];
 		}
@@ -1529,7 +1500,7 @@ class ObjectType implements TypeWithClassName, SubtractableType
 			return $this->currentAncestors[$className];
 		}
 
-		$description = $this->describeCache();
+		$description = $this->describe(VerbosityLevel::cache());
 		if (
 			array_key_exists($description, self::$ancestors)
 			&& array_key_exists($className, self::$ancestors[$description])

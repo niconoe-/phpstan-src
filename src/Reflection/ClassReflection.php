@@ -856,7 +856,7 @@ final class ClassReflection
 			return $this->subclasses[$cacheKey];
 		}
 
-		if ($class->isFinal() || $class->isAnonymous()) {
+		if ($class->isFinalByKeyword() || $class->isAnonymous()) {
 			return $this->subclasses[$cacheKey] = false;
 		}
 
