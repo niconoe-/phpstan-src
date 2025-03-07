@@ -33,3 +33,29 @@ class Bar
 		$this->i = 'foo';
 	}
 }
+
+class Foo2
+{
+	/**
+	 * @var string[]
+	 */
+	public array $x = [];
+	private ?string $i { get => $this->x[$this->k] ?? null; }
+	private int $k = 0;
+
+}
+
+class Bar2
+{
+	/**
+	 * @var string[]
+	 */
+	public array $x = [];
+	private ?string $i {
+		set {
+			$this->x[$this->k] = $value;
+		}
+	}
+	private int $k = 0;
+
+}

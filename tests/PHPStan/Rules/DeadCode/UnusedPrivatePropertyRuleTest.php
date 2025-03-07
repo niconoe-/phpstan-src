@@ -408,7 +408,16 @@ class UnusedPrivatePropertyRuleTest extends RuleTestCase
 		$this->alwaysWrittenTags = [];
 		$this->alwaysReadTags = [];
 
-		$this->analyse([__DIR__ . '/data/bug-12702.php'], []);
+		$this->analyse([__DIR__ . '/data/bug-12702.php'], [
+			[
+				'Readable property Bug12702\Foo2::$i is never read.',
+				43,
+			],
+			[
+				'Writable property Bug12702\Bar2::$i is never written.',
+				54,
+			],
+		]);
 	}
 
 }
