@@ -217,9 +217,14 @@ class ClosureType implements TypeWithClassName, CallableParametersAcceptor
 	private function isSuperTypeOfInternal(Type $type, bool $treatMixedAsAny): IsSuperTypeOfResult
 	{
 		if ($type instanceof self) {
+			$parameterTypes = array_map(static fn ($parameter) => $parameter->getType(), $this->getParameters());
+			$variant = ParametersAcceptorSelector::selectFromTypes($parameterTypes, [$type], false);
+			if (!$variant instanceof CallableParametersAcceptor) {
+				return IsSuperTypeOfResult::createNo([]);
+			}
 			return CallableTypeHelper::isParametersAcceptorSuperTypeOf(
 				$this,
-				$type,
+				$variant,
 				$treatMixedAsAny,
 			);
 		}
