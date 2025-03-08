@@ -171,8 +171,14 @@ class CallableType implements CompoundType, CallableParametersAcceptor
 			return $isCallable;
 		}
 
+		$parameterTypes = array_map(static fn ($parameter) => $parameter->getType(), $this->getParameters());
+
 		$variantsResult = null;
 		foreach ($type->getCallableParametersAcceptors($scope) as $variant) {
+			$variant = ParametersAcceptorSelector::selectFromTypes($parameterTypes, [$variant], false);
+			if (!$variant instanceof CallableParametersAcceptor) {
+				return IsSuperTypeOfResult::createNo([]);
+			}
 			$isSuperType = CallableTypeHelper::isParametersAcceptorSuperTypeOf($this, $variant, $treatMixedAsAny);
 			if ($variantsResult === null) {
 				$variantsResult = $isSuperType;
