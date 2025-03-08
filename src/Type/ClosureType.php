@@ -23,6 +23,7 @@ use PHPStan\Reflection\ExtendedMethodReflection;
 use PHPStan\Reflection\Native\NativeParameterReflection;
 use PHPStan\Reflection\ParameterReflection;
 use PHPStan\Reflection\ParametersAcceptor;
+use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Reflection\PassedByReference;
 use PHPStan\Reflection\Php\ClosureCallUnresolvedMethodPrototypeReflection;
 use PHPStan\Reflection\Php\DummyParameter;
@@ -524,10 +525,12 @@ class ClosureType implements TypeWithClassName, CallableParametersAcceptor
 
 	private function inferTemplateTypesOnParametersAcceptor(ParametersAcceptor $parametersAcceptor): TemplateTypeMap
 	{
-		$typeMap = TemplateTypeMap::createEmpty();
+		$parameterTypes = array_map(static fn ($parameter) => $parameter->getType(), $this->getParameters());
+		$parametersAcceptor = ParametersAcceptorSelector::selectFromTypes($parameterTypes, [$parametersAcceptor], false);
 		$args = $parametersAcceptor->getParameters();
 		$returnType = $parametersAcceptor->getReturnType();
 
+		$typeMap = TemplateTypeMap::createEmpty();
 		foreach ($this->getParameters() as $i => $param) {
 			$paramType = $param->getType();
 			if (isset($args[$i])) {
