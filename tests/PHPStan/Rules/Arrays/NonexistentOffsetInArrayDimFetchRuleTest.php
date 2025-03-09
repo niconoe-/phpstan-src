@@ -785,4 +785,48 @@ class NonexistentOffsetInArrayDimFetchRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/bug-12122.php'], []);
 	}
 
+	public function testArrayDimFetchAfterArrayKeyFirstOrLast(): void
+	{
+		$this->reportPossiblyNonexistentGeneralArrayOffset = true;
+
+		$this->analyse([__DIR__ . '/data/array-dim-after-array-key-first-or-last.php'], [
+			[
+				'Offset null does not exist on array{}.',
+				19,
+			],
+		]);
+	}
+
+	public function testArrayDimFetchAfterCount(): void
+	{
+		$this->reportPossiblyNonexistentGeneralArrayOffset = true;
+
+		$this->analyse([__DIR__ . '/data/array-dim-after-count.php'], [
+			[
+				'Offset int<0, max> might not exist on list<string>.',
+				26,
+			],
+			[
+				'Offset int<-1, max> might not exist on array<string>.',
+				35,
+			],
+			[
+				'Offset int<0, max> might not exist on non-empty-array<string>.',
+				42,
+			],
+		]);
+	}
+
+	public function testArrayDimFetchAfterArraySearch(): void
+	{
+		$this->reportPossiblyNonexistentGeneralArrayOffset = true;
+
+		$this->analyse([__DIR__ . '/data/array-dim-after-array-search.php'], [
+			[
+				'Offset int|string might not exist on array.',
+				20,
+			],
+		]);
+	}
+
 }
