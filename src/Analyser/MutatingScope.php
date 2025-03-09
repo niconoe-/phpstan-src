@@ -5140,7 +5140,7 @@ final class MutatingScope implements Scope
 				$constantArraysB = TypeCombinator::union(...$constantArrays['b']);
 				if (
 					$constantArraysA->getIterableKeyType()->equals($constantArraysB->getIterableKeyType())
-					&& $constantArraysA->getArraySize()->getGreaterOrEqualType()->isSuperTypeOf($constantArraysB->getArraySize())->yes()
+					&& $constantArraysA->getArraySize()->getGreaterOrEqualType($this->phpVersion)->isSuperTypeOf($constantArraysB->getArraySize())->yes()
 				) {
 					$resultArrayBuilder = ConstantArrayTypeBuilder::createEmpty();
 					foreach (TypeUtils::flattenTypes($constantArraysA->getIterableKeyType()) as $keyType) {
