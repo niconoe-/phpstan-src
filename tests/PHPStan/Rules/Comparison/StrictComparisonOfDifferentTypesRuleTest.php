@@ -940,6 +940,12 @@ class StrictComparisonOfDifferentTypesRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/strict-comparison-last-match-arm.php'], $expectedErrors);
 	}
 
+	public function testBug8030(): void
+	{
+		$this->checkAlwaysTrueStrictComparison = true;
+		$this->analyse([__DIR__ . '/data/bug-8030.php'], []);
+	}
+
 	public function testBug8776Part1(): void
 	{
 		$this->checkAlwaysTrueStrictComparison = true;
