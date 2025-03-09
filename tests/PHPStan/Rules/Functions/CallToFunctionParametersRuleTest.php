@@ -1961,20 +1961,30 @@ class CallToFunctionParametersRuleTest extends RuleTestCase
 
 	public function testBug8046(): void
 	{
-		if (PHP_VERSION_ID < 80100) {
-			$this->markTestSkipped('Test requires PHP 8.1.');
-		}
-
 		$this->analyse([__DIR__ . '/data/bug-8046.php'], []);
 	}
 
-	public function testBug11418(): void
+	public function testBug11942(): void
 	{
 		if (PHP_VERSION_ID < 80100) {
 			$this->markTestSkipped('Test requires PHP 8.1.');
 		}
 
+		$this->analyse([__DIR__ . '/data/bug-11942.php'], []);
+	}
+
+	public function testBug11418(): void
+	{
 		$this->analyse([__DIR__ . '/data/bug-11418.php'], []);
+	}
+
+	public function testBug9167(): void
+	{
+		if (PHP_VERSION_ID < 80100) {
+			$this->markTestSkipped('Test requires PHP 8.1.');
+		}
+
+		$this->analyse([__DIR__ . '/data/bug-9167.php'], []);
 	}
 
 	public function testBug3107(): void
