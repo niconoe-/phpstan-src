@@ -13,7 +13,7 @@ function foobar() {
 		}
 	}
 
-	assertType('array<1|2|3>&list', $x);
+	assertType('list<1|2|3>', $x);
 
 	if ($x) {
 	}
