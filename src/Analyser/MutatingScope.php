@@ -2000,12 +2000,19 @@ final class MutatingScope implements Scope
 			);
 		}
 
-		if ($node instanceof Variable && is_string($node->name)) {
-			if ($this->hasVariableType($node->name)->no()) {
-				return new ErrorType();
+		if ($node instanceof Variable) {
+			if (is_string($node->name)) {
+				if ($this->hasVariableType($node->name)->no()) {
+					return new ErrorType();
+				}
+
+				return $this->getVariableType($node->name);
 			}
 
-			return $this->getVariableType($node->name);
+			$nameType = $this->getType($node->name);
+			if (count($nameType->getConstantStrings()) > 0) {
+				return TypeCombinator::union(...array_map(fn ($constantString) => $this->getVariableType($constantString->getValue()), $nameType->getConstantStrings()));
+			}
 		}
 
 		if ($node instanceof Expr\ArrayDimFetch && $node->dim !== null) {
