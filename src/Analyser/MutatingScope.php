@@ -2126,35 +2126,48 @@ final class MutatingScope implements Scope
 			return $callType;
 		}
 
-		if ($node instanceof PropertyFetch && $node->name instanceof Node\Identifier) {
-			if ($this->nativeTypesPromoted) {
-				$propertyReflection = $this->propertyReflectionFinder->findPropertyReflectionFromNode($node, $this);
-				if ($propertyReflection === null) {
-					return new ErrorType();
+		if ($node instanceof PropertyFetch) {
+			if ($node->name instanceof Node\Identifier) {
+				if ($this->nativeTypesPromoted) {
+					$propertyReflection = $this->propertyReflectionFinder->findPropertyReflectionFromNode($node, $this);
+					if ($propertyReflection === null) {
+						return new ErrorType();
+					}
+
+					if (!$propertyReflection->hasNativeType()) {
+						return new MixedType();
+					}
+
+					$nativeType = $propertyReflection->getNativeType();
+
+					return $this->getNullsafeShortCircuitingType($node->var, $nativeType);
 				}
 
-				if (!$propertyReflection->hasNativeType()) {
-					return new MixedType();
-				}
+				$typeCallback = function () use ($node): Type {
+					$returnType = $this->propertyFetchType(
+						$this->getType($node->var),
+						$node->name->name,
+						$node,
+					);
+					if ($returnType === null) {
+						return new ErrorType();
+					}
+					return $returnType;
+				};
 
-				$nativeType = $propertyReflection->getNativeType();
-
-				return $this->getNullsafeShortCircuitingType($node->var, $nativeType);
+				return $this->getNullsafeShortCircuitingType($node->var, $typeCallback());
 			}
 
-			$typeCallback = function () use ($node): Type {
-				$returnType = $this->propertyFetchType(
-					$this->getType($node->var),
-					$node->name->name,
-					$node,
+			$nameType = $this->getType($node->name);
+			if (count($nameType->getConstantStrings()) > 0) {
+				return TypeCombinator::union(
+					...array_map(fn ($constantString) => $this
+						->filterByTruthyValue(new BinaryOp\Identical($node->name, new String_($constantString->getValue())))
+						->getType(
+							new PropertyFetch($node->var, new Identifier($constantString->getValue())),
+						), $nameType->getConstantStrings()),
 				);
-				if ($returnType === null) {
-					return new ErrorType();
-				}
-				return $returnType;
-			};
-
-			return $this->getNullsafeShortCircuitingType($node->var, $typeCallback());
+			}
 		}
 
 		if ($node instanceof Expr\NullsafePropertyFetch) {
