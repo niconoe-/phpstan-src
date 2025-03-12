@@ -151,7 +151,7 @@ class StrictComparisonOfDifferentTypesRuleTest extends RuleTestCase
 					335,
 				],
 				[
-					'Strict comparison using === between int<0, max> and \'string\' will always evaluate to false.',
+					'Strict comparison using === between int<1, max> and \'string\' will always evaluate to false.',
 					343,
 				],
 				[
