@@ -2010,7 +2010,11 @@ final class MutatingScope implements Scope
 
 			$nameType = $this->getType($node->name);
 			if (count($nameType->getConstantStrings()) > 0) {
-				return TypeCombinator::union(...array_map(fn ($constantString) => $this->getVariableType($constantString->getValue()), $nameType->getConstantStrings()));
+				return TypeCombinator::union(
+					...array_map(fn ($constantString) => $this
+						->filterByTruthyValue(new BinaryOp\Identical($node->name, new String_($constantString->getValue())))
+						->getVariableType($constantString->getValue()), $nameType->getConstantStrings()),
+				);
 			}
 		}
 
