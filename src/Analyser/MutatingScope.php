@@ -2415,8 +2415,7 @@ final class MutatingScope implements Scope
 				return null;
 			}
 
-			$nativeType = $propertyReflection->getNativeType();
-			if (!$nativeType instanceof MixedType) {
+			if ($propertyReflection->hasNativeType() && !$propertyReflection->isVirtual()->yes()) {
 				if (!$this->hasExpressionType($expr)->yes()) {
 					if ($expr instanceof Node\Expr\PropertyFetch) {
 						return $this->issetCheckUndefined($expr->var);
