@@ -2029,36 +2029,47 @@ final class MutatingScope implements Scope
 			);
 		}
 
-		if ($node instanceof MethodCall && $node->name instanceof Node\Identifier) {
-			if ($this->nativeTypesPromoted) {
+		if ($node instanceof MethodCall) {
+			if ($node->name instanceof Node\Identifier) {
+				if ($this->nativeTypesPromoted) {
+					$typeCallback = function () use ($node): Type {
+						$methodReflection = $this->getMethodReflection(
+							$this->getNativeType($node->var),
+							$node->name->name,
+						);
+						if ($methodReflection === null) {
+							return new ErrorType();
+						}
+
+						return ParametersAcceptorSelector::combineAcceptors($methodReflection->getVariants())->getNativeReturnType();
+					};
+
+					return $this->getNullsafeShortCircuitingType($node->var, $typeCallback());
+				}
+
 				$typeCallback = function () use ($node): Type {
-					$methodReflection = $this->getMethodReflection(
-						$this->getNativeType($node->var),
+					$returnType = $this->methodCallReturnType(
+						$this->getType($node->var),
 						$node->name->name,
+						$node,
 					);
-					if ($methodReflection === null) {
+					if ($returnType === null) {
 						return new ErrorType();
 					}
-
-					return ParametersAcceptorSelector::combineAcceptors($methodReflection->getVariants())->getNativeReturnType();
+					return $returnType;
 				};
 
 				return $this->getNullsafeShortCircuitingType($node->var, $typeCallback());
 			}
 
-			$typeCallback = function () use ($node): Type {
-				$returnType = $this->methodCallReturnType(
-					$this->getType($node->var),
-					$node->name->name,
-					$node,
+			$nameType = $this->getType($node->name);
+			if (count($nameType->getConstantStrings()) > 0) {
+				return TypeCombinator::union(
+					...array_map(fn ($constantString) => $this
+						->filterByTruthyValue(new BinaryOp\Identical($node->name, new String_($constantString->getValue())))
+						->getType(new MethodCall($node->var, new Identifier($constantString->getValue()), $node->args)), $nameType->getConstantStrings()),
 				);
-				if ($returnType === null) {
-					return new ErrorType();
-				}
-				return $returnType;
-			};
-
-			return $this->getNullsafeShortCircuitingType($node->var, $typeCallback());
+			}
 		}
 
 		if ($node instanceof Expr\NullsafeMethodCall) {
