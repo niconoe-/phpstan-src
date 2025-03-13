@@ -2077,23 +2077,50 @@ final class MutatingScope implements Scope
 			);
 		}
 
-		if ($node instanceof Expr\StaticCall && $node->name instanceof Node\Identifier) {
-			if ($this->nativeTypesPromoted) {
+		if ($node instanceof Expr\StaticCall) {
+			if ($node->name instanceof Node\Identifier) {
+				if ($this->nativeTypesPromoted) {
+					$typeCallback = function () use ($node): Type {
+						if ($node->class instanceof Name) {
+							$staticMethodCalledOnType = $this->resolveTypeByNameWithLateStaticBinding($node->class, $node->name);
+						} else {
+							$staticMethodCalledOnType = $this->getNativeType($node->class);
+						}
+						$methodReflection = $this->getMethodReflection(
+							$staticMethodCalledOnType,
+							$node->name->name,
+						);
+						if ($methodReflection === null) {
+							return new ErrorType();
+						}
+
+						return ParametersAcceptorSelector::combineAcceptors($methodReflection->getVariants())->getNativeReturnType();
+					};
+
+					$callType = $typeCallback();
+					if ($node->class instanceof Expr) {
+						return $this->getNullsafeShortCircuitingType($node->class, $callType);
+					}
+
+					return $callType;
+				}
+
 				$typeCallback = function () use ($node): Type {
 					if ($node->class instanceof Name) {
 						$staticMethodCalledOnType = $this->resolveTypeByNameWithLateStaticBinding($node->class, $node->name);
 					} else {
-						$staticMethodCalledOnType = $this->getNativeType($node->class);
-					}
-					$methodReflection = $this->getMethodReflection(
-						$staticMethodCalledOnType,
-						$node->name->name,
-					);
-					if ($methodReflection === null) {
-						return new ErrorType();
+						$staticMethodCalledOnType = TypeCombinator::removeNull($this->getType($node->class))->getObjectTypeOrClassStringObjectType();
 					}
 
-					return ParametersAcceptorSelector::combineAcceptors($methodReflection->getVariants())->getNativeReturnType();
+					$returnType = $this->methodCallReturnType(
+						$staticMethodCalledOnType,
+						$node->name->toString(),
+						$node,
+					);
+					if ($returnType === null) {
+						return new ErrorType();
+					}
+					return $returnType;
 				};
 
 				$callType = $typeCallback();
@@ -2104,30 +2131,14 @@ final class MutatingScope implements Scope
 				return $callType;
 			}
 
-			$typeCallback = function () use ($node): Type {
-				if ($node->class instanceof Name) {
-					$staticMethodCalledOnType = $this->resolveTypeByNameWithLateStaticBinding($node->class, $node->name);
-				} else {
-					$staticMethodCalledOnType = TypeCombinator::removeNull($this->getType($node->class))->getObjectTypeOrClassStringObjectType();
-				}
-
-				$returnType = $this->methodCallReturnType(
-					$staticMethodCalledOnType,
-					$node->name->toString(),
-					$node,
+			$nameType = $this->getType($node->name);
+			if (count($nameType->getConstantStrings()) > 0) {
+				return TypeCombinator::union(
+					...array_map(fn ($constantString) => $this
+						->filterByTruthyValue(new BinaryOp\Identical($node->name, new String_($constantString->getValue())))
+						->getType(new Expr\StaticCall($node->class, new Identifier($constantString->getValue()), $node->args)), $nameType->getConstantStrings()),
 				);
-				if ($returnType === null) {
-					return new ErrorType();
-				}
-				return $returnType;
-			};
-
-			$callType = $typeCallback();
-			if ($node->class instanceof Expr) {
-				return $this->getNullsafeShortCircuitingType($node->class, $callType);
 			}
-
-			return $callType;
 		}
 
 		if ($node instanceof PropertyFetch) {
