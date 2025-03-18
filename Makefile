@@ -109,6 +109,7 @@ lint:
 		--exclude tests/PHPStan/Rules/Properties/data/final-properties.php \
 		--exclude tests/PHPStan/Rules/Properties/data/property-in-interface-explicit-abstract.php \
 		--exclude tests/PHPStan/Rules/Constants/data/final-private-const.php \
+		--exclude tests/PHPStan/Rules/Properties/data/abstract-final-property-hook-parse-error.php \
 		src tests
 
 cs:
