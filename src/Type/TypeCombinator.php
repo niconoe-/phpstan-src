@@ -843,6 +843,10 @@ class TypeCombinator
 							return TypeCombinator::intersect($type, new OversizedArrayType());
 						}
 
+						if ($type instanceof ConstantScalarType) {
+							return $type->generalize(GeneralizePrecision::moreSpecific());
+						}
+
 						return $traverse($type);
 					});
 					$valueTypes[$generalizedValueType->describe(VerbosityLevel::precise())] = $generalizedValueType;
