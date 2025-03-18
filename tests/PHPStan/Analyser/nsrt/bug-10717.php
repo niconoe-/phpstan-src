@@ -1046,7 +1046,7 @@ function test(string $code): void
 	if ($country === 'fo' || $country === 'Faroese' || $country === 'Føroyskt') {
 		// foo
 	} else {
-		assertType('(bool|string)', $country);
+		assertType('(bool|(literal-string&non-falsy-string))', $country);
 	}
 }
 
