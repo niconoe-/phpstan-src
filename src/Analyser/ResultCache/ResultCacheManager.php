@@ -49,6 +49,7 @@ use const PHP_VERSION_ID;
 
 /**
  * @phpstan-import-type LinesToIgnore from FileAnalyserResult
+ * @phpstan-import-type CollectorData from CollectedData
  */
 final class ResultCacheManager
 {
@@ -406,10 +407,7 @@ final class ResultCacheManager
 			$freshLocallyIgnoredErrorsByFile[$error->getFilePath()][] = $error;
 		}
 
-		$freshCollectedDataByFile = [];
-		foreach ($analyserResult->getCollectedData() as $collectedData) {
-			$freshCollectedDataByFile[$collectedData->getFilePath()][] = $collectedData;
-		}
+		$freshCollectedDataByFile = $analyserResult->getCollectedData();
 
 		$meta = $resultCache->getMeta();
 		$projectConfigArray = $meta['projectConfig'];
@@ -524,13 +522,6 @@ final class ResultCacheManager
 			}
 		}
 
-		$flatCollectedData = [];
-		foreach ($collectedDataByFile as $fileCollectedData) {
-			foreach ($fileCollectedData as $collectedData) {
-				$flatCollectedData[] = $collectedData;
-			}
-		}
-
 		return new ResultCacheProcessResult(new AnalyserResult(
 			$flatErrors,
 			$analyserResult->getFilteredPhpErrors(),
@@ -539,7 +530,7 @@ final class ResultCacheManager
 			$linesToIgnore,
 			$unmatchedLineIgnores,
 			$internalErrors,
-			$flatCollectedData,
+			$collectedDataByFile,
 			$dependencies,
 			$exportedNodes,
 			$analyserResult->hasReachedInternalErrorsCountLimit(),
@@ -584,8 +575,8 @@ final class ResultCacheManager
 	}
 
 	/**
-	 * @param array<string, array<CollectedData>> $freshCollectedDataByFile
-	 * @return array<string, array<CollectedData>>
+	 * @param CollectorData $freshCollectedDataByFile
+	 * @return CollectorData
 	 */
 	private function mergeCollectedData(ResultCache $resultCache, array $freshCollectedDataByFile): array
 	{
@@ -704,7 +695,7 @@ final class ResultCacheManager
 	 * @param array<string, list<Error>> $locallyIgnoredErrors
 	 * @param array<string, LinesToIgnore> $linesToIgnore
 	 * @param array<string, LinesToIgnore> $unmatchedLineIgnores
-	 * @param array<string, array<CollectedData>> $collectedData
+	 * @param array<string, array<string, list<CollectedData>>> $collectedData
 	 * @param array<string, array<string>> $dependencies
 	 * @param array<string, array<RootExportedNode>> $exportedNodes
 	 * @param array<string, array{string, bool, string}> $projectExtensionFiles
@@ -759,6 +750,10 @@ final class ResultCacheManager
 		ksort($unmatchedLineIgnores);
 		ksort($collectedData);
 		ksort($invertedDependencies);
+
+		foreach ($collectedData as & $collectedDataPerFile) {
+			ksort($collectedDataPerFile);
+		}
 
 		foreach ($invertedDependencies as $file => $fileData) {
 			$dependentFiles = $fileData['dependentFiles'];
