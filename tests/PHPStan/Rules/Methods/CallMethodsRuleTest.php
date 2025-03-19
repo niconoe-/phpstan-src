@@ -3552,4 +3552,39 @@ class CallMethodsRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/bug-6828.php'], []);
 	}
 
+	public function testDynamicCall(): void
+	{
+		$this->checkThisOnly = false;
+		$this->checkNullables = true;
+		$this->checkUnionTypes = true;
+		$this->checkExplicitMixed = true;
+
+		$this->analyse([__DIR__ . '/data/dynamic-call.php'], [
+			[
+				'Call to an undefined method MethodsDynamicCall\Foo::bar().',
+				23,
+			],
+			[
+				'Call to an undefined method MethodsDynamicCall\Foo::doBar().',
+				26,
+			],
+			[
+				'Call to an undefined method MethodsDynamicCall\Foo::doBuz().',
+				26,
+			],
+			[
+				'Parameter #1 $n of method MethodsDynamicCall\Foo::doFoo() expects int, int|string given.',
+				53,
+			],
+			[
+				'Parameter #1 $s of method MethodsDynamicCall\Foo::doQux() expects string, int given.',
+				54,
+			],
+			[
+				'Parameter #1 $n of method MethodsDynamicCall\Foo::doFoo() expects int, string given.',
+				55,
+			],
+		]);
+	}
+
 }
