@@ -2908,7 +2908,15 @@ final class NodeScopeResolver
 		} elseif ($expr instanceof StaticPropertyFetch) {
 			$hasYield = false;
 			$throwPoints = [];
-			$impurePoints = [];
+			$impurePoints = [
+				new ImpurePoint(
+					$scope,
+					$expr,
+					'staticPropertyAccess',
+					'static property access',
+					true,
+				),
+			];
 			if ($expr->class instanceof Expr) {
 				$result = $this->processExprNode($stmt, $expr->class, $scope, $nodeCallback, $context->enterDeep());
 				$hasYield = $result->hasYield();
