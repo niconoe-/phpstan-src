@@ -378,8 +378,8 @@ class AssertingImpureVoidMethod
 
 class StaticMethodAccessingStaticProperty
 {
-	public static int $a = 0;
-
+	/** @var int */
+	public static $a = 0;
 	/**
 	 * @phpstan-pure
 	 */
