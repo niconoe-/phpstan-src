@@ -896,6 +896,16 @@ class AnalyserIntegrationTest extends PHPStanTestCase
 		$this->assertNoErrors($errors);
 	}
 
+	public function testBug12767(): void
+	{
+		$errors = $this->runAnalyse(__DIR__ . '/data/bug-12767.php');
+		$this->assertCount(3, $errors);
+
+		$this->assertSame('Expected type int, actual: *ERROR*', $errors[0]->getMessage());
+		$this->assertSame('Undefined variable: $field1', $errors[1]->getMessage());
+		$this->assertSame('Undefined variable: $field2', $errors[2]->getMessage());
+	}
+
 	public function testBug7554(): void
 	{
 		$errors = $this->runAnalyse(__DIR__ . '/data/bug-7554.php');
