@@ -52,7 +52,7 @@ jobs:
           tools: pecl
           extensions: ds,mbstring
           ini-file: development
-          ini-values: memory_limit=2G
+          ini-values: memory_limit=2G, opcache.enable_cli=1, opcache.jit=tracing, opcache.jit_buffer_size=64M
 
       - name: "Install dependencies"
         run: "composer install --no-interaction --no-progress"
@@ -87,7 +87,7 @@ jobs:
           tools: pecl
           extensions: ds,mbstring
           ini-file: development
-          ini-values: memory_limit=1G
+          ini-values: memory_limit=1G, opcache.enable_cli=1, opcache.jit=tracing, opcache.jit_buffer_size=64M
 
       - name: "Install dependencies"
         run: "composer install --no-interaction --no-progress"
@@ -147,7 +147,7 @@ jobs:
           tools: pecl
           extensions: ds,mbstring
           ini-file: development
-          ini-values: memory_limit=1G
+          ini-values: memory_limit=1G, opcache.enable_cli=1, opcache.jit=tracing, opcache.jit_buffer_size=64M
 
       - name: "Install dependencies"
         run: "composer install --no-interaction --no-progress"
