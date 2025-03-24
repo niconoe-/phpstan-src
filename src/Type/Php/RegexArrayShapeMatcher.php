@@ -107,12 +107,17 @@ final class RegexArrayShapeMatcher
 	 */
 	private function matchRegex(string $regex, ?int $flags, TrinaryLogic $wasMatched, bool $matchesAll): ?Type
 	{
-		$parseResult = $this->regexGroupParser->parseGroups($regex);
-		if ($parseResult === null) {
+		$astWalkResult = $this->regexGroupParser->parseGroups($regex);
+		if ($astWalkResult === null) {
 			// regex could not be parsed by Hoa/Regex
 			return null;
 		}
-		[$groupList, $markVerbs] = $parseResult;
+		$groupList = $astWalkResult->getCapturingGroups();
+		$markVerbs = $astWalkResult->getMarkVerbs();
+		$subjectBaseType = new StringType();
+		if ($wasMatched->yes()) {
+			$subjectBaseType = $astWalkResult->getSubjectBaseType();
+		}
 
 		$regexGroupList = new RegexGroupList($groupList);
 		$trailingOptionals = $regexGroupList->countTrailingOptionals();
@@ -130,6 +135,7 @@ final class RegexArrayShapeMatcher
 			$regexGroupList = $regexGroupList->forceGroupNonOptional($onlyOptionalTopLevelGroup);
 
 			$combiType = $this->buildArrayType(
+				$subjectBaseType,
 				$regexGroupList,
 				$wasMatched,
 				$trailingOptionals,
@@ -141,7 +147,7 @@ final class RegexArrayShapeMatcher
 			if (!$this->containsUnmatchedAsNull($flags, $matchesAll)) {
 				// positive match has a subject but not any capturing group
 				$combiType = TypeCombinator::union(
-					new ConstantArrayType([new ConstantIntegerType(0)], [$this->createSubjectValueType($flags, $matchesAll)], [1], [], TrinaryLogic::createYes()),
+					new ConstantArrayType([new ConstantIntegerType(0)], [$this->createSubjectValueType($subjectBaseType, $flags, $matchesAll)], [1], [], TrinaryLogic::createYes()),
 					$combiType,
 				);
 			}
@@ -180,6 +186,7 @@ final class RegexArrayShapeMatcher
 				}
 
 				$combiType = $this->buildArrayType(
+					$subjectBaseType,
 					$comboList,
 					$wasMatched,
 					$trailingOptionals,
@@ -199,7 +206,7 @@ final class RegexArrayShapeMatcher
 				)
 			) {
 				// positive match has a subject but not any capturing group
-				$combiTypes[] = new ConstantArrayType([new ConstantIntegerType(0)], [$this->createSubjectValueType($flags, $matchesAll)], [1], [], TrinaryLogic::createYes());
+				$combiTypes[] = new ConstantArrayType([new ConstantIntegerType(0)], [$this->createSubjectValueType($subjectBaseType, $flags, $matchesAll)], [1], [], TrinaryLogic::createYes());
 			}
 
 			return TypeCombinator::union(...$combiTypes);
@@ -208,6 +215,7 @@ final class RegexArrayShapeMatcher
 		// the general case, which should work in all cases but does not yield the most
 		// precise result possible in some cases
 		return $this->buildArrayType(
+			$subjectBaseType,
 			$regexGroupList,
 			$wasMatched,
 			$trailingOptionals,
@@ -221,6 +229,7 @@ final class RegexArrayShapeMatcher
 	 * @param list<string> $markVerbs
 	 */
 	private function buildArrayType(
+		Type $subjectBaseType,
 		RegexGroupList $captureGroups,
 		TrinaryLogic $wasMatched,
 		int $trailingOptionals,
@@ -234,7 +243,7 @@ final class RegexArrayShapeMatcher
 		// first item in matches contains the overall match.
 		$builder->setOffsetValueType(
 			$this->getKeyType(0),
-			$this->createSubjectValueType($flags, $matchesAll),
+			$this->createSubjectValueType($subjectBaseType, $flags, $matchesAll),
 			$this->isSubjectOptional($wasMatched, $matchesAll),
 		);
 
@@ -298,13 +307,21 @@ final class RegexArrayShapeMatcher
 		return !$wasMatched->yes();
 	}
 
-	private function createSubjectValueType(int $flags, bool $matchesAll): Type
+	/**
+	 * @param Type $baseType A string type (or string variant) representing the subject of the match
+	 */
+	private function createSubjectValueType(Type $baseType, int $flags, bool $matchesAll): Type
 	{
-		$subjectValueType = TypeCombinator::removeNull($this->getValueType(new StringType(), $flags, $matchesAll));
+		$subjectValueType = TypeCombinator::removeNull($this->getValueType($baseType, $flags, $matchesAll));
 
 		if ($matchesAll) {
+			$subjectValueType = TypeCombinator::removeNull($this->getValueType(new StringType(), $flags, $matchesAll));
+
 			if ($this->containsPatternOrder($flags)) {
-				$subjectValueType = TypeCombinator::intersect(new ArrayType(new IntegerType(), $subjectValueType), new AccessoryArrayListType());
+				$subjectValueType = TypeCombinator::intersect(
+					new ArrayType(new IntegerType(), $subjectValueType),
+					new AccessoryArrayListType(),
+				);
 			}
 		}
 

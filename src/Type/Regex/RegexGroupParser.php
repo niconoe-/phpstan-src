@@ -49,10 +49,7 @@ final class RegexGroupParser
 	{
 	}
 
-	/**
-	 * @return array{array<int, RegexCapturingGroup>, list<string>}|null
-	 */
-	public function parseGroups(string $regex): ?array
+	public function parseGroups(string $regex): ?RegexAstWalkResult
 	{
 		if (self::$parser === null) {
 			/** @throws void */
@@ -105,7 +102,28 @@ final class RegexGroupParser
 			RegexAstWalkResult::createEmpty(),
 		);
 
-		return [$astWalkResult->getCapturingGroups(), $astWalkResult->getMarkVerbs()];
+		$subjectAsGroupResult = $this->walkGroupAst(
+			$ast,
+			false,
+			false,
+			$modifiers,
+			RegexGroupWalkResult::createEmpty(),
+		);
+
+		if (!$subjectAsGroupResult->mightContainEmptyStringLiteral()) {
+			// we could handle numeric-string, in case we know the regex is delimited by ^ and $
+			if ($subjectAsGroupResult->isNonFalsy()->yes()) {
+				$astWalkResult = $astWalkResult->withSubjectBaseType(
+					TypeCombinator::intersect(new StringType(), new AccessoryNonFalsyStringType()),
+				);
+			} elseif ($subjectAsGroupResult->isNonEmpty()->yes()) {
+				$astWalkResult = $astWalkResult->withSubjectBaseType(
+					TypeCombinator::intersect(new StringType(), new AccessoryNonEmptyStringType()),
+				);
+			}
+		}
+
+		return $astWalkResult;
 	}
 
 	private function createEmptyTokenTreeNode(TreeNode $parentAst): TreeNode
