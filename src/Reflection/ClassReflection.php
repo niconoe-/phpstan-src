@@ -1332,6 +1332,9 @@ final class ClassReflection
 			$attributeClass = $this->reflectionProvider->getClass(Attribute::class);
 			$arguments = [];
 			foreach ($nativeAttributes[0]->getArgumentsExpressions() as $i => $expression) {
+				if ($i === '') {
+					throw new ShouldNotHappenException();
+				}
 				$arguments[] = new Arg($expression, false, false, [], is_int($i) ? null : new Identifier($i));
 			}
 

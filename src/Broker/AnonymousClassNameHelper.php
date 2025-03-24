@@ -20,6 +20,9 @@ final class AnonymousClassNameHelper
 	{
 	}
 
+	/**
+	 * @return non-empty-string
+	 */
 	public function getAnonymousClassName(
 		Node\Stmt\Class_ $classNode,
 		string $filename,

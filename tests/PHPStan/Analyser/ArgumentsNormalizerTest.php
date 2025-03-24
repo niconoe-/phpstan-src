@@ -246,8 +246,8 @@ class ArgumentsNormalizerTest extends PHPStanTestCase
 
 	/**
 	 * @dataProvider dataReorderValid
-	 * @param array<int, array{string, bool, bool, ?Type}> $parameterSettings
-	 * @param array<int, array{Type, ?string}> $argumentSettings
+	 * @param array<int, array{non-empty-string, bool, bool, ?Type}> $parameterSettings
+	 * @param array<int, array{Type, ?non-empty-string}> $argumentSettings
 	 * @param array<int, Type> $expectedArgumentTypes
 	 */
 	public function testReorderValid(
@@ -326,8 +326,8 @@ class ArgumentsNormalizerTest extends PHPStanTestCase
 
 	/**
 	 * @dataProvider dataReorderInvalid
-	 * @param array<int, array{string, bool, bool, ?Type}> $parameterSettings
-	 * @param array<int, array{Type, ?string}> $argumentSettings
+	 * @param array<int, array{non-empty-string, bool, bool, ?Type}> $parameterSettings
+	 * @param array<int, array{Type, ?non-empty-string}> $argumentSettings
 	 */
 	public function testReorderInvalid(
 		array $parameterSettings,

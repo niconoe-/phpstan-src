@@ -686,7 +686,7 @@ final class NodeScopeResolver
 						continue;
 					}
 
-					if (!$param->var instanceof Variable || !is_string($param->var->name)) {
+					if (!$param->var instanceof Variable || !is_string($param->var->name) || $param->var->name === '') {
 						throw new ShouldNotHappenException();
 					}
 					$phpDoc = null;

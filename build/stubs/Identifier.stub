@@ -1,0 +1,15 @@
+<?php declare(strict_types=1);
+
+namespace PhpParser\Node;
+
+use PhpParser\NodeAbstract;
+
+class Identifier extends NodeAbstract {
+
+    /**
+     * @param non-empty-string $name
+     * @param array<string, mixed> $attributes
+     */
+    public function __construct(string $name, array $attributes = []) { }
+
+}

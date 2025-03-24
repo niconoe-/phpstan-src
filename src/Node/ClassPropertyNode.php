@@ -15,6 +15,9 @@ use PHPStan\Type\Type;
 final class ClassPropertyNode extends NodeAbstract implements VirtualNode
 {
 
+	/**
+	 * @param non-empty-string $name
+	 */
 	public function __construct(
 		private string $name,
 		private int $flags,
@@ -35,6 +38,7 @@ final class ClassPropertyNode extends NodeAbstract implements VirtualNode
 		parent::__construct($originalNode->getAttributes());
 	}
 
+	/** @return non-empty-string */
 	public function getName(): string
 	{
 		return $this->name;

@@ -2075,7 +2075,7 @@ final class MutatingScope implements Scope
 			$nameType = $this->getType($node->name);
 			if (count($nameType->getConstantStrings()) > 0) {
 				return TypeCombinator::union(
-					...array_map(fn ($constantString) => $this
+					...array_map(fn ($constantString) => $constantString->getValue() === '' ? new ErrorType() : $this
 						->filterByTruthyValue(new BinaryOp\Identical($node->name, new String_($constantString->getValue())))
 						->getType(new MethodCall($node->var, new Identifier($constantString->getValue()), $node->args)), $nameType->getConstantStrings()),
 				);
@@ -2155,7 +2155,7 @@ final class MutatingScope implements Scope
 			$nameType = $this->getType($node->name);
 			if (count($nameType->getConstantStrings()) > 0) {
 				return TypeCombinator::union(
-					...array_map(fn ($constantString) => $this
+					...array_map(fn ($constantString) => $constantString->getValue() === '' ? new ErrorType() : $this
 						->filterByTruthyValue(new BinaryOp\Identical($node->name, new String_($constantString->getValue())))
 						->getType(new Expr\StaticCall($node->class, new Identifier($constantString->getValue()), $node->args)), $nameType->getConstantStrings()),
 				);
@@ -2197,7 +2197,7 @@ final class MutatingScope implements Scope
 			$nameType = $this->getType($node->name);
 			if (count($nameType->getConstantStrings()) > 0) {
 				return TypeCombinator::union(
-					...array_map(fn ($constantString) => $this
+					...array_map(fn ($constantString) => $constantString->getValue() === '' ? new ErrorType() : $this
 						->filterByTruthyValue(new BinaryOp\Identical($node->name, new String_($constantString->getValue())))
 						->getType(
 							new PropertyFetch($node->var, new Identifier($constantString->getValue())),
@@ -2271,7 +2271,7 @@ final class MutatingScope implements Scope
 			$nameType = $this->getType($node->name);
 			if (count($nameType->getConstantStrings()) > 0) {
 				return TypeCombinator::union(
-					...array_map(fn ($constantString) => $this
+					...array_map(fn ($constantString) => $constantString->getValue() === '' ? new ErrorType() : $this
 						->filterByTruthyValue(new BinaryOp\Identical($node->name, new String_($constantString->getValue())))
 						->getType(new Expr\StaticPropertyFetch($node->class, new Node\VarLikeIdentifier($constantString->getValue()))), $nameType->getConstantStrings()),
 				);
@@ -5693,6 +5693,10 @@ final class MutatingScope implements Scope
 			$constructorMethod = $classReflection->getConstructor();
 		} else {
 			$constructorMethod = new DummyConstructorReflection($classReflection);
+		}
+
+		if ($constructorMethod->getName() === '') {
+			throw new ShouldNotHappenException();
 		}
 
 		$resolvedTypes = [];

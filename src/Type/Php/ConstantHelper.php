@@ -24,7 +24,7 @@ final class ConstantHelper
 		$classConstParts = explode('::', $constantName);
 		if (count($classConstParts) >= 2) {
 			$fqcn = ltrim($classConstParts[0], '\\');
-			if ($fqcn === '') {
+			if ($fqcn === '' || $classConstParts[1] === '') {
 				return null;
 			}
 

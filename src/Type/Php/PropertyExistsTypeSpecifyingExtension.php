@@ -56,6 +56,10 @@ final class PropertyExistsTypeSpecifyingExtension implements FunctionTypeSpecify
 			return new SpecifiedTypes([], []);
 		}
 
+		if ($propertyNameType->getValue() === '') {
+			return new SpecifiedTypes([], []);
+		}
+
 		$objectType = $scope->getType($node->getArgs()[0]->value);
 		if ($objectType instanceof ConstantStringType) {
 			return new SpecifiedTypes([], []);

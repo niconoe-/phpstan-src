@@ -259,6 +259,9 @@ final class ClassStatementsGatherer
 			if ($property->isStatic()) {
 				continue;
 			}
+			if ($property->getName() === '') {
+				throw new ShouldNotHappenException();
+			}
 			$this->propertyUsages[] = new PropertyRead(
 				new PropertyFetch(new Expr\Variable('this'), new Identifier($property->getName())),
 				$scope,
@@ -281,6 +284,9 @@ final class ClassStatementsGatherer
 		foreach ($classReflection->getProperties(ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED) as $property) {
 			if (!$property->isPromoted() || $property->getDeclaringClass()->getName() !== $classReflection->getName()) {
 				continue;
+			}
+			if ($property->getName() === '') {
+				throw new ShouldNotHappenException();
 			}
 			$this->propertyUsages[] = new PropertyWrite(
 				new PropertyFetch(new Expr\Variable('this'), new Identifier($property->getName()), $ancestorConstructorCall->getAttributes()),
