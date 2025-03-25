@@ -37,7 +37,6 @@ use function is_array;
 use function is_file;
 use function ksort;
 use function microtime;
-use function round;
 use function sha1_file;
 use function sort;
 use function sprintf;
@@ -297,7 +296,7 @@ final class ResultCacheManager
 		if ($output->isVeryVerbose()) {
 			$elapsed = microtime(true) - $startTime;
 			$elapsedString = $elapsed > 5
-				? sprintf(' in %f seconds', round($elapsed, 1))
+				? sprintf(' in %.1f seconds', $elapsed)
 				: '';
 
 			$output->writeLineFormatted(sprintf(
