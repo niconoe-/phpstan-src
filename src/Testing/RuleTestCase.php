@@ -171,8 +171,11 @@ abstract class RuleTestCase extends PHPStanTestCase
 	 */
 	public function gatherAnalyserErrors(array $files): array
 	{
+		$reflectionProvider = $this->createReflectionProvider();
 		$ruleRegistry = new DirectRuleRegistry([
 			$this->getRule(),
+			new NonexistentAnalysedClassRule($reflectionProvider),
+			new NonexistentAnalysedTraitRule($reflectionProvider),
 		]);
 		$files = array_map([$this->getFileHelper(), 'normalizePath'], $files);
 		$analyserResult = $this->getAnalyser($ruleRegistry)->analyse(
@@ -196,7 +199,7 @@ abstract class RuleTestCase extends PHPStanTestCase
 			$ruleRegistry,
 			new IgnoreErrorExtensionProvider(self::getContainer()),
 			new RuleErrorTransformer(),
-			$this->createScopeFactory($this->createReflectionProvider(), $this->getTypeSpecifier()),
+			$this->createScopeFactory($reflectionProvider, $this->getTypeSpecifier()),
 			new LocalIgnoresProcessor(),
 			true,
 		);

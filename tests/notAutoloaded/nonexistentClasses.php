@@ -13,3 +13,8 @@ class Foo
 	}
 
 }
+
+trait FooTrait
+{
+
+}
