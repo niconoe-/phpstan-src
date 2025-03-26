@@ -13,13 +13,16 @@ use PHPStan\DependencyInjection\Type\ParameterClosureTypeExtensionProvider;
 use PHPStan\DependencyInjection\Type\ParameterOutTypeExtensionProvider;
 use PHPStan\File\FileHelper;
 use PHPStan\File\SystemAgnosticSimpleRelativePathHelper;
+use PHPStan\Node\InClassNode;
 use PHPStan\Php\PhpVersion;
 use PHPStan\PhpDoc\PhpDocInheritanceResolver;
 use PHPStan\PhpDoc\StubPhpDocProvider;
 use PHPStan\Reflection\AttributeReflectionFactory;
 use PHPStan\Reflection\InitializerExprTypeResolver;
+use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Reflection\SignatureMap\SignatureMapProvider;
 use PHPStan\Rules\Properties\ReadWritePropertiesExtensionProvider;
+use PHPStan\ShouldNotHappenException;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\ConstantScalarType;
 use PHPStan\Type\FileTypeMapper;
@@ -136,6 +139,8 @@ abstract class TypeInferenceTestCase extends PHPStanTestCase
 				$expectedCertainty->equals($actualCertainty),
 				sprintf('Expected %s, actual certainty of %s is %s in %s on line %d.', $expectedCertainty->describe(), $variableName, $actualCertainty->describe(), $file, $args[3]),
 			);
+		} elseif ($assertType === 'error') {
+			$this->fail($args[0]);
 		}
 	}
 
@@ -148,11 +153,37 @@ abstract class TypeInferenceTestCase extends PHPStanTestCase
 		$fileHelper = self::getContainer()->getByType(FileHelper::class);
 
 		$relativePathHelper = new SystemAgnosticSimpleRelativePathHelper($fileHelper);
+		$reflectionProvider = self::getContainer()->getByType(ReflectionProvider::class);
 
 		$file = $fileHelper->normalizePath($file);
 
 		$asserts = [];
-		self::processFile($file, static function (Node $node, Scope $scope) use (&$asserts, $file, $relativePathHelper): void {
+		self::processFile($file, static function (Node $node, Scope $scope) use (&$asserts, $file, $relativePathHelper, $reflectionProvider): void {
+			if ($node instanceof InClassNode) {
+				if (!$reflectionProvider->hasClass($node->getClassReflection()->getName())) {
+					$asserts[$file . ':' . $node->getStartLine()] = [
+						'error',
+						$file,
+						sprintf(
+							'%s %s in %s not found in ReflectionProvider. Configure "autoload-dev" section in composer.json to include your tests directory.',
+							$node->getClassReflection()->getClassTypeDescription(),
+							$node->getClassReflection()->getName(),
+							$file,
+						),
+					];
+				}
+			} elseif ($node instanceof Node\Stmt\Trait_) {
+				if ($node->namespacedName === null) {
+					throw new ShouldNotHappenException();
+				}
+				if (!$reflectionProvider->hasClass($node->namespacedName->toString())) {
+					$asserts[$file . ':' . $node->getStartLine()] = [
+						'error',
+						$file,
+						sprintf('Trait %s not found in ReflectionProvider. Configure "autoload-dev" section in composer.json to include your tests directory.', $node->namespacedName->toString()),
+					];
+				}
+			}
 			if (!$node instanceof Node\Expr\FuncCall) {
 				return;
 			}

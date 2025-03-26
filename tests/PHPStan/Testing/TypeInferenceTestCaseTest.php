@@ -101,4 +101,17 @@ final class TypeInferenceTestCaseTest extends TypeInferenceTestCase
 		$this->assertSame("offset 'email'", $offsetAssert[4]);
 	}
 
+	public function testNonexistentClassInAnalysedFile(): void
+	{
+		try {
+			foreach ($this->gatherAssertTypes(__DIR__ . '/../../notAutoloaded/nonexistentClasses.php') as $data) {
+				$this->assertFileAsserts(...$data);
+			}
+
+			$this->fail('Should have failed');
+		} catch (AssertionFailedError $e) {
+			$this->assertStringContainsString('not found in ReflectionProvider', $e->getMessage());
+		}
+	}
+
 }
