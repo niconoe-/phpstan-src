@@ -153,6 +153,12 @@ class AnalyserIntegrationTest extends PHPStanTestCase
 		$this->assertNoErrors($errors);
 	}
 
+	public function testBug12803(): void
+	{
+		$errors = $this->runAnalyse(__DIR__ . '/data/bug-12803.php');
+		$this->assertNoErrors($errors);
+	}
+
 	public function testArrayDestructuringArrayDimFetch(): void
 	{
 		$errors = $this->runAnalyse(__DIR__ . '/data/array-destructuring-array-dim-fetch.php');
