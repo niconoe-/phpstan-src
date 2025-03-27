@@ -153,6 +153,12 @@ class AnalyserIntegrationTest extends PHPStanTestCase
 		$this->assertNoErrors($errors);
 	}
 
+	public function testBug12803(): void
+	{
+		$errors = $this->runAnalyse(__DIR__ . '/data/bug-12803.php');
+		$this->assertNoErrors($errors);
+	}
+
 	public function testArrayDestructuringArrayDimFetch(): void
 	{
 		$errors = $this->runAnalyse(__DIR__ . '/data/array-destructuring-array-dim-fetch.php');
@@ -1204,7 +1210,8 @@ class AnalyserIntegrationTest extends PHPStanTestCase
 	public function testBug9459(): void
 	{
 		$errors = $this->runAnalyse(__DIR__ . '/data/bug-9459.php');
-		$this->assertCount(0, $errors);
+		$this->assertCount(1, $errors);
+		$this->assertSame('PHPDoc tag @var with type callable(): array is not subtype of native type Closure(): array{}.', $errors[0]->getMessage());
 	}
 
 	public function testBug9573(): void

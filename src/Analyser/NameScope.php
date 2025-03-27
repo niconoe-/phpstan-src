@@ -175,6 +175,20 @@ class NameScope
 		);
 	}
 
+	public function withoutNamespaceAndUses(): self
+	{
+		return new self(
+			null,
+			[],
+			$this->className,
+			$this->functionName,
+			$this->templateTypeMap,
+			$this->typeAliasesMap,
+			$this->bypassTypeAliases,
+			$this->constUses,
+		);
+	}
+
 	public function withClassName(string $className): self
 	{
 		return new self(
