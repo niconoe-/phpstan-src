@@ -4,6 +4,7 @@ namespace PHPStan\Rules\Classes;
 
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
+use const PHP_VERSION_ID;
 
 /**
  * @extends RuleTestCase<DuplicateDeclarationRule>
@@ -67,6 +68,10 @@ class DuplicateDeclarationRuleTest extends RuleTestCase
 
 	public function testDuplicateEnumCase(): void
 	{
+		if (PHP_VERSION_ID < 80100) {
+			$this->markTestSkipped('Test requires PHP 8.1.');
+		}
+
 		$this->analyse([__DIR__ . '/data/duplicate-enum-cases.php'], [
 			[
 				'Cannot redeclare enum case DuplicatedEnumCase\Foo::BAR.',

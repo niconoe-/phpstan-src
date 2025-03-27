@@ -7,6 +7,7 @@ use PHPStan\Rules\ClassForbiddenNameCheck;
 use PHPStan\Rules\ClassNameCheck;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
+use const PHP_VERSION_ID;
 
 /**
  * @extends RuleTestCase<RequireExtendsDefinitionTraitRule>
@@ -32,6 +33,10 @@ class RequireExtendsDefinitionTraitRuleTest extends RuleTestCase
 
 	public function testRule(): void
 	{
+		if (PHP_VERSION_ID < 80100) {
+			$this->markTestSkipped('Test requires PHP 8.1.');
+		}
+
 		$this->analyse([__DIR__ . '/data/incompatible-require-extends.php'], [
 			[
 				'PHPDoc tag @phpstan-require-extends cannot contain final class IncompatibleRequireExtends\SomeFinalClass.',

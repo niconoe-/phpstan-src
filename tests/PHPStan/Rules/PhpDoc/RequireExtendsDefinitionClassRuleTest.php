@@ -32,11 +32,8 @@ class RequireExtendsDefinitionClassRuleTest extends RuleTestCase
 
 	public function testRule(): void
 	{
-		$enumError = 'PHPDoc tag @phpstan-require-extends cannot contain non-class type IncompatibleRequireExtends\SomeEnum.';
-		$enumTip = null;
 		if (PHP_VERSION_ID < 80100) {
-			$enumError = 'PHPDoc tag @phpstan-require-extends contains unknown class IncompatibleRequireExtends\SomeEnum.';
-			$enumTip = 'Learn more at https://phpstan.org/user-guide/discovering-symbols';
+			$this->markTestSkipped('Test requires PHP 8.1.');
 		}
 
 		$this->analyse([__DIR__ . '/data/incompatible-require-extends.php'], [
@@ -49,9 +46,8 @@ class RequireExtendsDefinitionClassRuleTest extends RuleTestCase
 				13,
 			],
 			[
-				$enumError,
+				'PHPDoc tag @phpstan-require-extends cannot contain non-class type IncompatibleRequireExtends\SomeEnum.',
 				18,
-				$enumTip,
 			],
 			[
 				'PHPDoc tag @phpstan-require-extends contains unknown class IncompatibleRequireExtends\TypeDoesNotExist.',

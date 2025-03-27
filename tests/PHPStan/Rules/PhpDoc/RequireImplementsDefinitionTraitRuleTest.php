@@ -31,11 +31,8 @@ class RequireImplementsDefinitionTraitRuleTest extends RuleTestCase
 
 	public function testRule(): void
 	{
-		$enumError = 'PHPDoc tag @phpstan-require-implements cannot contain non-interface type IncompatibleRequireImplements\SomeEnum.';
-		$enumTip = null;
 		if (PHP_VERSION_ID < 80100) {
-			$enumError = 'PHPDoc tag @phpstan-require-implements contains unknown class IncompatibleRequireImplements\SomeEnum.';
-			$enumTip = 'Learn more at https://phpstan.org/user-guide/discovering-symbols';
+			$this->markTestSkipped('Test requires PHP 8.1.');
 		}
 
 		$expectedErrors = [
@@ -44,9 +41,8 @@ class RequireImplementsDefinitionTraitRuleTest extends RuleTestCase
 				8,
 			],
 			[
-				$enumError,
+				'PHPDoc tag @phpstan-require-implements cannot contain non-interface type IncompatibleRequireImplements\SomeEnum.',
 				13,
-				$enumTip,
 			],
 			[
 				'PHPDoc tag @phpstan-require-implements contains unknown class IncompatibleRequireImplements\TypeDoesNotExist.',

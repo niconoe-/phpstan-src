@@ -4,6 +4,7 @@ namespace PHPStan\Rules\PhpDoc;
 
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
+use const PHP_VERSION_ID;
 
 /**
  * @extends RuleTestCase<RequireImplementsDefinitionClassRule>
@@ -18,7 +19,11 @@ class RequireImplementsDefinitionClassRuleTest extends RuleTestCase
 
 	public function testRule(): void
 	{
-		$expectedErrors = [
+		if (PHP_VERSION_ID < 80100) {
+			$this->markTestSkipped('Test requires PHP 8.1.');
+		}
+
+		$this->analyse([__DIR__ . '/data/incompatible-require-implements.php'], [
 			[
 				'PHPDoc tag @phpstan-require-implements is only valid on trait.',
 				40,
@@ -27,9 +32,7 @@ class RequireImplementsDefinitionClassRuleTest extends RuleTestCase
 				'PHPDoc tag @phpstan-require-implements is only valid on trait.',
 				45,
 			],
-		];
-
-		$this->analyse([__DIR__ . '/data/incompatible-require-implements.php'], $expectedErrors);
+		]);
 	}
 
 }

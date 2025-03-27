@@ -227,6 +227,10 @@ class ReturnTypeRuleTest extends RuleTestCase
 
 	public function testBug8846(): void
 	{
+		if (PHP_VERSION_ID < 80100) {
+			$this->markTestSkipped('Test requires PHP 8.1.');
+		}
+
 		$this->checkExplicitMixed = true;
 		$this->checkNullables = true;
 		$this->analyse([__DIR__ . '/data/bug-8846.php'], []);
