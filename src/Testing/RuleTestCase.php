@@ -27,12 +27,14 @@ use PHPStan\Reflection\AttributeReflectionFactory;
 use PHPStan\Reflection\InitializerExprTypeResolver;
 use PHPStan\Reflection\SignatureMap\SignatureMapProvider;
 use PHPStan\Rules\DirectRegistry as DirectRuleRegistry;
+use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\Properties\DirectReadWritePropertiesExtensionProvider;
 use PHPStan\Rules\Properties\ReadWritePropertiesExtension;
 use PHPStan\Rules\Properties\ReadWritePropertiesExtensionProvider;
 use PHPStan\Rules\Rule;
 use PHPStan\Type\FileTypeMapper;
 use function array_map;
+use function array_merge;
 use function count;
 use function implode;
 use function sprintf;
@@ -136,7 +138,7 @@ abstract class RuleTestCase extends PHPStanTestCase
 	 */
 	public function analyse(array $files, array $expectedErrors): void
 	{
-		$actualErrors = $this->gatherAnalyserErrors($files);
+		[$actualErrors, $delayedErrors] = $this->gatherAnalyserErrorsWithDelayedErrors($files);
 		$strictlyTypedSprintf = static function (int $line, string $message, ?string $tip): string {
 			$message = sprintf('%02d: %s', $line, $message);
 			if ($tip !== null) {
@@ -162,7 +164,30 @@ abstract class RuleTestCase extends PHPStanTestCase
 			$actualErrors,
 		);
 
-		$this->assertSame(implode("\n", $expectedErrors) . "\n", implode("\n", $actualErrors) . "\n");
+		$expectedErrorsString = implode("\n", $expectedErrors) . "\n";
+		$actualErrorsString = implode("\n", $actualErrors) . "\n";
+
+		if (count($delayedErrors) === 0) {
+			$this->assertSame($expectedErrorsString, $actualErrorsString);
+			return;
+		}
+
+		if ($expectedErrorsString === $actualErrorsString) {
+			$this->assertSame($expectedErrorsString, $actualErrorsString);
+			return;
+		}
+
+		$actualErrorsString .= sprintf(
+			"\n%s might be reported because of the following misconfiguration %s:\n\n",
+			count($actualErrors) === 1 ? 'This error' : 'These errors',
+			count($delayedErrors) === 1 ? 'issue' : 'issues',
+		);
+
+		foreach ($delayedErrors as $delayedError) {
+			$actualErrorsString .= sprintf("* %s\n", $delayedError->getMessage());
+		}
+
+		$this->assertSame($expectedErrorsString, $actualErrorsString);
 	}
 
 	/**
@@ -171,11 +196,22 @@ abstract class RuleTestCase extends PHPStanTestCase
 	 */
 	public function gatherAnalyserErrors(array $files): array
 	{
+		return $this->gatherAnalyserErrorsWithDelayedErrors($files)[0];
+	}
+
+	/**
+	 * @param string[] $files
+	 * @return array{list<Error>, list<IdentifierRuleError>}
+	 */
+	private function gatherAnalyserErrorsWithDelayedErrors(array $files): array
+	{
 		$reflectionProvider = $this->createReflectionProvider();
+		$classRule = new DelayedRule(new NonexistentAnalysedClassRule($reflectionProvider));
+		$traitRule = new DelayedRule(new NonexistentAnalysedTraitRule($reflectionProvider));
 		$ruleRegistry = new DirectRuleRegistry([
 			$this->getRule(),
-			new NonexistentAnalysedClassRule($reflectionProvider),
-			new NonexistentAnalysedTraitRule($reflectionProvider),
+			$classRule,
+			$traitRule,
 		]);
 		$files = array_map([$this->getFileHelper(), 'normalizePath'], $files);
 		$analyserResult = $this->getAnalyser($ruleRegistry)->analyse(
@@ -204,7 +240,10 @@ abstract class RuleTestCase extends PHPStanTestCase
 			true,
 		);
 
-		return $finalizer->finalize($analyserResult, false, true)->getAnalyserResult()->getUnorderedErrors();
+		return [
+			$finalizer->finalize($analyserResult, false, true)->getAnalyserResult()->getUnorderedErrors(),
+			array_merge($classRule->getDelayedErrors(), $traitRule->getDelayedErrors()),
+		];
 	}
 
 	protected function shouldPolluteScopeWithLoopInitialAssignments(): bool

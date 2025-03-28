@@ -103,8 +103,15 @@ final class TypeInferenceTestCaseTest extends TypeInferenceTestCase
 
 	public function testNonexistentClassInAnalysedFile(): void
 	{
+		foreach ($this->gatherAssertTypes(__DIR__ . '/../../notAutoloaded/nonexistentClasses.php') as $data) {
+			$this->assertFileAsserts(...$data);
+		}
+	}
+
+	public function testNonexistentClassInAnalysedFileWithError(): void
+	{
 		try {
-			foreach ($this->gatherAssertTypes(__DIR__ . '/../../notAutoloaded/nonexistentClasses.php') as $data) {
+			foreach ($this->gatherAssertTypes(__DIR__ . '/../../notAutoloaded/nonexistentClasses-error.php') as $data) {
 				$this->assertFileAsserts(...$data);
 			}
 

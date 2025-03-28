@@ -6,6 +6,8 @@ use PhpParser\Node;
 use PhpParser\Node\Expr\FuncCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
+use PHPStan\Rules\RuleErrorBuilder;
+use PHPUnit\Framework\ExpectationFailedException;
 
 /**
  * @extends RuleTestCase<Rule<FuncCall>>
@@ -24,6 +26,15 @@ class NonexistentAnalysedClassRuleTest extends RuleTestCase
 
 			public function processNode(Node $node, Scope $scope): array
 			{
+				if ($node->name instanceof Node\Name && $node->name->toString() === 'error') {
+					return [
+						RuleErrorBuilder::message('Error call')
+							->identifier('test.errorCall')
+							->nonIgnorable()
+							->build(),
+					];
+				}
+
 				return [];
 			}
 
@@ -32,16 +43,20 @@ class NonexistentAnalysedClassRuleTest extends RuleTestCase
 
 	public function testRule(): void
 	{
-		$this->analyse([__DIR__ . '/../../notAutoloaded/nonexistentClasses.php'], [
-			[
-				'Class NamespaceForNonexistentClasses\Foo not found in ReflectionProvider. Configure "autoload-dev" section in composer.json to include your tests directory.',
-				7,
-			],
-			[
-				'Trait NamespaceForNonexistentClasses\FooTrait not found in ReflectionProvider. Configure "autoload-dev" section in composer.json to include your tests directory.',
-				17,
-			],
-		]);
+		$this->analyse([__DIR__ . '/../../notAutoloaded/nonexistentClasses.php'], []);
+	}
+
+	public function testRuleWithError(): void
+	{
+		try {
+			$this->analyse([__DIR__ . '/../../notAutoloaded/nonexistentClasses-error.php'], []);
+			$this->fail('Should have failed');
+		} catch (ExpectationFailedException $e) {
+			if ($e->getComparisonFailure() === null) {
+				throw $e;
+			}
+			$this->assertStringContainsString('not found in ReflectionProvider', $e->getComparisonFailure()->getDiff());
+		}
 	}
 
 }

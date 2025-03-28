@@ -126,21 +126,45 @@ abstract class TypeInferenceTestCase extends PHPStanTestCase
 				$actual = $args[1];
 			}
 
+			$failureMessage = sprintf('Expected type %s, got type %s in %s on line %d.', $expected, $actual, $file, $args[2]);
+
+			$delayedErrors = $args[3] ?? [];
+			if (count($delayedErrors) > 0) {
+				$failureMessage .= sprintf(
+					"\n\nThis failure might be reported because of the following misconfiguration %s:\n\n",
+					count($delayedErrors) === 1 ? 'issue' : 'issues',
+				);
+				foreach ($delayedErrors as $delayedError) {
+					$failureMessage .= sprintf("* %s\n", $delayedError);
+				}
+			}
+
 			$this->assertSame(
 				$expected,
 				$actual,
-				sprintf('Expected type %s, got type %s in %s on line %d.', $expected, $actual, $file, $args[2]),
+				$failureMessage,
 			);
 		} elseif ($assertType === 'variableCertainty') {
 			$expectedCertainty = $args[0];
 			$actualCertainty = $args[1];
 			$variableName = $args[2];
+
+			$failureMessage = sprintf('Expected %s, actual certainty of %s is %s in %s on line %d.', $expectedCertainty->describe(), $variableName, $actualCertainty->describe(), $file, $args[3]);
+			$delayedErrors = $args[4] ?? [];
+			if (count($delayedErrors) > 0) {
+				$failureMessage .= sprintf(
+					"\n\nThis failure might be reported because of the following misconfiguration %s:\n\n",
+					count($delayedErrors) === 1 ? 'issue' : 'issues',
+				);
+				foreach ($delayedErrors as $delayedError) {
+					$failureMessage .= sprintf("* %s\n", $delayedError);
+				}
+			}
+
 			$this->assertTrue(
 				$expectedCertainty->equals($actualCertainty),
-				sprintf('Expected %s, actual certainty of %s is %s in %s on line %d.', $expectedCertainty->describe(), $variableName, $actualCertainty->describe(), $file, $args[3]),
+				$failureMessage,
 			);
-		} elseif ($assertType === 'error') {
-			$this->fail($args[0]);
 		}
 	}
 
@@ -158,30 +182,23 @@ abstract class TypeInferenceTestCase extends PHPStanTestCase
 		$file = $fileHelper->normalizePath($file);
 
 		$asserts = [];
-		self::processFile($file, static function (Node $node, Scope $scope) use (&$asserts, $file, $relativePathHelper, $reflectionProvider): void {
+		$delayedErrors = [];
+		self::processFile($file, static function (Node $node, Scope $scope) use (&$asserts, &$delayedErrors, $file, $relativePathHelper, $reflectionProvider): void {
 			if ($node instanceof InClassNode) {
 				if (!$reflectionProvider->hasClass($node->getClassReflection()->getName())) {
-					$asserts[$file . ':' . $node->getStartLine()] = [
-						'error',
+					$delayedErrors[] = sprintf(
+						'%s %s in %s not found in ReflectionProvider. Configure "autoload-dev" section in composer.json to include your tests directory.',
+						$node->getClassReflection()->getClassTypeDescription(),
+						$node->getClassReflection()->getName(),
 						$file,
-						sprintf(
-							'%s %s in %s not found in ReflectionProvider. Configure "autoload-dev" section in composer.json to include your tests directory.',
-							$node->getClassReflection()->getClassTypeDescription(),
-							$node->getClassReflection()->getName(),
-							$file,
-						),
-					];
+					);
 				}
 			} elseif ($node instanceof Node\Stmt\Trait_) {
 				if ($node->namespacedName === null) {
 					throw new ShouldNotHappenException();
 				}
 				if (!$reflectionProvider->hasClass($node->namespacedName->toString())) {
-					$asserts[$file . ':' . $node->getStartLine()] = [
-						'error',
-						$file,
-						sprintf('Trait %s not found in ReflectionProvider. Configure "autoload-dev" section in composer.json to include your tests directory.', $node->namespacedName->toString()),
-					];
+					$delayedErrors[] = sprintf('Trait %s not found in ReflectionProvider. Configure "autoload-dev" section in composer.json to include your tests directory.', $node->namespacedName->toString());
 				}
 			}
 			if (!$node instanceof Node\Expr\FuncCall) {
@@ -301,6 +318,15 @@ abstract class TypeInferenceTestCase extends PHPStanTestCase
 
 		if (count($asserts) === 0) {
 			self::fail(sprintf('File %s does not contain any asserts', $file));
+		}
+
+		if (count($delayedErrors) === 0) {
+			return $asserts;
+		}
+
+		foreach ($asserts as $i => $assert) {
+			$assert[] = $delayedErrors;
+			$asserts[$i] = $assert;
 		}
 
 		return $asserts;
