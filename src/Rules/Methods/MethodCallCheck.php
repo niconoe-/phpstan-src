@@ -2,7 +2,10 @@
 
 namespace PHPStan\Rules\Methods;
 
+use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
+use PhpParser\Node\Identifier;
+use PhpParser\Node\Name\FullyQualified;
 use PHPStan\Analyser\NullsafeOperatorHelper;
 use PHPStan\Analyser\Scope;
 use PHPStan\Internal\SprintfHelper;
@@ -38,6 +41,7 @@ final class MethodCallCheck
 		Scope $scope,
 		string $methodName,
 		Expr $var,
+		Identifier|Expr $astName,
 	): array
 	{
 		$typeResult = $this->ruleLevelHelper->findTypeToCheck(
@@ -104,6 +108,17 @@ final class MethodCallCheck
 					}
 
 					$parentClassReflection = $parentClassReflection->getParentClass();
+				}
+			}
+
+			if ($astName instanceof Expr) {
+				$methodExistsExpr = new Expr\FuncCall(new FullyQualified('method_exists'), [
+					new Arg($var),
+					new Arg($astName),
+				]);
+
+				if ($scope->getType($methodExistsExpr)->isTrue()->yes()) {
+					return [[], null];
 				}
 			}
 

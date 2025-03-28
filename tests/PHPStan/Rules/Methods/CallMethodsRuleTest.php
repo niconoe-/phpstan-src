@@ -3587,4 +3587,14 @@ class CallMethodsRuleTest extends RuleTestCase
 		]);
 	}
 
+	public function testBu12793(): void
+	{
+		$this->checkThisOnly = false;
+		$this->checkNullables = true;
+		$this->checkUnionTypes = true;
+		$this->checkExplicitMixed = true;
+
+		$this->analyse([__DIR__ . '/data/bug-12793.php'], []);
+	}
+
 }

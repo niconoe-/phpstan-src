@@ -58,7 +58,7 @@ final class CallMethodsRule implements Rule
 	 */
 	private function processSingleMethodCall(Scope $scope, MethodCall $node, string $methodName): array
 	{
-		[$errors, $methodReflection] = $this->methodCallCheck->check($scope, $methodName, $node->var);
+		[$errors, $methodReflection] = $this->methodCallCheck->check($scope, $methodName, $node->var, $node->name);
 		if ($methodReflection === null) {
 			return $errors;
 		}

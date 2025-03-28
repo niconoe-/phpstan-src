@@ -44,7 +44,7 @@ final class MethodCallableRule implements Rule
 
 		$methodNameName = $methodName->toString();
 
-		[$errors, $methodReflection] = $this->methodCallCheck->check($scope, $methodNameName, $node->getVar());
+		[$errors, $methodReflection] = $this->methodCallCheck->check($scope, $methodNameName, $node->getVar(), $node->getName());
 		if ($methodReflection === null) {
 			return $errors;
 		}

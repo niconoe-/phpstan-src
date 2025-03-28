@@ -3,6 +3,7 @@
 namespace PHPStan\Type\Php;
 
 use PhpParser\Node\Expr\FuncCall;
+use PhpParser\Node\Name\FullyQualified;
 use PHPStan\Analyser\Scope;
 use PHPStan\Analyser\SpecifiedTypes;
 use PHPStan\Analyser\TypeSpecifier;
@@ -11,6 +12,7 @@ use PHPStan\Analyser\TypeSpecifierContext;
 use PHPStan\Reflection\FunctionReflection;
 use PHPStan\Type\Accessory\HasMethodType;
 use PHPStan\Type\ClassStringType;
+use PHPStan\Type\Constant\ConstantBooleanType;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\FunctionTypeSpecifyingExtension;
 use PHPStan\Type\IntersectionType;
@@ -48,7 +50,12 @@ final class MethodExistsTypeSpecifyingExtension implements FunctionTypeSpecifyin
 	{
 		$methodNameType = $scope->getType($node->getArgs()[1]->value);
 		if (!$methodNameType instanceof ConstantStringType) {
-			return new SpecifiedTypes([], []);
+			return $this->typeSpecifier->create(
+				new FuncCall(new FullyQualified('method_exists'), $node->getRawArgs()),
+				new ConstantBooleanType(true),
+				$context,
+				$scope,
+			);
 		}
 
 		$objectType = $scope->getType($node->getArgs()[0]->value);
