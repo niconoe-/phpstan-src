@@ -1035,4 +1035,12 @@ class AccessPropertiesRuleTest extends RuleTestCase
 		]);
 	}
 
+	public function testPropertyExists(): void
+	{
+		$this->checkThisOnly = false;
+		$this->checkUnionTypes = true;
+		$this->checkDynamicProperties = true;
+		$this->analyse([__DIR__ . '/data/property-exists.php'], []);
+	}
+
 }

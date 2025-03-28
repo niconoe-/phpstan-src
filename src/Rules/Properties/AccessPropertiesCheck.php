@@ -2,9 +2,12 @@
 
 namespace PHPStan\Rules\Properties;
 
+use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
+use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Identifier;
+use PhpParser\Node\Name\FullyQualified;
 use PHPStan\Analyser\NullsafeOperatorHelper;
 use PHPStan\Analyser\Scope;
 use PHPStan\Internal\SprintfHelper;
@@ -140,6 +143,17 @@ final class AccessPropertiesCheck
 					}
 
 					$parentClassReflection = $parentClassReflection->getParentClass();
+				}
+			}
+
+			if ($node->name instanceof Expr) {
+				$propertyExistsExpr = new FuncCall(new FullyQualified('property_exists'), [
+					new Arg($node->var),
+					new Arg($node->name),
+				]);
+
+				if ($scope->getType($propertyExistsExpr)->isTrue()->yes()) {
+					return [];
 				}
 			}
 
