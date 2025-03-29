@@ -595,17 +595,31 @@ final class TypeCombinator
 			}
 
 			$subtractedType = self::union(...$subtractedTypes);
-		} elseif ($b instanceof SubtractableType) {
-			$subtractedType = $b->getSubtractedType();
-			if ($subtractedType === null) {
-				return $a->getTypeWithoutSubtractedType();
-			}
 		} else {
-			$subtractedTypeTmp = self::intersect($a->getTypeWithoutSubtractedType(), $a->getSubtractedType());
-			if ($b->isSuperTypeOf($subtractedTypeTmp)->yes()) {
-				return $a->getTypeWithoutSubtractedType();
+			$isBAlreadySubtracted = $a->getSubtractedType()->isSuperTypeOf($b);
+
+			if ($isBAlreadySubtracted->no()) {
+				return $a;
+			} elseif ($isBAlreadySubtracted->yes()) {
+				$subtractedType = self::remove($a->getSubtractedType(), $b);
+
+				if ($subtractedType instanceof NeverType) {
+					$subtractedType = null;
+				}
+
+				return $a->changeSubtractedType($subtractedType);
+			} elseif ($b instanceof SubtractableType) {
+				$subtractedType = $b->getSubtractedType();
+				if ($subtractedType === null) {
+					return $a->getTypeWithoutSubtractedType();
+				}
+			} else {
+				$subtractedTypeTmp = self::intersect($a->getTypeWithoutSubtractedType(), $a->getSubtractedType());
+				if ($b->isSuperTypeOf($subtractedTypeTmp)->yes()) {
+					return $a->getTypeWithoutSubtractedType();
+				}
+				$subtractedType = new MixedType(false, $b);
 			}
-			$subtractedType = new MixedType(false, $b);
 		}
 
 		$subtractedType = self::intersect(

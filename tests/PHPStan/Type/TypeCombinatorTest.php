@@ -1069,7 +1069,7 @@ class TypeCombinatorTest extends PHPStanTestCase
 					new ObjectWithoutClassType(new ObjectType('A')),
 				],
 				MixedType::class,
-				'mixed=implicit',
+				'mixed~int=implicit',
 			],
 			[
 				[
@@ -1125,7 +1125,7 @@ class TypeCombinatorTest extends PHPStanTestCase
 					new ObjectType('InvalidArgumentException'),
 				],
 				MixedType::class,
-				'mixed=implicit', // should be MixedType~Exception+InvalidArgumentException
+				'mixed~Exception~InvalidArgumentException=implicit',
 			],
 			[
 				[
@@ -2260,6 +2260,36 @@ class TypeCombinatorTest extends PHPStanTestCase
 			],
 			ObjectType::class,
 			'PHPStan\Fixture\ManyCasesTestEnum~PHPStan\Fixture\ManyCasesTestEnum::A',
+		];
+
+		yield [
+			[
+				new ObjectType('PHPStan\Fixture\ManyCasesTestEnum', new UnionType([
+					new EnumCaseObjectType('PHPStan\Fixture\ManyCasesTestEnum', 'A'),
+					new EnumCaseObjectType('PHPStan\Fixture\ManyCasesTestEnum', 'B'),
+				])),
+				new UnionType([
+					new EnumCaseObjectType('PHPStan\Fixture\ManyCasesTestEnum', 'C'),
+					new EnumCaseObjectType('PHPStan\Fixture\ManyCasesTestEnum', 'D'),
+				]),
+			],
+			ObjectType::class,
+			'PHPStan\Fixture\ManyCasesTestEnum~(PHPStan\Fixture\ManyCasesTestEnum::A|PHPStan\Fixture\ManyCasesTestEnum::B)',
+		];
+
+		yield [
+			[
+				new ObjectType('PHPStan\Fixture\ManyCasesTestEnum', new UnionType([
+					new EnumCaseObjectType('PHPStan\Fixture\ManyCasesTestEnum', 'A'),
+					new EnumCaseObjectType('PHPStan\Fixture\ManyCasesTestEnum', 'B'),
+				])),
+				new UnionType([
+					new EnumCaseObjectType('PHPStan\Fixture\ManyCasesTestEnum', 'A'),
+					new EnumCaseObjectType('PHPStan\Fixture\ManyCasesTestEnum', 'D'),
+				]),
+			],
+			ObjectType::class,
+			'PHPStan\Fixture\ManyCasesTestEnum~PHPStan\Fixture\ManyCasesTestEnum::B',
 		];
 
 		yield [
@@ -4222,6 +4252,27 @@ class TypeCombinatorTest extends PHPStanTestCase
 			],
 			IntersectionType::class,
 			'$this(stdClass)&stdClass::foo',
+		];
+
+		yield [
+			[
+				new EnumCaseObjectType('PHPStan\Fixture\ManyCasesTestEnum', 'A'),
+				new MixedType(false, new EnumCaseObjectType('PHPStan\Fixture\ManyCasesTestEnum', 'A')),
+			],
+			NeverType::class,
+			'*NEVER*=implicit',
+		];
+
+		yield [
+			[
+				new UnionType([
+					new EnumCaseObjectType('PHPStan\Fixture\ManyCasesTestEnum', 'A'),
+					new EnumCaseObjectType('PHPStan\Fixture\ManyCasesTestEnum', 'B'),
+				]),
+				new MixedType(false, new EnumCaseObjectType('PHPStan\Fixture\ManyCasesTestEnum', 'A')),
+			],
+			EnumCaseObjectType::class,
+			'PHPStan\Fixture\ManyCasesTestEnum::B',
 		];
 
 		yield [
