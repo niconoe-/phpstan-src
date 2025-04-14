@@ -130,13 +130,21 @@ use Symfony\Component\Finder\Finder;
 		$metadata[$functionName] = ['hasSideEffects' => false];
 	}
 	foreach ($visitor->impureFunctions as $functionName) {
+		if (in_array($functionName, [
+			'class_exists',
+			'enum_exists',
+			'interface_exists',
+			'trait_exists',
+		], true)) {
+			continue;
+		}
 		if (array_key_exists($functionName, $metadata)) {
 			if (in_array($functionName, [
 				'ob_get_contents',
 			], true)) {
 				continue;
 			}
-			if ($metadata[$functionName]['hasSideEffects']) {
+			if (!$metadata[$functionName]['hasSideEffects']) {
 				throw new ShouldNotHappenException($functionName);
 			}
 		}
