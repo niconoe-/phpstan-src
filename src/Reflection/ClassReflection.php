@@ -26,6 +26,7 @@ use PHPStan\PhpDoc\Tag\RequireImplementsTag;
 use PHPStan\PhpDoc\Tag\TemplateTag;
 use PHPStan\PhpDoc\Tag\TypeAliasImportTag;
 use PHPStan\PhpDoc\Tag\TypeAliasTag;
+use PHPStan\Reflection\Deprecation\DeprecationProvider;
 use PHPStan\Reflection\Php\PhpClassReflectionExtension;
 use PHPStan\Reflection\Php\PhpPropertyReflection;
 use PHPStan\Reflection\Php\UniversalObjectCratesClassReflectionExtension;
@@ -161,6 +162,7 @@ final class ClassReflection
 		private PhpDocInheritanceResolver $phpDocInheritanceResolver,
 		private PhpVersion $phpVersion,
 		private SignatureMapProvider $signatureMapProvider,
+		private DeprecationProvider $deprecationProvider,
 		private AttributeReflectionFactory $attributeReflectionFactory,
 		private array $propertiesClassReflectionExtensions,
 		private array $methodsClassReflectionExtensions,
@@ -793,7 +795,8 @@ final class ClassReflection
 				$valueType = $this->initializerExprTypeResolver->getType($case->getValueExpression(), $initializerExprContext);
 			}
 			$caseName = $case->getName();
-			$cases[$caseName] = new EnumCaseReflection($this, $case, $valueType, $this->attributeReflectionFactory->fromNativeReflection($case->getAttributes(), InitializerExprContext::fromClass($this->getName(), $this->getFileName())));
+			$attributes = $this->attributeReflectionFactory->fromNativeReflection($case->getAttributes(), InitializerExprContext::fromClass($this->getName(), $this->getFileName()));
+			$cases[$caseName] = new EnumCaseReflection($this, $case, $valueType, $attributes, $this->deprecationProvider);
 		}
 
 		return $this->enumCases = $cases;
@@ -819,7 +822,9 @@ final class ClassReflection
 			$valueType = $this->initializerExprTypeResolver->getType($case->getValueExpression(), InitializerExprContext::fromClassReflection($this));
 		}
 
-		return new EnumCaseReflection($this, $case, $valueType, $this->attributeReflectionFactory->fromNativeReflection($case->getAttributes(), InitializerExprContext::fromClass($this->getName(), $this->getFileName())));
+		$attributes = $this->attributeReflectionFactory->fromNativeReflection($case->getAttributes(), InitializerExprContext::fromClass($this->getName(), $this->getFileName()));
+
+		return new EnumCaseReflection($this, $case, $valueType, $attributes, $this->deprecationProvider);
 	}
 
 	public function isClass(): bool
@@ -1079,6 +1084,10 @@ final class ClassReflection
 				throw new MissingConstantFromReflectionException($this->getName(), $name);
 			}
 
+			$deprecation = $this->deprecationProvider->getClassConstantDeprecation($reflectionConstant);
+			$deprecatedDescription = $deprecation === null ? null : $deprecation->getDescription();
+			$isDeprecated = $deprecation !== null;
+
 			$declaringClass = $this->reflectionProvider->getClass($reflectionConstant->getDeclaringClass()->getName());
 			$fileName = $declaringClass->getFileName();
 			$phpDocType = null;
@@ -1099,8 +1108,10 @@ final class ClassReflection
 				);
 			}
 
-			$deprecatedDescription = $resolvedPhpDoc->getDeprecatedTag() !== null ? $resolvedPhpDoc->getDeprecatedTag()->getMessage() : null;
-			$isDeprecated = $resolvedPhpDoc->isDeprecated();
+			if (!$isDeprecated) {
+				$deprecatedDescription = $resolvedPhpDoc->getDeprecatedTag() !== null ? $resolvedPhpDoc->getDeprecatedTag()->getMessage() : null;
+				$isDeprecated = $resolvedPhpDoc->isDeprecated();
+			}
 			$isInternal = $resolvedPhpDoc->isInternal();
 			$isFinal = $resolvedPhpDoc->isFinal();
 			$varTags = $resolvedPhpDoc->getVarTags();
@@ -1210,11 +1221,8 @@ final class ClassReflection
 
 	public function getDeprecatedDescription(): ?string
 	{
-		if ($this->deprecatedDescription === null && $this->isDeprecated()) {
-			$resolvedPhpDoc = $this->getResolvedPhpDoc();
-			if ($resolvedPhpDoc !== null && $resolvedPhpDoc->getDeprecatedTag() !== null) {
-				$this->deprecatedDescription = $resolvedPhpDoc->getDeprecatedTag()->getMessage();
-			}
+		if ($this->isDeprecated === null) {
+			$this->resolveDeprecation();
 		}
 
 		return $this->deprecatedDescription;
@@ -1223,11 +1231,34 @@ final class ClassReflection
 	public function isDeprecated(): bool
 	{
 		if ($this->isDeprecated === null) {
-			$resolvedPhpDoc = $this->getResolvedPhpDoc();
-			$this->isDeprecated = $resolvedPhpDoc !== null && $resolvedPhpDoc->isDeprecated();
+			$this->resolveDeprecation();
 		}
 
 		return $this->isDeprecated;
+	}
+
+	/**
+	 * @phpstan-assert bool $this->isDeprecated
+	 */
+	private function resolveDeprecation(): void
+	{
+		$deprecation = $this->deprecationProvider->getClassDeprecation($this->reflection);
+		if ($deprecation !== null) {
+			$this->isDeprecated = true;
+			$this->deprecatedDescription = $deprecation->getDescription();
+			return;
+		}
+
+		$resolvedPhpDoc = $this->getResolvedPhpDoc();
+
+		if ($resolvedPhpDoc !== null && $resolvedPhpDoc->isDeprecated()) {
+			$this->isDeprecated = true;
+			$this->deprecatedDescription = $resolvedPhpDoc->getDeprecatedTag() !== null ? $resolvedPhpDoc->getDeprecatedTag()->getMessage() : null;
+			return;
+		}
+
+		$this->isDeprecated = false;
+		$this->deprecatedDescription = null;
 	}
 
 	public function isBuiltin(): bool
@@ -1559,6 +1590,7 @@ final class ClassReflection
 			$this->phpDocInheritanceResolver,
 			$this->phpVersion,
 			$this->signatureMapProvider,
+			$this->deprecationProvider,
 			$this->attributeReflectionFactory,
 			$this->propertiesClassReflectionExtensions,
 			$this->methodsClassReflectionExtensions,
@@ -1590,6 +1622,7 @@ final class ClassReflection
 			$this->phpDocInheritanceResolver,
 			$this->phpVersion,
 			$this->signatureMapProvider,
+			$this->deprecationProvider,
 			$this->attributeReflectionFactory,
 			$this->propertiesClassReflectionExtensions,
 			$this->methodsClassReflectionExtensions,
@@ -1631,6 +1664,7 @@ final class ClassReflection
 			$this->phpDocInheritanceResolver,
 			$this->phpVersion,
 			$this->signatureMapProvider,
+			$this->deprecationProvider,
 			$this->attributeReflectionFactory,
 			$this->propertiesClassReflectionExtensions,
 			$this->methodsClassReflectionExtensions,

@@ -2158,6 +2158,9 @@ services:
 	-
 		class: PHPStan\Reflection\BetterReflection\SourceStubber\ReflectionSourceStubberFactory
 
+	-
+		class: PHPStan\Reflection\Deprecation\DeprecationProvider
+
 	php8Lexer:
 		class: PhpParser\Lexer\Emulative
 		factory: @PHPStan\Parser\LexerFactory::createEmulative()
