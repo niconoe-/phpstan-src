@@ -17,6 +17,11 @@ class ConstantRuleTest extends RuleTestCase
 		return new ConstantRule(true);
 	}
 
+	public function shouldNarrowMethodScopeFromConstructor(): bool
+	{
+		return true;
+	}
+
 	public function testConstants(): void
 	{
 		define('FOO_CONSTANT', 'foo');
@@ -75,6 +80,47 @@ class ConstantRuleTest extends RuleTestCase
 			[
 				'Constant TEST not found.',
 				11,
+				'Learn more at https://phpstan.org/user-guide/discovering-symbols',
+			],
+		]);
+	}
+
+	public function testRememberedConstructorScope(): void
+	{
+		$this->analyse([__DIR__ . '/data/remembered-constructor-scope.php'], [
+			[
+				'Constant REMEMBERED_FOO not found.',
+				23,
+				'Learn more at https://phpstan.org/user-guide/discovering-symbols',
+			],
+			[
+				'Constant REMEMBERED_FOO not found.',
+				38,
+				'Learn more at https://phpstan.org/user-guide/discovering-symbols',
+			],
+			[
+				'Constant REMEMBERED_FOO not found.',
+				51,
+				'Learn more at https://phpstan.org/user-guide/discovering-symbols',
+			],
+			[
+				'Constant REMEMBERED_FOO not found.',
+				65,
+				'Learn more at https://phpstan.org/user-guide/discovering-symbols',
+			],
+			[
+				'Constant XYZ22 not found.',
+				87,
+				'Learn more at https://phpstan.org/user-guide/discovering-symbols',
+			],
+			[
+				'Constant XYZ not found.',
+				88,
+				'Learn more at https://phpstan.org/user-guide/discovering-symbols',
+			],
+			[
+				'Constant XYZ33 not found.',
+				98,
 				'Learn more at https://phpstan.org/user-guide/discovering-symbols',
 			],
 		]);

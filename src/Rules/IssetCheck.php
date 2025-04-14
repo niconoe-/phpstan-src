@@ -5,6 +5,7 @@ namespace PHPStan\Rules;
 use PhpParser\Node;
 use PhpParser\Node\Expr;
 use PHPStan\Analyser\Scope;
+use PHPStan\Node\Expr\PropertyInitializationExpr;
 use PHPStan\Rules\Properties\PropertyDescriptor;
 use PHPStan\Rules\Properties\PropertyReflectionFinder;
 use PHPStan\Type\NeverType;
@@ -143,6 +144,27 @@ final class IssetCheck
 			}
 
 			if ($propertyReflection->hasNativeType() && !$propertyReflection->isVirtual()->yes()) {
+				if (
+					$expr instanceof Node\Expr\PropertyFetch
+					&& $expr->name instanceof Node\Identifier
+					&& $expr->var instanceof Expr\Variable
+					&& $expr->var->name === 'this'
+					&& $propertyReflection->getNativeType()->isNull()->no()
+					&& $scope->hasExpressionType(new PropertyInitializationExpr($propertyReflection->getName()))->yes()
+				) {
+					return $this->generateError(
+						$propertyReflection->getNativeType(),
+						sprintf(
+							'%s %s',
+							$this->propertyDescriptor->describeProperty($propertyReflection, $scope, $expr),
+							$operatorDescription,
+						),
+						$typeMessageCallback,
+						$identifier,
+						'propertyNeverNullOrUninitialized',
+					);
+				}
+
 				if (!$scope->hasExpressionType($expr)->yes()) {
 					if ($expr instanceof Node\Expr\PropertyFetch) {
 						return $this->checkUndefined($expr->var, $scope, $operatorDescription, $identifier);
@@ -280,7 +302,7 @@ final class IssetCheck
 	/**
 	 * @param callable(Type): ?string $typeMessageCallback
 	 * @param ErrorIdentifier $identifier
-	 * @param 'variable'|'offset'|'property'|'expr' $identifierSecondPart
+	 * @param 'variable'|'offset'|'property'|'expr'|'propertyNeverNullOrUninitialized' $identifierSecondPart
 	 */
 	private function generateError(Type $type, string $message, callable $typeMessageCallback, string $identifier, string $identifierSecondPart): ?IdentifierRuleError
 	{

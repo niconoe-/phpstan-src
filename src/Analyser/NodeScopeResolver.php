@@ -218,6 +218,7 @@ use function sprintf;
 use function str_starts_with;
 use function strtolower;
 use function trim;
+use function usort;
 use const PHP_VERSION_ID;
 use const SORT_NUMERIC;
 
@@ -271,6 +272,7 @@ final class NodeScopeResolver
 		private readonly array $universalObjectCratesClasses,
 		private readonly bool $implicitThrows,
 		private readonly bool $treatPhpDocTypesAsCertain,
+		private readonly bool $narrowMethodScopeFromConstructor,
 	)
 	{
 		$earlyTerminatingMethodNames = [];
@@ -791,6 +793,38 @@ final class NodeScopeResolver
 					$classReflection,
 					$methodReflection,
 				), $methodScope);
+
+				if ($isConstructor && $this->narrowMethodScopeFromConstructor) {
+					$finalScope = null;
+
+					foreach ($executionEnds as $executionEnd) {
+						if ($executionEnd->getStatementResult()->isAlwaysTerminating()) {
+							continue;
+						}
+
+						$endScope = $executionEnd->getStatementResult()->getScope();
+						if ($finalScope === null) {
+							$finalScope = $endScope;
+							continue;
+						}
+
+						$finalScope = $finalScope->mergeWith($endScope);
+					}
+
+					foreach ($gatheredReturnStatements as $statement) {
+						if ($finalScope === null) {
+							$finalScope = $statement->getScope();
+							continue;
+						}
+
+						$finalScope = $finalScope->mergeWith($statement->getScope());
+					}
+
+					if ($finalScope !== null) {
+						$scope = $finalScope->rememberConstructorScope();
+					}
+
+				}
 			}
 		} elseif ($stmt instanceof Echo_) {
 			$hasYield = false;
@@ -925,7 +959,26 @@ final class NodeScopeResolver
 			$classStatementsGatherer = new ClassStatementsGatherer($classReflection, $nodeCallback);
 			$this->processAttributeGroups($stmt, $stmt->attrGroups, $classScope, $classStatementsGatherer);
 
-			$this->processStmtNodes($stmt, $stmt->stmts, $classScope, $classStatementsGatherer, $context);
+			$classLikeStatements = $stmt->stmts;
+			if ($this->narrowMethodScopeFromConstructor) {
+				// analyze static methods first; constructor next; instance methods and property hooks last so we can carry over the scope
+				usort($classLikeStatements, static function ($a, $b) {
+					if ($a instanceof Node\Stmt\Property) {
+						return 1;
+					}
+					if ($b instanceof Node\Stmt\Property) {
+						return -1;
+					}
+
+					if (!$a instanceof Node\Stmt\ClassMethod || !$b instanceof Node\Stmt\ClassMethod) {
+						return 0;
+					}
+
+					return [!$a->isStatic(), $a->name->toLowerString() !== '__construct'] <=> [!$b->isStatic(), $b->name->toLowerString() !== '__construct'];
+				});
+			}
+
+			$this->processStmtNodes($stmt, $classLikeStatements, $classScope, $classStatementsGatherer, $context);
 			$nodeCallback(new ClassPropertiesNode($stmt, $this->readWritePropertiesExtensionProvider, $classStatementsGatherer->getProperties(), $classStatementsGatherer->getPropertyUsages(), $classStatementsGatherer->getMethodCalls(), $classStatementsGatherer->getReturnStatementsNodes(), $classStatementsGatherer->getPropertyAssigns(), $classReflection), $classScope);
 			$nodeCallback(new ClassMethodsNode($stmt, $classStatementsGatherer->getMethods(), $classStatementsGatherer->getMethodCalls(), $classReflection), $classScope);
 			$nodeCallback(new ClassConstantsNode($stmt, $classStatementsGatherer->getConstants(), $classStatementsGatherer->getConstantFetches(), $classReflection), $classScope);

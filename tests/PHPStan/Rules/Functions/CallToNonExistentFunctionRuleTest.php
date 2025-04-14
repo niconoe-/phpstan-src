@@ -17,6 +17,11 @@ class CallToNonExistentFunctionRuleTest extends RuleTestCase
 		return new CallToNonExistentFunctionRule($this->createReflectionProvider(), true, true);
 	}
 
+	public function shouldNarrowMethodScopeFromConstructor(): bool
+	{
+		return true;
+	}
+
 	public function testEmptyFile(): void
 	{
 		$this->analyse([__DIR__ . '/data/empty.php'], []);
@@ -254,6 +259,17 @@ class CallToNonExistentFunctionRuleTest extends RuleTestCase
 			[
 				'Call to function MongoDB\Driver\Monitoring\addSubscriber() with incorrect case: mongodb\driver\monitoring\addsubscriber',
 				14,
+			],
+		]);
+	}
+
+	public function testRememberFunctionExistsFromConstructor(): void
+	{
+		$this->analyse([__DIR__ . '/data/remember-function-exists-from-constructor.php'], [
+			[
+				'Function another_unknown_function not found.',
+				32,
+				'Learn more at https://phpstan.org/user-guide/discovering-symbols',
 			],
 		]);
 	}
