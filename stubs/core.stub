@@ -318,3 +318,12 @@ function abs($num) {}
  * @return ($categorize is true ? array<string, array<string, mixed>> : array<string, mixed>)
  */
 function get_defined_constants(bool $categorize = false): array {}
+
+/**
+ * @param array<string> $long_options
+ * @param mixed $rest_index
+ * @param-out positive-int $rest_index
+ * @return __benevolent<array<string,string>|array<string,false>|array<string,list<mixed>>|false>
+ */
+function getopt(string $short_options, array $long_options = [], &$rest_index = null) {}
+
