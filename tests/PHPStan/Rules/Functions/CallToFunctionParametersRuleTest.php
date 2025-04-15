@@ -2053,4 +2053,35 @@ class CallToFunctionParametersRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/bug-7522.php'], []);
 	}
 
+	public function testBug12847(): void
+	{
+		if (PHP_VERSION_ID < 80000) {
+			$this->markTestSkipped('Test requires PHP 8.0.');
+		}
+
+		$this->checkExplicitMixed = true;
+		$this->checkImplicitMixed = true;
+
+		$this->analyse([__DIR__ . '/data/bug-12847.php'], [
+			[
+				'Parameter #1 $array of function Bug12847\doSomething expects non-empty-array<mixed>, mixed given.',
+				32,
+				'mixed is empty.',
+			],
+			[
+				'Parameter #1 $array of function Bug12847\doSomething expects non-empty-array<mixed>, mixed given.',
+				39,
+				'mixed is empty.',
+			],
+			[
+				'Parameter #1 $array of function Bug12847\doSomethingWithInt expects non-empty-array<int>, non-empty-array given.',
+				61,
+			],
+			[
+				'Parameter #1 $array of function Bug12847\doSomethingWithInt expects non-empty-array<int>, non-empty-array given.',
+				67,
+			],
+		]);
+	}
+
 }
