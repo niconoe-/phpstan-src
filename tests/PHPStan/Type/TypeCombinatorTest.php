@@ -953,8 +953,8 @@ class TypeCombinatorTest extends PHPStanTestCase
 						new HasOffsetType(new ConstantStringType('bar')),
 					]),
 				],
-				ArrayType::class,
-				'array',
+				IntersectionType::class,
+				'non-empty-array',
 			],
 			[
 				[
@@ -970,6 +970,20 @@ class TypeCombinatorTest extends PHPStanTestCase
 				],
 				IntersectionType::class,
 				'non-empty-array&hasOffsetValue(\'foo\', mixed)',
+			],
+			[
+				[
+					new IntersectionType([
+						new ArrayType(new MixedType(), new MixedType()),
+						new HasOffsetType(new ConstantStringType('foo')),
+					]),
+					new IntersectionType([
+						new ArrayType(new MixedType(), new MixedType()),
+						new HasOffsetValueType(new ConstantIntegerType(2), new ConstantStringType('foo')),
+					]),
+				],
+				IntersectionType::class,
+				'non-empty-array',
 			],
 			[
 				[
