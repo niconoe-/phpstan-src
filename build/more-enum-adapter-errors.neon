@@ -1,10 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Parameter \\#1 \\$expected of method PHPUnit\\\\Framework\\\\Assert\\:\\:assertInstanceOf\\(\\) expects class\\-string\\<ReflectionEnum\\>, string given\\.$#"
-			count: 1
-			path: ../tests/PHPStan/Reflection/ClassReflectionTest.php
-		-
 			message: "#^Strict comparison using \\!\\=\\= between class\\-string and 'UnitEnum' will always evaluate to true\\.$#"
 			count: 1
 			path: ../src/Reflection/Php/PhpClassReflectionExtension.php
@@ -23,3 +19,6 @@ parameters:
 			message: "#^Class BackedEnum not found\\.$#"
 			count: 1
 			path: ../src/Type/Php/BackedEnumFromMethodDynamicReturnTypeExtension.php
+
+		-
+			message: "#^Call to method PHPStan\\\\Reflection\\\\ClassReflection::isEnum\\(\\) will always evaluate to false\\.$#"
