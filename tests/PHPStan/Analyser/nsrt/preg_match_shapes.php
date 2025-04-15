@@ -1011,7 +1011,65 @@ function bug12749f(string $str): void
 	}
 }
 
-function bug12397(string $string) : array {
+function bug12397(string $string): void {
 	$m = preg_match('#\b([A-Z]{2,})-(\d+)#', $string, $match);
 	assertType('list{0?: string, 1?: non-falsy-string, 2?: numeric-string}', $match);
+}
+
+function bug12792(string $string): void {
+	if (preg_match('~a\Kb~', $string, $match) === 1) {
+		assertType('array{string}', $match); // could be array{'b'}
+	}
+
+	if (preg_match('~a\K~', $string, $match) === 1) {
+		assertType('array{string}', $match); // could be array{''}
+	}
+
+	if (preg_match('~a\K.+~', $string, $match) === 1) {
+		assertType('array{string}', $match); // could be array{non-empty-string}
+	}
+
+	if (preg_match('~a\K.*~', $string, $match) === 1) {
+		assertType('array{string}', $match);
+	}
+
+	if (preg_match('~a\K(.+)~', $string, $match) === 1) {
+		assertType('array{string, non-empty-string}', $match); // could be array{non-empty-string, non-empty-string}
+	}
+
+	if (preg_match('~a\K(.*)~', $string, $match) === 1) {
+		assertType('array{string, string}', $match);
+	}
+
+	if (preg_match('~a\K(.+?)~', $string, $match) === 1) {
+		assertType('array{string, non-empty-string}', $match); // could be array{non-empty-string, non-empty-string}
+	}
+
+	if (preg_match('~a\K(.*?)~', $string, $match) === 1) {
+		assertType('array{string, string}', $match);
+	}
+
+	if (preg_match('~a\K(?=.+)~', $string, $match) === 1) {
+		assertType('array{string}', $match); // could be array{''}
+	}
+
+	if (preg_match('~a\K(?=.*)~', $string, $match) === 1) {
+		assertType('array{string}', $match); // could be array{''}
+	}
+
+	if (preg_match('~a(?:x\Kb|c)~', $string, $match) === 1) {
+		assertType('array{string}', $match); // could be array{'ac'|'b'}
+	}
+
+	if (preg_match('~a(?:c|x\Kb)~', $string, $match) === 1) {
+		assertType('array{string}', $match); // could be array{'ac'|'b'}
+	}
+
+	if (preg_match('~a(y|(?:x\Kb|c))d~', $string, $match) === 1) {
+		assertType('array{string, non-empty-string}', $match); // could be array{'acd'|'ayd'|'bd', 'c'|'xb'|'y'}
+	}
+
+	if (preg_match('~a((?:c|x\Kb)|y)d~', $string, $match) === 1) {
+		assertType('array{string, non-empty-string}', $match); // could be array{'acd'|'ayd'|'bd', 'c'|'xb'|'y'}
+	}
 }
