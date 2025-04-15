@@ -221,11 +221,11 @@ class EmptyRuleTest extends RuleTestCase
 
 		$this->analyse([__DIR__ . '/data/isset-after-remembered-constructor.php'], [
 			[
-				'Property IssetOrCoalesceOnNonNullableInitializedProperty\MoreEmptyCases::$false in empty() is always falsy.',
+				'Property IssetOrCoalesceOnNonNullableInitializedProperty\MoreEmptyCases::$false in empty() is always falsy and initialized.',
 				93,
 			],
 			[
-				'Property IssetOrCoalesceOnNonNullableInitializedProperty\MoreEmptyCases::$true in empty() is not falsy.',
+				'Property IssetOrCoalesceOnNonNullableInitializedProperty\MoreEmptyCases::$true in empty() is not falsy nor uninitialized.',
 				95,
 			],
 		]);
