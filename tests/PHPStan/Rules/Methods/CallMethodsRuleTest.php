@@ -3558,7 +3558,6 @@ class CallMethodsRuleTest extends RuleTestCase
 		$this->checkNullables = true;
 		$this->checkUnionTypes = true;
 		$this->checkExplicitMixed = true;
-
 		$this->analyse([__DIR__ . '/data/dynamic-call.php'], [
 			[
 				'Call to an undefined method MethodsDynamicCall\Foo::bar().',
@@ -3585,6 +3584,16 @@ class CallMethodsRuleTest extends RuleTestCase
 				55,
 			],
 		]);
+	}
+
+	public function testBug12884(): void
+	{
+		$this->checkThisOnly = false;
+		$this->checkNullables = true;
+		$this->checkUnionTypes = true;
+		$this->checkExplicitMixed = true;
+
+		$this->analyse([__DIR__ . '/data/bug-12884.php'], []);
 	}
 
 	public function testBu12793(): void
