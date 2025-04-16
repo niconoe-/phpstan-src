@@ -1164,7 +1164,7 @@ final class TypeSpecifier
 	{
 		if (!$context->null() && $constantType->isFalse()->yes()) {
 			$types = $this->create($exprNode, $constantType, $context, $scope)->setRootExpr($rootExpr);
-			if ($exprNode instanceof Expr\NullsafeMethodCall || $exprNode instanceof Expr\NullsafePropertyFetch) {
+			if (!$context->true() && ($exprNode instanceof Expr\NullsafeMethodCall || $exprNode instanceof Expr\NullsafePropertyFetch)) {
 				return $types;
 			}
 
@@ -1177,7 +1177,7 @@ final class TypeSpecifier
 
 		if (!$context->null() && $constantType->isTrue()->yes()) {
 			$types = $this->create($exprNode, $constantType, $context, $scope)->setRootExpr($rootExpr);
-			if ($exprNode instanceof Expr\NullsafeMethodCall || $exprNode instanceof Expr\NullsafePropertyFetch) {
+			if (!$context->true() && ($exprNode instanceof Expr\NullsafeMethodCall || $exprNode instanceof Expr\NullsafePropertyFetch)) {
 				return $types;
 			}
 
