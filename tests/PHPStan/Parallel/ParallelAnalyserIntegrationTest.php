@@ -11,6 +11,7 @@ use function array_map;
 use function escapeshellarg;
 use function exec;
 use function implode;
+use function md5;
 use function putenv;
 use function sprintf;
 use function sys_get_temp_dir;
