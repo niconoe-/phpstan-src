@@ -236,7 +236,23 @@ class IterableType implements CompoundType
 
 	public function toCoercedArgumentType(bool $strictTypes): Type
 	{
-		return TypeCombinator::union($this, new ArrayType(new MixedType(true), new MixedType(true)), new ObjectType(Traversable::class));
+		return TypeCombinator::union(
+			$this,
+			new ArrayType(
+				TypeCombinator::intersect(
+					$this->keyType->toArrayKey(),
+					new UnionType([
+						new IntegerType(),
+						new StringType(),
+					]),
+				),
+				$this->itemType,
+			),
+			new GenericObjectType(Traversable::class, [
+				$this->keyType,
+				$this->itemType,
+			]),
+		);
 	}
 
 	public function isOffsetAccessLegal(): TrinaryLogic
