@@ -2,6 +2,7 @@
 
 namespace PHPStan\Parallel;
 
+use Nette\Utils\FileSystem;
 use Nette\Utils\Json;
 use PHPStan\File\FileHelper;
 use PHPStan\ShouldNotHappenException;
@@ -10,7 +11,10 @@ use function array_map;
 use function escapeshellarg;
 use function exec;
 use function implode;
+use function putenv;
 use function sprintf;
+use function sys_get_temp_dir;
+use function uniqid;
 use const PHP_BINARY;
 
 /**
@@ -32,6 +36,8 @@ class ParallelAnalyserIntegrationTest extends TestCase
 	 */
 	public function testRun(string $command): void
 	{
+		$tmpDir = sys_get_temp_dir() . '/' . md5(uniqid());
+		putenv('PHPSTAN_TMP_DIR=' . $tmpDir);
 		exec(sprintf('%s %s clear-result-cache --configuration %s -q', escapeshellarg(PHP_BINARY), escapeshellarg(__DIR__ . '/../../../bin/phpstan'), escapeshellarg(__DIR__ . '/parallel-analyser.neon')), $clearResultCacheOutputLines, $clearResultCacheExitCode);
 		if ($clearResultCacheExitCode !== 0) {
 			throw new ShouldNotHappenException('Could not clear result cache.');
@@ -49,6 +55,8 @@ class ParallelAnalyserIntegrationTest extends TestCase
 			])),
 		), $outputLines, $exitCode);
 		$output = implode("\n", $outputLines);
+
+		FileSystem::delete($tmpDir);
 
 		$fileHelper = new FileHelper(__DIR__);
 		$filePath = $fileHelper->normalizePath(__DIR__ . '/data/trait-definition.php');

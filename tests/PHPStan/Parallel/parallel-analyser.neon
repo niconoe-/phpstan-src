@@ -1,3 +1,4 @@
 parameters:
 	parallel:
 		jobSize: 1
+	tmpDir: %env.PHPSTAN_TMP_DIR%
