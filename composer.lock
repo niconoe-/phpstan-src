@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "57704972deb09985fa7fc347f052e075",
+    "content-hash": "a1dba49658a71b1032e5a3ad804f2936",
     "packages": [
         {
             "name": "clue/ndjson-react",
@@ -4672,27 +4672,28 @@
         },
         {
             "name": "phpstan/phpstan-deprecation-rules",
-            "version": "2.0.0",
+            "version": "2.0.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-deprecation-rules.git",
-                "reference": "81833b5787e2e8f451b31218875e29e4ed600ab2"
+                "reference": "15f1d89bd70d9d05c9c99f7698ab8724e5a8431b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-deprecation-rules/zipball/81833b5787e2e8f451b31218875e29e4ed600ab2",
-                "reference": "81833b5787e2e8f451b31218875e29e4ed600ab2",
+                "url": "https://api.github.com/repos/phpstan/phpstan-deprecation-rules/zipball/15f1d89bd70d9d05c9c99f7698ab8724e5a8431b",
+                "reference": "15f1d89bd70d9d05c9c99f7698ab8724e5a8431b",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.4 || ^8.0",
-                "phpstan/phpstan": "^2.0"
+                "phpstan/phpstan": "^2.1.13"
             },
             "require-dev": {
                 "php-parallel-lint/php-parallel-lint": "^1.2",
                 "phpstan/phpstan-phpunit": "^2.0",
                 "phpunit/phpunit": "^9.6"
             },
+            "default-branch": true,
             "type": "phpstan-extension",
             "extra": {
                 "phpstan": {
@@ -4713,9 +4714,9 @@
             "description": "PHPStan rules for detecting usage of deprecated classes, methods, properties, constants and traits.",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan-deprecation-rules/issues",
-                "source": "https://github.com/phpstan/phpstan-deprecation-rules/tree/2.0.0"
+                "source": "https://github.com/phpstan/phpstan-deprecation-rules/tree/2.0.x"
             },
-            "time": "2024-10-26T16:04:11+00:00"
+            "time": "2025-04-19T16:06:02+00:00"
         },
         {
             "name": "phpstan/phpstan-nette",
