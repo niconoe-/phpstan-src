@@ -15,6 +15,7 @@ use PHPStan\Reflection\ExtendedMethodReflection;
  *
  * To register it in the configuration file use the following tag:
  *
+ * ```
  * services:
  * 	-
  *		class: App\PHPStan\MyExtension
