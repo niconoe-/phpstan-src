@@ -24,3 +24,26 @@ class Foo
 	}
 
 }
+
+class FooStatic
+{
+
+	public static function doTest(): void
+	{
+		Nonexistent::test();
+		self::doNonexistent();
+		self::doBar();
+		self::doFoo();
+	}
+
+	public static function doBar(): void
+	{
+
+	}
+
+	public static function doFoo(): void
+	{
+
+	}
+
+}
