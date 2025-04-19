@@ -111,6 +111,11 @@ final class EnumCasesMethodReflection implements ExtendedMethodReflection
 		return TrinaryLogic::createNo();
 	}
 
+	public function isBuiltin(): TrinaryLogic
+	{
+		return TrinaryLogic::createYes();
+	}
+
 	public function getThrowType(): ?Type
 	{
 		return null;

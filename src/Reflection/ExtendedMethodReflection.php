@@ -49,6 +49,8 @@ interface ExtendedMethodReflection extends MethodReflection
 
 	public function isAbstract(): TrinaryLogic|bool;
 
+	public function isBuiltin(): TrinaryLogic|bool;
+
 	/**
 	 * This indicates whether the method has phpstan-pure
 	 * or phpstan-impure annotation above it.

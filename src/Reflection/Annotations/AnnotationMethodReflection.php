@@ -119,6 +119,11 @@ final class AnnotationMethodReflection implements ExtendedMethodReflection
 		return TrinaryLogic::createNo();
 	}
 
+	public function isBuiltin(): TrinaryLogic
+	{
+		return TrinaryLogic::createNo();
+	}
+
 	public function getThrowType(): ?Type
 	{
 		return $this->throwType;

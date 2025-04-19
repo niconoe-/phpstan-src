@@ -94,6 +94,11 @@ final class DummyMethodReflection implements ExtendedMethodReflection
 		return TrinaryLogic::createMaybe();
 	}
 
+	public function isBuiltin(): TrinaryLogic
+	{
+		return TrinaryLogic::createMaybe();
+	}
+
 	public function getThrowType(): ?Type
 	{
 		return null;

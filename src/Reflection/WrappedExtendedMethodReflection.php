@@ -123,6 +123,11 @@ final class WrappedExtendedMethodReflection implements ExtendedMethodReflection
 		return $this->method->isInternal();
 	}
 
+	public function isBuiltin(): TrinaryLogic
+	{
+		return TrinaryLogic::createNo();
+	}
+
 	public function getThrowType(): ?Type
 	{
 		return $this->method->getThrowType();

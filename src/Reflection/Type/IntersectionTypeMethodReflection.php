@@ -152,6 +152,11 @@ final class IntersectionTypeMethodReflection implements ExtendedMethodReflection
 		return TrinaryLogic::lazyMaxMin($this->methods, static fn (MethodReflection $method): TrinaryLogic => $method->isInternal());
 	}
 
+	public function isBuiltin(): TrinaryLogic
+	{
+		return TrinaryLogic::lazyMaxMin($this->methods, static fn (ExtendedMethodReflection $method): TrinaryLogic => is_bool($method->isBuiltin()) ? TrinaryLogic::createFromBoolean($method->isBuiltin()) : $method->isBuiltin());
+	}
+
 	public function getThrowType(): ?Type
 	{
 		$types = [];

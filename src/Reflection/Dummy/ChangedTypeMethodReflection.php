@@ -110,6 +110,16 @@ final class ChangedTypeMethodReflection implements ExtendedMethodReflection
 		return $this->reflection->isInternal();
 	}
 
+	public function isBuiltin(): TrinaryLogic
+	{
+		$builtin = $this->reflection->isBuiltin();
+		if (is_bool($builtin)) {
+			return TrinaryLogic::createFromBoolean($builtin);
+		}
+
+		return $builtin;
+	}
+
 	public function getThrowType(): ?Type
 	{
 		return $this->reflection->getThrowType();

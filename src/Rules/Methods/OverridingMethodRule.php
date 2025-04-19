@@ -214,10 +214,15 @@ final class OverridingMethodRule implements Rule
 		$prototypeReturnType = $prototypeVariant->getNativeReturnType();
 		$reportReturnType = true;
 		if ($this->phpVersion->hasTentativeReturnTypes()) {
-			$reportReturnType = !$realPrototype instanceof MethodPrototypeReflection || $realPrototype->getTentativeReturnType() === null || $prototype->isInternal()->no();
+			$reportReturnType = !$realPrototype instanceof MethodPrototypeReflection
+				|| $realPrototype->getTentativeReturnType() === null
+				|| (is_bool($prototype->isBuiltin()) ? !$prototype->isBuiltin() : $prototype->isBuiltin()->no());
 		} else {
 			if ($realPrototype instanceof MethodPrototypeReflection && $realPrototype->isInternal()) {
-				if ($prototype->isInternal()->yes() && $prototypeDeclaringClass->getName() !== $realPrototype->getDeclaringClass()->getName()) {
+				if (
+					(is_bool($prototype->isBuiltin()) ? $prototype->isBuiltin() : $prototype->isBuiltin()->yes())
+					&& $prototypeDeclaringClass->getName() !== $realPrototype->getDeclaringClass()->getName()
+				) {
 					$realPrototypeVariant = $realPrototype->getVariants()[0];
 					if (
 						$prototypeReturnType instanceof MixedType
@@ -228,7 +233,10 @@ final class OverridingMethodRule implements Rule
 					}
 				}
 
-				if ($reportReturnType && $prototype->isInternal()->yes()) {
+				if (
+					$reportReturnType
+					&& (is_bool($prototype->isBuiltin()) ? $prototype->isBuiltin() : $prototype->isBuiltin()->yes())
+				) {
 					$reportReturnType = !$this->hasReturnTypeWillChangeAttribute($node->getOriginalNode());
 				}
 			}

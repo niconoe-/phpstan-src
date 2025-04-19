@@ -142,6 +142,16 @@ final class ClosureCallMethodReflection implements ExtendedMethodReflection
 		return $this->nativeMethodReflection->isInternal();
 	}
 
+	public function isBuiltin(): TrinaryLogic
+	{
+		$builtin = $this->nativeMethodReflection->isBuiltin();
+		if (is_bool($builtin)) {
+			return TrinaryLogic::createFromBoolean($builtin);
+		}
+
+		return $builtin;
+	}
+
 	public function getThrowType(): ?Type
 	{
 		return $this->nativeMethodReflection->getThrowType();

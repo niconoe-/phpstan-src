@@ -28,6 +28,7 @@ use function get_declared_classes;
 use function get_defined_functions;
 use function getenv;
 use function implode;
+use function is_bool;
 use function mkdir;
 use function sort;
 use function strpos;
@@ -347,6 +348,14 @@ class ReflectionProviderGoldenTest extends PHPStanTestCase
 
 		if (! $reflection->isInternal()->no()) {
 			$result .= 'Is internal: ' . $reflection->isInternal()->describe() . "\n";
+		}
+
+		if (is_bool($reflection->isBuiltin()) && $reflection->isBuiltin()) {
+			$result .= 'Is built-in' . "\n";
+		}
+
+		if (!is_bool($reflection->isBuiltin()) && !$reflection->isBuiltin()->no()) {
+			$result .= 'Is built-in: ' . $reflection->isBuiltin()->describe() . "\n";
 		}
 
 		if (! $reflection->returnsByReference()->no()) {
