@@ -217,6 +217,7 @@ rules:
 	- PHPStan\Rules\Debug\DumpPhpDocTypeRule
 	- PHPStan\Rules\Debug\DumpTypeRule
 	- PHPStan\Rules\Debug\FileAssertRule
+	- PHPStan\Rules\RestrictedUsage\RestrictedMethodUsageRule
 
 conditionalTags:
 	PHPStan\Rules\Exceptions\MissingCheckedExceptionInFunctionThrowsRule:
