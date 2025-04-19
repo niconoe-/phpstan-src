@@ -12,7 +12,7 @@ class MethodExtension implements RestrictedMethodUsageExtension
 
 	public function isRestrictedMethodUsage(
 		ExtendedMethodReflection $methodReflection,
-		Scope $scope,
+		Scope $scope
 	): ?RestrictedUsage
 	{
 		if ($methodReflection->getName() !== 'doFoo') {
