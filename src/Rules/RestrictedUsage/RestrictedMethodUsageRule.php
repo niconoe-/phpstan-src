@@ -29,6 +29,9 @@ final class RestrictedMethodUsageRule implements Rule
 		return MethodCall::class;
 	}
 
+	/**
+	 * @api
+	 */
 	public function processNode(Node $node, Scope $scope): array
 	{
 		if (!$node->name instanceof Identifier) {
