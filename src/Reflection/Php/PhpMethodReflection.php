@@ -379,7 +379,7 @@ final class PhpMethodReflection implements ExtendedMethodReflection
 
 	public function isInternal(): TrinaryLogic
 	{
-		return TrinaryLogic::createFromBoolean($this->isInternal);
+		return TrinaryLogic::createFromBoolean($this->isInternal || $this->declaringClass->isInternal());
 	}
 
 	public function isBuiltin(): TrinaryLogic

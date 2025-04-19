@@ -26,6 +26,7 @@ parameters:
 		skipCheckGenericClasses: []
 		stricterFunctionMap: false
 		reportPreciseLineForUnusedFunctionParameter: false
+		internalTag: false
 	fileExtensions:
 		- php
 	checkAdvancedIsset: false

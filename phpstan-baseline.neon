@@ -1921,6 +1921,12 @@ parameters:
 			path: tests/PHPStan/Reflection/SignatureMap/Php8SignatureMapProviderTest.php
 
 		-
+			message: '#^Call to internal method PHPUnit\\Framework\\ExpectationFailedException\:\:getComparisonFailure\(\) from outside its root namespace PHPUnit\.$#'
+			identifier: method.internal
+			count: 2
+			path: tests/PHPStan/Testing/NonexistentAnalysedClassRuleTest.php
+
+		-
 			message: '#^PHPDoc tag @var assumes the expression with type PHPStan\\Type\\Generic\\TemplateType is always PHPStan\\Type\\Generic\\TemplateMixedType but it''s error\-prone and dangerous\.$#'
 			identifier: phpstanApi.varTagAssumption
 			count: 1
