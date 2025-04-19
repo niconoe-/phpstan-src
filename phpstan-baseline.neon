@@ -1921,8 +1921,8 @@ parameters:
 			path: tests/PHPStan/Reflection/SignatureMap/Php8SignatureMapProviderTest.php
 
 		-
-			message: '#^Call to internal method PHPUnit\\Framework\\ExpectationFailedException\:\:getComparisonFailure\(\) from outside its root namespace PHPUnit\.$#'
-			identifier: method.internal
+			message: '#^Call to method getComparisonFailure\(\) of internal class PHPUnit\\Framework\\ExpectationFailedException from outside its root namespace PHPUnit\.$#'
+			identifier: method.internalClass
 			count: 2
 			path: tests/PHPStan/Testing/NonexistentAnalysedClassRuleTest.php
 

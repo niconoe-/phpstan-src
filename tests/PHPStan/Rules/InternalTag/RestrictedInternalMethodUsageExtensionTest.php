@@ -25,7 +25,7 @@ class RestrictedInternalMethodUsageExtensionTest extends RuleTestCase
 				58,
 			],
 			[
-				'Call to internal method MethodInternalTagOne\FooInternal::doFoo() from outside its root namespace MethodInternalTagOne.',
+				'Call to method doFoo() of internal class MethodInternalTagOne\FooInternal from outside its root namespace MethodInternalTagOne.',
 				63,
 			],
 			[
@@ -34,7 +34,7 @@ class RestrictedInternalMethodUsageExtensionTest extends RuleTestCase
 			],
 
 			[
-				'Call to internal method MethodInternalTagOne\FooInternal::doFoo() from outside its root namespace MethodInternalTagOne.',
+				'Call to method doFoo() of internal class MethodInternalTagOne\FooInternal from outside its root namespace MethodInternalTagOne.',
 				76,
 			],
 			[
@@ -42,7 +42,7 @@ class RestrictedInternalMethodUsageExtensionTest extends RuleTestCase
 				107,
 			],
 			[
-				'Call to internal method FooInternalWithoutNamespace::doFoo().',
+				'Call to method doFoo() of internal class FooInternalWithoutNamespace.',
 				112,
 			],
 			[
@@ -50,7 +50,7 @@ class RestrictedInternalMethodUsageExtensionTest extends RuleTestCase
 				120,
 			],
 			[
-				'Call to internal method FooInternalWithoutNamespace::doFoo().',
+				'Call to method doFoo() of internal class FooInternalWithoutNamespace.',
 				125,
 			],
 		]);
