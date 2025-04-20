@@ -2598,6 +2598,13 @@ final class NodeScopeResolver
 			}
 
 			if (
+				$parametersAcceptor instanceof ClosureType && count($parametersAcceptor->getImpurePoints()) > 0
+				&& $scope->isInClass()
+			) {
+				$scope = $scope->invalidateExpression(new Variable('this'), true);
+			}
+
+			if (
 				$functionReflection !== null
 				&& in_array($functionReflection->getName(), ['json_encode', 'json_decode'], true)
 			) {
@@ -3022,13 +3029,13 @@ final class NodeScopeResolver
 
 			if (
 				$methodReflection !== null
-				&& !$methodReflection->isStatic()
 				&& (
 					$methodReflection->hasSideEffects()->yes()
-					|| $methodReflection->getName() === '__construct'
+					|| (
+						!$methodReflection->isStatic()
+						&& $methodReflection->getName() === '__construct'
+					)
 				)
-				&& $scopeFunction instanceof MethodReflection
-				&& !$scopeFunction->isStatic()
 				&& $scope->isInClass()
 				&& $scope->getClassReflection()->is($methodReflection->getDeclaringClass()->getName())
 			) {
