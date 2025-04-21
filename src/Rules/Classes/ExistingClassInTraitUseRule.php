@@ -7,6 +7,7 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\ClassNameCheck;
 use PHPStan\Rules\ClassNameNodePair;
+use PHPStan\Rules\ClassNameUsageLocation;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\ShouldNotHappenException;
@@ -35,7 +36,9 @@ final class ExistingClassInTraitUseRule implements Rule
 	public function processNode(Node $node, Scope $scope): array
 	{
 		$messages = $this->classCheck->checkClassNames(
+			$scope,
 			array_map(static fn (Node\Name $traitName): ClassNameNodePair => new ClassNameNodePair((string) $traitName, $traitName), $node->traits),
+			ClassNameUsageLocation::from(ClassNameUsageLocation::TRAIT_USE),
 		);
 
 		if (!$scope->isInClass()) {

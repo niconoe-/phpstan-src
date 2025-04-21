@@ -37,7 +37,7 @@ final class RequireExtendsDefinitionTraitRule implements Rule
 		$traitReflection = $this->reflectionProvider->getClass($node->namespacedName->toString());
 		$extendsTags = $traitReflection->getRequireExtendsTags();
 
-		return $this->requireExtendsCheck->checkExtendsTags($node, $extendsTags);
+		return $this->requireExtendsCheck->checkExtendsTags($scope, $node, $extendsTags);
 	}
 
 }

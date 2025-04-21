@@ -2,6 +2,8 @@
 
 namespace PHPStan\Rules;
 
+use PHPStan\Analyser\Scope;
+
 final class ClassNameCheck
 {
 
@@ -16,7 +18,12 @@ final class ClassNameCheck
 	 * @param ClassNameNodePair[] $pairs
 	 * @return list<IdentifierRuleError>
 	 */
-	public function checkClassNames(array $pairs, bool $checkClassCaseSensitivity = true): array
+	public function checkClassNames(
+		Scope $scope,
+		array $pairs,
+		ClassNameUsageLocation $location,
+		bool $checkClassCaseSensitivity = true,
+	): array
 	{
 		$errors = [];
 

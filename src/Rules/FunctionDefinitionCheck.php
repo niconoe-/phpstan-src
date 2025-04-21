@@ -62,6 +62,7 @@ final class FunctionDefinitionCheck
 	 * @return list<IdentifierRuleError>
 	 */
 	public function checkFunction(
+		Scope $scope,
 		Function_ $function,
 		PhpFunctionFromParserNodeReflection $functionReflection,
 		string $parameterMessage,
@@ -73,6 +74,7 @@ final class FunctionDefinitionCheck
 	): array
 	{
 		return $this->checkParametersAcceptor(
+			$scope,
 			$functionReflection,
 			$function,
 			$parameterMessage,
@@ -173,9 +175,9 @@ final class FunctionDefinitionCheck
 
 				$errors = array_merge(
 					$errors,
-					$this->classCheck->checkClassNames([
+					$this->classCheck->checkClassNames($scope, [
 						new ClassNameNodePair($class, $param->type),
-					], $this->checkClassCaseSensitivity),
+					], ClassNameUsageLocation::from(ClassNameUsageLocation::PARAMETER_TYPE), $this->checkClassCaseSensitivity),
 				);
 			}
 		}
@@ -231,9 +233,9 @@ final class FunctionDefinitionCheck
 
 			$errors = array_merge(
 				$errors,
-				$this->classCheck->checkClassNames([
+				$this->classCheck->checkClassNames($scope, [
 					new ClassNameNodePair($returnTypeClass, $returnTypeNode),
-				], $this->checkClassCaseSensitivity),
+				], ClassNameUsageLocation::from(ClassNameUsageLocation::RETURN_TYPE), $this->checkClassCaseSensitivity),
 			);
 		}
 
@@ -244,6 +246,7 @@ final class FunctionDefinitionCheck
 	 * @return list<IdentifierRuleError>
 	 */
 	public function checkClassMethod(
+		Scope $scope,
 		PhpMethodFromParserNodeReflection $methodReflection,
 		ClassMethod|Node\PropertyHook $methodNode,
 		string $parameterMessage,
@@ -256,6 +259,7 @@ final class FunctionDefinitionCheck
 	): array
 	{
 		$errors = $this->checkParametersAcceptor(
+			$scope,
 			$methodReflection,
 			$methodNode,
 			$parameterMessage,
@@ -291,7 +295,9 @@ final class FunctionDefinitionCheck
 			$errors = array_merge(
 				$errors,
 				$this->classCheck->checkClassNames(
+					$scope,
 					array_map(static fn (string $class): ClassNameNodePair => new ClassNameNodePair($class, $methodNode), $selfOutTypeReferencedClasses),
+					ClassNameUsageLocation::from(ClassNameUsageLocation::PHPDOC_TAG_SELF_OUT),
 					$this->checkClassCaseSensitivity,
 				),
 			);
@@ -304,6 +310,7 @@ final class FunctionDefinitionCheck
 	 * @return list<IdentifierRuleError>
 	 */
 	private function checkParametersAcceptor(
+		Scope $scope,
 		ParametersAcceptor $parametersAcceptor,
 		FunctionLike $functionNode,
 		string $parameterMessage,
@@ -420,7 +427,9 @@ final class FunctionDefinitionCheck
 			$errors = array_merge(
 				$errors,
 				$this->classCheck->checkClassNames(
+					$scope,
 					array_map(static fn (string $class): ClassNameNodePair => new ClassNameNodePair($class, $parameterNodeCallback()), $referencedClasses),
+					ClassNameUsageLocation::from(ClassNameUsageLocation::PARAMETER_TYPE),
 					$this->checkClassCaseSensitivity,
 				),
 			);
@@ -468,7 +477,9 @@ final class FunctionDefinitionCheck
 		$errors = array_merge(
 			$errors,
 			$this->classCheck->checkClassNames(
+				$scope,
 				array_map(static fn (string $class): ClassNameNodePair => new ClassNameNodePair($class, $returnTypeNode), $returnTypeReferencedClasses),
+				ClassNameUsageLocation::from(ClassNameUsageLocation::RETURN_TYPE),
 				$this->checkClassCaseSensitivity,
 			),
 		);

@@ -47,6 +47,7 @@ final class ExistingClassesInPropertyHookTypehintsRule implements Rule
 		}
 
 		return $this->check->checkClassMethod(
+			$scope,
 			$hookReflection,
 			$originalHookNode,
 			sprintf(

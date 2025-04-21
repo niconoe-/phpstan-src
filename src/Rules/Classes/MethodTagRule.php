@@ -25,6 +25,7 @@ final class MethodTagRule implements Rule
 	public function processNode(Node $node, Scope $scope): array
 	{
 		return $this->check->check(
+			$scope,
 			$node->getClassReflection(),
 			$node->getOriginalNode(),
 		);

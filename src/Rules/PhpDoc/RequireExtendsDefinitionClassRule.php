@@ -44,7 +44,7 @@ final class RequireExtendsDefinitionClassRule implements Rule
 			];
 		}
 
-		return $this->requireExtendsCheck->checkExtendsTags($node, $extendsTags);
+		return $this->requireExtendsCheck->checkExtendsTags($scope, $node, $extendsTags);
 	}
 
 }

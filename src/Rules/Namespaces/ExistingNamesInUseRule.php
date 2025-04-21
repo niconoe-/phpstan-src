@@ -7,6 +7,7 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\ClassNameCheck;
 use PHPStan\Rules\ClassNameNodePair;
+use PHPStan\Rules\ClassNameUsageLocation;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
@@ -55,7 +56,7 @@ final class ExistingNamesInUseRule implements Rule
 			return $this->checkFunctions($node->uses);
 		}
 
-		return $this->checkClasses($node->uses);
+		return $this->checkClasses($scope, $node->uses);
 	}
 
 	/**
@@ -129,10 +130,12 @@ final class ExistingNamesInUseRule implements Rule
 	 * @param Node\UseItem[] $uses
 	 * @return list<IdentifierRuleError>
 	 */
-	private function checkClasses(array $uses): array
+	private function checkClasses(Scope $scope, array $uses): array
 	{
 		return $this->classCheck->checkClassNames(
+			$scope,
 			array_map(static fn (Node\UseItem $use): ClassNameNodePair => new ClassNameNodePair((string) $use->name, $use->name), $uses),
+			ClassNameUsageLocation::from(ClassNameUsageLocation::USE_STATEMENT),
 		);
 	}
 

@@ -4,6 +4,7 @@ namespace PHPStan\Rules\PhpDoc;
 
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Function_;
+use PHPStan\Analyser\Scope;
 use PHPStan\Node\Expr\TypeExpr;
 use PHPStan\PhpDoc\Tag\AssertTag;
 use PHPStan\Reflection\ExtendedMethodReflection;
@@ -14,6 +15,7 @@ use PHPStan\Reflection\ParametersAcceptor;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\ClassNameCheck;
 use PHPStan\Rules\ClassNameNodePair;
+use PHPStan\Rules\ClassNameUsageLocation;
 use PHPStan\Rules\Generics\GenericObjectTypeCheck;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\MissingTypehintCheck;
@@ -46,6 +48,7 @@ final class AssertRuleHelper
 	 * @return list<IdentifierRuleError>
 	 */
 	public function check(
+		Scope $scope,
 		Function_|ClassMethod $node,
 		ExtendedMethodReflection|FunctionReflection $reflection,
 		ParametersAcceptor $acceptor,
@@ -149,9 +152,9 @@ final class AssertRuleHelper
 
 				$errors = array_merge(
 					$errors,
-					$this->classCheck->checkClassNames([
+					$this->classCheck->checkClassNames($scope, [
 						new ClassNameNodePair($class, $node),
-					], $this->checkClassCaseSensitivity),
+					], ClassNameUsageLocation::from(ClassNameUsageLocation::PHPDOC_TAG_ASSERT), $this->checkClassCaseSensitivity),
 				);
 			}
 

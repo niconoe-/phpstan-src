@@ -8,6 +8,7 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\ClassNameCheck;
 use PHPStan\Rules\ClassNameNodePair;
+use PHPStan\Rules\ClassNameUsageLocation;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
@@ -55,7 +56,7 @@ final class ExistingNamesInGroupUseRule implements Rule
 			) {
 				$error = $this->checkFunction($name);
 			} elseif ($use->type === Use_::TYPE_NORMAL) {
-				$error = $this->checkClass($name);
+				$error = $this->checkClass($scope, $name);
 			} else {
 				throw new ShouldNotHappenException();
 			}
@@ -123,11 +124,11 @@ final class ExistingNamesInGroupUseRule implements Rule
 		return null;
 	}
 
-	private function checkClass(Node\Name $name): ?IdentifierRuleError
+	private function checkClass(Scope $scope, Node\Name $name): ?IdentifierRuleError
 	{
-		$errors = $this->classCheck->checkClassNames([
+		$errors = $this->classCheck->checkClassNames($scope, [
 			new ClassNameNodePair((string) $name, $name),
-		]);
+		], ClassNameUsageLocation::from(ClassNameUsageLocation::USE_STATEMENT));
 		if (count($errors) === 0) {
 			return null;
 		} elseif (count($errors) === 1) {

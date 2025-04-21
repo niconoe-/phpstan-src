@@ -3,11 +3,13 @@
 namespace PHPStan\Rules\Classes;
 
 use PhpParser\Node\Stmt\ClassLike;
+use PHPStan\Analyser\Scope;
 use PHPStan\Internal\SprintfHelper;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\ClassNameCheck;
 use PHPStan\Rules\ClassNameNodePair;
+use PHPStan\Rules\ClassNameUsageLocation;
 use PHPStan\Rules\Generics\GenericObjectTypeCheck;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\MissingTypehintCheck;
@@ -38,6 +40,7 @@ final class MethodTagCheck
 	 * @return list<IdentifierRuleError>
 	 */
 	public function check(
+		Scope $scope,
 		ClassReflection $classReflection,
 		ClassLike $node,
 	): array
@@ -51,7 +54,7 @@ final class MethodTagCheck
 				foreach ($this->checkMethodTypeInTraitDefinitionContext($classReflection, $methodName, $parameterDescription, $parameterTag->getType()) as $error) {
 					$errors[] = $error;
 				}
-				foreach ($this->checkMethodTypeInTraitUseContext($classReflection, $methodName, $parameterDescription, $parameterTag->getType(), $node) as $error) {
+				foreach ($this->checkMethodTypeInTraitUseContext($scope, $classReflection, $methodName, $parameterDescription, $parameterTag->getType(), $node) as $error) {
 					$errors[] = $error;
 				}
 
@@ -63,7 +66,7 @@ final class MethodTagCheck
 				foreach ($this->checkMethodTypeInTraitDefinitionContext($classReflection, $methodName, $defaultValueDescription, $parameterTag->getDefaultValue()) as $error) {
 					$errors[] = $error;
 				}
-				foreach ($this->checkMethodTypeInTraitUseContext($classReflection, $methodName, $defaultValueDescription, $parameterTag->getDefaultValue(), $node) as $error) {
+				foreach ($this->checkMethodTypeInTraitUseContext($scope, $classReflection, $methodName, $defaultValueDescription, $parameterTag->getDefaultValue(), $node) as $error) {
 					$errors[] = $error;
 				}
 			}
@@ -72,7 +75,7 @@ final class MethodTagCheck
 			foreach ($this->checkMethodTypeInTraitDefinitionContext($classReflection, $methodName, $returnTypeDescription, $methodTag->getReturnType()) as $error) {
 				$errors[] = $error;
 			}
-			foreach ($this->checkMethodTypeInTraitUseContext($classReflection, $methodName, $returnTypeDescription, $methodTag->getReturnType(), $node) as $error) {
+			foreach ($this->checkMethodTypeInTraitUseContext($scope, $classReflection, $methodName, $returnTypeDescription, $methodTag->getReturnType(), $node) as $error) {
 				$errors[] = $error;
 			}
 		}
@@ -118,6 +121,7 @@ final class MethodTagCheck
 	 * @return list<IdentifierRuleError>
 	 */
 	public function checkInTraitUseContext(
+		Scope $scope,
 		ClassReflection $classReflection,
 		ClassReflection $implementingClass,
 		ClassLike $node,
@@ -134,7 +138,7 @@ final class MethodTagCheck
 			foreach ($methodTag->getParameters() as $parameterName => $parameterTag) {
 				$i++;
 				$parameterDescription = sprintf('parameter #%d $%s', $i, $parameterName);
-				foreach ($this->checkMethodTypeInTraitUseContext($classReflection, $methodName, $parameterDescription, $parameterTag->getType(), $node) as $error) {
+				foreach ($this->checkMethodTypeInTraitUseContext($scope, $classReflection, $methodName, $parameterDescription, $parameterTag->getType(), $node) as $error) {
 					$errors[] = $error;
 				}
 
@@ -143,13 +147,13 @@ final class MethodTagCheck
 				}
 
 				$defaultValueDescription = sprintf('%s default value', $parameterDescription);
-				foreach ($this->checkMethodTypeInTraitUseContext($classReflection, $methodName, $defaultValueDescription, $parameterTag->getDefaultValue(), $node) as $error) {
+				foreach ($this->checkMethodTypeInTraitUseContext($scope, $classReflection, $methodName, $defaultValueDescription, $parameterTag->getDefaultValue(), $node) as $error) {
 					$errors[] = $error;
 				}
 			}
 
 			$returnTypeDescription = 'return type';
-			foreach ($this->checkMethodTypeInTraitUseContext($classReflection, $methodName, $returnTypeDescription, $methodTag->getReturnType(), $node) as $error) {
+			foreach ($this->checkMethodTypeInTraitUseContext($scope, $classReflection, $methodName, $returnTypeDescription, $methodTag->getReturnType(), $node) as $error) {
 				$errors[] = $error;
 			}
 		}
@@ -212,7 +216,7 @@ final class MethodTagCheck
 	/**
 	 * @return list<IdentifierRuleError>
 	 */
-	private function checkMethodTypeInTraitUseContext(ClassReflection $classReflection, string $methodName, string $description, Type $type, ClassLike $node): array
+	private function checkMethodTypeInTraitUseContext(Scope $scope, ClassReflection $classReflection, string $methodName, string $description, Type $type, ClassLike $node): array
 	{
 		$errors = [];
 		foreach ($type->getReferencedClasses() as $class) {
@@ -232,9 +236,9 @@ final class MethodTagCheck
 			} else {
 				$errors = array_merge(
 					$errors,
-					$this->classCheck->checkClassNames([
+					$this->classCheck->checkClassNames($scope, [
 						new ClassNameNodePair($class, $node),
-					], $this->checkClassCaseSensitivity),
+					], ClassNameUsageLocation::from(ClassNameUsageLocation::PHPDOC_TAG_METHOD), $this->checkClassCaseSensitivity),
 				);
 			}
 		}

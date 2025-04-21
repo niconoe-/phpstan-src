@@ -11,6 +11,7 @@ use PHPStan\Internal\SprintfHelper;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\ClassNameCheck;
 use PHPStan\Rules\ClassNameNodePair;
+use PHPStan\Rules\ClassNameUsageLocation;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
@@ -131,7 +132,11 @@ final class AccessStaticPropertiesRule implements Rule
 					];
 				}
 
-				$messages = $this->classCheck->checkClassNames([new ClassNameNodePair($class, $node->class)]);
+				$messages = $this->classCheck->checkClassNames(
+					$scope,
+					[new ClassNameNodePair($class, $node->class)],
+					ClassNameUsageLocation::from(ClassNameUsageLocation::STATIC_PROPERTY_ACCESS),
+				);
 
 				$classType = $scope->resolveTypeByName($node->class);
 			}

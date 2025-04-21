@@ -32,6 +32,7 @@ final class ExistingClassesInTypehintsRule implements Rule
 		$methodName = SprintfHelper::escapeFormatString($methodReflection->getName());
 
 		return $this->check->checkClassMethod(
+			$scope,
 			$methodReflection,
 			$node->getOriginalNode(),
 			sprintf(

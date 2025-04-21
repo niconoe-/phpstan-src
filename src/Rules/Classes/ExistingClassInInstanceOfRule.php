@@ -8,6 +8,7 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\ClassNameCheck;
 use PHPStan\Rules\ClassNameNodePair;
+use PHPStan\Rules\ClassNameUsageLocation;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\VerbosityLevel;
@@ -86,7 +87,9 @@ final class ExistingClassInInstanceOfRule implements Rule
 		$errors = array_merge(
 			$errors,
 			$this->classCheck->checkClassNames(
+				$scope,
 				[new ClassNameNodePair($name, $class)],
+				ClassNameUsageLocation::from(ClassNameUsageLocation::INSTANCEOF),
 				$this->checkClassCaseSensitivity,
 			),
 		);

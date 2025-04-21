@@ -3,9 +3,11 @@
 namespace PHPStan\Rules\PhpDoc;
 
 use PhpParser\Node;
+use PHPStan\Analyser\Scope;
 use PHPStan\PhpDoc\Tag\RequireExtendsTag;
 use PHPStan\Rules\ClassNameCheck;
 use PHPStan\Rules\ClassNameNodePair;
+use PHPStan\Rules\ClassNameUsageLocation;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\ObjectType;
@@ -30,7 +32,7 @@ final class RequireExtendsCheck
 	 * @param  array<RequireExtendsTag> $extendsTags
 	 * @return list<IdentifierRuleError>
 	 */
-	public function checkExtendsTags(Node $node, array $extendsTags): array
+	public function checkExtendsTags(Scope $scope, Node $node, array $extendsTags): array
 	{
 		$errors = [];
 
@@ -75,9 +77,9 @@ final class RequireExtendsCheck
 			} else {
 				$errors = array_merge(
 					$errors,
-					$this->classCheck->checkClassNames([
+					$this->classCheck->checkClassNames($scope, [
 						new ClassNameNodePair($class, $node),
-					], $this->checkClassCaseSensitivity),
+					], ClassNameUsageLocation::from(ClassNameUsageLocation::PHPDOC_TAG_REQUIRE_EXTENDS), $this->checkClassCaseSensitivity),
 				);
 			}
 		}

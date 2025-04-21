@@ -15,6 +15,7 @@ use PHPStan\Reflection\Php\PhpMethodReflection;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\ClassNameCheck;
 use PHPStan\Rules\ClassNameNodePair;
+use PHPStan\Rules\ClassNameUsageLocation;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Rules\RuleLevelHelper;
@@ -139,7 +140,11 @@ final class StaticMethodCallCheck
 					];
 				}
 
-				$errors = $this->classCheck->checkClassNames([new ClassNameNodePair($className, $class)]);
+				$errors = $this->classCheck->checkClassNames(
+					$scope,
+					[new ClassNameNodePair($className, $class)],
+					ClassNameUsageLocation::from(ClassNameUsageLocation::STATIC_METHOD_CALL),
+				);
 
 				$classType = $scope->resolveTypeByName($class);
 			}

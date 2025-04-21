@@ -7,6 +7,7 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\ClassNameCheck;
 use PHPStan\Rules\ClassNameNodePair;
+use PHPStan\Rules\ClassNameUsageLocation;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use function sprintf;
@@ -36,7 +37,11 @@ final class ExistingClassInClassExtendsRule implements Rule
 			return [];
 		}
 		$extendedClassName = (string) $node->extends;
-		$messages = $this->classCheck->checkClassNames([new ClassNameNodePair($extendedClassName, $node->extends)]);
+		$messages = $this->classCheck->checkClassNames(
+			$scope,
+			[new ClassNameNodePair($extendedClassName, $node->extends)],
+			ClassNameUsageLocation::from(ClassNameUsageLocation::CLASS_EXTENDS),
+		);
 		$currentClassName = null;
 		if (isset($node->namespacedName)) {
 			$currentClassName = (string) $node->namespacedName;

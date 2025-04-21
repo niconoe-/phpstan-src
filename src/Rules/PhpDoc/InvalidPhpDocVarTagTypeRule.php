@@ -8,6 +8,7 @@ use PHPStan\Internal\SprintfHelper;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\ClassNameCheck;
 use PHPStan\Rules\ClassNameNodePair;
+use PHPStan\Rules\ClassNameUsageLocation;
 use PHPStan\Rules\Generics\GenericObjectTypeCheck;
 use PHPStan\Rules\MissingTypehintCheck;
 use PHPStan\Rules\Rule;
@@ -153,7 +154,9 @@ final class InvalidPhpDocVarTagTypeRule implements Rule
 			$errors = array_merge(
 				$errors,
 				$this->classCheck->checkClassNames(
+					$scope,
 					array_map(static fn (string $class): ClassNameNodePair => new ClassNameNodePair($class, $node), $referencedClasses),
+					ClassNameUsageLocation::from(ClassNameUsageLocation::PHPDOC_TAG_VAR),
 					$this->checkClassCaseSensitivity,
 				),
 			);

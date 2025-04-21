@@ -24,7 +24,7 @@ final class PropertyTagRule implements Rule
 
 	public function processNode(Node $node, Scope $scope): array
 	{
-		return $this->check->check($node->getClassReflection(), $node->getOriginalNode());
+		return $this->check->check($scope, $node->getClassReflection(), $node->getOriginalNode());
 	}
 
 }

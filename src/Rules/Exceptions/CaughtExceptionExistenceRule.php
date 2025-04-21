@@ -8,6 +8,7 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\ClassNameCheck;
 use PHPStan\Rules\ClassNameNodePair;
+use PHPStan\Rules\ClassNameUsageLocation;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use Throwable;
@@ -67,7 +68,9 @@ final class CaughtExceptionExistenceRule implements Rule
 			$errors = array_merge(
 				$errors,
 				$this->classCheck->checkClassNames(
+					$scope,
 					[new ClassNameNodePair($className, $class)],
+					ClassNameUsageLocation::from(ClassNameUsageLocation::EXCEPTION_CATCH),
 					$this->checkClassCaseSensitivity,
 				),
 			);

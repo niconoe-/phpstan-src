@@ -4,6 +4,7 @@ namespace PHPStan\Rules\Classes;
 
 use PhpParser\Node\Stmt\ClassLike;
 use PHPStan\Analyser\NameScope;
+use PHPStan\Analyser\Scope;
 use PHPStan\Internal\SprintfHelper;
 use PHPStan\PhpDoc\TypeNodeResolver;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
@@ -11,6 +12,7 @@ use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\ClassNameCheck;
 use PHPStan\Rules\ClassNameNodePair;
+use PHPStan\Rules\ClassNameUsageLocation;
 use PHPStan\Rules\Generics\GenericObjectTypeCheck;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\MissingTypehintCheck;
@@ -51,13 +53,13 @@ final class LocalTypeAliasesCheck
 	/**
 	 * @return list<IdentifierRuleError>
 	 */
-	public function check(ClassReflection $reflection, ClassLike $node): array
+	public function check(Scope $scope, ClassReflection $reflection, ClassLike $node): array
 	{
 		$errors = [];
 		foreach ($this->checkInTraitDefinitionContext($reflection) as $error) {
 			$errors[] = $error;
 		}
-		foreach ($this->checkInTraitUseContext($reflection, $reflection, $node) as $error) {
+		foreach ($this->checkInTraitUseContext($scope, $reflection, $reflection, $node) as $error) {
 			$errors[] = $error;
 		}
 
@@ -230,6 +232,7 @@ final class LocalTypeAliasesCheck
 	 * @return list<IdentifierRuleError>
 	 */
 	public function checkInTraitUseContext(
+		Scope $scope,
 		ClassReflection $reflection,
 		ClassReflection $implementingClassReflection,
 		ClassLike $node,
@@ -270,9 +273,9 @@ final class LocalTypeAliasesCheck
 				} else {
 					$errors = array_merge(
 						$errors,
-						$this->classCheck->checkClassNames([
+						$this->classCheck->checkClassNames($scope, [
 							new ClassNameNodePair($class, $node),
-						], $this->checkClassCaseSensitivity),
+						], ClassNameUsageLocation::from(ClassNameUsageLocation::TYPE_ALIAS), $this->checkClassCaseSensitivity),
 					);
 				}
 			}

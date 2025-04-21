@@ -9,6 +9,7 @@ use PHPStan\PhpDoc\Tag\TemplateTag;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\ClassNameCheck;
 use PHPStan\Rules\ClassNameNodePair;
+use PHPStan\Rules\ClassNameUsageLocation;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\ArrayType;
@@ -105,7 +106,7 @@ final class TemplateTypeCheck
 			}
 
 			$classNameNodePairs = array_map(static fn (string $referencedClass): ClassNameNodePair => new ClassNameNodePair($referencedClass, $node), $boundType->getReferencedClasses());
-			$messages = array_merge($messages, $this->classCheck->checkClassNames($classNameNodePairs, $this->checkClassCaseSensitivity));
+			$messages = array_merge($messages, $this->classCheck->checkClassNames($scope, $classNameNodePairs, ClassNameUsageLocation::from(ClassNameUsageLocation::PHPDOC_TAG_TEMPLATE_BOUND), $this->checkClassCaseSensitivity));
 
 			$boundTypeClass = get_class($boundType);
 			if (
@@ -182,7 +183,7 @@ final class TemplateTypeCheck
 			}
 
 			$classNameNodePairs = array_map(static fn (string $referencedClass): ClassNameNodePair => new ClassNameNodePair($referencedClass, $node), $defaultType->getReferencedClasses());
-			$messages = array_merge($messages, $this->classCheck->checkClassNames($classNameNodePairs, $this->checkClassCaseSensitivity));
+			$messages = array_merge($messages, $this->classCheck->checkClassNames($scope, $classNameNodePairs, ClassNameUsageLocation::from(ClassNameUsageLocation::PHPDOC_TAG_TEMPLATE_DEFAULT), $this->checkClassCaseSensitivity));
 
 			$genericDefaultErrors = $this->genericObjectTypeCheck->check(
 				$defaultType,

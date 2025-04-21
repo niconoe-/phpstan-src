@@ -25,6 +25,7 @@ final class MixinTraitUseRule implements Rule
 	public function processNode(Node $node, Scope $scope): array
 	{
 		return $this->check->checkInTraitUseContext(
+			$scope,
 			$node->getTraitReflection(),
 			$node->getImplementingClassReflection(),
 			$node->getOriginalNode(),

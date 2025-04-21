@@ -30,6 +30,7 @@ final class ExistingClassesInTypehintsRule implements Rule
 		$functionName = SprintfHelper::escapeFormatString($node->getFunctionReflection()->getName());
 
 		return $this->check->checkFunction(
+			$scope,
 			$node->getOriginalNode(),
 			$node->getFunctionReflection(),
 			sprintf(

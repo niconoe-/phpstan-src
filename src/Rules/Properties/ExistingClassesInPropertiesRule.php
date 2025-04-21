@@ -9,6 +9,7 @@ use PHPStan\Php\PhpVersion;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\ClassNameCheck;
 use PHPStan\Rules\ClassNameNodePair;
+use PHPStan\Rules\ClassNameUsageLocation;
 use PHPStan\Rules\PhpDoc\UnresolvableTypeHelper;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
@@ -83,7 +84,9 @@ final class ExistingClassesInPropertiesRule implements Rule
 		$errors = array_merge(
 			$errors,
 			$this->classCheck->checkClassNames(
+				$scope,
 				array_map(static fn (string $class): ClassNameNodePair => new ClassNameNodePair($class, $node), $referencedClasses),
+				ClassNameUsageLocation::from(ClassNameUsageLocation::PROPERTY_TYPE),
 				$this->checkClassCaseSensitivity,
 			),
 		);

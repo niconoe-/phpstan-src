@@ -31,7 +31,7 @@ final class FunctionAssertRule implements Rule
 			return [];
 		}
 
-		return $this->helper->check($node->getOriginalNode(), $function, $variants[0]);
+		return $this->helper->check($scope, $node->getOriginalNode(), $function, $variants[0]);
 	}
 
 }

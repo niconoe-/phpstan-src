@@ -3,12 +3,14 @@
 namespace PHPStan\Rules\Classes;
 
 use PhpParser\Node\Stmt\ClassLike;
+use PHPStan\Analyser\Scope;
 use PHPStan\Internal\SprintfHelper;
 use PHPStan\PhpDoc\Tag\PropertyTag;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\ClassNameCheck;
 use PHPStan\Rules\ClassNameNodePair;
+use PHPStan\Rules\ClassNameUsageLocation;
 use PHPStan\Rules\Generics\GenericObjectTypeCheck;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\MissingTypehintCheck;
@@ -40,6 +42,7 @@ final class PropertyTagCheck
 	 * @return list<IdentifierRuleError>
 	 */
 	public function check(
+		Scope $scope,
 		ClassReflection $classReflection,
 		ClassLike $node,
 	): array
@@ -51,7 +54,7 @@ final class PropertyTagCheck
 				foreach ($this->checkPropertyTypeInTraitDefinitionContext($classReflection, $propertyName, $tagName, $type) as $error) {
 					$errors[] = $error;
 				}
-				foreach ($this->checkPropertyTypeInTraitUseContext($classReflection, $propertyName, $tagName, $type, $node) as $error) {
+				foreach ($this->checkPropertyTypeInTraitUseContext($scope, $classReflection, $propertyName, $tagName, $type, $node) as $error) {
 					$errors[] = $error;
 				}
 			}
@@ -82,6 +85,7 @@ final class PropertyTagCheck
 	 * @return list<IdentifierRuleError>
 	 */
 	public function checkInTraitUseContext(
+		Scope $scope,
 		ClassReflection $classReflection,
 		ClassReflection $implementingClass,
 		ClassLike $node,
@@ -96,7 +100,7 @@ final class PropertyTagCheck
 		foreach ($phpDoc->getPropertyTags() as $propertyName => $propertyTag) {
 			[$types, $tagName] = $this->getTypesAndTagName($propertyTag);
 			foreach ($types as $type) {
-				foreach ($this->checkPropertyTypeInTraitUseContext($classReflection, $propertyName, $tagName, $type, $node) as $error) {
+				foreach ($this->checkPropertyTypeInTraitUseContext($scope, $classReflection, $propertyName, $tagName, $type, $node) as $error) {
 					$errors[] = $error;
 				}
 			}
@@ -193,7 +197,7 @@ final class PropertyTagCheck
 	/**
 	 * @return list<IdentifierRuleError>
 	 */
-	private function checkPropertyTypeInTraitUseContext(ClassReflection $classReflection, string $propertyName, string $tagName, Type $type, ClassLike $node): array
+	private function checkPropertyTypeInTraitUseContext(Scope $scope, ClassReflection $classReflection, string $propertyName, string $tagName, Type $type, ClassLike $node): array
 	{
 		$errors = [];
 		foreach ($type->getReferencedClasses() as $class) {
@@ -213,9 +217,9 @@ final class PropertyTagCheck
 			} else {
 				$errors = array_merge(
 					$errors,
-					$this->classCheck->checkClassNames([
+					$this->classCheck->checkClassNames($scope, [
 						new ClassNameNodePair($class, $node),
-					], $this->checkClassCaseSensitivity),
+					], ClassNameUsageLocation::from(ClassNameUsageLocation::PHPDOC_TAG_PROPERTY), $this->checkClassCaseSensitivity),
 				);
 			}
 		}

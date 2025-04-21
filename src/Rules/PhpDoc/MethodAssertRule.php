@@ -31,7 +31,7 @@ final class MethodAssertRule implements Rule
 			return [];
 		}
 
-		return $this->helper->check($node->getOriginalNode(), $method, $variants[0]);
+		return $this->helper->check($scope, $node->getOriginalNode(), $method, $variants[0]);
 	}
 
 }

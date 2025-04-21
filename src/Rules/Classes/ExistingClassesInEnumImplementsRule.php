@@ -7,6 +7,7 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\ClassNameCheck;
 use PHPStan\Rules\ClassNameNodePair;
+use PHPStan\Rules\ClassNameUsageLocation;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use function array_map;
@@ -34,7 +35,9 @@ final class ExistingClassesInEnumImplementsRule implements Rule
 	public function processNode(Node $node, Scope $scope): array
 	{
 		$messages = $this->classCheck->checkClassNames(
+			$scope,
 			array_map(static fn (Node\Name $interfaceName): ClassNameNodePair => new ClassNameNodePair((string) $interfaceName, $interfaceName), $node->implements),
+			ClassNameUsageLocation::from(ClassNameUsageLocation::ENUM_IMPLEMENTS),
 		);
 
 		$currentEnumName = (string) $node->namespacedName;

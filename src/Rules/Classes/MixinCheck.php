@@ -3,10 +3,12 @@
 namespace PHPStan\Rules\Classes;
 
 use PhpParser\Node\Stmt\ClassLike;
+use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\ClassNameCheck;
 use PHPStan\Rules\ClassNameNodePair;
+use PHPStan\Rules\ClassNameUsageLocation;
 use PHPStan\Rules\Generics\GenericObjectTypeCheck;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\MissingTypehintCheck;
@@ -35,14 +37,14 @@ final class MixinCheck
 	/**
 	 * @return list<IdentifierRuleError>
 	 */
-	public function check(ClassReflection $classReflection, ClassLike $node): array
+	public function check(Scope $scope, ClassReflection $classReflection, ClassLike $node): array
 	{
 		$errors = [];
 		foreach ($this->checkInTraitDefinitionContext($classReflection) as $error) {
 			$errors[] = $error;
 		}
 
-		foreach ($this->checkInTraitUseContext($classReflection, $classReflection, $node) as $error) {
+		foreach ($this->checkInTraitUseContext($scope, $classReflection, $classReflection, $node) as $error) {
 			$errors[] = $error;
 		}
 
@@ -108,6 +110,7 @@ final class MixinCheck
 	 * @return list<IdentifierRuleError>
 	 */
 	public function checkInTraitUseContext(
+		Scope $scope,
 		ClassReflection $reflection,
 		ClassReflection $implementingClassReflection,
 		ClassLike $node,
@@ -161,9 +164,9 @@ final class MixinCheck
 				} else {
 					$errors = array_merge(
 						$errors,
-						$this->classCheck->checkClassNames([
+						$this->classCheck->checkClassNames($scope, [
 							new ClassNameNodePair($class, $node),
-						], $this->checkClassCaseSensitivity),
+						], ClassNameUsageLocation::from(ClassNameUsageLocation::PHPDOC_TAG_MIXIN), $this->checkClassCaseSensitivity),
 					);
 				}
 			}

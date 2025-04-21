@@ -13,6 +13,7 @@ use PHPStan\Php\PhpVersion;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\ClassNameCheck;
 use PHPStan\Rules\ClassNameNodePair;
+use PHPStan\Rules\ClassNameUsageLocation;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
@@ -150,7 +151,11 @@ final class ClassConstantRule implements Rule
 					}
 				}
 
-				$messages = $this->classCheck->checkClassNames([new ClassNameNodePair($className, $class)]);
+				$messages = $this->classCheck->checkClassNames(
+					$scope,
+					[new ClassNameNodePair($className, $class)],
+					ClassNameUsageLocation::from(ClassNameUsageLocation::CLASS_CONSTANT_ACCESS),
+				);
 			}
 
 			if (strtolower($constantName) === 'class') {

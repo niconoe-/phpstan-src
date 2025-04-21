@@ -12,6 +12,7 @@ use PHPStan\Reflection\Php\PhpMethodReflection;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\ClassNameCheck;
 use PHPStan\Rules\ClassNameNodePair;
+use PHPStan\Rules\ClassNameUsageLocation;
 use PHPStan\Rules\FunctionCallParametersCheck;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\Rule;
@@ -135,9 +136,9 @@ final class InstantiationRule implements Rule
 				];
 			}
 
-			$messages = $this->classCheck->checkClassNames([
+			$messages = $this->classCheck->checkClassNames($scope, [
 				new ClassNameNodePair($class, $node->class),
-			]);
+			], ClassNameUsageLocation::from(ClassNameUsageLocation::INSTANTIATION));
 
 			$classReflection = $this->reflectionProvider->getClass($class);
 		}
