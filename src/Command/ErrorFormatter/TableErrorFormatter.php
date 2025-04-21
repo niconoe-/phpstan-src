@@ -13,6 +13,7 @@ use function array_map;
 use function count;
 use function explode;
 use function getenv;
+use function in_array;
 use function is_string;
 use function ltrim;
 use function sprintf;
@@ -117,6 +118,14 @@ final class TableErrorFormatter implements ErrorFormatter
 
 					$message .= "\n✏️  <href=" . OutputFormatter::escape($url) . '>' . $title . '</>';
 				}
+
+				if (
+					$error->getIdentifier() !== null
+					&& in_array($error->getIdentifier(), ['phpstan.type', 'phpstan.nativeType', 'phpstan.variable', 'phpstan.dumpType', 'phpstan.unknownExpectation'], true)
+				) {
+					$message = '<fg=red>' . $message . '</>';
+				}
+
 				$rows[] = [
 					$this->formatLineNumber($error->getLine()),
 					$message,
