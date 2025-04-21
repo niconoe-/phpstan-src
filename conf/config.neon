@@ -219,7 +219,9 @@ rules:
 	- PHPStan\Rules\Debug\DumpTypeRule
 	- PHPStan\Rules\Debug\FileAssertRule
 	- PHPStan\Rules\RestrictedUsage\RestrictedMethodUsageRule
+	- PHPStan\Rules\RestrictedUsage\RestrictedMethodCallableUsageRule
 	- PHPStan\Rules\RestrictedUsage\RestrictedStaticMethodUsageRule
+	- PHPStan\Rules\RestrictedUsage\RestrictedStaticMethodCallableUsageRule
 
 conditionalTags:
 	PHPStan\Rules\Exceptions\MissingCheckedExceptionInFunctionThrowsRule:
