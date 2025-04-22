@@ -8,7 +8,6 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\ClassNameCheck;
 use PHPStan\Rules\ClassNameNodePair;
-use PHPStan\Rules\ClassNameUsageLocation;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
@@ -128,7 +127,7 @@ final class ExistingNamesInGroupUseRule implements Rule
 	{
 		$errors = $this->classCheck->checkClassNames($scope, [
 			new ClassNameNodePair((string) $name, $name),
-		], ClassNameUsageLocation::from(ClassNameUsageLocation::USE_STATEMENT));
+		], null);
 		if (count($errors) === 0) {
 			return null;
 		} elseif (count($errors) === 1) {

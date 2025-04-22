@@ -103,6 +103,10 @@ rules:
 	- PHPStan\Rules\Variables\UnsetRule
 	- PHPStan\Rules\Whitespace\FileWhitespaceRule
 
+conditionalTags:
+	PHPStan\Rules\InternalTag\RestrictedInternalClassNameUsageExtension:
+		phpstan.restrictedClassNameUsageExtension: %featureToggles.internalTag%
+
 services:
 	-
 		class: PHPStan\Rules\Classes\ExistingClassInClassExtendsRule
@@ -290,3 +294,6 @@ services:
 			currentWorkingDirectory: %currentWorkingDirectory%
 		tags:
 			- phpstan.rules.rule
+
+	-
+		class: PHPStan\Rules\InternalTag\RestrictedInternalClassNameUsageExtension

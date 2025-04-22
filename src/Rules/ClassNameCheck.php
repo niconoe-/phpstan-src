@@ -26,7 +26,7 @@ final class ClassNameCheck
 	public function checkClassNames(
 		Scope $scope,
 		array $pairs,
-		ClassNameUsageLocation $location,
+		?ClassNameUsageLocation $location,
 		bool $checkClassCaseSensitivity = true,
 	): array
 	{
@@ -39,6 +39,10 @@ final class ClassNameCheck
 		}
 		foreach ($this->classForbiddenNameCheck->checkClassNames($pairs) as $error) {
 			$errors[] = $error;
+		}
+
+		if ($location === null) {
+			return $errors;
 		}
 
 		/** @var RestrictedClassNameUsageExtension[] $extensions */
