@@ -9,11 +9,14 @@ use PHPStan\Rules\RestrictedUsage\RestrictedUsage;
 use function array_slice;
 use function explode;
 use function sprintf;
-use function str_starts_with;
 use function strtolower;
 
 final class RestrictedInternalMethodUsageExtension implements RestrictedMethodUsageExtension
 {
+
+	public function __construct(private RestrictedInternalUsageHelper $helper)
+	{
+	}
 
 	public function isRestrictedMethodUsage(
 		ExtendedMethodReflection $methodReflection,
@@ -21,28 +24,18 @@ final class RestrictedInternalMethodUsageExtension implements RestrictedMethodUs
 	): ?RestrictedUsage
 	{
 		$isMethodInternal = $methodReflection->isInternal()->yes();
-		$isDeclaringClassInternal = $methodReflection->getDeclaringClass()->isInternal();
+		$declaringClass = $methodReflection->getDeclaringClass();
+		$isDeclaringClassInternal = $declaringClass->isInternal();
 		if (!$isMethodInternal && !$isDeclaringClassInternal) {
 			return null;
 		}
 
-		$currentNamespace = $scope->getNamespace();
-		$declaringClassName = $methodReflection->getDeclaringClass()->getName();
-		$namespace = array_slice(explode('\\', $declaringClassName), 0, -1)[0] ?? null;
-		if ($currentNamespace === null) {
-			return $this->buildRestrictedUsage($methodReflection, $namespace, $isMethodInternal);
-		}
-
-		$currentNamespace = explode('\\', $currentNamespace)[0];
-		if (str_starts_with($namespace . '\\', $currentNamespace . '\\')) {
+		$declaringClassName = $declaringClass->getName();
+		if (!$this->helper->shouldBeReported($scope, $declaringClassName)) {
 			return null;
 		}
 
-		return $this->buildRestrictedUsage($methodReflection, $namespace, $isMethodInternal);
-	}
-
-	private function buildRestrictedUsage(ExtendedMethodReflection $methodReflection, ?string $namespace, bool $isMethodInternal): RestrictedUsage
-	{
+		$namespace = array_slice(explode('\\', $declaringClassName), 0, -1)[0] ?? null;
 		if ($namespace === null) {
 			if (!$isMethodInternal) {
 				return RestrictedUsage::create(
