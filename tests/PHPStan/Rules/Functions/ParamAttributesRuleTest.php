@@ -39,6 +39,8 @@ class ParamAttributesRuleTest extends RuleTestCase
 				new ClassNameCheck(
 					new ClassCaseSensitivityCheck($reflectionProvider, false),
 					new ClassForbiddenNameCheck(self::getContainer()),
+					$reflectionProvider,
+					self::getContainer(),
 				),
 				true,
 			),

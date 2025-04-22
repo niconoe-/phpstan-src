@@ -26,6 +26,8 @@ class ClassTemplateTypeRuleTest extends RuleTestCase
 				new ClassNameCheck(
 					new ClassCaseSensitivityCheck($reflectionProvider, true),
 					new ClassForbiddenNameCheck(self::getContainer()),
+					$reflectionProvider,
+					self::getContainer(),
 				),
 				new GenericObjectTypeCheck(),
 				$typeAliasResolver,
