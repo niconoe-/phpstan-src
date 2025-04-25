@@ -34,7 +34,12 @@ final class RestrictedInternalClassNameUsageExtension implements RestrictedClass
 		}
 
 		if ($location->value === ClassNameUsageLocation::STATIC_METHOD_CALL) {
-			return null;
+			$method = $location->getMethod();
+			if ($method !== null) {
+				if ($method->isInternal()->yes() || $method->getDeclaringClass()->isInternal()) {
+					return null;
+				}
+			}
 		}
 
 		return RestrictedUsage::create(

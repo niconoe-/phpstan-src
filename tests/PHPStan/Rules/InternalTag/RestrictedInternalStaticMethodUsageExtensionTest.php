@@ -56,4 +56,14 @@ class RestrictedInternalStaticMethodUsageExtensionTest extends RuleTestCase
 		]);
 	}
 
+	public function testStaticMethodCallOnInternalSubclass(): void
+	{
+		$this->analyse([__DIR__ . '/data/static-method-call-on-internal-subclass.php'], [
+			[
+				'Call to static method doBar() of internal class StaticMethodCallOnInternalSubclassOne\Bar from outside its root namespace StaticMethodCallOnInternalSubclassOne.',
+				34,
+			],
+		]);
+	}
+
 }

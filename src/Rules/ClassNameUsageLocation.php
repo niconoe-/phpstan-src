@@ -2,7 +2,7 @@
 
 namespace PHPStan\Rules;
 
-use function array_key_exists;
+use PHPStan\Reflection\ExtendedMethodReflection;
 use function sprintf;
 use function ucfirst;
 
@@ -39,26 +39,26 @@ final class ClassNameUsageLocation
 	public const PHPDOC_TAG_TEMPLATE_BOUND = 'templateBound';
 	public const PHPDOC_TAG_TEMPLATE_DEFAULT = 'templateDefault';
 
-	/** @var array<string, self> */
-	public static array $registry = [];
-
 	/**
 	 * @param self::* $value
+	 * @param mixed[] $data
 	 */
-	private function __construct(public readonly string $value)
+	private function __construct(public readonly string $value, public readonly array $data)
 	{
 	}
 
 	/**
 	 * @param self::* $value
+	 * @param mixed[] $data
 	 */
-	public static function from(string $value): self
+	public static function from(string $value, array $data = []): self
 	{
-		if (array_key_exists($value, self::$registry)) {
-			return self::$registry[$value];
-		}
+		return new self($value, $data);
+	}
 
-		return self::$registry[$value] = new self($value);
+	public function getMethod(): ?ExtendedMethodReflection
+	{
+		return $this->data['method'] ?? null;
 	}
 
 	public function createMessage(string $part): string
@@ -111,6 +111,11 @@ final class ClassNameUsageLocation
 			case self::PHPDOC_TAG_REQUIRE_IMPLEMENTS:
 				return sprintf('PHPDoc tag @phpstan-require-implements references %s.', $part);
 			case self::STATIC_METHOD_CALL:
+				$method = $this->getMethod();
+				if ($method !== null) {
+					return sprintf('Call to static method %s() on %s.', $method->getName(), $part);
+				}
+
 				return sprintf('Call to static method on %s.', $part);
 			case self::PHPDOC_TAG_TEMPLATE_BOUND:
 				return sprintf('PHPDoc tag @template bound references %s.', $part);

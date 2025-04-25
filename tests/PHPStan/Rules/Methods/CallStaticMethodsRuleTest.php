@@ -899,4 +899,18 @@ class CallStaticMethodsRuleTest extends RuleTestCase
 		]);
 	}
 
+	public function testRestrictedInternalClassNameUsage(): void
+	{
+		$this->checkThisOnly = false;
+		$this->checkExplicitMixed = true;
+		$this->checkImplicitMixed = true;
+
+		$this->analyse([__DIR__ . '/../InternalTag/data/static-method-call-on-internal-subclass.php'], [
+			[
+				'Call to static method doFoo() on internal class StaticMethodCallOnInternalSubclassOne\Bar.',
+				33,
+			],
+		]);
+	}
+
 }

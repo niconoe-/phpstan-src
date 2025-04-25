@@ -140,10 +140,16 @@ final class StaticMethodCallCheck
 					];
 				}
 
+				$locationData = [];
+				$locationClassReflection = $this->reflectionProvider->getClass($className);
+				if ($locationClassReflection->hasMethod($methodName)) {
+					$locationData['method'] = $locationClassReflection->getMethod($methodName, $scope);
+				}
+
 				$errors = $this->classCheck->checkClassNames(
 					$scope,
 					[new ClassNameNodePair($className, $class)],
-					ClassNameUsageLocation::from(ClassNameUsageLocation::STATIC_METHOD_CALL),
+					ClassNameUsageLocation::from(ClassNameUsageLocation::STATIC_METHOD_CALL, $locationData),
 				);
 
 				$classType = $scope->resolveTypeByName($class);
