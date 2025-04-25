@@ -188,7 +188,7 @@ final class ClassNameUsageLocation
 			case self::PHPDOC_TAG_VAR:
 				return sprintf('PHPDoc tag @var references %s.', $part);
 			case self::INSTANTIATION:
-				return sprintf('Instantiating %s.', $part);
+				return sprintf('Instantiation of %s.', $part);
 			case self::TYPE_ALIAS:
 				if ($this->getTypeAliasName() !== null) {
 					return sprintf('Type alias %s references %s.', $this->getTypeAliasName(), $part);
