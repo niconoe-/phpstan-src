@@ -3,6 +3,7 @@
 namespace PHPStan\Type\PHPStan;
 
 use PhpParser\Node\Expr\MethodCall;
+use PhpParser\Node\Expr\PropertyFetch;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Rules\ClassNameUsageLocation;
@@ -41,7 +42,11 @@ final class ClassNameUsageLocationCreateIdentifierDynamicReturnTypeExtension imp
 
 		$reflection = new ReflectionClass(ClassNameUsageLocation::class);
 		$identifiers = [];
+		$locationValueType = $scope->getType(new PropertyFetch($methodCall->var, 'value'));
 		foreach ($reflection->getConstants() as $constant) {
+			if (!$locationValueType->isSuperTypeOf($scope->getTypeFromValue($constant))->yes()) {
+				continue;
+			}
 			$location = ClassNameUsageLocation::from($constant);
 			foreach ($secondPartValues as $secondPart) {
 				$identifiers[] = $location->createIdentifier($secondPart->getValue());
