@@ -177,7 +177,9 @@ final class FunctionDefinitionCheck
 					$errors,
 					$this->classCheck->checkClassNames($scope, [
 						new ClassNameNodePair($class, $param->type),
-					], ClassNameUsageLocation::from(ClassNameUsageLocation::PARAMETER_TYPE), $this->checkClassCaseSensitivity),
+					], ClassNameUsageLocation::from(ClassNameUsageLocation::PARAMETER_TYPE, [
+						'parameterName' => $param->var->name,
+					]), $this->checkClassCaseSensitivity),
 				);
 			}
 		}
@@ -429,7 +431,9 @@ final class FunctionDefinitionCheck
 				$this->classCheck->checkClassNames(
 					$scope,
 					array_map(static fn (string $class): ClassNameNodePair => new ClassNameNodePair($class, $parameterNodeCallback()), $referencedClasses),
-					ClassNameUsageLocation::from(ClassNameUsageLocation::PARAMETER_TYPE),
+					ClassNameUsageLocation::from(ClassNameUsageLocation::PARAMETER_TYPE, [
+						'parameterName' => $parameter->getName(),
+					]),
 					$this->checkClassCaseSensitivity,
 				),
 			);

@@ -34,13 +34,15 @@ final class ExistingClassesInInterfaceExtendsRule implements Rule
 
 	public function processNode(Node $node, Scope $scope): array
 	{
+		$currentInterfaceName = (string) $node->namespacedName;
 		$messages = $this->classCheck->checkClassNames(
 			$scope,
 			array_map(static fn (Node\Name $interfaceName): ClassNameNodePair => new ClassNameNodePair((string) $interfaceName, $interfaceName), $node->extends),
-			ClassNameUsageLocation::from(ClassNameUsageLocation::INTERFACE_EXTENDS),
+			ClassNameUsageLocation::from(ClassNameUsageLocation::INTERFACE_EXTENDS, [
+				'currentClassName' => $currentInterfaceName,
+			]),
 		);
 
-		$currentInterfaceName = (string) $node->namespacedName;
 		foreach ($node->extends as $extends) {
 			$extendedInterfaceName = (string) $extends;
 			if (!$this->reflectionProvider->hasClass($extendedInterfaceName)) {

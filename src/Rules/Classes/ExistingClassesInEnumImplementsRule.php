@@ -34,13 +34,14 @@ final class ExistingClassesInEnumImplementsRule implements Rule
 
 	public function processNode(Node $node, Scope $scope): array
 	{
+		$currentEnumName = (string) $node->namespacedName;
 		$messages = $this->classCheck->checkClassNames(
 			$scope,
 			array_map(static fn (Node\Name $interfaceName): ClassNameNodePair => new ClassNameNodePair((string) $interfaceName, $interfaceName), $node->implements),
-			ClassNameUsageLocation::from(ClassNameUsageLocation::ENUM_IMPLEMENTS),
+			ClassNameUsageLocation::from(ClassNameUsageLocation::ENUM_IMPLEMENTS, [
+				'currentClassName' => $currentEnumName,
+			]),
 		);
-
-		$currentEnumName = (string) $node->namespacedName;
 
 		foreach ($node->implements as $implements) {
 			$implementedClassName = (string) $implements;

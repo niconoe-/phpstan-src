@@ -219,7 +219,9 @@ final class PropertyTagCheck
 					$errors,
 					$this->classCheck->checkClassNames($scope, [
 						new ClassNameNodePair($class, $node),
-					], ClassNameUsageLocation::from(ClassNameUsageLocation::PHPDOC_TAG_PROPERTY), $this->checkClassCaseSensitivity),
+					], ClassNameUsageLocation::from(ClassNameUsageLocation::PHPDOC_TAG_PROPERTY, [
+						'propertyTagName' => $propertyName,
+					]), $this->checkClassCaseSensitivity),
 				);
 			}
 		}

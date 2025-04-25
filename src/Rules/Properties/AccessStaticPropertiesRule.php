@@ -132,10 +132,16 @@ final class AccessStaticPropertiesRule implements Rule
 					];
 				}
 
+				$locationData = [];
+				$locationClassReflection = $this->reflectionProvider->getClass($class);
+				if ($locationClassReflection->hasProperty($name)) {
+					$locationData['property'] = $locationClassReflection->getProperty($name, $scope);
+				}
+
 				$messages = $this->classCheck->checkClassNames(
 					$scope,
 					[new ClassNameNodePair($class, $node->class)],
-					ClassNameUsageLocation::from(ClassNameUsageLocation::STATIC_PROPERTY_ACCESS),
+					ClassNameUsageLocation::from(ClassNameUsageLocation::STATIC_PROPERTY_ACCESS, $locationData),
 				);
 
 				$classType = $scope->resolveTypeByName($node->class);

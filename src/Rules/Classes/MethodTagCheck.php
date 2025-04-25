@@ -238,7 +238,9 @@ final class MethodTagCheck
 					$errors,
 					$this->classCheck->checkClassNames($scope, [
 						new ClassNameNodePair($class, $node),
-					], ClassNameUsageLocation::from(ClassNameUsageLocation::PHPDOC_TAG_METHOD), $this->checkClassCaseSensitivity),
+					], ClassNameUsageLocation::from(ClassNameUsageLocation::PHPDOC_TAG_METHOD, [
+						'methodTagName' => $methodName,
+					]), $this->checkClassCaseSensitivity),
 				);
 			}
 		}

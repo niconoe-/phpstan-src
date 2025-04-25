@@ -275,7 +275,9 @@ final class LocalTypeAliasesCheck
 						$errors,
 						$this->classCheck->checkClassNames($scope, [
 							new ClassNameNodePair($class, $node),
-						], ClassNameUsageLocation::from(ClassNameUsageLocation::TYPE_ALIAS), $this->checkClassCaseSensitivity),
+						], ClassNameUsageLocation::from(ClassNameUsageLocation::TYPE_ALIAS, [
+							'typeAliasName' => $aliasName,
+						]), $this->checkClassCaseSensitivity),
 					);
 				}
 			}

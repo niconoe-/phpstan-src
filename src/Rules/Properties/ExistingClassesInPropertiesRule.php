@@ -86,7 +86,9 @@ final class ExistingClassesInPropertiesRule implements Rule
 			$this->classCheck->checkClassNames(
 				$scope,
 				array_map(static fn (string $class): ClassNameNodePair => new ClassNameNodePair($class, $node), $referencedClasses),
-				ClassNameUsageLocation::from(ClassNameUsageLocation::PROPERTY_TYPE),
+				ClassNameUsageLocation::from(ClassNameUsageLocation::PROPERTY_TYPE, [
+					'property' => $propertyReflection,
+				]),
 				$this->checkClassCaseSensitivity,
 			),
 		);

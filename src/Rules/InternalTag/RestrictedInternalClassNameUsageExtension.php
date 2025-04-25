@@ -42,6 +42,24 @@ final class RestrictedInternalClassNameUsageExtension implements RestrictedClass
 			}
 		}
 
+		if ($location->value === ClassNameUsageLocation::STATIC_PROPERTY_ACCESS) {
+			$property = $location->getProperty();
+			if ($property !== null) {
+				if ($property->isInternal()->yes() || $property->getDeclaringClass()->isInternal()) {
+					return null;
+				}
+			}
+		}
+
+		if ($location->value === ClassNameUsageLocation::CLASS_CONSTANT_ACCESS) {
+			$constant = $location->getClassConstant();
+			if ($constant !== null) {
+				if ($constant->isInternal()->yes() || $constant->getDeclaringClass()->isInternal()) {
+					return null;
+				}
+			}
+		}
+
 		return RestrictedUsage::create(
 			$location->createMessage(sprintf('internal %s %s', strtolower($classReflection->getClassTypeDescription()), $classReflection->getDisplayName())),
 			$location->createIdentifier(sprintf('internal%s', $classReflection->getClassTypeDescription())),

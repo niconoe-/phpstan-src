@@ -154,7 +154,10 @@ final class AssertRuleHelper
 					$errors,
 					$this->classCheck->checkClassNames($scope, [
 						new ClassNameNodePair($class, $node),
-					], ClassNameUsageLocation::from(ClassNameUsageLocation::PHPDOC_TAG_ASSERT), $this->checkClassCaseSensitivity),
+					], ClassNameUsageLocation::from(ClassNameUsageLocation::PHPDOC_TAG_ASSERT, [
+						'phpDocTagName' => $tagName,
+						'assertedExprString' => $assertedExprString,
+					]), $this->checkClassCaseSensitivity),
 				);
 			}
 

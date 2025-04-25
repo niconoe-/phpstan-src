@@ -106,7 +106,9 @@ final class TemplateTypeCheck
 			}
 
 			$classNameNodePairs = array_map(static fn (string $referencedClass): ClassNameNodePair => new ClassNameNodePair($referencedClass, $node), $boundType->getReferencedClasses());
-			$messages = array_merge($messages, $this->classCheck->checkClassNames($scope, $classNameNodePairs, ClassNameUsageLocation::from(ClassNameUsageLocation::PHPDOC_TAG_TEMPLATE_BOUND), $this->checkClassCaseSensitivity));
+			$messages = array_merge($messages, $this->classCheck->checkClassNames($scope, $classNameNodePairs, ClassNameUsageLocation::from(ClassNameUsageLocation::PHPDOC_TAG_TEMPLATE_BOUND, [
+				'templateTagName' => $templateTagName,
+			]), $this->checkClassCaseSensitivity));
 
 			$boundTypeClass = get_class($boundType);
 			if (
@@ -183,7 +185,9 @@ final class TemplateTypeCheck
 			}
 
 			$classNameNodePairs = array_map(static fn (string $referencedClass): ClassNameNodePair => new ClassNameNodePair($referencedClass, $node), $defaultType->getReferencedClasses());
-			$messages = array_merge($messages, $this->classCheck->checkClassNames($scope, $classNameNodePairs, ClassNameUsageLocation::from(ClassNameUsageLocation::PHPDOC_TAG_TEMPLATE_DEFAULT), $this->checkClassCaseSensitivity));
+			$messages = array_merge($messages, $this->classCheck->checkClassNames($scope, $classNameNodePairs, ClassNameUsageLocation::from(ClassNameUsageLocation::PHPDOC_TAG_TEMPLATE_DEFAULT, [
+				'templateTagName' => $templateTagName,
+			]), $this->checkClassCaseSensitivity));
 
 			$genericDefaultErrors = $this->genericObjectTypeCheck->check(
 				$defaultType,

@@ -151,10 +151,16 @@ final class ClassConstantRule implements Rule
 					}
 				}
 
+				$locationData = [];
+				$locationClassReflection = $this->reflectionProvider->getClass($className);
+				if ($locationClassReflection->hasConstant($constantName)) {
+					$locationData['classConstant'] = $locationClassReflection->getConstant($constantName);
+				}
+
 				$messages = $this->classCheck->checkClassNames(
 					$scope,
 					[new ClassNameNodePair($className, $class)],
-					ClassNameUsageLocation::from(ClassNameUsageLocation::CLASS_CONSTANT_ACCESS),
+					ClassNameUsageLocation::from(ClassNameUsageLocation::CLASS_CONSTANT_ACCESS, $locationData),
 				);
 			}
 

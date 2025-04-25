@@ -2,7 +2,9 @@
 
 namespace PHPStan\Rules;
 
+use PHPStan\Reflection\ClassConstantReflection;
 use PHPStan\Reflection\ExtendedMethodReflection;
+use PHPStan\Reflection\ExtendedPropertyReflection;
 use function sprintf;
 use function ucfirst;
 
@@ -61,34 +63,123 @@ final class ClassNameUsageLocation
 		return $this->data['method'] ?? null;
 	}
 
+	public function getProperty(): ?ExtendedPropertyReflection
+	{
+		return $this->data['property'] ?? null;
+	}
+
+	public function getPhpDocTagName(): ?string
+	{
+		return $this->data['phpDocTagName'] ?? null;
+	}
+
+	public function getAssertedExprString(): ?string
+	{
+		return $this->data['assertedExprString'] ?? null;
+	}
+
+	public function getClassConstant(): ?ClassConstantReflection
+	{
+		return $this->data['classConstant'] ?? null;
+	}
+
+	public function getCurrentClassName(): ?string
+	{
+		return $this->data['currentClassName'] ?? null;
+	}
+
+	public function getParameterName(): ?string
+	{
+		return $this->data['parameterName'] ?? null;
+	}
+
+	public function getTypeAliasName(): ?string
+	{
+		return $this->data['typeAliasName'] ?? null;
+	}
+
+	public function getMethodTagName(): ?string
+	{
+		return $this->data['methodTagName'] ?? null;
+	}
+
+	public function getPropertyTagName(): ?string
+	{
+		return $this->data['propertyTagName'] ?? null;
+	}
+
+	public function getTemplateTagName(): ?string
+	{
+		return $this->data['templateTagName'] ?? null;
+	}
+
 	public function createMessage(string $part): string
 	{
 		switch ($this->value) {
 			case self::TRAIT_USE:
 				return sprintf('Usage of %s.', $part);
 			case self::STATIC_PROPERTY_ACCESS:
+				$property = $this->getProperty();
+				if ($property !== null) {
+					return sprintf('Access to static property $%s on %s.', $property->getName(), $part);
+				}
+
 				return sprintf('Access to static property on %s.', $part);
 			case self::PHPDOC_TAG_ASSERT:
+				$phpDocTagName = $this->getPhpDocTagName();
+				$assertExprString = $this->getAssertedExprString();
+				if ($phpDocTagName !== null && $assertExprString !== null) {
+					return sprintf('PHPDoc tag %s for %s references %s.', $phpDocTagName, $assertExprString, $part);
+				}
+
 				return sprintf('Assert tag references %s.', $part);
 			case self::ATTRIBUTE:
 				return sprintf('Attribute references %s.', $part);
 			case self::EXCEPTION_CATCH:
 				return sprintf('Catching %s.', $part);
 			case self::CLASS_CONSTANT_ACCESS:
+				if ($this->getClassConstant() !== null) {
+					return sprintf('Access to constant %s on %s.', $this->getClassConstant()->getName(), $part);
+				}
 				return sprintf('Access to constant on %s.', $part);
 			case self::CLASS_IMPLEMENTS:
+				if ($this->getCurrentClassName() !== null) {
+					return sprintf('Class %s implements %s.', $this->getCurrentClassName(), $part);
+				}
+
 				return sprintf('Class implements %s.', $part);
 			case self::ENUM_IMPLEMENTS:
+				if ($this->getCurrentClassName() !== null) {
+					return sprintf('Enum %s implements %s.', $this->getCurrentClassName(), $part);
+				}
+
 				return sprintf('Enum implements %s.', $part);
 			case self::INTERFACE_EXTENDS:
+				if ($this->getCurrentClassName() !== null) {
+					return sprintf('Interface %s extends %s.', $this->getCurrentClassName(), $part);
+				}
+
 				return sprintf('Interface extends %s.', $part);
 			case self::CLASS_EXTENDS:
+				if ($this->getCurrentClassName() !== null) {
+					return sprintf('Class %s extends %s.', $this->getCurrentClassName(), $part);
+				}
+
 				return sprintf('Class extends %s.', $part);
 			case self::INSTANCEOF:
 				return sprintf('Instanceof references %s.', $part);
 			case self::PROPERTY_TYPE:
+				$property = $this->getProperty();
+				if ($property !== null) {
+					return sprintf('Property $%s references %s in its type.', $property->getName(), $part);
+				}
 				return sprintf('Property references %s in its type.', $part);
 			case self::PARAMETER_TYPE:
+				$parameterName = $this->getParameterName();
+				if ($parameterName !== null) {
+					return sprintf('Parameter $%s references %s in its type.', $parameterName, $part);
+				}
+
 				return sprintf('Parameter references %s in its type.', $part);
 			case self::RETURN_TYPE:
 				return sprintf('Return type references %s.', $part);
@@ -99,12 +190,22 @@ final class ClassNameUsageLocation
 			case self::INSTANTIATION:
 				return sprintf('Instantiating %s.', $part);
 			case self::TYPE_ALIAS:
+				if ($this->getTypeAliasName() !== null) {
+					return sprintf('Type alias %s references %s.', $this->getTypeAliasName(), $part);
+				}
+
 				return sprintf('Type alias references %s.', $part);
 			case self::PHPDOC_TAG_METHOD:
+				if ($this->getMethodTagName() !== null) {
+					return sprintf('PHPDoc tag @method for %s() references %s.', $this->getMethodTagName(), $part);
+				}
 				return sprintf('PHPDoc tag @method references %s.', $part);
 			case self::PHPDOC_TAG_MIXIN:
 				return sprintf('PHPDoc tag @mixin references %s.', $part);
 			case self::PHPDOC_TAG_PROPERTY:
+				if ($this->getPropertyTagName() !== null) {
+					return sprintf('PHPDoc tag @property for $%s references %s.', $this->getPropertyTagName(), $part);
+				}
 				return sprintf('PHPDoc tag @property references %s.', $part);
 			case self::PHPDOC_TAG_REQUIRE_EXTENDS:
 				return sprintf('PHPDoc tag @phpstan-require-extends references %s.', $part);
@@ -118,8 +219,16 @@ final class ClassNameUsageLocation
 
 				return sprintf('Call to static method on %s.', $part);
 			case self::PHPDOC_TAG_TEMPLATE_BOUND:
+				if ($this->getTemplateTagName() !== null) {
+					return sprintf('PHPDoc tag @template %s bound references %s.', $this->getTemplateTagName(), $part);
+				}
+
 				return sprintf('PHPDoc tag @template bound references %s.', $part);
 			case self::PHPDOC_TAG_TEMPLATE_DEFAULT:
+				if ($this->getTemplateTagName() !== null) {
+					return sprintf('PHPDoc tag @template %s default references %s.', $this->getTemplateTagName(), $part);
+				}
+
 				return sprintf('PHPDoc tag @template default references %s.', $part);
 		}
 	}

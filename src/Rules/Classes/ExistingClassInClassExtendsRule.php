@@ -37,15 +37,18 @@ final class ExistingClassInClassExtendsRule implements Rule
 			return [];
 		}
 		$extendedClassName = (string) $node->extends;
-		$messages = $this->classCheck->checkClassNames(
-			$scope,
-			[new ClassNameNodePair($extendedClassName, $node->extends)],
-			ClassNameUsageLocation::from(ClassNameUsageLocation::CLASS_EXTENDS),
-		);
 		$currentClassName = null;
 		if (isset($node->namespacedName)) {
 			$currentClassName = (string) $node->namespacedName;
 		}
+		$messages = $this->classCheck->checkClassNames(
+			$scope,
+			[new ClassNameNodePair($extendedClassName, $node->extends)],
+			ClassNameUsageLocation::from(ClassNameUsageLocation::CLASS_EXTENDS, [
+				'currentClassName' => $currentClassName,
+			]),
+		);
+
 		if (!$this->reflectionProvider->hasClass($extendedClassName)) {
 			if (!$scope->isInClassExists($extendedClassName)) {
 				$errorBuilder = RuleErrorBuilder::message(sprintf(
