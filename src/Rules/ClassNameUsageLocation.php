@@ -117,6 +117,9 @@ final class ClassNameUsageLocation
 	{
 		switch ($this->value) {
 			case self::TRAIT_USE:
+				if ($this->getCurrentClassName() !== null) {
+					return sprintf('Usage of %s in class %s.', $part, $this->getCurrentClassName());
+				}
 				return sprintf('Usage of %s.', $part);
 			case self::STATIC_PROPERTY_ACCESS:
 				$property = $this->getProperty();

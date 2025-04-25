@@ -35,17 +35,20 @@ final class ExistingClassInTraitUseRule implements Rule
 
 	public function processNode(Node $node, Scope $scope): array
 	{
-		$messages = $this->classCheck->checkClassNames(
-			$scope,
-			array_map(static fn (Node\Name $traitName): ClassNameNodePair => new ClassNameNodePair((string) $traitName, $traitName), $node->traits),
-			ClassNameUsageLocation::from(ClassNameUsageLocation::TRAIT_USE),
-		);
-
 		if (!$scope->isInClass()) {
 			throw new ShouldNotHappenException();
 		}
 
 		$classReflection = $scope->getClassReflection();
+
+		$messages = $this->classCheck->checkClassNames(
+			$scope,
+			array_map(static fn (Node\Name $traitName): ClassNameNodePair => new ClassNameNodePair((string) $traitName, $traitName), $node->traits),
+			ClassNameUsageLocation::from(ClassNameUsageLocation::TRAIT_USE, [
+				'currentClassName' => $classReflection->isAnonymous() ? null : $classReflection->getName(),
+			]),
+		);
+
 		if ($classReflection->isInterface()) {
 			if (!$scope->isInTrait()) {
 				foreach ($node->traits as $trait) {
