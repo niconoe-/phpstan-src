@@ -16,6 +16,11 @@ final class ChangedTypePropertyReflection implements WrapperPropertyReflection
 	{
 	}
 
+	public function getName(): string
+	{
+		return $this->reflection->getName();
+	}
+
 	public function getDeclaringClass(): ClassReflection
 	{
 		return $this->declaringClass;

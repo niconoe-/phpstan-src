@@ -14,6 +14,7 @@ final class AnnotationPropertyReflection implements ExtendedPropertyReflection
 {
 
 	public function __construct(
+		private string $name,
 		private ClassReflection $declaringClass,
 		private Type $readableType,
 		private Type $writableType,
@@ -21,6 +22,11 @@ final class AnnotationPropertyReflection implements ExtendedPropertyReflection
 		private bool $writable,
 	)
 	{
+	}
+
+	public function getName(): string
+	{
+		return $this->name;
 	}
 
 	public function getDeclaringClass(): ClassReflection

@@ -14,11 +14,17 @@ final class UniversalObjectCrateProperty implements ExtendedPropertyReflection
 {
 
 	public function __construct(
+		private string $name,
 		private ClassReflection $declaringClass,
 		private Type $readableType,
 		private Type $writableType,
 	)
 	{
+	}
+
+	public function getName(): string
+	{
+		return $this->name;
 	}
 
 	public function getDeclaringClass(): ClassReflection

@@ -13,8 +13,13 @@ use PHPStan\Type\Type;
 final class EnumPropertyReflection implements ExtendedPropertyReflection
 {
 
-	public function __construct(private ClassReflection $declaringClass, private Type $type)
+	public function __construct(private string $name, private ClassReflection $declaringClass, private Type $type)
 	{
+	}
+
+	public function getName(): string
+	{
+		return $this->name;
 	}
 
 	public function getDeclaringClass(): ClassReflection

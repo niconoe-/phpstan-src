@@ -26,6 +26,8 @@ interface ExtendedPropertyReflection extends PropertyReflection
 
 	public const HOOK_SET = 'set';
 
+	public function getName(): string;
+
 	public function hasPhpDocType(): bool;
 
 	public function getPhpDocType(): Type;

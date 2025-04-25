@@ -10,8 +10,13 @@ use PHPStan\Type\Type;
 final class WrappedExtendedPropertyReflection implements ExtendedPropertyReflection
 {
 
-	public function __construct(private PropertyReflection $property)
+	public function __construct(private string $name, private PropertyReflection $property)
 	{
+	}
+
+	public function getName(): string
+	{
+		return $this->name;
 	}
 
 	public function getDeclaringClass(): ClassReflection

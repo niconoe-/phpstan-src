@@ -85,7 +85,7 @@ final class UniversalObjectCratesClassReflectionExtension
 			$writableType = new MixedType();
 		}
 
-		return new UniversalObjectCrateProperty($classReflection, $readableType, $writableType);
+		return new UniversalObjectCrateProperty($propertyName, $classReflection, $readableType, $writableType);
 	}
 
 }

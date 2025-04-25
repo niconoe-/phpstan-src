@@ -551,13 +551,13 @@ final class ClassReflection
 		return new WrappedExtendedMethodReflection($method);
 	}
 
-	private function wrapExtendedProperty(PropertyReflection $method): ExtendedPropertyReflection
+	private function wrapExtendedProperty(string $propertyName, PropertyReflection $method): ExtendedPropertyReflection
 	{
 		if ($method instanceof ExtendedPropertyReflection) {
 			return $method;
 		}
 
-		return new WrappedExtendedPropertyReflection($method);
+		return new WrappedExtendedPropertyReflection($propertyName, $method);
 	}
 
 	public function hasNativeMethod(string $methodName): bool
@@ -663,7 +663,7 @@ final class ClassReflection
 					continue;
 				}
 
-				$property = $this->wrapExtendedProperty($extension->getProperty($this, $propertyName));
+				$property = $this->wrapExtendedProperty($propertyName, $extension->getProperty($this, $propertyName));
 				if ($scope->canReadProperty($property)) {
 					return $this->properties[$key] = $property;
 				}

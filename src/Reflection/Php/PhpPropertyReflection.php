@@ -48,6 +48,11 @@ final class PhpPropertyReflection implements ExtendedPropertyReflection
 	{
 	}
 
+	public function getName(): string
+	{
+		return $this->reflection->getName();
+	}
+
 	public function getDeclaringClass(): ClassReflection
 	{
 		return $this->declaringClass;

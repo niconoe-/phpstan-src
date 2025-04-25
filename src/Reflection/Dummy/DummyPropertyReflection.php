@@ -15,6 +15,15 @@ use stdClass;
 final class DummyPropertyReflection implements ExtendedPropertyReflection
 {
 
+	public function __construct(private string $name)
+	{
+	}
+
+	public function getName(): string
+	{
+		return $this->name;
+	}
+
 	public function getDeclaringClass(): ClassReflection
 	{
 		$reflectionProvider = ReflectionProviderStaticAccessor::getInstance();

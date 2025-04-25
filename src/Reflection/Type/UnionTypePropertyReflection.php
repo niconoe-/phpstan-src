@@ -23,6 +23,11 @@ final class UnionTypePropertyReflection implements ExtendedPropertyReflection
 	{
 	}
 
+	public function getName(): string
+	{
+		return $this->properties[0]->getName();
+	}
+
 	public function getDeclaringClass(): ClassReflection
 	{
 		return $this->properties[0]->getDeclaringClass();

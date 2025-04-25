@@ -113,7 +113,7 @@ class ObjectShapeType implements Type
 			throw new ShouldNotHappenException();
 		}
 
-		$property = new ObjectShapePropertyReflection($this->properties[$propertyName]);
+		$property = new ObjectShapePropertyReflection($propertyName, $this->properties[$propertyName]);
 		return new CallbackUnresolvedPropertyPrototypeReflection(
 			$property,
 			$property->getDeclaringClass(),

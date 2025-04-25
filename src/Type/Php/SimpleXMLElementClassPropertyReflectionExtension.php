@@ -20,7 +20,7 @@ final class SimpleXMLElementClassPropertyReflectionExtension implements Properti
 
 	public function getProperty(ClassReflection $classReflection, string $propertyName): PropertyReflection
 	{
-		return new SimpleXMLElementProperty($classReflection, new BenevolentUnionType([new ObjectType($classReflection->getName()), new NullType()]));
+		return new SimpleXMLElementProperty($propertyName, $classReflection, new BenevolentUnionType([new ObjectType($classReflection->getName()), new NullType()]));
 	}
 
 }

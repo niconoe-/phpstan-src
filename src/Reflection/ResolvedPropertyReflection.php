@@ -25,6 +25,11 @@ final class ResolvedPropertyReflection implements WrapperPropertyReflection
 	{
 	}
 
+	public function getName(): string
+	{
+		return $this->reflection->getName();
+	}
+
 	public function getOriginalReflection(): ExtendedPropertyReflection
 	{
 		return $this->reflection;

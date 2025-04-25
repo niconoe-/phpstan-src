@@ -19,10 +19,16 @@ final class SimpleXMLElementProperty implements ExtendedPropertyReflection
 {
 
 	public function __construct(
+		private string $name,
 		private ClassReflection $declaringClass,
 		private Type $type,
 	)
 	{
+	}
+
+	public function getName(): string
+	{
+		return $this->name;
 	}
 
 	public function getDeclaringClass(): ClassReflection

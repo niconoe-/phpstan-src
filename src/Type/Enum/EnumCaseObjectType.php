@@ -135,7 +135,7 @@ class EnumCaseObjectType extends ObjectType
 		}
 		if ($propertyName === 'name') {
 			return new EnumUnresolvedPropertyPrototypeReflection(
-				new EnumPropertyReflection($classReflection, new ConstantStringType($this->enumCaseName)),
+				new EnumPropertyReflection($propertyName, $classReflection, new ConstantStringType($this->enumCaseName)),
 			);
 		}
 
@@ -148,7 +148,7 @@ class EnumCaseObjectType extends ObjectType
 				}
 
 				return new EnumUnresolvedPropertyPrototypeReflection(
-					new EnumPropertyReflection($classReflection, $valueType),
+					new EnumPropertyReflection($propertyName, $classReflection, $valueType),
 				);
 			}
 		}

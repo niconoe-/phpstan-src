@@ -13,8 +13,13 @@ use stdClass;
 final class ObjectShapePropertyReflection implements ExtendedPropertyReflection
 {
 
-	public function __construct(private Type $type)
+	public function __construct(private string $name, private Type $type)
 	{
+	}
+
+	public function getName(): string
+	{
+		return $this->name;
 	}
 
 	public function getDeclaringClass(): ClassReflection

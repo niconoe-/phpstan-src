@@ -52,6 +52,7 @@ final class AnnotationsPropertiesClassReflectionExtension implements PropertiesC
 			}
 
 			return new AnnotationPropertyReflection(
+				$propertyName,
 				$declaringClass,
 				TemplateTypeHelper::resolveTemplateTypes(
 					$propertyTag->getReadableType() ?? new NeverType(),
