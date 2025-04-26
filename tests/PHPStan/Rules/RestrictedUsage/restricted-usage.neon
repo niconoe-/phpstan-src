@@ -1,5 +1,9 @@
 services:
 	-
+		class: RestrictedUsage\ClassConstantExtension
+		tags:
+			- phpstan.restrictedClassConstantUsageExtension
+	-
 		class: RestrictedUsage\MethodExtension
 		tags:
 			- phpstan.restrictedMethodUsageExtension

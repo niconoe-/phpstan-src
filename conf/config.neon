@@ -218,6 +218,7 @@ rules:
 	- PHPStan\Rules\Debug\DumpPhpDocTypeRule
 	- PHPStan\Rules\Debug\DumpTypeRule
 	- PHPStan\Rules\Debug\FileAssertRule
+	- PHPStan\Rules\RestrictedUsage\RestrictedClassConstantUsageRule
 	- PHPStan\Rules\RestrictedUsage\RestrictedFunctionUsageRule
 	- PHPStan\Rules\RestrictedUsage\RestrictedFunctionCallableUsageRule
 	- PHPStan\Rules\RestrictedUsage\RestrictedMethodUsageRule

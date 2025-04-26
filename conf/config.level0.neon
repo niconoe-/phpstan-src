@@ -104,6 +104,8 @@ rules:
 	- PHPStan\Rules\Whitespace\FileWhitespaceRule
 
 conditionalTags:
+	PHPStan\Rules\InternalTag\RestrictedInternalClassConstantUsageExtension:
+		phpstan.restrictedClassConstantUsageExtension: %featureToggles.internalTag%
 	PHPStan\Rules\InternalTag\RestrictedInternalClassNameUsageExtension:
 		phpstan.restrictedClassNameUsageExtension: %featureToggles.internalTag%
 	PHPStan\Rules\InternalTag\RestrictedInternalFunctionUsageExtension:
@@ -296,6 +298,9 @@ services:
 			currentWorkingDirectory: %currentWorkingDirectory%
 		tags:
 			- phpstan.rules.rule
+
+	-
+		class: PHPStan\Rules\InternalTag\RestrictedInternalClassConstantUsageExtension
 
 	-
 		class: PHPStan\Rules\InternalTag\RestrictedInternalClassNameUsageExtension
