@@ -80,10 +80,9 @@ final class RestrictedInternalClassConstantUsageExtension implements RestrictedC
 
 		return RestrictedUsage::create(
 			sprintf(
-				'Access to constant %s of internal %s %s from outside its root namespace %s.',
-				$constantReflection->getName(),
-				strtolower($constantReflection->getDeclaringClass()->getClassTypeDescription()),
+				'Access to internal constant %s::%s from outside its root namespace %s.',
 				$constantReflection->getDeclaringClass()->getDisplayName(),
+				$constantReflection->getName(),
 				$namespace,
 			),
 			'classConstant.internal',

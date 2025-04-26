@@ -21,7 +21,7 @@ class RestrictedInternalClassConstantUsageExtensionTest extends RuleTestCase
 	{
 		$this->analyse([__DIR__ . '/data/class-constant-internal-tag.php'], [
 			[
-				'Access to constant INTERNAL of internal class ClassConstantInternalTagOne\Foo from outside its root namespace ClassConstantInternalTagOne.',
+				'Access to internal constant ClassConstantInternalTagOne\Foo::INTERNAL from outside its root namespace ClassConstantInternalTagOne.',
 				49,
 			],
 			[
@@ -29,7 +29,7 @@ class RestrictedInternalClassConstantUsageExtensionTest extends RuleTestCase
 				54,
 			],
 			[
-				'Access to constant INTERNAL of internal class ClassConstantInternalTagOne\Foo from outside its root namespace ClassConstantInternalTagOne.',
+				'Access to internal constant ClassConstantInternalTagOne\Foo::INTERNAL from outside its root namespace ClassConstantInternalTagOne.',
 				62,
 			],
 
