@@ -427,14 +427,24 @@ final class FunctionDefinitionCheck
 					->build();
 			}
 
+			$locationData = [
+				'parameterName' => $parameter->getName(),
+			];
+			if ($parametersAcceptor instanceof PhpMethodFromParserNodeReflection) {
+				$locationData['method'] = $parametersAcceptor;
+				if (!$parametersAcceptor->getDeclaringClass()->isAnonymous()) {
+					$locationData['currentClassName'] = $parametersAcceptor->getDeclaringClass()->getName();
+				}
+			} else {
+				$locationData['function'] = $parametersAcceptor;
+			}
+
 			$errors = array_merge(
 				$errors,
 				$this->classCheck->checkClassNames(
 					$scope,
 					array_map(static fn (string $class): ClassNameNodePair => new ClassNameNodePair($class, $parameterNodeCallback()), $referencedClasses),
-					ClassNameUsageLocation::from(ClassNameUsageLocation::PARAMETER_TYPE, [
-						'parameterName' => $parameter->getName(),
-					]),
+					ClassNameUsageLocation::from(ClassNameUsageLocation::PARAMETER_TYPE, $locationData),
 					$this->checkClassCaseSensitivity,
 				),
 			);
