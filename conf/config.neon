@@ -222,8 +222,10 @@ rules:
 	- PHPStan\Rules\RestrictedUsage\RestrictedFunctionCallableUsageRule
 	- PHPStan\Rules\RestrictedUsage\RestrictedMethodUsageRule
 	- PHPStan\Rules\RestrictedUsage\RestrictedMethodCallableUsageRule
+	- PHPStan\Rules\RestrictedUsage\RestrictedPropertyUsageRule
 	- PHPStan\Rules\RestrictedUsage\RestrictedStaticMethodUsageRule
 	- PHPStan\Rules\RestrictedUsage\RestrictedStaticMethodCallableUsageRule
+	- PHPStan\Rules\RestrictedUsage\RestrictedStaticPropertyUsageRule
 
 conditionalTags:
 	PHPStan\Rules\Exceptions\MissingCheckedExceptionInFunctionThrowsRule:

@@ -7,3 +7,7 @@ services:
 		class: RestrictedUsage\FunctionExtension
 		tags:
 			- phpstan.restrictedFunctionUsageExtension
+	-
+		class: RestrictedUsage\PropertyExtension
+		tags:
+			- phpstan.restrictedPropertyUsageExtension

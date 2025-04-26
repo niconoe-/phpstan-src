@@ -68,6 +68,8 @@ rules:
 	- PHPStan\Rules\Pure\PureMethodRule
 
 conditionalTags:
+	PHPStan\Rules\InternalTag\RestrictedInternalPropertyUsageExtension:
+		phpstan.restrictedPropertyUsageExtension: %featureToggles.internalTag%
 	PHPStan\Rules\InternalTag\RestrictedInternalMethodUsageExtension:
 		phpstan.restrictedMethodUsageExtension: %featureToggles.internalTag%
 
@@ -114,6 +116,9 @@ services:
 		class: PHPStan\Rules\PhpDoc\InvalidPHPStanDocTagRule
 		tags:
 			- phpstan.rules.rule
+
+	-
+		class: PHPStan\Rules\InternalTag\RestrictedInternalPropertyUsageExtension
 
 	-
 		class: PHPStan\Rules\InternalTag\RestrictedInternalMethodUsageExtension

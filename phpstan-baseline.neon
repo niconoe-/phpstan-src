@@ -205,6 +205,24 @@ parameters:
 			path: src/Diagnose/PHPStanDiagnoseExtension.php
 
 		-
+			message: '#^Access to property \$id of internal class Symfony\\Polyfill\\Php80\\PhpToken from outside its root namespace Symfony\.$#'
+			identifier: property.internalClass
+			count: 1
+			path: src/Parser/RichParser.php
+
+		-
+			message: '#^Access to property \$line of internal class Symfony\\Polyfill\\Php80\\PhpToken from outside its root namespace Symfony\.$#'
+			identifier: property.internalClass
+			count: 4
+			path: src/Parser/RichParser.php
+
+		-
+			message: '#^Access to property \$text of internal class Symfony\\Polyfill\\Php80\\PhpToken from outside its root namespace Symfony\.$#'
+			identifier: property.internalClass
+			count: 3
+			path: src/Parser/RichParser.php
+
+		-
 			message: '#^Call to function method_exists\(\) with PHPStan\\PhpDocParser\\Ast\\PhpDoc\\PhpDocNode and ''getParamOutTypeTagV…'' will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 1
