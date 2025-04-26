@@ -5,6 +5,7 @@ namespace PHPStan\Rules;
 use PHPStan\Reflection\ClassConstantReflection;
 use PHPStan\Reflection\ExtendedMethodReflection;
 use PHPStan\Reflection\ExtendedPropertyReflection;
+use PHPStan\Reflection\FunctionReflection;
 use function sprintf;
 use function ucfirst;
 
@@ -68,6 +69,11 @@ final class ClassNameUsageLocation
 		return $this->data['property'] ?? null;
 	}
 
+	public function getFunction(): ?FunctionReflection
+	{
+		return $this->data['function'] ?? null;
+	}
+
 	public function getPhpDocTagName(): ?string
 	{
 		return $this->data['phpDocTagName'] ?? null;
@@ -111,6 +117,11 @@ final class ClassNameUsageLocation
 	public function getTemplateTagName(): ?string
 	{
 		return $this->data['templateTagName'] ?? null;
+	}
+
+	public function isInAnomyousFunction(): bool
+	{
+		return $this->data['isInAnonymousFunction'] ?? false;
 	}
 
 	public function createMessage(string $part): string
@@ -180,12 +191,42 @@ final class ClassNameUsageLocation
 			case self::PARAMETER_TYPE:
 				$parameterName = $this->getParameterName();
 				if ($parameterName !== null) {
-					return sprintf('Parameter $%s references %s in its type.', $parameterName, $part);
+					if ($this->isInAnomyousFunction()) {
+						return sprintf('Parameter $%s of anonymous function has typehint with %s.', $parameterName, $part);
+					}
+					if ($this->getMethod() !== null) {
+						if ($this->getCurrentClassName() !== null) {
+							return sprintf('Parameter $%s of method %s::%s() has typehint with %s.', $parameterName, $this->getCurrentClassName(), $this->getMethod()->getName(), $part);
+						}
+
+						return sprintf('Parameter $%s of method %s() in anonymous class has typehint with %s.', $parameterName, $this->getMethod()->getName(), $part);
+					}
+
+					if ($this->getFunction() !== null) {
+						return sprintf('Parameter $%s of function %s() has typehint with %s.', $parameterName, $this->getFunction()->getName(), $part);
+					}
+
+					return sprintf('Parameter $%s has typehint with %s.', $parameterName, $part);
 				}
 
-				return sprintf('Parameter references %s in its type.', $part);
+				return sprintf('Parameter has typehint with %s.', $part);
 			case self::RETURN_TYPE:
-				return sprintf('Return type references %s.', $part);
+				if ($this->isInAnomyousFunction()) {
+					return sprintf('Return type of anonymous function has typehint with %s.', $part);
+				}
+				if ($this->getMethod() !== null) {
+					if ($this->getCurrentClassName() !== null) {
+						return sprintf('Return type of method %s::%s() has typehint with %s.', $this->getCurrentClassName(), $this->getMethod()->getName(), $part);
+					}
+
+					return sprintf('Return type of method %s() in anonymous class has typehint with %s.', $this->getMethod()->getName(), $part);
+				}
+
+				if ($this->getFunction() !== null) {
+					return sprintf('Return type of function %s() has typehint with %s.', $this->getFunction()->getName(), $part);
+				}
+
+				return sprintf('Return type has typehint with %s.', $part);
 			case self::PHPDOC_TAG_SELF_OUT:
 				return sprintf('PHPDoc tag @phpstan-self-out references %s.', $part);
 			case self::PHPDOC_TAG_VAR:

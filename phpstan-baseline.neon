@@ -757,7 +757,7 @@ parameters:
 			path: src/Testing/LevelsTestCase.php
 
 		-
-			message: '#^Return type references internal class PHPUnit\\Framework\\AssertionFailedError\.$#'
+			message: '#^Return type of method PHPStan\\Testing\\LevelsTestCase\:\:compareFiles\(\) has typehint with internal class PHPUnit\\Framework\\AssertionFailedError\.$#'
 			identifier: return.internalClass
 			count: 1
 			path: src/Testing/LevelsTestCase.php

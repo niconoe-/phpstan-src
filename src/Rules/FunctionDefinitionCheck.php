@@ -179,6 +179,7 @@ final class FunctionDefinitionCheck
 						new ClassNameNodePair($class, $param->type),
 					], ClassNameUsageLocation::from(ClassNameUsageLocation::PARAMETER_TYPE, [
 						'parameterName' => $param->var->name,
+						'isInAnonymousFunction' => true,
 					]), $this->checkClassCaseSensitivity),
 				);
 			}
@@ -237,7 +238,9 @@ final class FunctionDefinitionCheck
 				$errors,
 				$this->classCheck->checkClassNames($scope, [
 					new ClassNameNodePair($returnTypeClass, $returnTypeNode),
-				], ClassNameUsageLocation::from(ClassNameUsageLocation::RETURN_TYPE), $this->checkClassCaseSensitivity),
+				], ClassNameUsageLocation::from(ClassNameUsageLocation::RETURN_TYPE, [
+					'isInAnonymousFunction' => true,
+				]), $this->checkClassCaseSensitivity),
 			);
 		}
 
@@ -313,7 +316,7 @@ final class FunctionDefinitionCheck
 	 */
 	private function checkParametersAcceptor(
 		Scope $scope,
-		ParametersAcceptor $parametersAcceptor,
+		PhpMethodFromParserNodeReflection|PhpFunctionFromParserNodeReflection $parametersAcceptor,
 		FunctionLike $functionNode,
 		string $parameterMessage,
 		string $returnMessage,
@@ -377,28 +380,26 @@ final class FunctionDefinitionCheck
 
 				return $parameterNode;
 			};
-			if ($parameter instanceof ExtendedParameterReflection) {
-				$parameterVar = $parameterNodeCallback()->var;
-				if (!$parameterVar instanceof Variable || !is_string($parameterVar->name)) {
-					throw new ShouldNotHappenException();
-				}
-				if ($parameter->getNativeType()->isVoid()->yes()) {
-					$errors[] = RuleErrorBuilder::message(sprintf($parameterMessage, $parameterVar->name, 'void'))
-						->line($parameterNodeCallback()->getStartLine())
-						->identifier('parameter.void')
-						->nonIgnorable()
-						->build();
-				}
-				if (
-					$this->phpVersion->supportsPureIntersectionTypes()
-					&& $this->unresolvableTypeHelper->containsUnresolvableType($parameter->getNativeType())
-				) {
-					$errors[] = RuleErrorBuilder::message(sprintf($unresolvableParameterTypeMessage, $parameterVar->name))
-						->line($parameterNodeCallback()->getStartLine())
-						->identifier('parameter.unresolvableNativeType')
-						->nonIgnorable()
-						->build();
-				}
+			$parameterVar = $parameterNodeCallback()->var;
+			if (!$parameterVar instanceof Variable || !is_string($parameterVar->name)) {
+				throw new ShouldNotHappenException();
+			}
+			if ($parameter->getNativeType()->isVoid()->yes()) {
+				$errors[] = RuleErrorBuilder::message(sprintf($parameterMessage, $parameterVar->name, 'void'))
+					->line($parameterNodeCallback()->getStartLine())
+					->identifier('parameter.void')
+					->nonIgnorable()
+					->build();
+			}
+			if (
+				$this->phpVersion->supportsPureIntersectionTypes()
+				&& $this->unresolvableTypeHelper->containsUnresolvableType($parameter->getNativeType())
+			) {
+				$errors[] = RuleErrorBuilder::message(sprintf($unresolvableParameterTypeMessage, $parameterVar->name))
+					->line($parameterNodeCallback()->getStartLine())
+					->identifier('parameter.unresolvableNativeType')
+					->nonIgnorable()
+					->build();
 			}
 			foreach ($referencedClasses as $class) {
 				if (!$this->reflectionProvider->hasClass($class)) {
@@ -478,12 +479,22 @@ final class FunctionDefinitionCheck
 				->build();
 		}
 
+		$locationData = [];
+		if ($parametersAcceptor instanceof PhpMethodFromParserNodeReflection) {
+			$locationData['method'] = $parametersAcceptor;
+			if (!$parametersAcceptor->getDeclaringClass()->isAnonymous()) {
+				$locationData['currentClassName'] = $parametersAcceptor->getDeclaringClass()->getName();
+			}
+		} else {
+			$locationData['function'] = $parametersAcceptor;
+		}
+
 		$errors = array_merge(
 			$errors,
 			$this->classCheck->checkClassNames(
 				$scope,
 				array_map(static fn (string $class): ClassNameNodePair => new ClassNameNodePair($class, $returnTypeNode), $returnTypeReferencedClasses),
-				ClassNameUsageLocation::from(ClassNameUsageLocation::RETURN_TYPE),
+				ClassNameUsageLocation::from(ClassNameUsageLocation::RETURN_TYPE, $locationData),
 				$this->checkClassCaseSensitivity,
 			),
 		);
