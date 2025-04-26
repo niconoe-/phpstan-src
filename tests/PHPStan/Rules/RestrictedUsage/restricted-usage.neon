@@ -3,3 +3,7 @@ services:
 		class: RestrictedUsage\MethodExtension
 		tags:
 			- phpstan.restrictedMethodUsageExtension
+	-
+		class: RestrictedUsage\FunctionExtension
+		tags:
+			- phpstan.restrictedFunctionUsageExtension

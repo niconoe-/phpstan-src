@@ -106,6 +106,8 @@ rules:
 conditionalTags:
 	PHPStan\Rules\InternalTag\RestrictedInternalClassNameUsageExtension:
 		phpstan.restrictedClassNameUsageExtension: %featureToggles.internalTag%
+	PHPStan\Rules\InternalTag\RestrictedInternalFunctionUsageExtension:
+		phpstan.restrictedFunctionUsageExtension: %featureToggles.internalTag%
 
 services:
 	-
@@ -297,3 +299,6 @@ services:
 
 	-
 		class: PHPStan\Rules\InternalTag\RestrictedInternalClassNameUsageExtension
+
+	-
+		class: PHPStan\Rules\InternalTag\RestrictedInternalFunctionUsageExtension

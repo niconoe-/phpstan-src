@@ -26,6 +26,7 @@ use PHPStan\Rules\Constants\AlwaysUsedClassConstantsExtensionProvider;
 use PHPStan\Rules\LazyRegistry;
 use PHPStan\Rules\Properties\ReadWritePropertiesExtensionProvider;
 use PHPStan\Rules\RestrictedUsage\RestrictedClassNameUsageExtension;
+use PHPStan\Rules\RestrictedUsage\RestrictedFunctionUsageExtension;
 use PHPStan\Rules\RestrictedUsage\RestrictedMethodUsageExtension;
 use PHPStan\ShouldNotHappenException;
 use function array_reduce;
@@ -77,6 +78,7 @@ final class ConditionalTagsExtension extends CompilerExtension
 			PropertyDeprecationExtension::PROPERTY_EXTENSION_TAG => $bool,
 			RestrictedMethodUsageExtension::METHOD_EXTENSION_TAG => $bool,
 			RestrictedClassNameUsageExtension::CLASS_NAME_EXTENSION_TAG => $bool,
+			RestrictedFunctionUsageExtension::FUNCTION_EXTENSION_TAG => $bool,
 		])->min(1));
 	}
 
