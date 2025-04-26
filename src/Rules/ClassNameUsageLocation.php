@@ -161,7 +161,7 @@ final class ClassNameUsageLocation
 					return sprintf('Class %s implements %s.', $this->getCurrentClassName(), $part);
 				}
 
-				return sprintf('Class implements %s.', $part);
+				return sprintf('Anonymous class implements %s.', $part);
 			case self::ENUM_IMPLEMENTS:
 				if ($this->getCurrentClassName() !== null) {
 					return sprintf('Enum %s implements %s.', $this->getCurrentClassName(), $part);
@@ -179,7 +179,7 @@ final class ClassNameUsageLocation
 					return sprintf('Class %s extends %s.', $this->getCurrentClassName(), $part);
 				}
 
-				return sprintf('Class extends %s.', $part);
+				return sprintf('Anonymous class extends %s.', $part);
 			case self::INSTANCEOF:
 				return sprintf('Instanceof references %s.', $part);
 			case self::PROPERTY_TYPE:
