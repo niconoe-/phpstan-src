@@ -1138,6 +1138,16 @@ class AnalyserIntegrationTest extends PHPStanTestCase
 		$this->assertNoErrors($errors);
 	}
 
+	public function testBug12934(): void
+	{
+		if (PHP_VERSION_ID < 80000) {
+			$this->markTestSkipped('Test requires PHP 8.0.');
+		}
+
+		$errors = $this->runAnalyse(__DIR__ . '/data/bug-12934.php');
+		$this->assertNoErrors($errors);
+	}
+
 	public function testConditionalExpressionInfiniteLoop(): void
 	{
 		$errors = $this->runAnalyse(__DIR__ . '/data/conditional-expression-infinite-loop.php');

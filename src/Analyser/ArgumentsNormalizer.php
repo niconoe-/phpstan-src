@@ -18,6 +18,7 @@ use function array_keys;
 use function count;
 use function ksort;
 use function max;
+use function sprintf;
 
 /**
  * @api
@@ -276,7 +277,7 @@ final class ArgumentsNormalizer
 			$defaultValue = $parameter->getDefaultValue();
 			if ($defaultValue === null) {
 				if (!$parameter->isVariadic()) {
-					throw new ShouldNotHappenException('An optional parameter must have a default value');
+					throw new ShouldNotHappenException(sprintf('An optional parameter $%s must have a default value', $parameter->getName()));
 				}
 				$defaultValue = new ConstantArrayType([], []);
 			}

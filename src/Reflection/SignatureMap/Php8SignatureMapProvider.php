@@ -272,8 +272,8 @@ final class Php8SignatureMapProvider implements SignatureMapProvider
 					$functionParam->getNativeType(),
 					$functionParam->passedByReference(),
 					$functionParam->isVariadic(),
-					$functionParam->getDefaultValue(),
-					$functionParam->getOutType(),
+					$functionParam->getDefaultValue() ?? $nativeParam->getDefaultValue(),
+					$functionParam->getOutType() ?? $nativeParam->getOutType(),
 				);
 			}
 
