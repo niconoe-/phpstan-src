@@ -8,7 +8,7 @@ namespace PHPStan\Rules\RestrictedUsage;
 final class RestrictedUsage
 {
 
-	public function __construct(
+	private function __construct(
 		public readonly string $errorMessage,
 		public readonly string $identifier,
 	)
