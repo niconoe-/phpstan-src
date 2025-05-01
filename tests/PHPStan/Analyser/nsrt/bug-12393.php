@@ -143,3 +143,42 @@ class EntryPointLookup
 	}
 
 }
+
+// https://3v4l.org/LK6Rh
+class CallableString {
+	private string $foo;
+
+	public function doFoo(callable $foo): void {
+		$this->foo = $foo; // PHPStorm wrongly reports an error on this line
+		assertType('callable-string|non-empty-string', $this->foo);
+	}
+}
+
+// https://3v4l.org/WJ8NW
+class CallableArray {
+	private array $foo;
+
+	public function doFoo(callable $foo): void {
+		$this->foo = $foo;
+		assertType('array', $this->foo); // could be non-empty-array
+	}
+}
+
+class StringableFoo {
+	private string $foo;
+
+	// https://3v4l.org/DQSgA#v8.4.6
+	public function doFoo(StringableFoo $foo): void {
+		$this->foo = $foo;
+		assertType('*NEVER*', $this->foo);
+	}
+
+	public function doFoo2(NotStringable $foo): void {
+		$this->foo = $foo;
+		assertType('*NEVER*', $this->foo);
+	}
+
+	public function __toString(): string {
+		return 'Foo';
+	}
+}

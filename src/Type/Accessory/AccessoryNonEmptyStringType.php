@@ -213,6 +213,10 @@ class AccessoryNonEmptyStringType implements CompoundType, AccessoryType
 
 	public function toCoercedArgumentType(bool $strictTypes): Type
 	{
+		if (!$strictTypes) {
+			return TypeCombinator::union($this->toInteger(), $this->toFloat(), $this, $this->toBoolean());
+		}
+
 		return $this;
 	}
 

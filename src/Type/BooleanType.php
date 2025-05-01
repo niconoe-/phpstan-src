@@ -113,6 +113,10 @@ class BooleanType implements Type
 
 	public function toCoercedArgumentType(bool $strictTypes): Type
 	{
+		if (!$strictTypes) {
+			return TypeCombinator::union($this->toInteger(), $this->toFloat(), $this->toString(), $this);
+		}
+
 		return $this;
 	}
 

@@ -14,6 +14,7 @@ use PHPStan\Type\NeverType;
 use PHPStan\Type\StaticTypeFactory;
 use PHPStan\Type\Traits\ConstantScalarTypeTrait;
 use PHPStan\Type\Type;
+use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\VerbosityLevel;
 
 /** @api */
@@ -109,6 +110,10 @@ class ConstantBooleanType extends BooleanType implements ConstantScalarType
 
 	public function toCoercedArgumentType(bool $strictTypes): Type
 	{
+		if (!$strictTypes) {
+			return TypeCombinator::union($this->toInteger(), $this->toFloat(), $this->toString(), $this);
+		}
+
 		return $this;
 	}
 

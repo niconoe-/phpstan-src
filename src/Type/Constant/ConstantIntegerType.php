@@ -14,6 +14,7 @@ use PHPStan\Type\IsSuperTypeOfResult;
 use PHPStan\Type\Traits\ConstantNumericComparisonTypeTrait;
 use PHPStan\Type\Traits\ConstantScalarTypeTrait;
 use PHPStan\Type\Type;
+use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\VerbosityLevel;
 use function abs;
 use function sprintf;
@@ -90,6 +91,15 @@ class ConstantIntegerType extends IntegerType implements ConstantScalarType
 	public function toArrayKey(): Type
 	{
 		return $this;
+	}
+
+	public function toCoercedArgumentType(bool $strictTypes): Type
+	{
+		if (!$strictTypes) {
+			return TypeCombinator::union($this, $this->toFloat(), $this->toString(), $this->toBoolean());
+		}
+
+		return TypeCombinator::union($this, $this->toFloat());
 	}
 
 	public function generalize(GeneralizePrecision $precision): Type

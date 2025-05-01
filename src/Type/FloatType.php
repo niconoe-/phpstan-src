@@ -145,6 +145,10 @@ class FloatType implements Type
 
 	public function toCoercedArgumentType(bool $strictTypes): Type
 	{
+		if (!$strictTypes) {
+			return TypeCombinator::union($this->toInteger(), $this, $this->toString(), $this->toBoolean());
+		}
+
 		return $this;
 	}
 

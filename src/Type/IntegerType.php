@@ -100,6 +100,10 @@ class IntegerType implements Type
 
 	public function toCoercedArgumentType(bool $strictTypes): Type
 	{
+		if (!$strictTypes) {
+			return TypeCombinator::union($this, $this->toFloat(), $this->toString(), $this->toBoolean());
+		}
+
 		return TypeCombinator::union($this, $this->toFloat());
 	}
 
