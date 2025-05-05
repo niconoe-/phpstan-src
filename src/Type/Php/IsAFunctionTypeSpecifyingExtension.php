@@ -47,9 +47,16 @@ final class IsAFunctionTypeSpecifyingExtension implements FunctionTypeSpecifying
 		$allowStringType = isset($node->getArgs()[2]) ? $scope->getType($node->getArgs()[2]->value) : new ConstantBooleanType(false);
 		$allowString = !$allowStringType->equals(new ConstantBooleanType(false));
 
+		$resultType = $this->isAFunctionTypeSpecifyingHelper->determineType($objectOrClassType, $classType, $allowString, true);
+
+		// prevent false-positives in IsAFunctionTypeSpecifyingHelper
+		if ($classType->getConstantStrings() === [] && $resultType->isSuperTypeOf($objectOrClassType)->yes()) {
+			return new SpecifiedTypes([], []);
+		}
+
 		return $this->typeSpecifier->create(
 			$node->getArgs()[0]->value,
-			$this->isAFunctionTypeSpecifyingHelper->determineType($objectOrClassType, $classType, $allowString, true),
+			$resultType,
 			$context,
 			$scope,
 		);
