@@ -973,7 +973,6 @@ class ImpossibleCheckTypeFunctionCallRuleTest extends RuleTestCase
 
 	public function testBug3979(): void
 	{
-		$this->checkAlwaysTrueCheckTypeFunctionCall = true;
 		$this->treatPhpDocTypesAsCertain = true;
 		$this->analyse([__DIR__ . '/data/bug-3979.php'], []);
 	}
@@ -984,21 +983,18 @@ class ImpossibleCheckTypeFunctionCallRuleTest extends RuleTestCase
 			$this->markTestSkipped('Test requires PHP 8.0.');
 		}
 
-		$this->checkAlwaysTrueCheckTypeFunctionCall = true;
 		$this->treatPhpDocTypesAsCertain = true;
 		$this->analyse([__DIR__ . '/data/bug-8464.php'], []);
 	}
 
 	public function testBug8954(): void
 	{
-		$this->checkAlwaysTrueCheckTypeFunctionCall = true;
 		$this->treatPhpDocTypesAsCertain = true;
 		$this->analyse([__DIR__ . '/data/bug-8954.php'], []);
 	}
 
 	public function testBugPR3404(): void
 	{
-		$this->checkAlwaysTrueCheckTypeFunctionCall = true;
 		$this->treatPhpDocTypesAsCertain = true;
 		$this->analyse([__DIR__ . '/data/bug-pr-3404.php'], [
 			[
