@@ -190,13 +190,13 @@ class TableErrorFormatterTest extends ErrorFormatterTestCase
 			'numGenericErrors' => 0,
 			'verbose' => false,
 			'extraEnvVars' => [],
-			'expected' => ' ------ ----------------
+			'expected' => ' ------ ---------------
   Line   foo.php
- ------ ----------------
+ ------ ---------------
   5      Foobar\Buz
-         🪪  foobar.buz
+         🪪 foobar.buz
          💡 a tip
- ------ ----------------
+ ------ ---------------
 
 
  [ERROR] Found 1 error
@@ -211,13 +211,13 @@ class TableErrorFormatterTest extends ErrorFormatterTestCase
 			'numGenericErrors' => 0,
 			'verbose' => true,
 			'extraEnvVars' => [],
-			'expected' => ' ------ ----------------
+			'expected' => ' ------ ---------------
   Line   foo.php
- ------ ----------------
+ ------ ---------------
   5      Foobar\Buz
-         🪪  foobar.buz
+         🪪 foobar.buz
          💡 a tip
- ------ ----------------
+ ------ ---------------
 
 
  [ERROR] Found 1 error

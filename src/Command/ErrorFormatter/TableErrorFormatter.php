@@ -16,6 +16,7 @@ use function getenv;
 use function in_array;
 use function is_string;
 use function ltrim;
+use function rtrim;
 use function sprintf;
 use function str_contains;
 use function str_replace;
@@ -83,7 +84,7 @@ final class TableErrorFormatter implements ErrorFormatter
 				$filePath = $error->getTraitFilePath() ?? $error->getFilePath();
 				if ($error->getIdentifier() !== null && $error->canBeIgnored()) {
 					$message .= "\n";
-					$message .= '🪪  ' . $error->getIdentifier();
+					$message .= '🪪 ' . $error->getIdentifier();
 				}
 				if ($error->getTip() !== null) {
 					$tip = $error->getTip();
@@ -95,6 +96,7 @@ final class TableErrorFormatter implements ErrorFormatter
 						foreach ($lines as $line) {
 							$message .= '💡 ' . ltrim($line, ' •') . "\n";
 						}
+						$message = rtrim($message, "\n");
 					} else {
 						$message .= '💡 ' . $tip;
 					}
@@ -116,7 +118,7 @@ final class TableErrorFormatter implements ErrorFormatter
 						$title = $this->relativePathHelper->getRelativePath($filePath);
 					}
 
-					$message .= "\n✏️  <href=" . OutputFormatter::escape($url) . '>' . $title . '</>';
+					$message .= "\n✏️ <href=" . OutputFormatter::escape($url) . '>' . $title . '</>';
 				}
 
 				if (
