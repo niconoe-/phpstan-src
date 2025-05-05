@@ -1102,4 +1102,41 @@ class ImpossibleCheckTypeFunctionCallRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/always-true-preg-match.php'], []);
 	}
 
+	public function testBug3979(): void
+	{
+		$this->checkAlwaysTrueCheckTypeFunctionCall = true;
+		$this->treatPhpDocTypesAsCertain = true;
+		$this->analyse([__DIR__ . '/data/bug-3979.php'], []);
+	}
+
+	public function testBug8464(): void
+	{
+		if (PHP_VERSION_ID < 80000) {
+			$this->markTestSkipped('Test requires PHP 8.0.');
+		}
+
+		$this->checkAlwaysTrueCheckTypeFunctionCall = true;
+		$this->treatPhpDocTypesAsCertain = true;
+		$this->analyse([__DIR__ . '/data/bug-8464.php'], []);
+	}
+
+	public function testBug8954(): void
+	{
+		$this->checkAlwaysTrueCheckTypeFunctionCall = true;
+		$this->treatPhpDocTypesAsCertain = true;
+		$this->analyse([__DIR__ . '/data/bug-8954.php'], []);
+	}
+
+	public function testBugPR3404(): void
+	{
+		$this->checkAlwaysTrueCheckTypeFunctionCall = true;
+		$this->treatPhpDocTypesAsCertain = true;
+		$this->analyse([__DIR__ . '/data/bug-pr-3404.php'], [
+			[
+				'Call to function is_a() with arguments BugPR3404\Location, \'BugPR3404\\\\Location\' and true will always evaluate to true.',
+				21,
+			],
+		]);
+	}
+
 }
