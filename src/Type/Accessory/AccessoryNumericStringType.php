@@ -210,7 +210,13 @@ class AccessoryNumericStringType implements CompoundType, AccessoryType
 
 	public function toArrayKey(): Type
 	{
-		return new IntegerType();
+		return new UnionType([
+			new IntegerType(),
+			new IntersectionType([
+				new StringType(),
+				new AccessoryNumericStringType(),
+			]),
+		]);
 	}
 
 	public function toCoercedArgumentType(bool $strictTypes): Type
