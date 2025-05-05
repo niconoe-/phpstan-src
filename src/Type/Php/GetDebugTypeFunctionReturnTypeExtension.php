@@ -2,7 +2,6 @@
 
 namespace PHPStan\Type\Php;
 
-use Closure;
 use PhpParser\Node\Expr\FuncCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\FunctionReflection;
@@ -10,6 +9,7 @@ use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\DynamicFunctionReturnTypeExtension;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
+use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\UnionType;
 use function array_key_first;
 use function array_map;
@@ -31,7 +31,7 @@ final class GetDebugTypeFunctionReturnTypeExtension implements DynamicFunctionRe
 
 		$argType = $scope->getType($functionCall->getArgs()[0]->value);
 		if ($argType instanceof UnionType) {
-			return new UnionType(array_map(Closure::fromCallable([self::class, 'resolveOneType']), $argType->getTypes()));
+			return TypeCombinator::union(...array_map(static fn (Type $type) => self::resolveOneType($type), $argType->getTypes()));
 		}
 		return self::resolveOneType($argType);
 	}
@@ -92,7 +92,7 @@ final class GetDebugTypeFunctionReturnTypeExtension implements DynamicFunctionRe
 				case 1:
 					return $types[0];
 				default:
-					return new UnionType($types);
+					return TypeCombinator::union(...$types);
 			}
 		}
 

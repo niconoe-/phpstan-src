@@ -448,6 +448,16 @@ class AnalyserIntegrationTest extends PHPStanTestCase
 		$this->assertNotEmpty($errors);
 	}
 
+	public function testBug12512(): void
+	{
+		if (PHP_VERSION_ID < 80100) {
+			$this->markTestSkipped('Test requires PHP 8.1.');
+		}
+
+		$errors = $this->runAnalyse(__DIR__ . '/data/bug-12512.php');
+		$this->assertNoErrors($errors);
+	}
+
 	public function testBug5529(): void
 	{
 		$errors = $this->runAnalyse(__DIR__ . '/nsrt/bug-5529.php');
