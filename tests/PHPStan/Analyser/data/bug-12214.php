@@ -18,7 +18,7 @@ function test_iterable(iterable $test): void
  */
 function test_array(array $test): void
 {
-	assertType('T of array (function Bug12214\test_array(), argument)', $test);
+	assertType('T of array<mixed> (function Bug12214\test_array(), argument)', $test);
 }
 
 /**
