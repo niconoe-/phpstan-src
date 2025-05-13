@@ -20,6 +20,7 @@ use PHPStan\Type\Traits\UndecidedBooleanTypeTrait;
 use PHPStan\Type\Traits\UndecidedComparisonCompoundTypeTrait;
 use Traversable;
 use function array_merge;
+use function get_class;
 use function sprintf;
 
 /** @api */
@@ -167,7 +168,7 @@ class IterableType implements CompoundType
 
 	public function equals(Type $type): bool
 	{
-		if (!$type instanceof self) {
+		if (get_class($type) !== static::class) {
 			return false;
 		}
 
