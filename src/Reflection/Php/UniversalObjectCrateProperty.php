@@ -117,6 +117,11 @@ final class UniversalObjectCrateProperty implements ExtendedPropertyReflection
 		return TrinaryLogic::createNo();
 	}
 
+	public function isFinalByKeyword(): TrinaryLogic
+	{
+		return TrinaryLogic::createNo();
+	}
+
 	public function isFinal(): TrinaryLogic
 	{
 		return TrinaryLogic::createNo();

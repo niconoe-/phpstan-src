@@ -116,6 +116,11 @@ final class ChangedTypePropertyReflection implements WrapperPropertyReflection
 		return $this->reflection->isAbstract();
 	}
 
+	public function isFinalByKeyword(): TrinaryLogic
+	{
+		return $this->reflection->isFinalByKeyword();
+	}
+
 	public function isFinal(): TrinaryLogic
 	{
 		return $this->reflection->isFinal();

@@ -143,6 +143,11 @@ final class FoundPropertyReflection implements ExtendedPropertyReflection
 		return $this->originalPropertyReflection->isAbstract();
 	}
 
+	public function isFinalByKeyword(): TrinaryLogic
+	{
+		return $this->originalPropertyReflection->isFinalByKeyword();
+	}
+
 	public function isFinal(): TrinaryLogic
 	{
 		return $this->originalPropertyReflection->isFinal();

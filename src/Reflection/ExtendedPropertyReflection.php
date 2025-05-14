@@ -38,6 +38,8 @@ interface ExtendedPropertyReflection extends PropertyReflection
 
 	public function isAbstract(): TrinaryLogic;
 
+	public function isFinalByKeyword(): TrinaryLogic;
+
 	public function isFinal(): TrinaryLogic;
 
 	public function isVirtual(): TrinaryLogic;

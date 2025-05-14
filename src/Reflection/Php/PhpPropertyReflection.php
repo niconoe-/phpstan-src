@@ -44,6 +44,7 @@ final class PhpPropertyReflection implements ExtendedPropertyReflection
 		private bool $isReadOnlyByPhpDoc,
 		private bool $isAllowedPrivateMutation,
 		private array $attributes,
+		private bool $isFinal,
 	)
 	{
 	}
@@ -242,9 +243,14 @@ final class PhpPropertyReflection implements ExtendedPropertyReflection
 		return TrinaryLogic::createFromBoolean($this->reflection->isAbstract());
 	}
 
-	public function isFinal(): TrinaryLogic
+	public function isFinalByKeyword(): TrinaryLogic
 	{
 		return TrinaryLogic::createFromBoolean($this->reflection->isFinal());
+	}
+
+	public function isFinal(): TrinaryLogic
+	{
+		return TrinaryLogic::createFromBoolean($this->isFinal);
 	}
 
 	public function isVirtual(): TrinaryLogic
