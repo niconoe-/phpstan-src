@@ -24,6 +24,7 @@ class ForbiddenNameCheckExtensionRuleTest extends RuleTestCase
 	{
 		$reflectionProvider = $this->createReflectionProvider();
 		return new InstantiationRule(
+			self::getContainer(),
 			$reflectionProvider,
 			new FunctionCallParametersCheck(new RuleLevelHelper($reflectionProvider, true, false, true, false, false, false, true), new NullsafeCheck(), new UnresolvableTypeHelper(), new PropertyReflectionFinder(), true, true, true, true),
 			new ClassNameCheck(

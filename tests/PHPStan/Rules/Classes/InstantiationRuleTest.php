@@ -24,6 +24,7 @@ class InstantiationRuleTest extends RuleTestCase
 	{
 		$reflectionProvider = $this->createReflectionProvider();
 		return new InstantiationRule(
+			self::getContainer(),
 			$reflectionProvider,
 			new FunctionCallParametersCheck(new RuleLevelHelper($reflectionProvider, true, false, true, false, false, false, true), new NullsafeCheck(), new UnresolvableTypeHelper(), new PropertyReflectionFinder(), true, true, true, true),
 			new ClassNameCheck(
@@ -552,6 +553,35 @@ class InstantiationRuleTest extends RuleTestCase
 			[
 				'Parameter #1 $i of class ClassString\A constructor expects int, string given.',
 				87,
+			],
+		]);
+	}
+
+	public function testInternalConstructor(): void
+	{
+		$this->analyse([__DIR__ . '/data/internal-constructor.php'], [
+			[
+				'Call to internal method InternalConstructorDefinition\Foo::__construct() from outside its root namespace InternalConstructorDefinition.',
+				21,
+			],
+		]);
+	}
+
+	public function testBug12951(): void
+	{
+		if (PHP_VERSION_ID < 80100) {
+			self::markTestSkipped('Test requires PHP 8.1');
+		}
+
+		require_once __DIR__ . '/../InternalTag/data/bug-12951-define.php';
+		$this->analyse([__DIR__ . '/../InternalTag/data/bug-12951-constructor.php'], [
+			[
+				'Instantiation of internal class Bug12951Polyfill\NumberFormatter.',
+				7,
+			],
+			[
+				'Call to method __construct() of internal class Bug12951Polyfill\NumberFormatter from outside its root namespace Bug12951Polyfill.',
+				7,
 			],
 		]);
 	}

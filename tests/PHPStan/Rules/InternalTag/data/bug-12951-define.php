@@ -12,12 +12,17 @@ namespace Bug12951Core {
 namespace Bug12951Polyfill {
 
 	/** @internal */
-	abstract class NumberFormatter
+	class NumberFormatter
 	{
 
 		public const NUMERIC_COLLATION = 1;
 
 		public static $prop;
+
+		public function __construct()
+		{
+
+		}
 
 		public static function doBar(): void
 		{

@@ -5,6 +5,7 @@ namespace PHPStan\Rules\Classes;
 use PhpParser\Node;
 use PhpParser\Node\Expr\New_;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\Container;
 use PHPStan\Internal\SprintfHelper;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
@@ -15,6 +16,8 @@ use PHPStan\Rules\ClassNameNodePair;
 use PHPStan\Rules\ClassNameUsageLocation;
 use PHPStan\Rules\FunctionCallParametersCheck;
 use PHPStan\Rules\IdentifierRuleError;
+use PHPStan\Rules\RestrictedUsage\RestrictedMethodUsageExtension;
+use PHPStan\Rules\RestrictedUsage\RewrittenDeclaringClassMethodReflection;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\ShouldNotHappenException;
@@ -33,6 +36,7 @@ final class InstantiationRule implements Rule
 {
 
 	public function __construct(
+		private Container $container,
 		private ReflectionProvider $reflectionProvider,
 		private FunctionCallParametersCheck $check,
 		private ClassNameCheck $classCheck,
@@ -194,6 +198,28 @@ final class InstantiationRule implements Rule
 				$constructorReflection->getName(),
 			))
 				->identifier(sprintf('new.%sConstructor', $constructorReflection->isPrivate() ? 'private' : 'protected'))
+				->build();
+		}
+
+		/** @var RestrictedMethodUsageExtension[] $restrictedUsageExtensions */
+		$restrictedUsageExtensions = $this->container->getServicesByTag(RestrictedMethodUsageExtension::METHOD_EXTENSION_TAG);
+
+		foreach ($restrictedUsageExtensions as $extension) {
+			$restrictedUsage = $extension->isRestrictedMethodUsage($constructorReflection, $scope);
+			if ($restrictedUsage === null) {
+				continue;
+			}
+
+			if ($classReflection->getName() !== $constructorReflection->getDeclaringClass()->getName()) {
+				$rewrittenConstructorReflection = new RewrittenDeclaringClassMethodReflection($classReflection, $constructorReflection);
+				$rewrittenRestrictedUsage = $extension->isRestrictedMethodUsage($rewrittenConstructorReflection, $scope);
+				if ($rewrittenRestrictedUsage === null) {
+					continue;
+				}
+			}
+
+			$messages[] = RuleErrorBuilder::message($restrictedUsage->errorMessage)
+				->identifier($restrictedUsage->identifier)
 				->build();
 		}
 
