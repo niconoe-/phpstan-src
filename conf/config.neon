@@ -227,6 +227,7 @@ rules:
 	- PHPStan\Rules\RestrictedUsage\RestrictedStaticMethodUsageRule
 	- PHPStan\Rules\RestrictedUsage\RestrictedStaticMethodCallableUsageRule
 	- PHPStan\Rules\RestrictedUsage\RestrictedStaticPropertyUsageRule
+	- PHPStan\Rules\RestrictedUsage\RestrictedUsageOfDeprecatedStringCastRule
 
 conditionalTags:
 	PHPStan\Rules\Exceptions\MissingCheckedExceptionInFunctionThrowsRule:

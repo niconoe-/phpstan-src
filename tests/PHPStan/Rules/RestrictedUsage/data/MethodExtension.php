@@ -6,6 +6,7 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ExtendedMethodReflection;
 use PHPStan\Rules\RestrictedUsage\RestrictedMethodUsageExtension;
 use PHPStan\Rules\RestrictedUsage\RestrictedUsage;
+use function sprintf;
 
 class MethodExtension implements RestrictedMethodUsageExtension
 {
@@ -15,11 +16,11 @@ class MethodExtension implements RestrictedMethodUsageExtension
 		Scope $scope
 	): ?RestrictedUsage
 	{
-		if ($methodReflection->getName() !== 'doFoo') {
+		if ($methodReflection->getName() !== 'doFoo' && $methodReflection->getName() !== '__toString') {
 			return null;
 		}
 
-		return RestrictedUsage::create('Cannot call doFoo', 'restrictedUsage.doFoo');
+		return RestrictedUsage::create(sprintf('Cannot call %s', $methodReflection->getName()), 'restrictedUsage.doFoo');
 	}
 
 }
