@@ -32,6 +32,17 @@ class RestrictedStaticPropertyUsageRuleTest extends RuleTestCase
 		]);
 	}
 
+	public function testBug12951(): void
+	{
+		require_once __DIR__ . '/../InternalTag/data/bug-12951-define.php';
+		$this->analyse([__DIR__ . '/../InternalTag/data/bug-12951-static-property.php'], [
+			[
+				'Access to static property $prop of internal class Bug12951Polyfill\NumberFormatter from outside its root namespace Bug12951Polyfill.',
+				7,
+			],
+		]);
+	}
+
 	public static function getAdditionalConfigFiles(): array
 	{
 		return [

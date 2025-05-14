@@ -86,6 +86,14 @@ final class RestrictedStaticPropertyUsageRule implements Rule
 					continue;
 				}
 
+				if ($classReflection->getName() !== $propertyReflection->getDeclaringClass()->getName()) {
+					$rewrittenPropertyReflection = new RewrittenDeclaringClassPropertyReflection($classReflection, $propertyReflection);
+					$rewrittenRestrictedUsage = $extension->isRestrictedPropertyUsage($rewrittenPropertyReflection, $scope);
+					if ($rewrittenRestrictedUsage === null) {
+						continue;
+					}
+				}
+
 				$errors[] = RuleErrorBuilder::message($restrictedUsage->errorMessage)
 					->identifier($restrictedUsage->identifier)
 					->build();

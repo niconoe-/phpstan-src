@@ -86,6 +86,14 @@ final class RestrictedClassConstantUsageRule implements Rule
 					continue;
 				}
 
+				if ($classReflection->getName() !== $constantReflection->getDeclaringClass()->getName()) {
+					$rewrittenConstantReflection = new RewrittenDeclaringClassClassConstantReflection($classReflection, $constantReflection);
+					$rewrittenRestrictedUsage = $extension->isRestrictedClassConstantUsage($rewrittenConstantReflection, $scope);
+					if ($rewrittenRestrictedUsage === null) {
+						continue;
+					}
+				}
+
 				$errors[] = RuleErrorBuilder::message($restrictedUsage->errorMessage)
 					->identifier($restrictedUsage->identifier)
 					->build();

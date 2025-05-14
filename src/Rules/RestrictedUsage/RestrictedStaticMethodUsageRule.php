@@ -86,6 +86,14 @@ final class RestrictedStaticMethodUsageRule implements Rule
 					continue;
 				}
 
+				if ($classReflection->getName() !== $methodReflection->getDeclaringClass()->getName()) {
+					$rewrittenMethodReflection = new RewrittenDeclaringClassMethodReflection($classReflection, $methodReflection);
+					$rewrittenRestrictedUsage = $extension->isRestrictedMethodUsage($rewrittenMethodReflection, $scope);
+					if ($rewrittenRestrictedUsage === null) {
+						continue;
+					}
+				}
+
 				$errors[] = RuleErrorBuilder::message($restrictedUsage->errorMessage)
 					->identifier($restrictedUsage->identifier)
 					->build();

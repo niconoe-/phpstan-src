@@ -56,12 +56,23 @@ class RestrictedInternalClassConstantUsageExtensionTest extends RuleTestCase
 		]);
 	}
 
-	public function testStaticPropertyAccessOnInternalSubclass(): void
+	public function testClassConstantAccessOnInternalSubclass(): void
 	{
 		$this->analyse([__DIR__ . '/data/class-constant-access-on-internal-subclass.php'], [
 			[
 				'Access to constant BAR of internal class ClassConstantAccessOnInternalSubclassOne\Bar from outside its root namespace ClassConstantAccessOnInternalSubclassOne.',
 				28,
+			],
+		]);
+	}
+
+	public function testBug12951(): void
+	{
+		require_once __DIR__ . '/data/bug-12951-define.php';
+		$this->analyse([__DIR__ . '/data/bug-12951-constant.php'], [
+			[
+				'Access to constant NUMERIC_COLLATION of internal class Bug12951Polyfill\NumberFormatter from outside its root namespace Bug12951Polyfill.',
+				7,
 			],
 		]);
 	}

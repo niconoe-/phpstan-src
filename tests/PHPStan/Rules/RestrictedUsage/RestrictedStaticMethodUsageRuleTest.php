@@ -5,6 +5,7 @@ namespace PHPStan\Rules\RestrictedUsage;
 use PHPStan\Rules\Rule as TRule;
 use PHPStan\Rules\RuleLevelHelper;
 use PHPStan\Testing\RuleTestCase;
+use const PHP_VERSION_ID;
 
 /**
  * @extends RuleTestCase<RestrictedStaticMethodUsageRule>
@@ -28,6 +29,21 @@ class RestrictedStaticMethodUsageRuleTest extends RuleTestCase
 			[
 				'Cannot call doFoo',
 				36,
+			],
+		]);
+	}
+
+	public function testBug12951(): void
+	{
+		if (PHP_VERSION_ID < 80100) {
+			self::markTestSkipped('Test requires PHP 8.1');
+		}
+
+		require_once __DIR__ . '/../InternalTag/data/bug-12951-define.php';
+		$this->analyse([__DIR__ . '/../InternalTag/data/bug-12951-static-method.php'], [
+			[
+				'Call to static method doBar() of internal class Bug12951Polyfill\NumberFormatter from outside its root namespace Bug12951Polyfill.',
+				7,
 			],
 		]);
 	}
