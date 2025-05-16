@@ -2,7 +2,6 @@
 
 namespace PHPStan\Reflection;
 
-use PHPStan\Reflection\Php\PhpPropertyReflection;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\Generic\TemplateTypeHelper;
 use PHPStan\Type\Generic\TemplateTypeMap;
@@ -38,15 +37,6 @@ final class ResolvedPropertyReflection implements WrapperPropertyReflection
 	public function getDeclaringClass(): ClassReflection
 	{
 		return $this->reflection->getDeclaringClass();
-	}
-
-	public function getDeclaringTrait(): ?ClassReflection
-	{
-		if ($this->reflection instanceof PhpPropertyReflection) {
-			return $this->reflection->getDeclaringTrait();
-		}
-
-		return null;
 	}
 
 	public function isStatic(): bool
