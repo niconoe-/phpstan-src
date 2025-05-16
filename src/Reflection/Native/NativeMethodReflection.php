@@ -94,7 +94,6 @@ final class NativeMethodReflection implements ExtendedMethodReflection
 				$prototypeMethod->isPrivate(),
 				$prototypeMethod->isPublic(),
 				$prototypeMethod->isAbstract(),
-				$prototypeMethod->isFinal(),
 				$prototypeMethod->isInternal(),
 				$prototypeDeclaringClass->getNativeMethod($prototypeMethod->getName())->getVariants(),
 				$tentativeReturnType,

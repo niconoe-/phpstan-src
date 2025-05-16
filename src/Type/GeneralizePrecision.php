@@ -40,11 +40,6 @@ final class GeneralizePrecision
 		return self::create(self::TEMPLATE_ARGUMENT);
 	}
 
-	public function isLessSpecific(): bool
-	{
-		return $this->value === self::LESS_SPECIFIC;
-	}
-
 	public function isMoreSpecific(): bool
 	{
 		return $this->value === self::MORE_SPECIFIC;

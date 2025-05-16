@@ -17,7 +17,6 @@ final class MethodPrototypeReflection implements ClassMemberReflection
 		private bool $isPrivate,
 		private bool $isPublic,
 		private bool $isAbstract,
-		private bool $isFinal,
 		private bool $isInternal,
 		private array $variants,
 		private ?Type $tentativeReturnType,
@@ -53,11 +52,6 @@ final class MethodPrototypeReflection implements ClassMemberReflection
 	public function isAbstract(): bool
 	{
 		return $this->isAbstract;
-	}
-
-	public function isFinal(): bool
-	{
-		return $this->isFinal;
 	}
 
 	public function isInternal(): bool
