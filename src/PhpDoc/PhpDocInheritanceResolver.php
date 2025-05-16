@@ -32,7 +32,6 @@ final class PhpDocInheritanceResolver
 			null,
 			$propertyName,
 			$classReflectionFileName,
-			null,
 		);
 
 		return $this->docBlockTreeToResolvedDocBlock($phpDocBlock, $declaringTraitName, null, $propertyName, null);
@@ -50,7 +49,6 @@ final class PhpDocInheritanceResolver
 			$classReflection,
 			$constantName,
 			$classReflectionFileName,
-			null,
 		);
 
 		return $this->docBlockTreeToResolvedDocBlock($phpDocBlock, null, null, null, $constantName);
@@ -74,7 +72,6 @@ final class PhpDocInheritanceResolver
 			$declaringTraitName,
 			$methodName,
 			$fileName,
-			null,
 			$positionalParameterNames,
 			$positionalParameterNames,
 		);

@@ -27,7 +27,6 @@ final class PhpDocBlock
 		private ?string $file,
 		private ClassReflection $classReflection,
 		private ?string $trait,
-		private bool $explicit,
 		private array $parameterNameMapping,
 		private array $parents,
 	)
@@ -52,11 +51,6 @@ final class PhpDocBlock
 	public function getTrait(): ?string
 	{
 		return $this->trait;
-	}
-
-	public function isExplicit(): bool
-	{
-		return $this->explicit;
 	}
 
 	/**
@@ -115,7 +109,6 @@ final class PhpDocBlock
 		?string $trait,
 		string $propertyName,
 		?string $file,
-		?bool $explicit,
 	): self
 	{
 		$docBlocksFromParents = [];
@@ -123,7 +116,6 @@ final class PhpDocBlock
 			$oneResult = self::resolvePropertyPhpDocBlockFromClass(
 				$parentReflection,
 				$propertyName,
-				$explicit ?? $docComment !== null,
 			);
 
 			if ($oneResult === null) { // Null if it is private or from a wrong trait.
@@ -138,7 +130,6 @@ final class PhpDocBlock
 			$file,
 			$classReflection,
 			$trait,
-			$explicit ?? true,
 			[],
 			$docBlocksFromParents,
 		);
@@ -149,7 +140,6 @@ final class PhpDocBlock
 		ClassReflection $classReflection,
 		string $constantName,
 		?string $file,
-		?bool $explicit,
 	): self
 	{
 		$docBlocksFromParents = [];
@@ -157,7 +147,6 @@ final class PhpDocBlock
 			$oneResult = self::resolveConstantPhpDocBlockFromClass(
 				$parentReflection,
 				$constantName,
-				$explicit ?? $docComment !== null,
 			);
 
 			if ($oneResult === null) { // Null if it is private or from a wrong trait.
@@ -172,7 +161,6 @@ final class PhpDocBlock
 			$file,
 			$classReflection,
 			null,
-			$explicit ?? true,
 			[],
 			$docBlocksFromParents,
 		);
@@ -188,7 +176,6 @@ final class PhpDocBlock
 		?string $trait,
 		string $methodName,
 		?string $file,
-		?bool $explicit,
 		array $originalPositionalParameterNames,
 		array $newPositionalParameterNames,
 	): self
@@ -198,7 +185,6 @@ final class PhpDocBlock
 			$oneResult = self::resolveMethodPhpDocBlockFromClass(
 				$parentReflection,
 				$methodName,
-				$explicit ?? $docComment !== null,
 				$newPositionalParameterNames,
 			);
 
@@ -234,7 +220,6 @@ final class PhpDocBlock
 				$classReflection->getFileName(),
 				$classReflection,
 				$traitReflection->getName(),
-				$explicit ?? $traitMethod->getDocComment() !== null,
 				self::remapParameterNames($newPositionalParameterNames, $positionalMethodParameterNames),
 				[],
 			);
@@ -245,7 +230,6 @@ final class PhpDocBlock
 			$file,
 			$classReflection,
 			$trait,
-			$explicit ?? true,
 			self::remapParameterNames($originalPositionalParameterNames, $newPositionalParameterNames),
 			$docBlocksFromParents,
 		);
@@ -294,7 +278,6 @@ final class PhpDocBlock
 	private static function resolveConstantPhpDocBlockFromClass(
 		ClassReflection $classReflection,
 		string $name,
-		bool $explicit,
 	): ?self
 	{
 		if ($classReflection->hasConstant($name)) {
@@ -310,7 +293,6 @@ final class PhpDocBlock
 				$classReflection,
 				$name,
 				$classReflection->getFileName(),
-				$explicit,
 			);
 		}
 
@@ -320,7 +302,6 @@ final class PhpDocBlock
 	private static function resolvePropertyPhpDocBlockFromClass(
 		ClassReflection $classReflection,
 		string $name,
-		bool $explicit,
 	): ?self
 	{
 		if ($classReflection->hasNativeProperty($name)) {
@@ -342,7 +323,6 @@ final class PhpDocBlock
 				$trait,
 				$name,
 				$classReflection->getFileName(),
-				$explicit,
 			);
 		}
 
@@ -355,7 +335,6 @@ final class PhpDocBlock
 	private static function resolveMethodPhpDocBlockFromClass(
 		ClassReflection $classReflection,
 		string $name,
-		bool $explicit,
 		array $positionalParameterNames,
 	): ?self
 	{
@@ -396,7 +375,6 @@ final class PhpDocBlock
 				$trait,
 				$name,
 				$classReflection->getFileName(),
-				$explicit,
 				$positionalParameterNames,
 				$positionalMethodParameterNames,
 			);
