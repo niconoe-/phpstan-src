@@ -21,10 +21,6 @@ parameters:
 		- ../tests/phpstan-bootstrap.php
 	cache:
 		nodesByStringCountMax: 128
-	shipmonkDeadCode:
-		usageExcluders:
-			tests:
-				enabled: true
 	checkUninitializedProperties: true
 	checkMissingCallableSignature: true
 	excludePaths:
@@ -79,6 +75,15 @@ parameters:
 		-
 			identifier: shipmonk.deadMethod
 			message: '#^Unused .*?Factory::create#' # likely used in DIC
+		-
+			identifier: shipmonk.deadMethod
+			paths:
+				- ../tests/PHPStan/Tests
+				- ../tests/e2e
+		-
+			identifier: shipmonk.deadConstant
+			paths:
+				- ../tests/PHPStan/Fixture
 		-
 			identifier: shipmonk.deadMethod
 			path: ../src/Reflection/BetterReflection/SourceLocator/FileReadTrapStreamWrapper.php
