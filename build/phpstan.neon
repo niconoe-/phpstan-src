@@ -84,6 +84,7 @@ parameters:
 			identifier: shipmonk.deadConstant
 			paths:
 				- ../tests/PHPStan/Fixture
+			reportUnmatched: false # constants on enums, not reported on PHP8-
 		-
 			identifier: shipmonk.deadMethod
 			path: ../src/Reflection/BetterReflection/SourceLocator/FileReadTrapStreamWrapper.php
