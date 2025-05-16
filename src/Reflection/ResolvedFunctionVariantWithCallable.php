@@ -67,11 +67,6 @@ final class ResolvedFunctionVariantWithCallable implements ResolvedFunctionVaria
 		return $this->parametersAcceptor->getReturnTypeWithUnresolvableTemplateTypes();
 	}
 
-	public function getPhpDocReturnTypeWithUnresolvableTemplateTypes(): Type
-	{
-		return $this->parametersAcceptor->getPhpDocReturnTypeWithUnresolvableTemplateTypes();
-	}
-
 	public function getReturnType(): Type
 	{
 		return $this->parametersAcceptor->getReturnType();
