@@ -297,11 +297,6 @@ trait TemplateTypeTrait
 		return $this->strategy;
 	}
 
-	protected function shouldGeneralizeInferredType(): bool
-	{
-		return true;
-	}
-
 	public function traverse(callable $cb): Type
 	{
 		$bound = $cb($this->getBound());
