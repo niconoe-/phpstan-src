@@ -416,16 +416,6 @@ class ExistingClassesInTypehintsRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/intersection-types.php'], $errors);
 	}
 
-	public function dataTrueTypes(): array
-	{
-		return [
-			[
-				80200,
-				[],
-			],
-		];
-	}
-
 	public function testTrueTypehint(): void
 	{
 		if (PHP_VERSION_ID >= 80200) {
