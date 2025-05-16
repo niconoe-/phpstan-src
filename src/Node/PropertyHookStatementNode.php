@@ -20,14 +20,9 @@ use PhpParser\Node\Stmt;
 final class PropertyHookStatementNode extends Stmt implements VirtualNode
 {
 
-	public function __construct(private PropertyHook $propertyHook)
+	public function __construct(PropertyHook $propertyHook)
 	{
-		parent::__construct($this->propertyHook->getAttributes());
-	}
-
-	public function getPropertyHook(): PropertyHook
-	{
-		return $this->propertyHook;
+		parent::__construct($propertyHook->getAttributes());
 	}
 
 	/**

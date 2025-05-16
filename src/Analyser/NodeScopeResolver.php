@@ -5404,7 +5404,7 @@ final class NodeScopeResolver
 			$conditionalExpressions = $this->processSureTypesForConditionalExpressionsAfterAssign($scope, $var->name, $conditionalExpressions, $falseySpecifiedTypes, $falseyType);
 			$conditionalExpressions = $this->processSureNotTypesForConditionalExpressionsAfterAssign($scope, $var->name, $conditionalExpressions, $falseySpecifiedTypes, $falseyType);
 
-			$nodeCallback(new VariableAssignNode($var, $assignedExpr, $isAssignOp), $result->getScope());
+			$nodeCallback(new VariableAssignNode($var, $assignedExpr), $result->getScope());
 			$scope = $scope->assignVariable($var->name, $type, $scope->getNativeType($assignedExpr), TrinaryLogic::createYes());
 			foreach ($conditionalExpressions as $exprString => $holders) {
 				$scope = $scope->addConditionalExpressions($exprString, $holders);
@@ -5542,7 +5542,7 @@ final class NodeScopeResolver
 
 			if ($varType->isArray()->yes() || !(new ObjectType(ArrayAccess::class))->isSuperTypeOf($varType)->yes()) {
 				if ($var instanceof Variable && is_string($var->name)) {
-					$nodeCallback(new VariableAssignNode($var, $assignedPropertyExpr, $isAssignOp), $scope);
+					$nodeCallback(new VariableAssignNode($var, $assignedPropertyExpr), $scope);
 					$scope = $scope->assignVariable($var->name, $valueToWrite, $nativeValueToWrite, TrinaryLogic::createYes());
 				} else {
 					if ($var instanceof PropertyFetch || $var instanceof StaticPropertyFetch) {
@@ -5574,7 +5574,7 @@ final class NodeScopeResolver
 				}
 			} else {
 				if ($var instanceof Variable) {
-					$nodeCallback(new VariableAssignNode($var, $assignedPropertyExpr, $isAssignOp), $scope);
+					$nodeCallback(new VariableAssignNode($var, $assignedPropertyExpr), $scope);
 				} elseif ($var instanceof PropertyFetch || $var instanceof StaticPropertyFetch) {
 					$nodeCallback(new PropertyAssignNode($var, $assignedPropertyExpr, $isAssignOp), $scope);
 					if ($var instanceof PropertyFetch && $var->name instanceof Node\Identifier && !$isAssignOp) {
@@ -5861,7 +5861,7 @@ final class NodeScopeResolver
 			}
 
 			if ($var instanceof Variable && is_string($var->name)) {
-				$nodeCallback(new VariableAssignNode($var, $assignedPropertyExpr, $isAssignOp), $scope);
+				$nodeCallback(new VariableAssignNode($var, $assignedPropertyExpr), $scope);
 				$scope = $scope->assignVariable($var->name, $valueToWrite, $nativeValueToWrite, TrinaryLogic::createYes());
 			} else {
 				if ($var instanceof PropertyFetch || $var instanceof StaticPropertyFetch) {

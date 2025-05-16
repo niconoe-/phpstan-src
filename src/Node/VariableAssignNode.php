@@ -11,7 +11,6 @@ final class VariableAssignNode extends NodeAbstract implements VirtualNode
 	public function __construct(
 		private Expr\Variable $variable,
 		private Expr $assignedExpr,
-		private bool $assignOp,
 	)
 	{
 		parent::__construct($variable->getAttributes());
@@ -25,11 +24,6 @@ final class VariableAssignNode extends NodeAbstract implements VirtualNode
 	public function getAssignedExpr(): Expr
 	{
 		return $this->assignedExpr;
-	}
-
-	public function isAssignOp(): bool
-	{
-		return $this->assignOp;
 	}
 
 	public function getType(): string
