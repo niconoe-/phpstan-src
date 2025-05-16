@@ -2,6 +2,9 @@
 
 namespace PHPStan\Type;
 
+/**
+ * @api
+ */
 final class SimultaneousTypeTraverser
 {
 
