@@ -843,7 +843,7 @@ final class MutatingScope implements Scope
 		}
 
 		if ($node instanceof AlwaysRememberedExpr) {
-			return $node->getExprType();
+			return $this->nativeTypesPromoted ? $node->getNativeExprType() : $node->getExprType();
 		}
 
 		if ($node instanceof Expr\BinaryOp\Smaller) {
