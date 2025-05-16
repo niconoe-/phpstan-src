@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "03d7ba380a92b25500e9631a644b06d2",
+    "content-hash": "3048aa1c538e9ea0ccfcddbb6a95c705",
     "packages": [
         {
             "name": "clue/ndjson-react",
@@ -6340,16 +6340,16 @@
         },
         {
             "name": "shipmonk/dead-code-detector",
-            "version": "dev-api-phpdoc",
+            "version": "0.12.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shipmonk-rnd/dead-code-detector.git",
-                "reference": "c4300075b3d75fda71c818f7e76933bcf1e267dd"
+                "reference": "1f0c70ec4e9868c785f6505592dfb01ef53af2ca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shipmonk-rnd/dead-code-detector/zipball/c4300075b3d75fda71c818f7e76933bcf1e267dd",
-                "reference": "c4300075b3d75fda71c818f7e76933bcf1e267dd",
+                "url": "https://api.github.com/repos/shipmonk-rnd/dead-code-detector/zipball/1f0c70ec4e9868c785f6505592dfb01ef53af2ca",
+                "reference": "1f0c70ec4e9868c785f6505592dfb01ef53af2ca",
                 "shasum": ""
             },
             "require": {
@@ -6409,9 +6409,9 @@
             ],
             "support": {
                 "issues": "https://github.com/shipmonk-rnd/dead-code-detector/issues",
-                "source": "https://github.com/shipmonk-rnd/dead-code-detector/tree/api-phpdoc"
+                "source": "https://github.com/shipmonk-rnd/dead-code-detector/tree/0.12.0"
             },
-            "time": "2025-05-16T10:10:34+00:00"
+            "time": "2025-05-16T13:02:10+00:00"
         },
         {
             "name": "shipmonk/name-collision-detector",
@@ -6525,8 +6525,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "jetbrains/phpstorm-stubs": 20,
-        "shipmonk/dead-code-detector": 20
+        "jetbrains/phpstorm-stubs": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
