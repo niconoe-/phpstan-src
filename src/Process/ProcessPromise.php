@@ -24,7 +24,9 @@ final class ProcessPromise
 
 	public function __construct(private LoopInterface $loop, private string $name, private string $command)
 	{
-		$this->deferred = new Deferred();
+		$this->deferred = new Deferred(function (): void {
+			$this->cancel();
+		});
 	}
 
 	public function getName(): string
@@ -85,7 +87,7 @@ final class ProcessPromise
 		return $this->deferred->promise();
 	}
 
-	public function cancel(): void
+	private function cancel(): void
 	{
 		if ($this->process === null) {
 			throw new ShouldNotHappenException('Cancelling process before running');
