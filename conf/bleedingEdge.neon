@@ -6,3 +6,4 @@ parameters:
 		stricterFunctionMap: true
 		reportPreciseLineForUnusedFunctionParameter: true
 		internalTag: true
+		newStaticInAbstractClassStaticMethod: true

@@ -110,6 +110,8 @@ conditionalTags:
 		phpstan.restrictedClassNameUsageExtension: %featureToggles.internalTag%
 	PHPStan\Rules\InternalTag\RestrictedInternalFunctionUsageExtension:
 		phpstan.restrictedFunctionUsageExtension: %featureToggles.internalTag%
+	PHPStan\Rules\Classes\NewStaticInAbstractClassStaticMethodRule:
+		phpstan.rules.rule: %featureToggles.newStaticInAbstractClassStaticMethod%
 
 services:
 	-
@@ -177,6 +179,9 @@ services:
 		arguments:
 			checkFunctionNameCase: %checkFunctionNameCase%
 			discoveringSymbolsTip: %tips.discoveringSymbols%
+
+	-
+		class: PHPStan\Rules\Classes\NewStaticInAbstractClassStaticMethodRule
 
 	-
 		class: PHPStan\Rules\Constants\OverridingConstantRule

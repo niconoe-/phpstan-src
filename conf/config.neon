@@ -27,6 +27,7 @@ parameters:
 		stricterFunctionMap: false
 		reportPreciseLineForUnusedFunctionParameter: false
 		internalTag: false
+		newStaticInAbstractClassStaticMethod: false
 	fileExtensions:
 		- php
 	checkAdvancedIsset: false

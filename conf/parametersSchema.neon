@@ -33,6 +33,7 @@ parametersSchema:
 		stricterFunctionMap: bool()
 		reportPreciseLineForUnusedFunctionParameter: bool()
 		internalTag: bool()
+		newStaticInAbstractClassStaticMethod: bool()
 	])
 	fileExtensions: listOf(string())
 	checkAdvancedIsset: bool()
