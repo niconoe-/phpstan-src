@@ -15,11 +15,6 @@ final class SymfonyStyle implements OutputStyle
 	{
 	}
 
-	public function getSymfonyStyle(): StyleInterface
-	{
-		return $this->symfonyStyle;
-	}
-
 	public function title(string $message): void
 	{
 		$this->symfonyStyle->title($message);

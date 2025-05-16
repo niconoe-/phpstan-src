@@ -16,7 +16,6 @@ final class FileMonitorResult
 		private array $newFiles,
 		private array $changedFiles,
 		private array $deletedFiles,
-		private int $totalFilesCount,
 	)
 	{
 	}
@@ -34,11 +33,6 @@ final class FileMonitorResult
 		return count($this->newFiles) > 0
 			|| count($this->changedFiles) > 0
 			|| count($this->deletedFiles) > 0;
-	}
-
-	public function getTotalFilesCount(): int
-	{
-		return $this->totalFilesCount;
 	}
 
 }

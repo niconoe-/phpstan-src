@@ -4,6 +4,7 @@ includes:
 	- ../vendor/phpstan/phpstan-phpunit/extension.neon
 	- ../vendor/phpstan/phpstan-phpunit/rules.neon
 	- ../vendor/phpstan/phpstan-strict-rules/rules.neon
+	- ../vendor/shipmonk/dead-code-detector/rules.neon
 	- ../conf/bleedingEdge.neon
 	- ../phpstan-baseline.neon
 	- ../phpstan-baseline.php
@@ -71,6 +72,22 @@ parameters:
 		- '#should be contravariant with parameter \$node \(PhpParser\\Node\) of method PHPStan\\Rules\\Rule<PhpParser\\Node>::processNode\(\)$#'
 		- '#Variable property access on PhpParser\\Node#'
 		- '#Test::data[a-zA-Z0-9_]+\(\) return type has no value type specified in iterable type#'
+		-
+			identifier: shipmonk.deadMethod
+			message: '#^Unused .*?Factory::create#' # likely used in DIC
+		-
+			identifier: shipmonk.deadMethod
+			paths:
+				- ../tests/PHPStan/Tests
+				- ../tests/e2e
+		-
+			identifier: shipmonk.deadConstant
+			paths:
+				- ../tests/PHPStan/Fixture
+			reportUnmatched: false # constants on enums, not reported on PHP8-
+		-
+			identifier: shipmonk.deadMethod
+			path: ../src/Reflection/BetterReflection/SourceLocator/FileReadTrapStreamWrapper.php
 		-
 			message: '#Fetching class constant class of deprecated class DeprecatedAnnotations\\DeprecatedFoo.#'
 			path: ../tests/PHPStan/Reflection/Annotations/DeprecatedAnnotationsTest.php
