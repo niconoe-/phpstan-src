@@ -22,16 +22,11 @@ final class ProcessPromise
 
 	private bool $canceled = false;
 
-	public function __construct(private LoopInterface $loop, private string $name, private string $command)
+	public function __construct(private LoopInterface $loop, private string $command)
 	{
 		$this->deferred = new Deferred(function (): void {
 			$this->cancel();
 		});
-	}
-
-	public function getName(): string
-	{
-		return $this->name;
 	}
 
 	/**

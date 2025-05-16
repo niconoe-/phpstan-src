@@ -465,7 +465,7 @@ final class FixerApplication
 			});
 		});
 
-		$process = new ProcessPromise($loop, 'changedFileAnalysis', ProcessHelper::getWorkerCommand(
+		$process = new ProcessPromise($loop, ProcessHelper::getWorkerCommand(
 			$mainScript,
 			'fixer:worker',
 			$projectConfigFile,
