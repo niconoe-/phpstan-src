@@ -7,7 +7,7 @@ final class BleedingEdgeToggle
 
 	private static bool $bleedingEdge = false;
 
-	public static function isBleedingEdge(): bool
+	public static function isBleedingEdge(): bool // @phpstan-ignore shipmonk.deadMethod (kept for future use)
 	{
 		return self::$bleedingEdge;
 	}
