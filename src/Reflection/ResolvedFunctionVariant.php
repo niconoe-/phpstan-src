@@ -11,6 +11,4 @@ interface ResolvedFunctionVariant extends ExtendedParametersAcceptor
 
 	public function getReturnTypeWithUnresolvableTemplateTypes(): Type;
 
-	public function getPhpDocReturnTypeWithUnresolvableTemplateTypes(): Type;
-
 }
