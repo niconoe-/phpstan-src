@@ -61,7 +61,6 @@ parameters:
 			- 'PHPStan\Reflection\MissingPropertyFromReflectionException'
 			- 'PHPStan\Reflection\MissingConstantFromReflectionException'
 			- 'PHPStan\Type\CircularTypeAliasDefinitionException'
-			- 'PHPStan\Broker\ClassAutoloadingException'
 			- 'LogicException'
 			- 'Error'
 		check:

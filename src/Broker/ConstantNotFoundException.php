@@ -5,6 +5,13 @@ namespace PHPStan\Broker;
 use PHPStan\AnalysedCodeException;
 use function sprintf;
 
+/**
+ * @api
+ *
+ * Unchecked exception thrown from `ReflectionProvider`
+ * in case the user does not check the existence of the constant beforehand
+ * with `hasConstant()`.
+ */
 final class ConstantNotFoundException extends AnalysedCodeException
 {
 

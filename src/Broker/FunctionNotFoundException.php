@@ -5,6 +5,13 @@ namespace PHPStan\Broker;
 use PHPStan\AnalysedCodeException;
 use function sprintf;
 
+/**
+ * @api
+ *
+ * Unchecked exception thrown from `ReflectionProvider`
+ * in case the user does not check the existence of the function beforehand
+ * with `hasFunction()`.
+ */
 final class FunctionNotFoundException extends AnalysedCodeException
 {
 

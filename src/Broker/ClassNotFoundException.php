@@ -5,6 +5,13 @@ namespace PHPStan\Broker;
 use PHPStan\AnalysedCodeException;
 use function sprintf;
 
+/**
+ * @api
+ *
+ * Unchecked exception thrown from `ReflectionProvider` and other places
+ * in case the user does not check the existence of the class beforehand
+ * with `hasClass()` or similar.
+ */
 final class ClassNotFoundException extends AnalysedCodeException
 {
 

@@ -5,6 +5,12 @@ namespace PHPStan\Analyser;
 use PHPStan\AnalysedCodeException;
 use function sprintf;
 
+/**
+ * @api
+ *
+ * Unchecked exception thrown from `PHPStan\Analyser\Scope::getVariableType()`
+ * in case the user doesn't check `hasVariableType()` is not `no()`.
+ */
 final class UndefinedVariableException extends AnalysedCodeException
 {
 
