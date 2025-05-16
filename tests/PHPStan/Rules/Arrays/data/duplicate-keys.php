@@ -107,4 +107,69 @@ class Foo
 		];
 	}
 
+	/**
+	 * @param 'foo'|'bar' $key
+	 */
+	public function maybeDuplicate(string $key): void
+	{
+		$a = [
+			'foo' => 'foo',
+			$key => 'foo|bar',
+		];
+	}
+
+	/**
+	 * @param 'foo'|'bar' $key
+	 */
+	public function sureDuplicate(string $key): void
+	{
+		$a = [
+			'foo' => 'foo',
+			$key => 'foo|bar',
+			'bar' => 'bar',
+		];
+	}
+
+	/**
+	 * @param 'foo'|'bar' $key
+	 */
+	public function sureDuplicate2(string $key): void
+	{
+		$a = [
+			$key => 'foo|bar',
+			'foo' => 'foo',
+			'bar' => 'bar',
+		];
+	}
+
+	/**
+	 * @param 'foo'|'bar' $key
+	 */
+	public function sureDuplicate3(string $key): void
+	{
+		$a = [
+			'foo' => 'foo',
+			'bar' => 'bar',
+			$key => 'foo|bar',
+		];
+	}
+
+	/**
+	 * @param 'foo'|'bar'|'baz' $key
+	 */
+	public function sureDuplicate4(string $key): void
+	{
+		$a = [
+			'foo' => 'foo',
+			'bar' => 'bar',
+			$key => 'foo|bar|baz',
+		];
+
+		$b = [
+			'foo' => 'foo',
+			'bar' => 'bar',
+			$key => 'foo|bar|baz',
+			'baz' => 'baz',
+		];
+	}
 }
