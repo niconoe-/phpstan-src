@@ -5,7 +5,6 @@ namespace PHPStan\File;
 use PHPStan\ShouldNotHappenException;
 use function array_key_exists;
 use function array_keys;
-use function count;
 use function sha1_file;
 
 final class FileMonitor
@@ -75,7 +74,6 @@ final class FileMonitor
 			$newFiles,
 			$changedFiles,
 			$deletedFiles,
-			count($fileHashes),
 		);
 	}
 
