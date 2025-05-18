@@ -56,6 +56,7 @@ final class BetterReflectionSourceLocatorFactory
 		private array $composerAutoloaderProjectPaths,
 		private array $analysedPathsFromConfig,
 		private bool $playgroundMode, // makes all PHPStan classes in the PHAR discoverable with PSR-4
+		private ?string $singleReflectionFile,
 	)
 	{
 	}
@@ -63,6 +64,10 @@ final class BetterReflectionSourceLocatorFactory
 	public function create(): SourceLocator
 	{
 		$locators = [];
+
+		if ($this->singleReflectionFile !== null) {
+			$locators[] = $this->optimizedSingleFileSourceLocatorRepository->getOrCreate($this->singleReflectionFile);
+		}
 
 		$astLocator = new Locator($this->parser);
 		$locators[] = new AutoloadFunctionsSourceLocator(
