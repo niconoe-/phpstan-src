@@ -24,7 +24,10 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 use function array_fill_keys;
+use function array_filter;
 use function array_merge;
+use function array_unshift;
+use function array_values;
 use function defined;
 use function is_array;
 use function is_bool;
@@ -62,6 +65,8 @@ final class WorkerCommand extends Command
 				new InputOption('xdebug', null, InputOption::VALUE_NONE, 'Allow running with Xdebug for debugging purposes'),
 				new InputOption('port', null, InputOption::VALUE_REQUIRED),
 				new InputOption('identifier', null, InputOption::VALUE_REQUIRED),
+				new InputOption('tmp-file', null, InputOption::VALUE_REQUIRED),
+				new InputOption('instead-of', null, InputOption::VALUE_REQUIRED),
 			])
 			->setHidden(true);
 	}
@@ -76,6 +81,8 @@ final class WorkerCommand extends Command
 		$allowXdebug = $input->getOption('xdebug');
 		$port = $input->getOption('port');
 		$identifier = $input->getOption('identifier');
+		$tmpFile = $input->getOption('tmp-file');
+		$insteadOfFile = $input->getOption('instead-of');
 
 		if (
 			!is_array($paths)
@@ -86,6 +93,8 @@ final class WorkerCommand extends Command
 			|| (!is_bool($allowXdebug))
 			|| !is_string($port)
 			|| !is_string($identifier)
+			|| (!is_string($tmpFile) && $tmpFile !== null)
+			|| (!is_string($insteadOfFile) && $insteadOfFile !== null)
 		) {
 			throw new ShouldNotHappenException();
 		}
@@ -103,6 +112,8 @@ final class WorkerCommand extends Command
 				$level,
 				$allowXdebug,
 				false,
+				$tmpFile,
+				$insteadOfFile,
 				false,
 			);
 		} catch (InceptionNotSuccessfulException $e) {
@@ -114,6 +125,7 @@ final class WorkerCommand extends Command
 
 		try {
 			[$analysedFiles] = $inceptionResult->getFiles();
+			$analysedFiles = $this->switchTmpFile($analysedFiles, $insteadOfFile, $tmpFile);
 		} catch (PathNotFoundException $e) {
 			$inceptionResult->getErrorOutput()->writeLineFormatted(sprintf('<error>%s</error>', $e->getMessage()));
 			return 1;
@@ -127,14 +139,14 @@ final class WorkerCommand extends Command
 		$analysedFiles = array_fill_keys($analysedFiles, true);
 
 		$tcpConnector = new TcpConnector($loop);
-		$tcpConnector->connect(sprintf('127.0.0.1:%d', $port))->then(function (ConnectionInterface $connection) use ($container, $identifier, $output, $analysedFiles): void {
+		$tcpConnector->connect(sprintf('127.0.0.1:%d', $port))->then(function (ConnectionInterface $connection) use ($container, $identifier, $output, $analysedFiles, $tmpFile, $insteadOfFile): void {
 			// phpcs:disable SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly
 			$jsonInvalidUtf8Ignore = defined('JSON_INVALID_UTF8_IGNORE') ? JSON_INVALID_UTF8_IGNORE : 0;
 			// phpcs:enable
 			$out = new Encoder($connection, $jsonInvalidUtf8Ignore);
 			$in = new Decoder($connection, true, 512, $jsonInvalidUtf8Ignore, $container->getParameter('parallel')['buffer']);
 			$out->write(['action' => 'hello', 'identifier' => $identifier]);
-			$this->runWorker($container, $out, $in, $output, $analysedFiles);
+			$this->runWorker($container, $out, $in, $output, $analysedFiles, $tmpFile, $insteadOfFile);
 		});
 
 		$loop->run();
@@ -155,6 +167,8 @@ final class WorkerCommand extends Command
 		ReadableStreamInterface $in,
 		OutputInterface $output,
 		array $analysedFiles,
+		?string $tmpFile,
+		?string $insteadOfFile,
 	): void
 	{
 		$handleError = function (Throwable $error) use ($out, $output): void {
@@ -192,7 +206,7 @@ final class WorkerCommand extends Command
 		$fileAnalyser = $container->getByType(FileAnalyser::class);
 		$ruleRegistry = $container->getByType(RuleRegistry::class);
 		$collectorRegistry = $container->getByType(CollectorRegistry::class);
-		$in->on('data', static function (array $json) use ($fileAnalyser, $ruleRegistry, $collectorRegistry, $out, $analysedFiles): void {
+		$in->on('data', static function (array $json) use ($fileAnalyser, $ruleRegistry, $collectorRegistry, $out, $analysedFiles, $tmpFile, $insteadOfFile): void {
 			$action = $json['action'];
 			if ($action !== 'analyse') {
 				return;
@@ -212,6 +226,9 @@ final class WorkerCommand extends Command
 			$exportedNodes = [];
 			foreach ($files as $file) {
 				try {
+					if ($file === $insteadOfFile) {
+						$file = $tmpFile;
+					}
 					$fileAnalyserResult = $fileAnalyser->analyseFile($file, $analysedFiles, $ruleRegistry, $collectorRegistry, null);
 					$fileErrors = $fileAnalyserResult->getErrors();
 					$filteredPhpErrors = array_merge($filteredPhpErrors, $fileAnalyserResult->getFilteredPhpErrors());
@@ -264,6 +281,28 @@ final class WorkerCommand extends Command
 				]]);
 		});
 		$in->on('error', $handleError);
+	}
+
+	/**
+	 * @param string[] $analysedFiles
+	 * @return string[]
+	 */
+	private function switchTmpFile(
+		array $analysedFiles,
+		?string $insteadOfFile,
+		?string $tmpFile,
+	): array
+	{
+		if ($insteadOfFile === null) {
+			return $analysedFiles;
+		}
+		$analysedFiles = array_values(array_filter($analysedFiles, static fn (string $file): bool => $file !== $insteadOfFile));
+
+		if ($tmpFile !== null) {
+			array_unshift($analysedFiles, $tmpFile);
+		}
+
+		return $analysedFiles;
 	}
 
 }

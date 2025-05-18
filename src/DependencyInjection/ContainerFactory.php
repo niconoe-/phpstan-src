@@ -102,6 +102,8 @@ final class ContainerFactory
 		string $usedLevel = CommandHelper::DEFAULT_LEVEL,
 		?string $generateBaselineFile = null,
 		?string $cliAutoloadFile = null,
+		?string $singleReflectionFile = null,
+		?string $singleReflectionInsteadOfFile = null,
 	): Container
 	{
 		[$allConfigFiles, $projectConfig] = $this->detectDuplicateIncludedFiles(
@@ -139,6 +141,8 @@ final class ContainerFactory
 			'env' => getenv(),
 		]);
 		$configurator->addDynamicParameters([
+			'singleReflectionFile' => $singleReflectionFile,
+			'singleReflectionInsteadOfFile' => $singleReflectionInsteadOfFile,
 			'analysedPaths' => $analysedPaths,
 			'analysedPathsFromConfig' => $analysedPathsFromConfig,
 		]);

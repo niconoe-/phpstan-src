@@ -161,6 +161,21 @@ jobs:
               ../bashunit -a contains 'Result cache not used because the metadata do not match: projectConfig, scannedFiles' "$OUTPUT"
               ../bashunit -a contains 'Instantiated class ResultCacheE2EGenerated\Foo not found.' "$OUTPUT"
           - script: |
+              cd e2e/editor-mode
+              OUTPUT=$(../bashunit -a exit_code "1" "../../bin/phpstan analyse -vv --error-format raw")
+              echo "$OUTPUT"
+              ../bashunit -a contains 'Bar.php:10:Parameter #1 $s of method EditorModeE2E\Bar::requireString() expects string, int given. [identifier=argument.type]' "$OUTPUT"
+              ../bashunit -a contains 'Foo.php:10:Method EditorModeE2E\Foo::doFoo() should return int but returns string. [identifier=return.type]' "$OUTPUT"
+              ../bashunit -a contains 'Result cache is saved.' "$OUTPUT"
+
+              OUTPUT=$(../bashunit -a exit_code "1" "../../bin/phpstan analyse -vv --error-format raw --tmp-file differentFoo.php --instead-of src/Foo.php")
+              echo "$OUTPUT"
+              ../bashunit -a contains 'differentFoo.php:10:Method EditorModeE2E\Foo::doFoo() should return float but returns string. [identifier=return.type]' "$OUTPUT"
+              ../bashunit -a not_contains 'Foo.php:10:Method EditorModeE2E\Foo::doFoo() should return int but returns string. [identifier=return.type]' "$OUTPUT"
+              ../bashunit -a contains 'Bar.php:10:Parameter #1 $s of method EditorModeE2E\Bar::requireString() expects string, float given. [identifier=argument.type]' "$OUTPUT"
+              ../bashunit -a contains 'Result cache restored. 2 files will be reanalysed.' "$OUTPUT"
+              ../bashunit -a contains 'Result cache was not saved because of --tmp-file and --instead-of CLI options passed (editor mode).' "$OUTPUT"
+          - script: |
               cd e2e/trait-caching
               ../../bin/phpstan analyze --no-progress --level 8 --error-format raw data/
               ../../bin/phpstan analyze --no-progress --level 8 --error-format raw data/

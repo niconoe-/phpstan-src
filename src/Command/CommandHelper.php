@@ -91,6 +91,8 @@ final class CommandHelper
 		?string $level,
 		bool $allowXdebug,
 		bool $debugEnabled,
+		?string $singleReflectionFile,
+		?string $singleReflectionInsteadOfFile,
 		bool $cleanupContainerCache,
 	): InceptionResult
 	{
@@ -202,6 +204,32 @@ final class CommandHelper
 
 		if ($generateBaselineFile !== null) {
 			$generateBaselineFile = $currentWorkingDirectoryFileHelper->normalizePath($currentWorkingDirectoryFileHelper->absolutizePath($generateBaselineFile));
+		}
+
+		if ($singleReflectionFile !== null) {
+			$singleReflectionFile = $currentWorkingDirectoryFileHelper->normalizePath($currentWorkingDirectoryFileHelper->absolutizePath($singleReflectionFile));
+			if (!is_file($singleReflectionFile)) {
+				$errorOutput->writeLineFormatted(sprintf('File passed to <fg=cyan>--tmp-file</> option does not exist: <error>%s</error>', $singleReflectionFile));
+				throw new InceptionNotSuccessfulException();
+			}
+
+			if ($singleReflectionInsteadOfFile === null) {
+				$errorOutput->writeLineFormatted('Both <fg=cyan>--tmp-file</> and <fg=cyan>--instead-of</> options must be passed at the same time for editor mode to work.');
+				throw new InceptionNotSuccessfulException();
+			}
+		}
+
+		if ($singleReflectionInsteadOfFile !== null) {
+			$singleReflectionInsteadOfFile = $currentWorkingDirectoryFileHelper->normalizePath($currentWorkingDirectoryFileHelper->absolutizePath($singleReflectionInsteadOfFile));
+			if (!is_file($singleReflectionInsteadOfFile)) {
+				$errorOutput->writeLineFormatted(sprintf('File passed to <fg=cyan>--instead-of</> option does not exist: <error>%s</error>', $singleReflectionFile));
+				throw new InceptionNotSuccessfulException();
+			}
+
+			if ($singleReflectionFile === null) {
+				$errorOutput->writeLineFormatted('Both <fg=cyan>--tmp-file</> and <fg=cyan>--instead-of</> options must be passed at the same time for editor mode to work.');
+				throw new InceptionNotSuccessfulException();
+			}
 		}
 
 		$defaultLevelUsed = false;
@@ -356,7 +384,7 @@ final class CommandHelper
 		}
 
 		try {
-			$container = $containerFactory->create($tmpDir, $additionalConfigFiles, $paths, $composerAutoloaderProjectPaths, $analysedPathsFromConfig, $level ?? self::DEFAULT_LEVEL, $generateBaselineFile, $autoloadFile);
+			$container = $containerFactory->create($tmpDir, $additionalConfigFiles, $paths, $composerAutoloaderProjectPaths, $analysedPathsFromConfig, $level ?? self::DEFAULT_LEVEL, $generateBaselineFile, $autoloadFile, $singleReflectionFile, $singleReflectionInsteadOfFile);
 		} catch (InvalidConfigurationException | AssertionException $e) {
 			$errorOutput->writeLineFormatted('<error>Invalid configuration:</error>');
 			$errorOutput->writeLineFormatted($e->getMessage());
@@ -585,6 +613,8 @@ final class CommandHelper
 			$projectConfigFile,
 			$projectConfig,
 			$generateBaselineFile,
+			$singleReflectionFile,
+			$singleReflectionInsteadOfFile,
 		);
 	}
 

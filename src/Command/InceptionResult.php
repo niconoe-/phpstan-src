@@ -32,6 +32,8 @@ final class InceptionResult
 		private ?string $projectConfigFile,
 		private ?array $projectConfigArray,
 		private ?string $generateBaselineFile,
+		private ?string $editorModeTmpFile,
+		private ?string $editorModeInsteadOfFile,
 	)
 	{
 		$this->filesCallback = $filesCallback;
@@ -86,6 +88,16 @@ final class InceptionResult
 	public function getGenerateBaselineFile(): ?string
 	{
 		return $this->generateBaselineFile;
+	}
+
+	public function getEditorModeTmpFile(): ?string
+	{
+		return $this->editorModeTmpFile;
+	}
+
+	public function getEditorModeInsteadOfFile(): ?string
+	{
+		return $this->editorModeInsteadOfFile;
 	}
 
 	public function handleReturn(int $exitCode, ?int $peakMemoryUsageBytes, float $analysisStartTime): int

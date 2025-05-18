@@ -108,6 +108,8 @@ final class FixerWorkerCommand extends Command
 				$level,
 				$allowXdebug,
 				false,
+				null,
+				null,
 				false,
 			);
 		} catch (InceptionNotSuccessfulException) {
@@ -133,7 +135,7 @@ final class FixerWorkerCommand extends Command
 			//$in = new Decoder($connection, true, 512, $jsonInvalidUtf8Ignore, 128 * 1024 * 1024);
 
 			/** @var ResultCacheManager $resultCacheManager */
-			$resultCacheManager = $container->getByType(ResultCacheManagerFactory::class)->create();
+			$resultCacheManager = $container->getByType(ResultCacheManagerFactory::class)->create([]);
 			$projectConfigArray = $inceptionResult->getProjectConfigArray();
 
 			/** @var AnalyserResultFinalizer $analyserResultFinalizer */
@@ -406,6 +408,8 @@ final class FixerWorkerCommand extends Command
 			$mainScript,
 			null,
 			$configuration,
+			null,
+			null,
 			$input,
 			$onFileAnalysisHandler,
 		);

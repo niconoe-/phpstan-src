@@ -5,6 +5,9 @@ namespace PHPStan\Analyser\ResultCache;
 interface ResultCacheManagerFactory
 {
 
-	public function create(): ResultCacheManager;
+	/**
+	 * @param array<string, string> $fileReplacements
+	 */
+	public function create(array $fileReplacements): ResultCacheManager;
 
 }

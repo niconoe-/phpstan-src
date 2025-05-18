@@ -23,6 +23,8 @@ final class DerivativeContainerFactory
 		private string $usedLevel,
 		private ?string $generateBaselineFile,
 		private ?string $cliAutoloadFile,
+		private ?string $singleReflectionFile,
+		private ?string $singleReflectionInsteadOfFile,
 	)
 	{
 	}
@@ -46,6 +48,8 @@ final class DerivativeContainerFactory
 			$this->usedLevel,
 			$this->generateBaselineFile,
 			$this->cliAutoloadFile,
+			$this->singleReflectionFile,
+			$this->singleReflectionInsteadOfFile,
 		);
 	}
 

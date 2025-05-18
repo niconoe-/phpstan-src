@@ -24,6 +24,7 @@ use function array_reverse;
 use function array_sum;
 use function count;
 use function defined;
+use function escapeshellarg;
 use function ini_get;
 use function max;
 use function memory_get_usage;
@@ -61,6 +62,8 @@ final class ParallelAnalyser
 		string $mainScript,
 		?Closure $postFileCallback,
 		?string $projectConfigFile,
+		?string $tmpFile,
+		?string $insteadOfFile,
 		InputInterface $input,
 		?callable $onFileAnalysisHandler,
 	): PromiseInterface
@@ -168,6 +171,13 @@ final class ParallelAnalyser
 				'--identifier',
 				$processIdentifier,
 			];
+
+			if ($tmpFile !== null && $insteadOfFile !== null) {
+				$commandOptions[] = '--tmp-file';
+				$commandOptions[] = escapeshellarg($tmpFile);
+				$commandOptions[] = '--instead-of';
+				$commandOptions[] = escapeshellarg($insteadOfFile);
+			}
 
 			$process = new Process(ProcessHelper::getWorkerCommand(
 				$mainScript,

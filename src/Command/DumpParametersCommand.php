@@ -82,6 +82,8 @@ final class DumpParametersCommand extends Command
 				$level,
 				false,
 				false,
+				null,
+				null,
 				false,
 			);
 		} catch (InceptionNotSuccessfulException) {
@@ -97,6 +99,10 @@ final class DumpParametersCommand extends Command
 		unset($parameters['productionMode']);
 		unset($parameters['tempDir']);
 		unset($parameters['__validate']);
+
+		// internal - editor mode
+		unset($parameters['singleReflectionFile']);
+		unset($parameters['singleReflectionInsteadOfFile']);
 
 		if ($json) {
 			$encoded = Json::encode($parameters, Json::PRETTY);

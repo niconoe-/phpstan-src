@@ -193,3 +193,7 @@ parametersSchema:
 	analysedPathsFromConfig: listOf(string())
 	usedLevel: string()
 	cliAutoloadFile: schema(string(), nullable())
+
+	# internal - editor mode
+	singleReflectionFile: schema(string(), nullable())
+	singleReflectionInsteadOfFile: schema(string(), nullable())

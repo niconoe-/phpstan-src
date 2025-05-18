@@ -81,6 +81,8 @@ final class ClearResultCacheCommand extends Command
 				'0',
 				$allowXdebug,
 				$debugEnabled,
+				null,
+				null,
 				true,
 			);
 		} catch (InceptionNotSuccessfulException) {
