@@ -46,11 +46,17 @@ final class AnalyseApplication
 		bool $debug,
 		?string $projectConfigFile,
 		?array $projectConfigArray,
+		?string $tmpFile,
+		?string $insteadOfFile,
 		InputInterface $input,
 	): AnalysisResult
 	{
 		$isResultCacheUsed = false;
-		$resultCacheManager = $this->resultCacheManagerFactory->create();
+		$fileReplacements = [];
+		if ($tmpFile !== null && $insteadOfFile !== null) {
+			$fileReplacements = [$insteadOfFile => $tmpFile];
+		}
+		$resultCacheManager = $this->resultCacheManagerFactory->create($fileReplacements);
 
 		$ignoredErrorHelperResult = $this->ignoredErrorHelper->initialize();
 		$fileSpecificErrors = [];
@@ -71,6 +77,8 @@ final class AnalyseApplication
 				$files,
 				$debug,
 				$projectConfigFile,
+				$tmpFile,
+				$insteadOfFile,
 				$stdOutput,
 				$errorOutput,
 				$input,
@@ -169,6 +177,8 @@ final class AnalyseApplication
 		array $allAnalysedFiles,
 		bool $debug,
 		?string $projectConfigFile,
+		?string $tmpFile,
+		?string $insteadOfFile,
 		Output $stdOutput,
 		Output $errorOutput,
 		InputInterface $input,
@@ -212,7 +222,7 @@ final class AnalyseApplication
 			}
 		}
 
-		$analyserResult = $this->analyserRunner->runAnalyser($files, $allAnalysedFiles, $preFileCallback, $postFileCallback, $debug, true, $projectConfigFile, $input);
+		$analyserResult = $this->analyserRunner->runAnalyser($files, $allAnalysedFiles, $preFileCallback, $postFileCallback, $debug, true, $projectConfigFile, $tmpFile, $insteadOfFile, $input);
 
 		if (!$debug) {
 			$errorOutput->getStyle()->progressFinish();

@@ -67,6 +67,7 @@ final class ResultCacheManager
 	 * @param string[] $bootstrapFiles
 	 * @param string[] $scanFiles
 	 * @param string[] $scanDirectories
+	 * @param array<string, string> $fileReplacements
 	 */
 	public function __construct(
 		private ExportedNodeFetcher $exportedNodeFetcher,
@@ -83,6 +84,7 @@ final class ResultCacheManager
 		private array $bootstrapFiles,
 		private array $scanFiles,
 		private array $scanDirectories,
+		private array $fileReplacements,
 		private bool $checkDependenciesOfProjectExtensionFiles,
 	)
 	{
@@ -369,6 +371,9 @@ final class ResultCacheManager
 	 */
 	private function exportedNodesChanged(string $analysedFile, array $cachedFileExportedNodes): ?bool
 	{
+		if (array_key_exists($analysedFile, $this->fileReplacements)) {
+			$analysedFile = $this->fileReplacements[$analysedFile];
+		}
 		$fileExportedNodes = $this->exportedNodeFetcher->fetchNodes($analysedFile);
 
 		$cachedSymbols = [];
@@ -439,6 +444,13 @@ final class ResultCacheManager
 			if (count($internalErrors) > 0) {
 				if ($output->isVeryVerbose()) {
 					$output->writeLineFormatted('Result cache was not saved because of internal errors.');
+				}
+				return false;
+			}
+
+			if (count($this->fileReplacements) > 0) {
+				if ($output->isVeryVerbose()) {
+					$output->writeLineFormatted('Result cache was not saved because of --tmp-file and --instead-of CLI options passed (editor mode).');
 				}
 				return false;
 			}
@@ -561,6 +573,10 @@ final class ResultCacheManager
 	{
 		$errorsByFile = $resultCache->getErrors();
 		foreach ($resultCache->getFilesToAnalyse() as $file) {
+			if (array_key_exists($file, $this->fileReplacements)) {
+				unset($errorsByFile[$file]);
+				$file = $this->fileReplacements[$file];
+			}
 			if (!array_key_exists($file, $freshErrorsByFile)) {
 				unset($errorsByFile[$file]);
 				continue;
@@ -579,6 +595,10 @@ final class ResultCacheManager
 	{
 		$errorsByFile = $resultCache->getLocallyIgnoredErrors();
 		foreach ($resultCache->getFilesToAnalyse() as $file) {
+			if (array_key_exists($file, $this->fileReplacements)) {
+				unset($errorsByFile[$file]);
+				$file = $this->fileReplacements[$file];
+			}
 			if (!array_key_exists($file, $freshLocallyIgnoredErrorsByFile)) {
 				unset($errorsByFile[$file]);
 				continue;
@@ -597,6 +617,10 @@ final class ResultCacheManager
 	{
 		$collectedDataByFile = $resultCache->getCollectedData();
 		foreach ($resultCache->getFilesToAnalyse() as $file) {
+			if (array_key_exists($file, $this->fileReplacements)) {
+				unset($collectedDataByFile[$file]);
+				$file = $this->fileReplacements[$file];
+			}
 			if (!array_key_exists($file, $freshCollectedDataByFile)) {
 				unset($collectedDataByFile[$file]);
 				continue;
@@ -637,6 +661,10 @@ final class ResultCacheManager
 
 		$newDependencies = $cachedDependencies;
 		foreach ($resultCache->getFilesToAnalyse() as $file) {
+			if (array_key_exists($file, $this->fileReplacements)) {
+				unset($newDependencies[$file]);
+				$file = $this->fileReplacements[$file];
+			}
 			if (!array_key_exists($file, $freshDependencies)) {
 				unset($newDependencies[$file]);
 				continue;
@@ -656,6 +684,10 @@ final class ResultCacheManager
 	{
 		$newExportedNodes = $resultCache->getExportedNodes();
 		foreach ($resultCache->getFilesToAnalyse() as $file) {
+			if (array_key_exists($file, $this->fileReplacements)) {
+				unset($newExportedNodes[$file]);
+				$file = $this->fileReplacements[$file];
+			}
 			if (!array_key_exists($file, $freshExportedNodes)) {
 				unset($newExportedNodes[$file]);
 				continue;
@@ -675,6 +707,10 @@ final class ResultCacheManager
 	{
 		$newLinesToIgnore = $resultCache->getLinesToIgnore();
 		foreach ($resultCache->getFilesToAnalyse() as $file) {
+			if (array_key_exists($file, $this->fileReplacements)) {
+				unset($newLinesToIgnore[$file]);
+				$file = $this->fileReplacements[$file];
+			}
 			if (!array_key_exists($file, $freshLinesToIgnore)) {
 				unset($newLinesToIgnore[$file]);
 				continue;
@@ -694,6 +730,10 @@ final class ResultCacheManager
 	{
 		$newUnmatchedLineIgnores = $resultCache->getUnmatchedLineIgnores();
 		foreach ($resultCache->getFilesToAnalyse() as $file) {
+			if (array_key_exists($file, $this->fileReplacements)) {
+				unset($newUnmatchedLineIgnores[$file]);
+				$file = $this->fileReplacements[$file];
+			}
 			if (!array_key_exists($file, $freshUnmatchedLineIgnores)) {
 				unset($newUnmatchedLineIgnores[$file]);
 				continue;
@@ -933,6 +973,9 @@ return [
 
 	private function getFileHash(string $path): string
 	{
+		if (array_key_exists($path, $this->fileReplacements)) {
+			$path = $this->fileReplacements[$path];
+		}
 		if (array_key_exists($path, $this->fileHashes)) {
 			return $this->fileHashes[$path];
 		}

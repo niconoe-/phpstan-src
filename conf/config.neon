@@ -660,6 +660,8 @@ services:
 			usedLevel: %usedLevel%
 			generateBaselineFile: %generateBaselineFile%
 			cliAutoloadFile: %cliAutoloadFile%
+			singleReflectionFile: %singleReflectionFile%
+			singleReflectionInsteadOfFile: %singleReflectionInsteadOfFile%
 
 	-
 		class: PHPStan\DependencyInjection\Reflection\ClassReflectionExtensionRegistryProvider
@@ -2196,6 +2198,7 @@ services:
 			composerAutoloaderProjectPaths: %composerAutoloaderProjectPaths%
 			analysedPathsFromConfig: %analysedPathsFromConfig%
 			playgroundMode: %sourceLocatorPlaygroundMode%
+			singleReflectionFile: %singleReflectionFile%
 
 	-
 		implement: PHPStan\Reflection\BetterReflection\BetterReflectionProviderFactory
@@ -2243,6 +2246,7 @@ services:
 			currentPhpVersionRichParser: @currentPhpVersionRichParser
 			currentPhpVersionSimpleParser: @currentPhpVersionSimpleParser
 			php8Parser: @php8Parser
+			singleReflectionFile: %singleReflectionFile%
 		autowired: false
 
 	phpstanDiagnoseExtension:

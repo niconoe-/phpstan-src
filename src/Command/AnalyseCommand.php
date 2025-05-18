@@ -98,6 +98,8 @@ final class AnalyseCommand extends Command
 				new InputOption('allow-empty-baseline', null, InputOption::VALUE_NONE, 'Do not error out when the generated baseline is empty'),
 				new InputOption('memory-limit', null, InputOption::VALUE_REQUIRED, 'Memory limit for analysis'),
 				new InputOption('xdebug', null, InputOption::VALUE_NONE, 'Allow running with Xdebug for debugging purposes'),
+				new InputOption('tmp-file', null, InputOption::VALUE_REQUIRED, '(Editor mode) Edited file used in place of --instead-of file'),
+				new InputOption('instead-of', null, InputOption::VALUE_REQUIRED, '(Editor mode) File being replaced by --tmp-file'),
 				new InputOption('fix', null, InputOption::VALUE_NONE, 'Launch PHPStan Pro'),
 				new InputOption('watch', null, InputOption::VALUE_NONE, 'Launch PHPStan Pro'),
 				new InputOption('pro', null, InputOption::VALUE_NONE, 'Launch PHPStan Pro'),
@@ -147,12 +149,17 @@ final class AnalyseCommand extends Command
 
 		$allowEmptyBaseline = (bool) $input->getOption('allow-empty-baseline');
 
+		$tmpFile = $input->getOption('tmp-file');
+		$insteadOfFile = $input->getOption('instead-of');
+
 		if (
 			!is_array($paths)
 			|| (!is_string($memoryLimit) && $memoryLimit !== null)
 			|| (!is_string($autoloadFile) && $autoloadFile !== null)
 			|| (!is_string($configuration) && $configuration !== null)
 			|| (!is_string($level) && $level !== null)
+			|| (!is_string($tmpFile) && $tmpFile !== null)
+			|| (!is_string($insteadOfFile) && $insteadOfFile !== null)
 			|| (!is_bool($allowXdebug))
 		) {
 			throw new ShouldNotHappenException();
@@ -171,6 +178,8 @@ final class AnalyseCommand extends Command
 				$level,
 				$allowXdebug,
 				$debugEnabled,
+				$tmpFile,
+				$insteadOfFile,
 			);
 		} catch (InceptionNotSuccessfulException $e) {
 			return 1;
@@ -179,6 +188,17 @@ final class AnalyseCommand extends Command
 		if ($generateBaselineFile === null && $allowEmptyBaseline) {
 			$inceptionResult->getStdOutput()->getStyle()->error('You must pass the --generate-baseline option alongside --allow-empty-baseline.');
 			return $inceptionResult->handleReturn(1, null, $this->analysisStartTime);
+		}
+
+		if ($inceptionResult->getEditorModeTmpFile() !== null) {
+			if ($generateBaselineFile !== null) {
+				$inceptionResult->getStdOutput()->getStyle()->error('Editor mode options --tmp-file and --instead-of cannot be used when generating the baseline.');
+				return $inceptionResult->handleReturn(1, null, $this->analysisStartTime);
+			}
+			if ($fix) {
+				$inceptionResult->getStdOutput()->getStyle()->error('Editor mode options --tmp-file and --instead-of cannot be used with PHPStan Pro.');
+				return $inceptionResult->handleReturn(1, null, $this->analysisStartTime);
+			}
 		}
 
 		$errorOutput = $inceptionResult->getErrorOutput();
@@ -306,6 +326,8 @@ final class AnalyseCommand extends Command
 				$debug,
 				$inceptionResult->getProjectConfigFile(),
 				$inceptionResult->getProjectConfigArray(),
+				$inceptionResult->getEditorModeTmpFile(),
+				$inceptionResult->getEditorModeInsteadOfFile(),
 				$input,
 			);
 		} catch (Throwable $t) {

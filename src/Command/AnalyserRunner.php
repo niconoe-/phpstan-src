@@ -11,6 +11,9 @@ use PHPStan\Process\CpuCoreCounter;
 use PHPStan\ShouldNotHappenException;
 use React\EventLoop\StreamSelectLoop;
 use Symfony\Component\Console\Input\InputInterface;
+use function array_filter;
+use function array_unshift;
+use function array_values;
 use function count;
 use function function_exists;
 use function is_file;
@@ -42,6 +45,8 @@ final class AnalyserRunner
 		bool $debug,
 		bool $allowParallel,
 		?string $projectConfigFile,
+		?string $tmpFile,
+		?string $insteadOfFile,
 		InputInterface $input,
 	): AnalyserResult
 	{
@@ -65,7 +70,7 @@ final class AnalyserRunner
 		) {
 			$loop = new StreamSelectLoop();
 			$result = null;
-			$promise = $this->parallelAnalyser->analyse($loop, $schedule, $mainScript, $postFileCallback, $projectConfigFile, $input, null);
+			$promise = $this->parallelAnalyser->analyse($loop, $schedule, $mainScript, $postFileCallback, $projectConfigFile, $tmpFile, $insteadOfFile, $input, null);
 			$promise->then(static function (AnalyserResult $tmp) use (&$result): void {
 				$result = $tmp;
 			});
@@ -77,12 +82,34 @@ final class AnalyserRunner
 		}
 
 		return $this->analyser->analyse(
-			$files,
+			$this->switchTmpFile($files, $insteadOfFile, $tmpFile),
 			$preFileCallback,
 			$postFileCallback,
 			$debug,
-			$allAnalysedFiles,
+			$this->switchTmpFile($allAnalysedFiles, $insteadOfFile, $tmpFile),
 		);
+	}
+
+	/**
+	 * @param string[] $analysedFiles
+	 * @return string[]
+	 */
+	private function switchTmpFile(
+		array $analysedFiles,
+		?string $insteadOfFile,
+		?string $tmpFile,
+	): array
+	{
+		if ($insteadOfFile === null) {
+			return $analysedFiles;
+		}
+		$analysedFiles = array_values(array_filter($analysedFiles, static fn (string $file): bool => $file !== $insteadOfFile));
+
+		if ($tmpFile !== null) {
+			array_unshift($analysedFiles, $tmpFile);
+		}
+
+		return $analysedFiles;
 	}
 
 }

@@ -96,6 +96,10 @@ final class DumpParametersCommand extends Command
 		unset($parameters['tempDir']);
 		unset($parameters['__validate']);
 
+		// internal - editor mode
+		unset($parameters['singleReflectionFile']);
+		unset($parameters['singleReflectionInsteadOfFile']);
+
 		if ($json) {
 			$encoded = Json::encode($parameters, Json::PRETTY);
 		} else {
