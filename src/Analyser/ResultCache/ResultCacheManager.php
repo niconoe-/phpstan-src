@@ -97,6 +97,9 @@ final class ResultCacheManager
 		$startTime = microtime(true);
 		$currentFileHashes = [];
 		foreach ($allAnalysedFiles as $analysedFile) {
+			if (!is_file($analysedFile)) {
+				continue;
+			}
 			$currentFileHashes[$analysedFile] = $this->getFileHash($analysedFile);
 		}
 		if ($debug) {
