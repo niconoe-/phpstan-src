@@ -24,6 +24,7 @@ final class ResultCache
 	 * @param array<string, array<string>> $dependencies
 	 * @param array<string, array<RootExportedNode>> $exportedNodes
 	 * @param array<string, array{string, bool, string}> $projectExtensionFiles
+	 * @param array<string, string> $currentFileHashes
 	 */
 	public function __construct(
 		private array $filesToAnalyse,
@@ -38,6 +39,7 @@ final class ResultCache
 		private array $dependencies,
 		private array $exportedNodes,
 		private array $projectExtensionFiles,
+		private array $currentFileHashes,
 	)
 	{
 	}
@@ -130,6 +132,14 @@ final class ResultCache
 	public function getProjectExtensionFiles(): array
 	{
 		return $this->projectExtensionFiles;
+	}
+
+	/**
+	 * @return array<string, string>
+	 */
+	public function getCurrentFileHashes(): array
+	{
+		return $this->currentFileHashes;
 	}
 
 }
