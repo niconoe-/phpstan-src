@@ -1,0 +1,8 @@
+--- src/Generated/Foo.php	2025-05-18 14:26:01
++++ src/Generated/Foo.php	2025-05-18 14:27:01
+@@ -1,4 +1,4 @@
+ <?php
+ namespace ResultCacheE2EGenerated;
+
+-final class Foo {}
++final class Bar {}

@@ -27,6 +27,7 @@ use function array_fill_keys;
 use function array_filter;
 use function array_key_exists;
 use function array_keys;
+use function array_merge;
 use function array_unique;
 use function array_values;
 use function count;
@@ -34,6 +35,7 @@ use function explode;
 use function get_loaded_extensions;
 use function implode;
 use function is_array;
+use function is_dir;
 use function is_file;
 use function ksort;
 use function microtime;
@@ -63,6 +65,7 @@ final class ResultCacheManager
 
 	/**
 	 * @param string[] $analysedPaths
+	 * @param string[] $analysedPathsFromConfig
 	 * @param string[] $composerAutoloaderProjectPaths
 	 * @param string[] $bootstrapFiles
 	 * @param string[] $scanFiles
@@ -78,6 +81,7 @@ final class ResultCacheManager
 		private FileHelper $fileHelper,
 		private string $cacheFilePath,
 		private array $analysedPaths,
+		private array $analysedPathsFromConfig,
 		private array $composerAutoloaderProjectPaths,
 		private string $usedLevel,
 		private ?string $cliAutoloadFile,
@@ -940,11 +944,23 @@ return [
 	private function getScannedFiles(array $allAnalysedFiles): array
 	{
 		$scannedFiles = $this->scanFiles;
-		foreach ($this->scanFileFinder->findFiles($this->scanDirectories)->getFiles() as $file) {
-			$scannedFiles[] = $file;
+		$analysedDirectories = [];
+		foreach (array_merge($this->analysedPaths, $this->analysedPathsFromConfig) as $analysedPath) {
+			if (is_file($analysedPath)) {
+				continue;
+			}
+
+			if (!is_dir($analysedPath)) {
+				continue;
+			}
+
+			$analysedDirectories[] = $analysedPath;
 		}
 
-		$scannedFiles = array_unique($scannedFiles);
+		$directories = array_unique(array_merge($analysedDirectories, $this->scanDirectories));
+		foreach ($this->scanFileFinder->findFiles($directories)->getFiles() as $file) {
+			$scannedFiles[] = $file;
+		}
 
 		$hashes = [];
 		foreach (array_diff($scannedFiles, $allAnalysedFiles) as $file) {
