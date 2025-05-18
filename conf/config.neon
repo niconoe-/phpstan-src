@@ -680,7 +680,12 @@ services:
 	-
 		class: PHPStan\File\FileMonitor
 		arguments:
-			fileFinder: @fileFinderAnalyse
+			analyseFileFinder: @fileFinderAnalyse
+			scanFileFinder: @fileFinderScan
+			analysedPaths: %analysedPaths%
+			analysedPathsFromConfig: %analysedPathsFromConfig%
+			scanFiles: %scanFiles%
+			scanDirectories: %scanDirectories%
 
 	-
 		class: PHPStan\Parser\DeclarePositionVisitor

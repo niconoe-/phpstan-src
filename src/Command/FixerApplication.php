@@ -147,7 +147,6 @@ final class FixerApplication
 			});
 
 			$this->fileMonitor->initialize(array_merge(
-				$this->analysedPaths,
 				$this->getComposerLocks(),
 				$this->getComposerInstalled(),
 				$this->getExecutedFiles(),
