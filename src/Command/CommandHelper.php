@@ -222,7 +222,7 @@ final class CommandHelper
 		if ($singleReflectionInsteadOfFile !== null) {
 			$singleReflectionInsteadOfFile = $currentWorkingDirectoryFileHelper->normalizePath($currentWorkingDirectoryFileHelper->absolutizePath($singleReflectionInsteadOfFile));
 			if (!is_file($singleReflectionInsteadOfFile)) {
-				$errorOutput->writeLineFormatted(sprintf('File passed to <fg=cyan>--instead-of</> option does not exist: <error>%s</error>', $singleReflectionFile));
+				$errorOutput->writeLineFormatted(sprintf('File passed to <fg=cyan>--instead-of</> option does not exist: <error>%s</error>', $singleReflectionInsteadOfFile));
 				throw new InceptionNotSuccessfulException();
 			}
 
