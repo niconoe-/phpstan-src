@@ -262,6 +262,13 @@ final class AnalyseCommand extends Command
 			return $inceptionResult->handleReturn(1, null, $this->analysisStartTime);
 		}
 
+		if ($inceptionResult->getEditorModeInsteadOfFile() !== null) {
+			if (!in_array($inceptionResult->getEditorModeInsteadOfFile(), $files, true)) {
+				$inceptionResult->getStdOutput()->getStyle()->error(sprintf('File %s passed to --instead-of is not in analysed project files.', $inceptionResult->getEditorModeInsteadOfFile()));
+				return $inceptionResult->handleReturn(1, null, $this->analysisStartTime);
+			}
+		}
+
 		$analysedConfigFiles = array_intersect($files, $container->getParameter('allConfigFiles'));
 		/** @var RelativePathHelper $relativePathHelper */
 		$relativePathHelper = $container->getService('relativePathHelper');
