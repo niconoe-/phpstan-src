@@ -14,6 +14,7 @@ use PHPStan\Broker\FunctionNotFoundException;
 use PHPStan\File\FileHelper;
 use PHPStan\Node\ClassPropertyNode;
 use PHPStan\Node\InClassMethodNode;
+use PHPStan\Node\InClassNode;
 use PHPStan\Node\InFunctionNode;
 use PHPStan\Node\InPropertyHookNode;
 use PHPStan\Reflection\ClassReflection;
@@ -470,6 +471,16 @@ final class DependencyResolver
 		}
 
 		return new NodeDependencies($this->fileHelper, $dependenciesReflections, $this->exportedNodeResolver->resolve($scope->getFile(), $node));
+	}
+
+	public function resolveUsedTraitDependencies(InClassNode $inClassNode): NodeDependencies
+	{
+		$dependenciesReflections = [];
+		foreach ($inClassNode->getClassReflection()->getTraits(true) as $trait) {
+			$dependenciesReflections[] = $trait;
+		}
+
+		return new NodeDependencies($this->fileHelper, $dependenciesReflections, null);
 	}
 
 	private function considerArrayForCallableTest(Scope $scope, Array_ $arrayNode): bool

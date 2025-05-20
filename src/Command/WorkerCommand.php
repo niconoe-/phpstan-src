@@ -223,6 +223,7 @@ final class WorkerCommand extends Command
 			$unmatchedLineIgnores = [];
 			$collectedData = [];
 			$dependencies = [];
+			$usedTraitDependencies = [];
 			$exportedNodes = [];
 			foreach ($files as $file) {
 				try {
@@ -236,6 +237,7 @@ final class WorkerCommand extends Command
 					$linesToIgnore[$file] = $fileAnalyserResult->getLinesToIgnore();
 					$unmatchedLineIgnores[$file] = $fileAnalyserResult->getUnmatchedLineIgnores();
 					$dependencies[$file] = $fileAnalyserResult->getDependencies();
+					$usedTraitDependencies[$file] = $fileAnalyserResult->getUsedTraitDependencies();
 					$exportedNodes[$file] = $fileAnalyserResult->getExportedNodes();
 					foreach ($fileErrors as $fileError) {
 						$errors[] = $fileError;
@@ -275,6 +277,7 @@ final class WorkerCommand extends Command
 					'collectedData' => $collectedData,
 					'memoryUsage' => memory_get_peak_usage(true),
 					'dependencies' => $dependencies,
+					'usedTraitDependencies' => $usedTraitDependencies,
 					'exportedNodes' => $exportedNodes,
 					'files' => $files,
 					'internalErrorsCount' => $internalErrorsCount,
