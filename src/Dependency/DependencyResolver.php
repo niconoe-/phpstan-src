@@ -15,6 +15,7 @@ use PHPStan\File\FileHelper;
 use PHPStan\Node\ClassPropertyNode;
 use PHPStan\Node\InClassMethodNode;
 use PHPStan\Node\InFunctionNode;
+use PHPStan\Node\InPropertyHookNode;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ExtendedParameterReflection;
 use PHPStan\Reflection\ExtendedParametersAcceptor;
@@ -83,6 +84,10 @@ final class DependencyResolver
 					$this->addClassToDependencies($referencedClass, $dependenciesReflections);
 				}
 			}
+		} elseif ($node instanceof InPropertyHookNode) {
+			$nativeMethod = $node->getHookReflection();
+			$this->extractThrowType($nativeMethod->getThrowType(), $dependenciesReflections);
+			$this->extractFromParametersAcceptor($nativeMethod, $dependenciesReflections);
 		} elseif ($node instanceof ClassPropertyNode) {
 			$nativeType = $node->getNativeType();
 			if ($nativeType !== null) {
