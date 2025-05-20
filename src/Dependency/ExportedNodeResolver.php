@@ -3,6 +3,7 @@
 namespace PHPStan\Dependency;
 
 use PhpParser\Node;
+use PhpParser\Node\Expr;
 use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
@@ -19,6 +20,7 @@ use PHPStan\Dependency\ExportedNode\ExportedMethodNode;
 use PHPStan\Dependency\ExportedNode\ExportedParameterNode;
 use PHPStan\Dependency\ExportedNode\ExportedPhpDocNode;
 use PHPStan\Dependency\ExportedNode\ExportedPropertiesNode;
+use PHPStan\Dependency\ExportedNode\ExportedPropertyHookNode;
 use PHPStan\Dependency\ExportedNode\ExportedTraitNode;
 use PHPStan\Dependency\ExportedNode\ExportedTraitUseAdaptation;
 use PHPStan\Node\Printer\ExprPrinter;
@@ -27,6 +29,7 @@ use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\FileTypeMapper;
 use function array_map;
 use function is_string;
+use function sprintf;
 
 final class ExportedNodeResolver
 {
@@ -307,6 +310,7 @@ final class ExportedNodeResolver
 				$node->isStatic(),
 				$node->isReadonly(),
 				$this->exportAttributeNodes($node->attrGroups),
+				$this->exportPropertyHooks($node->hooks, $fileName, $namespacedName),
 			);
 		}
 
@@ -377,6 +381,43 @@ final class ExportedNodeResolver
 					$args,
 				);
 			}
+		}
+
+		return $nodes;
+	}
+
+	/**
+	 * @param Node\PropertyHook[] $hooks
+	 * @return ExportedPropertyHookNode[]
+	 */
+	private function exportPropertyHooks(
+		array $hooks,
+		string $fileName,
+		string $namespacedName,
+	): array
+	{
+		$nodes = [];
+		foreach ($hooks as $hook) {
+			$docComment = $hook->getDocComment();
+			$propertyName = $hook->getAttribute('propertyName');
+			if ($propertyName === null) {
+				continue;
+			}
+			$nodes[] = new ExportedPropertyHookNode(
+				$hook->name->toString(),
+				$this->exportPhpDocNode(
+					$fileName,
+					$namespacedName,
+					sprintf('$%s::%s', $propertyName, $hook->name->toString()),
+					$docComment !== null ? $docComment->getText() : null,
+				),
+				$hook->byRef,
+				$hook->body === null,
+				$hook->isFinal(),
+				$hook->body instanceof Expr,
+				$this->exportParameterNodes($hook->params),
+				$this->exportAttributeNodes($hook->attrGroups),
+			);
 		}
 
 		return $nodes;

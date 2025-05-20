@@ -15,6 +15,7 @@ final class ExportedPropertiesNode implements JsonSerializable, ExportedNode
 	/**
 	 * @param string[] $names
 	 * @param ExportedAttributeNode[] $attributes
+	 * @param ExportedPropertyHookNode[] $hooks
 	 */
 	public function __construct(
 		private array $names,
@@ -25,6 +26,7 @@ final class ExportedPropertiesNode implements JsonSerializable, ExportedNode
 		private bool $static,
 		private bool $readonly,
 		private array $attributes,
+		private array $hooks,
 	)
 	{
 	}
@@ -67,6 +69,16 @@ final class ExportedPropertiesNode implements JsonSerializable, ExportedNode
 			}
 		}
 
+		if (count($this->hooks) !== count($node->hooks)) {
+			return false;
+		}
+
+		foreach ($this->hooks as $i => $hook) {
+			if (!$hook->equals($node->hooks[$i])) {
+				return false;
+			}
+		}
+
 		return $this->type === $node->type
 			&& $this->public === $node->public
 			&& $this->private === $node->private
@@ -88,6 +100,7 @@ final class ExportedPropertiesNode implements JsonSerializable, ExportedNode
 			$properties['static'],
 			$properties['readonly'],
 			$properties['attributes'],
+			$properties['hooks'],
 		);
 	}
 
@@ -110,6 +123,12 @@ final class ExportedPropertiesNode implements JsonSerializable, ExportedNode
 				}
 				return ExportedAttributeNode::decode($attributeData['data']);
 			}, $data['attributes']),
+			array_map(static function (array $attributeData): ExportedPropertyHookNode {
+				if ($attributeData['type'] !== ExportedPropertyHookNode::class) {
+					throw new ShouldNotHappenException();
+				}
+				return ExportedPropertyHookNode::decode($attributeData['data']);
+			}, $data['hooks']),
 		);
 	}
 
@@ -130,6 +149,7 @@ final class ExportedPropertiesNode implements JsonSerializable, ExportedNode
 				'static' => $this->static,
 				'readonly' => $this->readonly,
 				'attributes' => $this->attributes,
+				'hooks' => $this->hooks,
 			],
 		];
 	}
