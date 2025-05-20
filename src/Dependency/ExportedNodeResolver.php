@@ -25,6 +25,7 @@ use PHPStan\Dependency\ExportedNode\ExportedTraitNode;
 use PHPStan\Dependency\ExportedNode\ExportedTraitUseAdaptation;
 use PHPStan\Node\Printer\ExprPrinter;
 use PHPStan\Node\Printer\NodeTypePrinter;
+use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\FileTypeMapper;
 use function array_map;
@@ -34,7 +35,11 @@ use function sprintf;
 final class ExportedNodeResolver
 {
 
-	public function __construct(private FileTypeMapper $fileTypeMapper, private ExprPrinter $exprPrinter)
+	public function __construct(
+		private ReflectionProvider $reflectionProvider,
+		private FileTypeMapper $fileTypeMapper,
+		private ExprPrinter $exprPrinter,
+	)
 	{
 	}
 
@@ -296,8 +301,17 @@ final class ExportedNodeResolver
 
 			$docComment = $node->getDocComment();
 
+			$names = array_map(static fn (Node\PropertyItem $prop): string => $prop->name->toString(), $node->props);
+			$virtual = false;
+			if ($this->reflectionProvider->hasClass($namespacedName)) {
+				$classReflection = $this->reflectionProvider->getClass($namespacedName);
+				if ($classReflection->hasNativeProperty($names[0])) {
+					$virtual = $classReflection->getNativeProperty($names[0])->isVirtual()->yes();
+				}
+			}
+
 			return new ExportedPropertiesNode(
-				array_map(static fn (Node\PropertyItem $prop): string => $prop->name->toString(), $node->props),
+				$names,
 				$this->exportPhpDocNode(
 					$fileName,
 					$namespacedName,
@@ -314,6 +328,7 @@ final class ExportedNodeResolver
 				$node->isPublicSet(),
 				$node->isProtectedSet(),
 				$node->isPrivateSet(),
+				$virtual,
 				$this->exportAttributeNodes($node->attrGroups),
 				$this->exportPropertyHooks($node->hooks, $fileName, $namespacedName),
 			);

@@ -30,6 +30,7 @@ final class ExportedPropertiesNode implements JsonSerializable, ExportedNode
 		private bool $publicSet,
 		private bool $protectedSet,
 		private bool $privateSet,
+		private bool $virtual,
 		private array $attributes,
 		private array $hooks,
 	)
@@ -93,7 +94,8 @@ final class ExportedPropertiesNode implements JsonSerializable, ExportedNode
 			&& $this->final === $node->final
 			&& $this->publicSet === $node->publicSet
 			&& $this->protectedSet === $node->protectedSet
-			&& $this->privateSet === $node->privateSet;
+			&& $this->privateSet === $node->privateSet
+			&& $this->virtual === $node->virtual;
 	}
 
 	/**
@@ -114,6 +116,7 @@ final class ExportedPropertiesNode implements JsonSerializable, ExportedNode
 			$properties['publicSet'],
 			$properties['protectedSet'],
 			$properties['privateSet'],
+			$properties['virtual'],
 			$properties['attributes'],
 			$properties['hooks'],
 		);
@@ -137,6 +140,7 @@ final class ExportedPropertiesNode implements JsonSerializable, ExportedNode
 			$data['publicSet'],
 			$data['protectedSet'],
 			$data['privateSet'],
+			$data['virtual'],
 			array_map(static function (array $attributeData): ExportedAttributeNode {
 				if ($attributeData['type'] !== ExportedAttributeNode::class) {
 					throw new ShouldNotHappenException();
@@ -173,6 +177,7 @@ final class ExportedPropertiesNode implements JsonSerializable, ExportedNode
 				'publicSet' => $this->publicSet,
 				'protectedSet' => $this->protectedSet,
 				'privateSet' => $this->privateSet,
+				'virtual' => $this->virtual,
 				'attributes' => $this->attributes,
 				'hooks' => $this->hooks,
 			],
