@@ -1234,6 +1234,10 @@ final class TypeNodeResolver
 			return IntegerRangeType::fromInterval($min, $max);
 		}
 
+		if (count($values) > InitializerExprTypeResolver::CALCULATE_SCALARS_LIMIT) {
+			return IntegerRangeType::fromInterval($min, $max);
+		}
+
 		return TypeCombinator::union(...array_map(static fn ($value) => new ConstantIntegerType($value), $values));
 	}
 
