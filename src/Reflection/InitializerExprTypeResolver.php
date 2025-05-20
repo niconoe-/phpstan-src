@@ -608,31 +608,30 @@ final class InitializerExprTypeResolver
 		if ($leftTypesCount > 0 && $rightTypesCount > 0) {
 			$resultTypes = [];
 			$generalize = $leftTypesCount * $rightTypesCount > self::CALCULATE_SCALARS_LIMIT;
-			foreach ($leftTypes as $leftTypeInner) {
-				foreach ($rightTypes as $rightTypeInner) {
-					if ($leftTypeInner instanceof ConstantStringType && $rightTypeInner instanceof ConstantStringType) {
-						$resultType = $this->getTypeFromValue($leftTypeInner->getValue() & $rightTypeInner->getValue());
-					} else {
-						$leftNumberType = $leftTypeInner->toNumber();
-						$rightNumberType = $rightTypeInner->toNumber();
+			if (!$generalize) {
+				foreach ($leftTypes as $leftTypeInner) {
+					foreach ($rightTypes as $rightTypeInner) {
+						if ($leftTypeInner instanceof ConstantStringType && $rightTypeInner instanceof ConstantStringType) {
+							$resultType = $this->getTypeFromValue($leftTypeInner->getValue() & $rightTypeInner->getValue());
+						} else {
+							$leftNumberType = $leftTypeInner->toNumber();
+							$rightNumberType = $rightTypeInner->toNumber();
 
-						if ($leftNumberType instanceof ErrorType || $rightNumberType instanceof ErrorType) {
-							return new ErrorType();
+							if ($leftNumberType instanceof ErrorType || $rightNumberType instanceof ErrorType) {
+								return new ErrorType();
+							}
+
+							if (!$leftNumberType instanceof ConstantScalarType || !$rightNumberType instanceof ConstantScalarType) {
+								throw new ShouldNotHappenException();
+							}
+
+							$resultType = $this->getTypeFromValue($leftNumberType->getValue() & $rightNumberType->getValue());
 						}
-
-						if (!$leftNumberType instanceof ConstantScalarType || !$rightNumberType instanceof ConstantScalarType) {
-							throw new ShouldNotHappenException();
-						}
-
-						$resultType = $this->getTypeFromValue($leftNumberType->getValue() & $rightNumberType->getValue());
+						$resultTypes[] = $resultType;
 					}
-					if ($generalize) {
-						$resultType = $resultType->generalize(GeneralizePrecision::lessSpecific());
-					}
-					$resultTypes[] = $resultType;
 				}
+				return TypeCombinator::union(...$resultTypes);
 			}
-			return TypeCombinator::union(...$resultTypes);
 		}
 
 		if ($leftType->isString()->yes() && $rightType->isString()->yes()) {
@@ -675,31 +674,30 @@ final class InitializerExprTypeResolver
 		if ($leftTypesCount > 0 && $rightTypesCount > 0) {
 			$resultTypes = [];
 			$generalize = $leftTypesCount * $rightTypesCount > self::CALCULATE_SCALARS_LIMIT;
-			foreach ($leftTypes as $leftTypeInner) {
-				foreach ($rightTypes as $rightTypeInner) {
-					if ($leftTypeInner instanceof ConstantStringType && $rightTypeInner instanceof ConstantStringType) {
-						$resultType = $this->getTypeFromValue($leftTypeInner->getValue() | $rightTypeInner->getValue());
-					} else {
-						$leftNumberType = $leftTypeInner->toNumber();
-						$rightNumberType = $rightTypeInner->toNumber();
+			if (!$generalize) {
+				foreach ($leftTypes as $leftTypeInner) {
+					foreach ($rightTypes as $rightTypeInner) {
+						if ($leftTypeInner instanceof ConstantStringType && $rightTypeInner instanceof ConstantStringType) {
+							$resultType = $this->getTypeFromValue($leftTypeInner->getValue() | $rightTypeInner->getValue());
+						} else {
+							$leftNumberType = $leftTypeInner->toNumber();
+							$rightNumberType = $rightTypeInner->toNumber();
 
-						if ($leftNumberType instanceof ErrorType || $rightNumberType instanceof ErrorType) {
-							return new ErrorType();
+							if ($leftNumberType instanceof ErrorType || $rightNumberType instanceof ErrorType) {
+								return new ErrorType();
+							}
+
+							if (!$leftNumberType instanceof ConstantScalarType || !$rightNumberType instanceof ConstantScalarType) {
+								throw new ShouldNotHappenException();
+							}
+
+							$resultType = $this->getTypeFromValue($leftNumberType->getValue() | $rightNumberType->getValue());
 						}
-
-						if (!$leftNumberType instanceof ConstantScalarType || !$rightNumberType instanceof ConstantScalarType) {
-							throw new ShouldNotHappenException();
-						}
-
-						$resultType = $this->getTypeFromValue($leftNumberType->getValue() | $rightNumberType->getValue());
+						$resultTypes[] = $resultType;
 					}
-					if ($generalize) {
-						$resultType = $resultType->generalize(GeneralizePrecision::lessSpecific());
-					}
-					$resultTypes[] = $resultType;
 				}
+				return TypeCombinator::union(...$resultTypes);
 			}
-			return TypeCombinator::union(...$resultTypes);
 		}
 
 		if ($leftType->isString()->yes() && $rightType->isString()->yes()) {
@@ -732,31 +730,30 @@ final class InitializerExprTypeResolver
 		if ($leftTypesCount > 0 && $rightTypesCount > 0) {
 			$resultTypes = [];
 			$generalize = $leftTypesCount * $rightTypesCount > self::CALCULATE_SCALARS_LIMIT;
-			foreach ($leftTypes as $leftTypeInner) {
-				foreach ($rightTypes as $rightTypeInner) {
-					if ($leftTypeInner instanceof ConstantStringType && $rightTypeInner instanceof ConstantStringType) {
-						$resultType = $this->getTypeFromValue($leftTypeInner->getValue() ^ $rightTypeInner->getValue());
-					} else {
-						$leftNumberType = $leftTypeInner->toNumber();
-						$rightNumberType = $rightTypeInner->toNumber();
+			if (!$generalize) {
+				foreach ($leftTypes as $leftTypeInner) {
+					foreach ($rightTypes as $rightTypeInner) {
+						if ($leftTypeInner instanceof ConstantStringType && $rightTypeInner instanceof ConstantStringType) {
+							$resultType = $this->getTypeFromValue($leftTypeInner->getValue() ^ $rightTypeInner->getValue());
+						} else {
+							$leftNumberType = $leftTypeInner->toNumber();
+							$rightNumberType = $rightTypeInner->toNumber();
 
-						if ($leftNumberType instanceof ErrorType || $rightNumberType instanceof ErrorType) {
-							return new ErrorType();
+							if ($leftNumberType instanceof ErrorType || $rightNumberType instanceof ErrorType) {
+								return new ErrorType();
+							}
+
+							if (!$leftNumberType instanceof ConstantScalarType || !$rightNumberType instanceof ConstantScalarType) {
+								throw new ShouldNotHappenException();
+							}
+
+							$resultType = $this->getTypeFromValue($leftNumberType->getValue() ^ $rightNumberType->getValue());
 						}
-
-						if (!$leftNumberType instanceof ConstantScalarType || !$rightNumberType instanceof ConstantScalarType) {
-							throw new ShouldNotHappenException();
-						}
-
-						$resultType = $this->getTypeFromValue($leftNumberType->getValue() ^ $rightNumberType->getValue());
+						$resultTypes[] = $resultType;
 					}
-					if ($generalize) {
-						$resultType = $resultType->generalize(GeneralizePrecision::lessSpecific());
-					}
-					$resultTypes[] = $resultType;
 				}
+				return TypeCombinator::union(...$resultTypes);
 			}
-			return TypeCombinator::union(...$resultTypes);
 		}
 
 		if ($leftType->isString()->yes() && $rightType->isString()->yes()) {
@@ -818,31 +815,30 @@ final class InitializerExprTypeResolver
 		if ($leftTypesCount > 0 && $rightTypesCount > 0) {
 			$resultTypes = [];
 			$generalize = $leftTypesCount * $rightTypesCount > self::CALCULATE_SCALARS_LIMIT;
-			foreach ($leftTypes as $leftTypeInner) {
-				foreach ($rightTypes as $rightTypeInner) {
-					$leftNumberType = $leftTypeInner->toNumber();
-					$rightNumberType = $rightTypeInner->toNumber();
+			if (!$generalize) {
+				foreach ($leftTypes as $leftTypeInner) {
+					foreach ($rightTypes as $rightTypeInner) {
+						$leftNumberType = $leftTypeInner->toNumber();
+						$rightNumberType = $rightTypeInner->toNumber();
 
-					if ($leftNumberType instanceof ErrorType || $rightNumberType instanceof ErrorType) {
-						return new ErrorType();
-					}
+						if ($leftNumberType instanceof ErrorType || $rightNumberType instanceof ErrorType) {
+							return new ErrorType();
+						}
 
-					if (!$leftNumberType instanceof ConstantScalarType || !$rightNumberType instanceof ConstantScalarType) {
-						throw new ShouldNotHappenException();
-					}
+						if (!$leftNumberType instanceof ConstantScalarType || !$rightNumberType instanceof ConstantScalarType) {
+							throw new ShouldNotHappenException();
+						}
 
-					if (in_array($rightNumberType->getValue(), [0, 0.0], true)) {
-						return new ErrorType();
-					}
+						if (in_array($rightNumberType->getValue(), [0, 0.0], true)) {
+							return new ErrorType();
+						}
 
-					$resultType = $this->getTypeFromValue($leftNumberType->getValue() / $rightNumberType->getValue()); // @phpstan-ignore binaryOp.invalid
-					if ($generalize) {
-						$resultType = $resultType->generalize(GeneralizePrecision::lessSpecific());
+						$resultType = $this->getTypeFromValue($leftNumberType->getValue() / $rightNumberType->getValue()); // @phpstan-ignore binaryOp.invalid
+						$resultTypes[] = $resultType;
 					}
-					$resultTypes[] = $resultType;
 				}
+				return TypeCombinator::union(...$resultTypes);
 			}
-			return TypeCombinator::union(...$resultTypes);
 		}
 
 		$rightScalarValues = $rightType->toNumber()->getConstantScalarValues();
@@ -878,32 +874,31 @@ final class InitializerExprTypeResolver
 		if ($leftTypesCount > 0 && $rightTypesCount > 0) {
 			$resultTypes = [];
 			$generalize = $leftTypesCount * $rightTypesCount > self::CALCULATE_SCALARS_LIMIT;
-			foreach ($leftTypes as $leftTypeInner) {
-				foreach ($rightTypes as $rightTypeInner) {
-					$leftNumberType = $leftTypeInner->toNumber();
-					$rightNumberType = $rightTypeInner->toNumber();
+			if (!$generalize) {
+				foreach ($leftTypes as $leftTypeInner) {
+					foreach ($rightTypes as $rightTypeInner) {
+						$leftNumberType = $leftTypeInner->toNumber();
+						$rightNumberType = $rightTypeInner->toNumber();
 
-					if ($leftNumberType instanceof ErrorType || $rightNumberType instanceof ErrorType) {
-						return new ErrorType();
-					}
+						if ($leftNumberType instanceof ErrorType || $rightNumberType instanceof ErrorType) {
+							return new ErrorType();
+						}
 
-					if (!$leftNumberType instanceof ConstantScalarType || !$rightNumberType instanceof ConstantScalarType) {
-						throw new ShouldNotHappenException();
-					}
+						if (!$leftNumberType instanceof ConstantScalarType || !$rightNumberType instanceof ConstantScalarType) {
+							throw new ShouldNotHappenException();
+						}
 
-					$rightIntegerValue = (int) $rightNumberType->getValue();
-					if ($rightIntegerValue === 0) {
-						return new ErrorType();
-					}
+						$rightIntegerValue = (int) $rightNumberType->getValue();
+						if ($rightIntegerValue === 0) {
+							return new ErrorType();
+						}
 
-					$resultType = $this->getTypeFromValue((int) $leftNumberType->getValue() % $rightIntegerValue);
-					if ($generalize) {
-						$resultType = $resultType->generalize(GeneralizePrecision::lessSpecific());
+						$resultType = $this->getTypeFromValue((int) $leftNumberType->getValue() % $rightIntegerValue);
+						$resultTypes[] = $resultType;
 					}
-					$resultTypes[] = $resultType;
 				}
+				return TypeCombinator::union(...$resultTypes);
 			}
-			return TypeCombinator::union(...$resultTypes);
 		}
 
 		$integerType = $rightType->toInteger();
@@ -975,28 +970,27 @@ final class InitializerExprTypeResolver
 		if ($leftTypesCount > 0 && $rightTypesCount > 0) {
 			$resultTypes = [];
 			$generalize = $leftTypesCount * $rightTypesCount > self::CALCULATE_SCALARS_LIMIT;
-			foreach ($leftTypes as $leftTypeInner) {
-				foreach ($rightTypes as $rightTypeInner) {
-					$leftNumberType = $leftTypeInner->toNumber();
-					$rightNumberType = $rightTypeInner->toNumber();
+			if (!$generalize) {
+				foreach ($leftTypes as $leftTypeInner) {
+					foreach ($rightTypes as $rightTypeInner) {
+						$leftNumberType = $leftTypeInner->toNumber();
+						$rightNumberType = $rightTypeInner->toNumber();
 
-					if ($leftNumberType instanceof ErrorType || $rightNumberType instanceof ErrorType) {
-						return new ErrorType();
-					}
+						if ($leftNumberType instanceof ErrorType || $rightNumberType instanceof ErrorType) {
+							return new ErrorType();
+						}
 
-					if (!$leftNumberType instanceof ConstantScalarType || !$rightNumberType instanceof ConstantScalarType) {
-						throw new ShouldNotHappenException();
-					}
+						if (!$leftNumberType instanceof ConstantScalarType || !$rightNumberType instanceof ConstantScalarType) {
+							throw new ShouldNotHappenException();
+						}
 
-					$resultType = $this->getTypeFromValue($leftNumberType->getValue() + $rightNumberType->getValue());
-					if ($generalize) {
-						$resultType = $resultType->generalize(GeneralizePrecision::lessSpecific());
+						$resultType = $this->getTypeFromValue($leftNumberType->getValue() + $rightNumberType->getValue());
+						$resultTypes[] = $resultType;
 					}
-					$resultTypes[] = $resultType;
 				}
-			}
 
-			return TypeCombinator::union(...$resultTypes);
+				return TypeCombinator::union(...$resultTypes);
+			}
 		}
 
 		$leftConstantArrays = $leftType->getConstantArrays();
@@ -1137,28 +1131,27 @@ final class InitializerExprTypeResolver
 		if ($leftTypesCount > 0 && $rightTypesCount > 0) {
 			$resultTypes = [];
 			$generalize = $leftTypesCount * $rightTypesCount > self::CALCULATE_SCALARS_LIMIT;
-			foreach ($leftTypes as $leftTypeInner) {
-				foreach ($rightTypes as $rightTypeInner) {
-					$leftNumberType = $leftTypeInner->toNumber();
-					$rightNumberType = $rightTypeInner->toNumber();
+			if (!$generalize) {
+				foreach ($leftTypes as $leftTypeInner) {
+					foreach ($rightTypes as $rightTypeInner) {
+						$leftNumberType = $leftTypeInner->toNumber();
+						$rightNumberType = $rightTypeInner->toNumber();
 
-					if ($leftNumberType instanceof ErrorType || $rightNumberType instanceof ErrorType) {
-						return new ErrorType();
-					}
+						if ($leftNumberType instanceof ErrorType || $rightNumberType instanceof ErrorType) {
+							return new ErrorType();
+						}
 
-					if (!$leftNumberType instanceof ConstantScalarType || !$rightNumberType instanceof ConstantScalarType) {
-						throw new ShouldNotHappenException();
-					}
+						if (!$leftNumberType instanceof ConstantScalarType || !$rightNumberType instanceof ConstantScalarType) {
+							throw new ShouldNotHappenException();
+						}
 
-					$resultType = $this->getTypeFromValue($leftNumberType->getValue() - $rightNumberType->getValue());
-					if ($generalize) {
-						$resultType = $resultType->generalize(GeneralizePrecision::lessSpecific());
+						$resultType = $this->getTypeFromValue($leftNumberType->getValue() - $rightNumberType->getValue());
+						$resultTypes[] = $resultType;
 					}
-					$resultTypes[] = $resultType;
 				}
-			}
 
-			return TypeCombinator::union(...$resultTypes);
+				return TypeCombinator::union(...$resultTypes);
+			}
 		}
 
 		return $this->resolveCommonMath(new BinaryOp\Minus($left, $right), $leftType, $rightType);
@@ -1179,28 +1172,27 @@ final class InitializerExprTypeResolver
 		if ($leftTypesCount > 0 && $rightTypesCount > 0) {
 			$resultTypes = [];
 			$generalize = $leftTypesCount * $rightTypesCount > self::CALCULATE_SCALARS_LIMIT;
-			foreach ($leftTypes as $leftTypeInner) {
-				foreach ($rightTypes as $rightTypeInner) {
-					$leftNumberType = $leftTypeInner->toNumber();
-					$rightNumberType = $rightTypeInner->toNumber();
+			if (!$generalize) {
+				foreach ($leftTypes as $leftTypeInner) {
+					foreach ($rightTypes as $rightTypeInner) {
+						$leftNumberType = $leftTypeInner->toNumber();
+						$rightNumberType = $rightTypeInner->toNumber();
 
-					if ($leftNumberType instanceof ErrorType || $rightNumberType instanceof ErrorType) {
-						return new ErrorType();
-					}
+						if ($leftNumberType instanceof ErrorType || $rightNumberType instanceof ErrorType) {
+							return new ErrorType();
+						}
 
-					if (!$leftNumberType instanceof ConstantScalarType || !$rightNumberType instanceof ConstantScalarType) {
-						throw new ShouldNotHappenException();
-					}
+						if (!$leftNumberType instanceof ConstantScalarType || !$rightNumberType instanceof ConstantScalarType) {
+							throw new ShouldNotHappenException();
+						}
 
-					$resultType = $this->getTypeFromValue($leftNumberType->getValue() * $rightNumberType->getValue());
-					if ($generalize) {
-						$resultType = $resultType->generalize(GeneralizePrecision::lessSpecific());
+						$resultType = $this->getTypeFromValue($leftNumberType->getValue() * $rightNumberType->getValue());
+						$resultTypes[] = $resultType;
 					}
-					$resultTypes[] = $resultType;
 				}
-			}
 
-			return TypeCombinator::union(...$resultTypes);
+				return TypeCombinator::union(...$resultTypes);
+			}
 		}
 
 		$leftNumberType = $leftType->toNumber();
@@ -1261,32 +1253,31 @@ final class InitializerExprTypeResolver
 		if ($leftTypesCount > 0 && $rightTypesCount > 0) {
 			$resultTypes = [];
 			$generalize = $leftTypesCount * $rightTypesCount > self::CALCULATE_SCALARS_LIMIT;
-			foreach ($leftTypes as $leftTypeInner) {
-				foreach ($rightTypes as $rightTypeInner) {
-					$leftNumberType = $leftTypeInner->toNumber();
-					$rightNumberType = $rightTypeInner->toNumber();
+			if (!$generalize) {
+				foreach ($leftTypes as $leftTypeInner) {
+					foreach ($rightTypes as $rightTypeInner) {
+						$leftNumberType = $leftTypeInner->toNumber();
+						$rightNumberType = $rightTypeInner->toNumber();
 
-					if ($leftNumberType instanceof ErrorType || $rightNumberType instanceof ErrorType) {
-						return new ErrorType();
-					}
+						if ($leftNumberType instanceof ErrorType || $rightNumberType instanceof ErrorType) {
+							return new ErrorType();
+						}
 
-					if (!$leftNumberType instanceof ConstantScalarType || !$rightNumberType instanceof ConstantScalarType) {
-						throw new ShouldNotHappenException();
-					}
+						if (!$leftNumberType instanceof ConstantScalarType || !$rightNumberType instanceof ConstantScalarType) {
+							throw new ShouldNotHappenException();
+						}
 
-					if ($rightNumberType->getValue() < 0) {
-						return new ErrorType();
-					}
+						if ($rightNumberType->getValue() < 0) {
+							return new ErrorType();
+						}
 
-					$resultType = $this->getTypeFromValue(intval($leftNumberType->getValue()) << intval($rightNumberType->getValue()));
-					if ($generalize) {
-						$resultType = $resultType->generalize(GeneralizePrecision::lessSpecific());
+						$resultType = $this->getTypeFromValue(intval($leftNumberType->getValue()) << intval($rightNumberType->getValue()));
+						$resultTypes[] = $resultType;
 					}
-					$resultTypes[] = $resultType;
 				}
-			}
 
-			return TypeCombinator::union(...$resultTypes);
+				return TypeCombinator::union(...$resultTypes);
+			}
 		}
 
 		$leftNumberType = $leftType->toNumber();
@@ -1318,32 +1309,31 @@ final class InitializerExprTypeResolver
 		if ($leftTypesCount > 0 && $rightTypesCount > 0) {
 			$resultTypes = [];
 			$generalize = $leftTypesCount * $rightTypesCount > self::CALCULATE_SCALARS_LIMIT;
-			foreach ($leftTypes as $leftTypeInner) {
-				foreach ($rightTypes as $rightTypeInner) {
-					$leftNumberType = $leftTypeInner->toNumber();
-					$rightNumberType = $rightTypeInner->toNumber();
+			if (!$generalize) {
+				foreach ($leftTypes as $leftTypeInner) {
+					foreach ($rightTypes as $rightTypeInner) {
+						$leftNumberType = $leftTypeInner->toNumber();
+						$rightNumberType = $rightTypeInner->toNumber();
 
-					if ($leftNumberType instanceof ErrorType || $rightNumberType instanceof ErrorType) {
-						return new ErrorType();
-					}
+						if ($leftNumberType instanceof ErrorType || $rightNumberType instanceof ErrorType) {
+							return new ErrorType();
+						}
 
-					if (!$leftNumberType instanceof ConstantScalarType || !$rightNumberType instanceof ConstantScalarType) {
-						throw new ShouldNotHappenException();
-					}
+						if (!$leftNumberType instanceof ConstantScalarType || !$rightNumberType instanceof ConstantScalarType) {
+							throw new ShouldNotHappenException();
+						}
 
-					if ($rightNumberType->getValue() < 0) {
-						return new ErrorType();
-					}
+						if ($rightNumberType->getValue() < 0) {
+							return new ErrorType();
+						}
 
-					$resultType = $this->getTypeFromValue(intval($leftNumberType->getValue()) >> intval($rightNumberType->getValue()));
-					if ($generalize) {
-						$resultType = $resultType->generalize(GeneralizePrecision::lessSpecific());
+						$resultType = $this->getTypeFromValue(intval($leftNumberType->getValue()) >> intval($rightNumberType->getValue()));
+						$resultTypes[] = $resultType;
 					}
-					$resultTypes[] = $resultType;
 				}
-			}
 
-			return TypeCombinator::union(...$resultTypes);
+				return TypeCombinator::union(...$resultTypes);
+			}
 		}
 
 		$leftNumberType = $leftType->toNumber();
