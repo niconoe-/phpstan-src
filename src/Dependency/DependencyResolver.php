@@ -502,7 +502,7 @@ final class DependencyResolver
 				$dependenciesReflections[] = $interface;
 			}
 
-			foreach ($classReflection->getTraits() as $trait) {
+			foreach ($classReflection->getTraits(true) as $trait) {
 				$dependenciesReflections[] = $trait;
 			}
 
