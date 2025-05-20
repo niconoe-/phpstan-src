@@ -632,6 +632,9 @@ final class InitializerExprTypeResolver
 				}
 				return TypeCombinator::union(...$resultTypes);
 			}
+
+			$leftType = $this->optimizeScalarType($leftType);
+			$rightType = $this->optimizeScalarType($rightType);
 		}
 
 		if ($leftType->isString()->yes() && $rightType->isString()->yes()) {
@@ -698,6 +701,9 @@ final class InitializerExprTypeResolver
 				}
 				return TypeCombinator::union(...$resultTypes);
 			}
+
+			$leftType = $this->optimizeScalarType($leftType);
+			$rightType = $this->optimizeScalarType($rightType);
 		}
 
 		if ($leftType->isString()->yes() && $rightType->isString()->yes()) {
@@ -754,6 +760,9 @@ final class InitializerExprTypeResolver
 				}
 				return TypeCombinator::union(...$resultTypes);
 			}
+
+			$leftType = $this->optimizeScalarType($leftType);
+			$rightType = $this->optimizeScalarType($rightType);
 		}
 
 		if ($leftType->isString()->yes() && $rightType->isString()->yes()) {
@@ -839,6 +848,9 @@ final class InitializerExprTypeResolver
 				}
 				return TypeCombinator::union(...$resultTypes);
 			}
+
+			$leftType = $this->optimizeScalarType($leftType);
+			$rightType = $this->optimizeScalarType($rightType);
 		}
 
 		$rightScalarValues = $rightType->toNumber()->getConstantScalarValues();
@@ -899,6 +911,9 @@ final class InitializerExprTypeResolver
 				}
 				return TypeCombinator::union(...$resultTypes);
 			}
+
+			$leftType = $this->optimizeScalarType($leftType);
+			$rightType = $this->optimizeScalarType($rightType);
 		}
 
 		$integerType = $rightType->toInteger();
@@ -991,6 +1006,9 @@ final class InitializerExprTypeResolver
 
 				return TypeCombinator::union(...$resultTypes);
 			}
+
+			$leftType = $this->optimizeScalarType($leftType);
+			$rightType = $this->optimizeScalarType($rightType);
 		}
 
 		$leftConstantArrays = $leftType->getConstantArrays();
@@ -1152,6 +1170,9 @@ final class InitializerExprTypeResolver
 
 				return TypeCombinator::union(...$resultTypes);
 			}
+
+			$leftType = $this->optimizeScalarType($leftType);
+			$rightType = $this->optimizeScalarType($rightType);
 		}
 
 		return $this->resolveCommonMath(new BinaryOp\Minus($left, $right), $leftType, $rightType);
@@ -1193,6 +1214,9 @@ final class InitializerExprTypeResolver
 
 				return TypeCombinator::union(...$resultTypes);
 			}
+
+			$leftType = $this->optimizeScalarType($leftType);
+			$rightType = $this->optimizeScalarType($rightType);
 		}
 
 		$leftNumberType = $leftType->toNumber();
@@ -1278,6 +1302,9 @@ final class InitializerExprTypeResolver
 
 				return TypeCombinator::union(...$resultTypes);
 			}
+
+			$leftType = $this->optimizeScalarType($leftType);
+			$rightType = $this->optimizeScalarType($rightType);
 		}
 
 		$leftNumberType = $leftType->toNumber();
@@ -1334,6 +1361,9 @@ final class InitializerExprTypeResolver
 
 				return TypeCombinator::union(...$resultTypes);
 			}
+
+			$leftType = $this->optimizeScalarType($leftType);
+			$rightType = $this->optimizeScalarType($rightType);
 		}
 
 		$leftNumberType = $leftType->toNumber();
@@ -1344,6 +1374,33 @@ final class InitializerExprTypeResolver
 		}
 
 		return $this->resolveCommonMath(new Expr\BinaryOp\ShiftRight($left, $right), $leftType, $rightType);
+	}
+
+	private function optimizeScalarType(Type $type): Type
+	{
+		$types = [];
+		if ($type->isInteger()->yes()) {
+			$types[] = new IntegerType();
+		}
+		if ($type->isString()->yes()) {
+			$types[] = new StringType();
+		}
+		if ($type->isFloat()->yes()) {
+			$types[] = new FloatType();
+		}
+		if ($type->isNull()->yes()) {
+			$types[] = new NullType();
+		}
+
+		if (count($types) === 0) {
+			return new ErrorType();
+		}
+
+		if (count($types) === 1) {
+			return $types[0];
+		}
+
+		return new UnionType($types);
 	}
 
 	/**
