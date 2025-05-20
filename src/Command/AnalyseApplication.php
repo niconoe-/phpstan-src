@@ -103,6 +103,7 @@ final class AnalyseApplication
 					$intermediateAnalyserResult->getInternalErrors(),
 					$intermediateAnalyserResult->getCollectedData(),
 					$intermediateAnalyserResult->getDependencies(),
+					$intermediateAnalyserResult->getUsedTraitDependencies(),
 					$intermediateAnalyserResult->getExportedNodes(),
 					$intermediateAnalyserResult->hasReachedInternalErrorsCountLimit(),
 					$intermediateAnalyserResult->getPeakMemoryUsageBytes(),
@@ -190,7 +191,7 @@ final class AnalyseApplication
 			$errorOutput->getStyle()->progressStart($allAnalysedFilesCount);
 			$errorOutput->getStyle()->progressAdvance($allAnalysedFilesCount);
 			$errorOutput->getStyle()->progressFinish();
-			return new AnalyserResult([], [], [], [], [], [], [], [], [], [], false, memory_get_peak_usage(true));
+			return new AnalyserResult([], [], [], [], [], [], [], [], [], [], [], false, memory_get_peak_usage(true));
 		}
 
 		if (!$debug) {

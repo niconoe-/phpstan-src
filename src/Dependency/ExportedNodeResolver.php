@@ -145,7 +145,52 @@ final class ExportedNodeResolver
 		}
 
 		if ($node instanceof Node\Stmt\Trait_ && isset($node->namespacedName)) {
-			return new ExportedTraitNode($node->namespacedName->toString());
+			$docComment = $node->getDocComment();
+			$usedTraits = [];
+			$adaptations = [];
+			foreach ($node->getTraitUses() as $traitUse) {
+				foreach ($traitUse->traits as $usedTraitName) {
+					$usedTraits[] = $usedTraitName->toString();
+				}
+				foreach ($traitUse->adaptations as $adaptation) {
+					$adaptations[] = $adaptation;
+				}
+			}
+
+			$className = $node->namespacedName->toString();
+
+			return new ExportedTraitNode(
+				$className,
+				$this->exportPhpDocNode(
+					$fileName,
+					$className,
+					null,
+					$docComment !== null ? $docComment->getText() : null,
+				),
+				$usedTraits,
+				array_map(static function (Node\Stmt\TraitUseAdaptation $adaptation): ExportedTraitUseAdaptation {
+					if ($adaptation instanceof Node\Stmt\TraitUseAdaptation\Alias) {
+						return ExportedTraitUseAdaptation::createAlias(
+							$adaptation->trait !== null ? $adaptation->trait->toString() : null,
+							$adaptation->method->toString(),
+							$adaptation->newModifier,
+							$adaptation->newName !== null ? $adaptation->newName->toString() : null,
+						);
+					}
+
+					if ($adaptation instanceof Node\Stmt\TraitUseAdaptation\Precedence) {
+						return ExportedTraitUseAdaptation::createPrecedence(
+							$adaptation->trait !== null ? $adaptation->trait->toString() : null,
+							$adaptation->method->toString(),
+							array_map(static fn (Name $name): string => $name->toString(), $adaptation->insteadof),
+						);
+					}
+
+					throw new ShouldNotHappenException();
+				}, $adaptations),
+				$this->exportClassStatements($node->stmts, $fileName, $className),
+				$this->exportAttributeNodes($node->attrGroups),
+			);
 		}
 
 		if ($node instanceof Function_) {

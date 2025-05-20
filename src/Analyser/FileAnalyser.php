@@ -11,6 +11,7 @@ use PHPStan\Collectors\CollectedData;
 use PHPStan\Collectors\Registry as CollectorRegistry;
 use PHPStan\Dependency\DependencyResolver;
 use PHPStan\Node\FileNode;
+use PHPStan\Node\InClassNode;
 use PHPStan\Node\InTraitNode;
 use PHPStan\Parser\Parser;
 use PHPStan\Parser\ParserErrorsException;
@@ -78,6 +79,7 @@ final class FileAnalyser
 		$fileCollectedData = [];
 
 		$fileDependencies = [];
+		$usedTraitFileDependencies = [];
 		$exportedNodes = [];
 		$linesToIgnore = [];
 		$unmatchedLineIgnores = [];
@@ -87,7 +89,7 @@ final class FileAnalyser
 				$parserNodes = $this->parser->parseFile($file);
 				$linesToIgnore = $unmatchedLineIgnores = [$file => $this->getLinesToIgnoreFromTokens($parserNodes)];
 				$temporaryFileErrors = [];
-				$nodeCallback = function (Node $node, Scope $scope) use (&$fileErrors, &$fileCollectedData, &$fileDependencies, &$exportedNodes, $file, $ruleRegistry, $collectorRegistry, $outerNodeCallback, $analysedFiles, &$linesToIgnore, &$unmatchedLineIgnores, &$temporaryFileErrors): void {
+				$nodeCallback = function (Node $node, Scope $scope) use (&$fileErrors, &$fileCollectedData, &$fileDependencies, &$usedTraitFileDependencies, &$exportedNodes, $file, $ruleRegistry, $collectorRegistry, $outerNodeCallback, $analysedFiles, &$linesToIgnore, &$unmatchedLineIgnores, &$temporaryFileErrors): void {
 					if ($node instanceof Node\Stmt\Trait_) {
 						foreach (array_keys($linesToIgnore[$file] ?? []) as $lineToIgnore) {
 							if ($lineToIgnore < $node->getStartLine() || $lineToIgnore > $node->getEndLine()) {
@@ -205,6 +207,15 @@ final class FileAnalyser
 					} catch (UnableToCompileNode) {
 						// pass
 					}
+
+					if (!$node instanceof InClassNode) {
+						return;
+					}
+
+					$usedTraitDependencies = $this->dependencyResolver->resolveUsedTraitDependencies($node);
+					foreach ($usedTraitDependencies->getFileDependencies($scope->getFile(), $analysedFiles) as $dependentFile) {
+						$usedTraitFileDependencies[] = $dependentFile;
+					}
 				};
 
 				$scope = $this->scopeFactory->create(ScopeContext::create($file));
@@ -287,6 +298,7 @@ final class FileAnalyser
 			$locallyIgnoredErrors,
 			$fileCollectedData,
 			array_values(array_unique($fileDependencies)),
+			array_values(array_unique($usedTraitFileDependencies)),
 			$exportedNodes,
 			$linesToIgnore,
 			$unmatchedLineIgnores,
