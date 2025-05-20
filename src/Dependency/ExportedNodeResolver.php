@@ -309,6 +309,11 @@ final class ExportedNodeResolver
 				$node->isPrivate(),
 				$node->isStatic(),
 				$node->isReadonly(),
+				$node->isAbstract(),
+				$node->isFinal(),
+				$node->isPublicSet(),
+				$node->isProtectedSet(),
+				$node->isPrivateSet(),
 				$this->exportAttributeNodes($node->attrGroups),
 				$this->exportPropertyHooks($node->hooks, $fileName, $namespacedName),
 			);

@@ -25,6 +25,11 @@ final class ExportedPropertiesNode implements JsonSerializable, ExportedNode
 		private bool $private,
 		private bool $static,
 		private bool $readonly,
+		private bool $abstract,
+		private bool $final,
+		private bool $publicSet,
+		private bool $protectedSet,
+		private bool $privateSet,
 		private array $attributes,
 		private array $hooks,
 	)
@@ -83,7 +88,12 @@ final class ExportedPropertiesNode implements JsonSerializable, ExportedNode
 			&& $this->public === $node->public
 			&& $this->private === $node->private
 			&& $this->static === $node->static
-			&& $this->readonly === $node->readonly;
+			&& $this->readonly === $node->readonly
+			&& $this->abstract === $node->abstract
+			&& $this->final === $node->final
+			&& $this->publicSet === $node->publicSet
+			&& $this->protectedSet === $node->protectedSet
+			&& $this->privateSet === $node->privateSet;
 	}
 
 	/**
@@ -99,6 +109,11 @@ final class ExportedPropertiesNode implements JsonSerializable, ExportedNode
 			$properties['private'],
 			$properties['static'],
 			$properties['readonly'],
+			$properties['abstract'],
+			$properties['final'],
+			$properties['publicSet'],
+			$properties['protectedSet'],
+			$properties['privateSet'],
 			$properties['attributes'],
 			$properties['hooks'],
 		);
@@ -117,6 +132,11 @@ final class ExportedPropertiesNode implements JsonSerializable, ExportedNode
 			$data['private'],
 			$data['static'],
 			$data['readonly'],
+			$data['abstract'],
+			$data['final'],
+			$data['publicSet'],
+			$data['protectedSet'],
+			$data['privateSet'],
 			array_map(static function (array $attributeData): ExportedAttributeNode {
 				if ($attributeData['type'] !== ExportedAttributeNode::class) {
 					throw new ShouldNotHappenException();
@@ -148,6 +168,11 @@ final class ExportedPropertiesNode implements JsonSerializable, ExportedNode
 				'private' => $this->private,
 				'static' => $this->static,
 				'readonly' => $this->readonly,
+				'abstract' => $this->abstract,
+				'final' => $this->final,
+				'publicSet' => $this->publicSet,
+				'protectedSet' => $this->protectedSet,
+				'privateSet' => $this->privateSet,
 				'attributes' => $this->attributes,
 				'hooks' => $this->hooks,
 			],
