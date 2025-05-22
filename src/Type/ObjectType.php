@@ -229,7 +229,7 @@ class ObjectType implements TypeWithClassName, SubtractableType
 
 		$property = RecursionGuard::run($this, static fn () => $nakedClassReflection->getProperty($propertyName, $scope));
 		if ($property instanceof ErrorType) {
-			$property = new DummyPropertyReflection();
+			$property = new DummyPropertyReflection($propertyName);
 
 			return new CallbackUnresolvedPropertyPrototypeReflection(
 				$property,
