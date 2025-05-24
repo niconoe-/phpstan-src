@@ -1682,13 +1682,11 @@ final class TypeSpecifier
 		if (
 			$leftType instanceof ConstantScalarType
 			&& !$rightExpr instanceof ConstFetch
-			&& !$rightExpr instanceof ClassConstFetch
 		) {
 			return [$binaryOperation->right, $leftType, $rightType];
 		} elseif (
 			$rightType instanceof ConstantScalarType
 			&& !$leftExpr instanceof ConstFetch
-			&& !$leftExpr instanceof ClassConstFetch
 		) {
 			return [$binaryOperation->left, $rightType, $leftType];
 		}
@@ -2084,6 +2082,16 @@ final class TypeSpecifier
 				&& $exprNode->name instanceof Name
 				&& $exprNode->name->toLowerString() === 'preg_match'
 				&& (new ConstantIntegerType(1))->isSuperTypeOf($constantType)->yes()
+			) {
+				return $this->specifyTypesInCondition($scope, new Expr\BinaryOp\Identical($expr->left, $expr->right), $context)->setRootExpr($expr);
+			}
+
+			if (
+				$context->true()
+				&& $exprNode instanceof ClassConstFetch
+				&& $exprNode->name instanceof Node\Identifier
+				&& strtolower($exprNode->name->toString()) === 'class'
+				&& $constantType->isString()->yes()
 			) {
 				return $this->specifyTypesInCondition($scope, new Expr\BinaryOp\Identical($expr->left, $expr->right), $context)->setRootExpr($expr);
 			}
