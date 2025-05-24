@@ -257,6 +257,10 @@ final class CommandHelper
 				$containerFactory->getRootDirectory(),
 				$containerFactory->getCurrentWorkingDirectory(),
 				$generateBaselineFile,
+				[
+					'[parameters][paths][]',
+					'[parameters][tmpDir]',
+				],
 			))->createLoader();
 
 			try {
