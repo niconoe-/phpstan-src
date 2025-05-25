@@ -351,9 +351,6 @@ services:
 			- phpstan.parser.richParserNodeVisitor
 
 	-
-		class: PHPStan\Node\Printer\ExprPrinter
-
-	-
 		class: PHPStan\Node\Printer\Printer
 		autowired:
 			- PHPStan\Node\Printer\Printer
@@ -402,12 +399,6 @@ services:
 
 	-
 		class: PHPStan\PhpDocParser\Printer\Printer
-
-	-
-		class: PHPStan\PhpDoc\PhpDocInheritanceResolver
-
-	-
-		class: PHPStan\PhpDoc\PhpDocNodeResolver
 
 	-
 		class: PHPStan\PhpDoc\PhpDocStringResolver

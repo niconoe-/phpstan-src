@@ -3,6 +3,7 @@
 namespace PHPStan\PhpDoc;
 
 use PHPStan\Analyser\NameScope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\PhpDoc\Tag\AssertTag;
 use PHPStan\PhpDoc\Tag\AssertTagParameter;
 use PHPStan\PhpDoc\Tag\DeprecatedTag;
@@ -49,6 +50,7 @@ use function method_exists;
 use function str_starts_with;
 use function substr;
 
+#[AutowiredService]
 final class PhpDocNodeResolver
 {
 
