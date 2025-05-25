@@ -404,11 +404,6 @@ services:
 		class: PHPStan\PhpDoc\StubValidator
 
 	-
-		class: PHPStan\PhpDoc\SocketSelectStubFilesExtension
-		tags:
-			- phpstan.stubFilesExtension
-
-	-
 		class: PHPStan\PhpDoc\DefaultStubFilesProvider
 		arguments:
 			stubFiles: %stubFiles%
@@ -754,11 +749,6 @@ services:
 			- phpstan.broker.dynamicMethodReturnTypeExtension
 
 	-
-		class: PHPStan\Reflection\BetterReflection\Type\AdapterReflectionEnumDynamicReturnTypeExtension
-		tags:
-			- phpstan.broker.dynamicMethodReturnTypeExtension
-
-	-
 		class: PHPStan\Reflection\ConstructorsHelper
 		arguments:
 			additionalConstructors: %additionalConstructors%
@@ -792,11 +782,6 @@ services:
 
 	-
 		class: PHPStan\Reflection\Php\Soap\SoapClientMethodsClassReflectionExtension
-
-	-
-		class: PHPStan\Reflection\Php\EnumAllowedSubTypesClassReflectionExtension
-		tags:
-			- phpstan.broker.allowedSubTypesClassReflectionExtension
 
 	-
 		class: PHPStan\Reflection\Php\UniversalObjectCratesClassReflectionExtension
@@ -1071,10 +1056,6 @@ services:
 		arguments:
 			reportMagicProperties: %reportMagicProperties%
 			checkDynamicProperties: %checkDynamicProperties%
-	-
-		class: PHPStan\Type\Php\BcMathNumberOperatorTypeSpecifyingExtension
-		tags:
-			- phpstan.broker.operatorTypeSpecifyingExtension
 
 	-
 		class: PHPStan\Rules\Properties\UninitializedPropertyRule
@@ -1084,12 +1065,6 @@ services:
 
 	-
 		class: PHPStan\Rules\Properties\PropertyDescriptor
-
-	-
-		class: PHPStan\Rules\Properties\PropertyReflectionFinder
-
-	-
-		class: PHPStan\Rules\Pure\FunctionPurityCheck
 
 	-
 		class: PHPStan\Rules\RuleLevelHelper
@@ -1106,9 +1081,6 @@ services:
 		class: PHPStan\Rules\UnusedFunctionParametersCheck
 		arguments:
 			reportExactLine: %featureToggles.reportPreciseLineForUnusedFunctionParameter%
-
-	-
-		class: PHPStan\Rules\TooWideTypehints\TooWideParameterOutTypeCheck
 
 	-
 		class: PHPStan\Type\FileTypeMapper
@@ -1132,75 +1104,11 @@ services:
 		factory: PHPStan\Type\LazyTypeAliasResolverProvider
 
 	-
-		class: PHPStan\Type\BitwiseFlagHelper
-
-	-
 		class: PHPStan\Type\Php\CompactFunctionReturnTypeExtension
 		tags:
 			- phpstan.broker.dynamicFunctionReturnTypeExtension
 		arguments:
 			checkMaybeUndefinedVariables: %checkMaybeUndefinedVariables%
-
-	-
-		class: PHPStan\Type\Php\ConstantHelper
-
-	-
-		class: PHPStan\Type\Php\DateFunctionReturnTypeHelper
-
-	-
-		class: PHPStan\Type\Php\ArrayKeyExistsFunctionTypeSpecifyingExtension
-		tags:
-			- phpstan.typeSpecifier.functionTypeSpecifyingExtension
-
-	-
-		class: PHPStan\Type\Php\AssertThrowTypeExtension
-		tags:
-			- phpstan.dynamicFunctionThrowTypeExtension
-
-	-
-		class: PHPStan\Type\Php\ArraySearchFunctionTypeSpecifyingExtension
-		tags:
-			- phpstan.typeSpecifier.functionTypeSpecifyingExtension
-
-	-
-		class: PHPStan\Type\Php\ClosureBindDynamicReturnTypeExtension
-		tags:
-			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
-
-	-
-		class: PHPStan\Type\Php\CountFunctionTypeSpecifyingExtension
-		tags:
-			- phpstan.typeSpecifier.functionTypeSpecifyingExtension
-
-	-
-		class: PHPStan\Type\Php\ClosureBindToDynamicReturnTypeExtension
-		tags:
-			- phpstan.broker.dynamicMethodReturnTypeExtension
-
-	-
-		class: PHPStan\Type\Php\ClosureFromCallableDynamicReturnTypeExtension
-		tags:
-			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
-
-	-
-		class: PHPStan\Type\Php\BackedEnumFromMethodDynamicReturnTypeExtension
-		tags:
-			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
-
-	-
-		class: PHPStan\Type\Php\DateFormatMethodReturnTypeExtension
-		tags:
-			- phpstan.broker.dynamicMethodReturnTypeExtension
-
-	-
-		class: PHPStan\Type\Php\DateIntervalConstructorThrowTypeExtension
-		tags:
-			- phpstan.dynamicStaticMethodThrowTypeExtension
-
-	-
-		class: PHPStan\Type\Php\DateIntervalDynamicReturnTypeExtension
-		tags:
-			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
 
 	-
 		class: PHPStan\Type\Php\DateTimeModifyReturnTypeExtension
@@ -1217,214 +1125,11 @@ services:
 			dateTimeClass: DateTimeImmutable
 
 	-
-		class: PHPStan\Type\Php\DateTimeConstructorThrowTypeExtension
-		tags:
-			- phpstan.dynamicStaticMethodThrowTypeExtension
-
-	-
-		class: PHPStan\Type\Php\DateTimeModifyMethodThrowTypeExtension
-		tags:
-			- phpstan.dynamicMethodThrowTypeExtension
-
-	-
-		class: PHPStan\Type\Php\DateTimeSubMethodThrowTypeExtension
-		tags:
-			- phpstan.dynamicMethodThrowTypeExtension
-
-	-
-		class: PHPStan\Type\Php\DateTimeZoneConstructorThrowTypeExtension
-		tags:
-			- phpstan.dynamicStaticMethodThrowTypeExtension
-
-	-
-		class: PHPStan\Type\Php\DsMapDynamicReturnTypeExtension
-		tags:
-			- phpstan.broker.dynamicMethodReturnTypeExtension
-
-	-
-		class: PHPStan\Type\Php\DsMapDynamicMethodThrowTypeExtension
-		tags:
-			- phpstan.dynamicMethodThrowTypeExtension
-
-	-
-		class: PHPStan\Type\Php\IntdivThrowTypeExtension
-		tags:
-			- phpstan.dynamicFunctionThrowTypeExtension
-
-	-
-		class: PHPStan\Type\Php\JsonThrowTypeExtension
-		tags:
-			- phpstan.dynamicFunctionThrowTypeExtension
-
-	-
-		class: PHPStan\Type\Php\OpenSslEncryptParameterOutTypeExtension
-		tags:
-			- phpstan.functionParameterOutTypeExtension
-
-	-
-		class: PHPStan\Type\Php\ParseStrParameterOutTypeExtension
-		tags:
-			- phpstan.functionParameterOutTypeExtension
-
-	-
-		class: PHPStan\Type\Php\PregMatchTypeSpecifyingExtension
-		tags:
-			- phpstan.typeSpecifier.functionTypeSpecifyingExtension
-
-	-
-		class: PHPStan\Type\Php\PregMatchParameterOutTypeExtension
-		tags:
-			- phpstan.functionParameterOutTypeExtension
-
-	-
-		class: PHPStan\Type\Php\PregReplaceCallbackClosureTypeExtension
-		tags:
-			- phpstan.functionParameterClosureTypeExtension
-
-	-
-		class: PHPStan\Type\Php\RegexArrayShapeMatcher
-
-	-
-		class: PHPStan\Type\Regex\RegexGroupParser
-
-	-
-		class: PHPStan\Type\Regex\RegexExpressionHelper
-
-	-
-		class: PHPStan\Type\Php\ReflectionClassConstructorThrowTypeExtension
-		tags:
-			- phpstan.dynamicStaticMethodThrowTypeExtension
-
-	-
-		class: PHPStan\Type\Php\ReflectionFunctionConstructorThrowTypeExtension
-		tags:
-			- phpstan.dynamicStaticMethodThrowTypeExtension
-
-	-
-		class: PHPStan\Type\Php\ReflectionMethodConstructorThrowTypeExtension
-		tags:
-			- phpstan.dynamicStaticMethodThrowTypeExtension
-
-	-
-		class: PHPStan\Type\Php\ReflectionPropertyConstructorThrowTypeExtension
-		tags:
-			- phpstan.dynamicStaticMethodThrowTypeExtension
-
-	-
-		class: PHPStan\Type\Php\StrContainingTypeSpecifyingExtension
-		tags:
-			- phpstan.typeSpecifier.functionTypeSpecifyingExtension
-
-	-
-		class: PHPStan\Type\Php\SimpleXMLElementClassPropertyReflectionExtension
-		tags:
-			- phpstan.broker.propertiesClassReflectionExtension
-
-	-
-		class: PHPStan\Type\Php\SimpleXMLElementConstructorThrowTypeExtension
-		tags:
-			- phpstan.dynamicStaticMethodThrowTypeExtension
-
-	-
-		class: PHPStan\Type\Php\StatDynamicReturnTypeExtension
-		tags:
-			- phpstan.broker.dynamicFunctionReturnTypeExtension
-			- phpstan.broker.dynamicMethodReturnTypeExtension
-
-	-
-		class: PHPStan\Type\Php\MethodExistsTypeSpecifyingExtension
-		tags:
-			- phpstan.typeSpecifier.functionTypeSpecifyingExtension
-
-	-
-		class: PHPStan\Type\Php\PropertyExistsTypeSpecifyingExtension
-		tags:
-			- phpstan.typeSpecifier.functionTypeSpecifyingExtension
-
-	-
-		class: PHPStan\Type\Php\ReflectionClassIsSubclassOfTypeSpecifyingExtension
-		tags:
-			- phpstan.typeSpecifier.methodTypeSpecifyingExtension
-
-	-
-		class: PHPStan\Type\Php\SetTypeFunctionTypeSpecifyingExtension
-		tags:
-			- phpstan.typeSpecifier.functionTypeSpecifyingExtension
-
-	-
-		class: PHPStan\Type\Php\ThrowableReturnTypeExtension
-		tags:
-			- phpstan.broker.dynamicMethodReturnTypeExtension
-
-	-
 		class: PHPStan\Type\Php\VersionCompareFunctionDynamicReturnTypeExtension
 		arguments:
 			configPhpVersion: %phpVersion%
 		tags:
 			- phpstan.broker.dynamicFunctionReturnTypeExtension
-
-	-
-		class: PHPStan\Type\Php\AssertFunctionTypeSpecifyingExtension
-		tags:
-			- phpstan.typeSpecifier.functionTypeSpecifyingExtension
-
-	-
-		class: PHPStan\Type\Php\ClassExistsFunctionTypeSpecifyingExtension
-		tags:
-			- phpstan.typeSpecifier.functionTypeSpecifyingExtension
-
-	-
-		class: PHPStan\Type\Php\DefineConstantTypeSpecifyingExtension
-		tags:
-			- phpstan.typeSpecifier.functionTypeSpecifyingExtension
-
-	-
-		class: PHPStan\Type\Php\DefinedConstantTypeSpecifyingExtension
-		tags:
-			- phpstan.typeSpecifier.functionTypeSpecifyingExtension
-
-	-
-		class: PHPStan\Type\Php\FunctionExistsFunctionTypeSpecifyingExtension
-		tags:
-			- phpstan.typeSpecifier.functionTypeSpecifyingExtension
-
-	-
-		class: PHPStan\Type\Php\InArrayFunctionTypeSpecifyingExtension
-		tags:
-			- phpstan.typeSpecifier.functionTypeSpecifyingExtension
-
-	-
-		class: PHPStan\Type\Php\IsArrayFunctionTypeSpecifyingExtension
-		tags:
-			- phpstan.typeSpecifier.functionTypeSpecifyingExtension
-
-	-
-		class: PHPStan\Type\Php\IsCallableFunctionTypeSpecifyingExtension
-		tags:
-			- phpstan.typeSpecifier.functionTypeSpecifyingExtension
-
-	-
-		class: PHPStan\Type\Php\IsIterableFunctionTypeSpecifyingExtension
-		tags:
-			- phpstan.typeSpecifier.functionTypeSpecifyingExtension
-
-	-
-		class: PHPStan\Type\Php\IsSubclassOfFunctionTypeSpecifyingExtension
-		tags:
-			- phpstan.typeSpecifier.functionTypeSpecifyingExtension
-
-	-
-		class: PHPStan\Type\Php\IsAFunctionTypeSpecifyingExtension
-		tags:
-			- phpstan.typeSpecifier.functionTypeSpecifyingExtension
-
-	-
-		class: PHPStan\Type\Php\IsAFunctionTypeSpecifyingHelper
-
-	-
-		class: PHPStan\Type\Php\CtypeDigitFunctionTypeSpecifyingExtension
-		tags:
-			- phpstan.typeSpecifier.functionTypeSpecifyingExtension
 
 	-
 		class: PHPStan\Type\Php\TypeSpecifyingFunctionsDynamicReturnTypeExtension
@@ -1435,16 +1140,6 @@ services:
 			- phpstan.broker.dynamicFunctionReturnTypeExtension
 
 	-
-		class: PHPStan\Type\Php\SimpleXMLElementAsXMLMethodReturnTypeExtension
-		tags:
-			- phpstan.broker.dynamicMethodReturnTypeExtension
-
-	-
-		class: PHPStan\Type\Php\SimpleXMLElementXpathMethodReturnTypeExtension
-		tags:
-			- phpstan.broker.dynamicMethodReturnTypeExtension
-
-	-
 		class: PHPStan\Type\Php\LtrimFunctionReturnTypeExtension
 		tags:
 			- phpstan.broker.dynamicFunctionReturnTypeExtension
@@ -1453,12 +1148,6 @@ services:
 		class: PHPStan\Type\Php\TrimFunctionDynamicReturnTypeExtension
 		tags:
 			- phpstan.broker.dynamicFunctionReturnTypeExtension
-
-	-
-		class: PHPStan\Type\Php\XMLReaderOpenReturnTypeExtension
-		tags:
-			- phpstan.broker.dynamicMethodReturnTypeExtension
-			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
 
 	-
 		class: PHPStan\Type\Php\ReflectionGetAttributesMethodReturnTypeExtension
@@ -1496,24 +1185,9 @@ services:
 			- phpstan.broker.dynamicMethodReturnTypeExtension
 
 	-
-		class: PHPStan\Type\Php\DatePeriodConstructorReturnTypeExtension
-		tags:
-			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
-
-	-
-		class: PHPStan\Type\PHPStan\ClassNameUsageLocationCreateIdentifierDynamicReturnTypeExtension
-		tags:
-			- phpstan.broker.dynamicMethodReturnTypeExtension
-	-
 		class: PHPStan\Type\ClosureTypeFactory
 		arguments:
 			parser: @currentPhpVersionPhpParser
-
-	-
-		class: PHPStan\Type\Constant\OversizedArrayBuilder
-
-	-
-		class: PHPStan\Rules\Functions\PrintfHelper
 
 	exceptionTypeResolver:
 		class: PHPStan\Rules\Exceptions\ExceptionTypeResolver
@@ -1681,12 +1355,6 @@ services:
 		factory: @PHPStan\Reflection\BetterReflection\SourceStubber\ReflectionSourceStubberFactory::create()
 		autowired:
 			- PHPStan\BetterReflection\SourceLocator\SourceStubber\ReflectionSourceStubber
-
-	-
-		class: PHPStan\Reflection\BetterReflection\SourceStubber\ReflectionSourceStubberFactory
-
-	-
-		class: PHPStan\Reflection\Deprecation\DeprecationProvider
 
 	php8Lexer:
 		class: PhpParser\Lexer\Emulative
