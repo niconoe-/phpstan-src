@@ -216,22 +216,6 @@ extensions:
 	validateIgnoredErrors: PHPStan\DependencyInjection\ValidateIgnoredErrorsExtension
 	validateExcludePaths: PHPStan\DependencyInjection\ValidateExcludePathsExtension
 
-rules:
-	- PHPStan\Rules\Debug\DebugScopeRule
-	- PHPStan\Rules\Debug\DumpPhpDocTypeRule
-	- PHPStan\Rules\Debug\DumpTypeRule
-	- PHPStan\Rules\Debug\FileAssertRule
-	- PHPStan\Rules\RestrictedUsage\RestrictedClassConstantUsageRule
-	- PHPStan\Rules\RestrictedUsage\RestrictedFunctionUsageRule
-	- PHPStan\Rules\RestrictedUsage\RestrictedFunctionCallableUsageRule
-	- PHPStan\Rules\RestrictedUsage\RestrictedMethodUsageRule
-	- PHPStan\Rules\RestrictedUsage\RestrictedMethodCallableUsageRule
-	- PHPStan\Rules\RestrictedUsage\RestrictedPropertyUsageRule
-	- PHPStan\Rules\RestrictedUsage\RestrictedStaticMethodUsageRule
-	- PHPStan\Rules\RestrictedUsage\RestrictedStaticMethodCallableUsageRule
-	- PHPStan\Rules\RestrictedUsage\RestrictedStaticPropertyUsageRule
-	- PHPStan\Rules\RestrictedUsage\RestrictedUsageOfDeprecatedStringCastRule
-
 conditionalTags:
 	PHPStan\Rules\Exceptions\MissingCheckedExceptionInFunctionThrowsRule:
 		phpstan.rules.rule: %exceptions.check.missingCheckedExceptionInThrows%

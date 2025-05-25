@@ -5,6 +5,8 @@ namespace PHPStan\DependencyInjection;
 use Nette\DI\CompilerExtension;
 use olvlvl\ComposerAttributeCollector\Attributes;
 use PHPStan\Broker\BrokerFactory;
+use PHPStan\Rules\LazyRegistry;
+use PHPStan\Rules\Rule;
 use PHPStan\Type\DynamicFunctionReturnTypeExtension;
 use ReflectionClass;
 
@@ -19,6 +21,7 @@ final class AutowiredAttributeServicesExtension extends CompilerExtension
 
 		$interfaceToTag = [
 			DynamicFunctionReturnTypeExtension::class => BrokerFactory::DYNAMIC_FUNCTION_RETURN_TYPE_EXTENSION_TAG,
+			Rule::class => LazyRegistry::RULE_TAG,
 		];
 
 		foreach ($autowiredServiceClasses as $class) {
