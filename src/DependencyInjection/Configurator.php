@@ -75,9 +75,18 @@ final class Configurator extends \Nette\Bootstrap\Configurator
 			$this->staticParameters['debugMode'],
 		);
 
+		$attributesPhp = __DIR__ . '/../../vendor/attributes.php';
+
 		$className = $loader->load(
 			[$this, 'generateContainer'],
-			[$this->staticParameters, array_keys($this->dynamicParameters), $this->configs, PHP_VERSION_ID - PHP_RELEASE_VERSION, NeonAdapter::CACHE_KEY, $this->getAllConfigFilesHashes()],
+			[
+				$this->staticParameters,
+				array_keys($this->dynamicParameters),
+				$this->configs,
+				PHP_VERSION_ID - PHP_RELEASE_VERSION,
+				is_file($attributesPhp) ? sha1_file($attributesPhp) : 'attributes-missing',
+				NeonAdapter::CACHE_KEY, $this->getAllConfigFilesHashes(),
+			],
 		);
 
 		if ($this->journalContainer) {
