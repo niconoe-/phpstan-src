@@ -312,11 +312,6 @@ services:
 			- phpstan.parser.richParserNodeVisitor
 
 	-
-		class: PHPStan\Parser\LastConditionVisitor
-		tags:
-			- phpstan.parser.richParserNodeVisitor
-
-	-
 		class: PHPStan\Parser\TypeTraverserInstanceofVisitor
 		tags:
 			- phpstan.parser.richParserNodeVisitor
@@ -489,6 +484,9 @@ services:
 			parser: @defaultAnalysisParser
 
 	-
+		class: PHPStan\Dependency\ExportedNodeVisitor
+
+	-
 		class: PHPStan\DependencyInjection\Container
 		factory: PHPStan\DependencyInjection\MemoizingContainer
 		arguments:
@@ -630,6 +628,9 @@ services:
 
 	-
 		class: PHPStan\Reflection\Annotations\AnnotationsPropertiesClassReflectionExtension
+
+	-
+		class: PHPStan\Reflection\BetterReflection\SourceLocator\CachingVisitor
 
 	-
 		class: PHPStan\Reflection\BetterReflection\SourceLocator\FileNodesFetcher

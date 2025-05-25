@@ -4,8 +4,10 @@ namespace PHPStan\Parser;
 
 use PhpParser\Node;
 use PhpParser\NodeVisitorAbstract;
+use PHPStan\DependencyInjection\AutowiredService;
 use function count;
 
+#[AutowiredService]
 final class LastConditionVisitor extends NodeVisitorAbstract
 {
 

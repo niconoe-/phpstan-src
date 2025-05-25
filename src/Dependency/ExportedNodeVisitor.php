@@ -5,10 +5,8 @@ namespace PHPStan\Dependency;
 use PhpParser\Node;
 use PhpParser\NodeVisitor;
 use PhpParser\NodeVisitorAbstract;
-use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\ShouldNotHappenException;
 
-#[AutowiredService]
 final class ExportedNodeVisitor extends NodeVisitorAbstract
 {
 

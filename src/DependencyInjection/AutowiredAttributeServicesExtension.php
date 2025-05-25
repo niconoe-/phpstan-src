@@ -4,12 +4,17 @@ namespace PHPStan\DependencyInjection;
 
 use Nette\DI\CompilerExtension;
 use olvlvl\ComposerAttributeCollector\Attributes;
+use PhpParser\NodeVisitor;
 use PHPStan\Analyser\ResultCache\ResultCacheMetaExtension;
 use PHPStan\Analyser\TypeSpecifierFactory;
 use PHPStan\Broker\BrokerFactory;
+use PHPStan\Collectors\Collector;
+use PHPStan\Collectors\RegistryFactory as CollectorRegistryFactory;
 use PHPStan\DependencyInjection\Type\LazyDynamicThrowTypeExtensionProvider;
 use PHPStan\DependencyInjection\Type\LazyParameterClosureTypeExtensionProvider;
 use PHPStan\DependencyInjection\Type\LazyParameterOutTypeExtensionProvider;
+use PHPStan\Diagnose\DiagnoseExtension;
+use PHPStan\Parser\RichParser;
 use PHPStan\PhpDoc\StubFilesExtension;
 use PHPStan\PhpDoc\TypeNodeResolverExtension;
 use PHPStan\Reflection\AllowedSubTypesClassReflectionExtension;
@@ -101,7 +106,9 @@ final class AutowiredAttributeServicesExtension extends CompilerExtension
 			RestrictedFunctionUsageExtension::class => RestrictedFunctionUsageExtension::FUNCTION_EXTENSION_TAG,
 			RestrictedPropertyUsageExtension::class => RestrictedPropertyUsageExtension::PROPERTY_EXTENSION_TAG,
 			RestrictedClassConstantUsageExtension::class => RestrictedClassConstantUsageExtension::CLASS_CONSTANT_EXTENSION_TAG,
-
+			NodeVisitor::class => RichParser::VISITOR_SERVICE_TAG,
+			Collector::class => CollectorRegistryFactory::COLLECTOR_TAG,
+			DiagnoseExtension::class => DiagnoseExtension::EXTENSION_TAG,
 		];
 
 		foreach ($autowiredServiceClasses as $class) {
