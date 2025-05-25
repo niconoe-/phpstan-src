@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "22eb9a4d7a19b311c2bfe0b1cd1d9251",
+    "content-hash": "b235ba93272364ed2ad1aff93785d2ca",
     "packages": [
         {
             "name": "clue/ndjson-react",
@@ -2258,7 +2258,7 @@
         },
         {
             "name": "ondrejmirtes/composer-attribute-collector",
-            "version": "dev-main",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ondrejmirtes/composer-attribute-collector.git",
@@ -2280,7 +2280,6 @@
                 "phpstan/phpstan": "^2.0",
                 "phpunit/phpunit": "^9.5"
             },
-            "default-branch": true,
             "type": "composer-plugin",
             "extra": {
                 "class": "olvlvl\\ComposerAttributeCollector\\Plugin",
@@ -2317,7 +2316,7 @@
             ],
             "description": "A convenient and near zero-cost way to retrieve targets of PHP 8 attributes",
             "support": {
-                "source": "https://github.com/ondrejmirtes/composer-attribute-collector/tree/main"
+                "source": "https://github.com/ondrejmirtes/composer-attribute-collector/tree/1.0.0"
             },
             "time": "2025-05-24T23:38:56+00:00"
         },
@@ -6541,8 +6540,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "jetbrains/phpstorm-stubs": 20,
-        "ondrejmirtes/composer-attribute-collector": 20
+        "jetbrains/phpstorm-stubs": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
