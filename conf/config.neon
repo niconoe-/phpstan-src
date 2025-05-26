@@ -510,20 +510,6 @@ services:
 		implement: PHPStan\Reflection\BetterReflection\SourceLocator\OptimizedSingleFileSourceLocatorFactory
 
 	-
-		class: PHPStan\Reflection\BetterReflection\Type\AdapterReflectionEnumCaseDynamicReturnTypeExtension
-		arguments:
-			class: PHPStan\BetterReflection\Reflection\Adapter\ReflectionEnumBackedCase
-		tags:
-			- phpstan.broker.dynamicMethodReturnTypeExtension
-
-	-
-		class: PHPStan\Reflection\BetterReflection\Type\AdapterReflectionEnumCaseDynamicReturnTypeExtension
-		arguments:
-			class: PHPStan\BetterReflection\Reflection\Adapter\ReflectionEnumUnitCase
-		tags:
-			- phpstan.broker.dynamicMethodReturnTypeExtension
-
-	-
 		class: PHPStan\Reflection\ConstructorsHelper
 		arguments:
 			additionalConstructors: %additionalConstructors%
@@ -539,22 +525,6 @@ services:
 			- phpstan.broker.propertiesClassReflectionExtension
 		arguments:
 			classes: %universalObjectCratesClasses%
-
-	-
-		class: PHPStan\Reflection\PHPStan\NativeReflectionEnumReturnDynamicReturnTypeExtension
-		tags:
-			- phpstan.broker.dynamicMethodReturnTypeExtension
-		arguments:
-			className: PHPStan\Reflection\ClassReflection
-			methodName: getNativeReflection
-
-	-
-		class: PHPStan\Reflection\PHPStan\NativeReflectionEnumReturnDynamicReturnTypeExtension
-		tags:
-			- phpstan.broker.dynamicMethodReturnTypeExtension
-		arguments:
-			className: PHPStan\Reflection\Php\BuiltinMethodReflection
-			methodName: getDeclaringClass
 
 	-
 		class: PHPStan\Reflection\ReflectionProvider\ReflectionProviderProvider
@@ -803,20 +773,6 @@ services:
 			- phpstan.broker.dynamicFunctionReturnTypeExtension
 		arguments:
 			checkMaybeUndefinedVariables: %checkMaybeUndefinedVariables%
-
-	-
-		class: PHPStan\Type\Php\DateTimeModifyReturnTypeExtension
-		tags:
-			- phpstan.broker.dynamicMethodReturnTypeExtension
-		arguments:
-			dateTimeClass: DateTime
-
-	-
-		class: PHPStan\Type\Php\DateTimeModifyReturnTypeExtension
-		tags:
-			- phpstan.broker.dynamicMethodReturnTypeExtension
-		arguments:
-			dateTimeClass: DateTimeImmutable
 
 	-
 		class: PHPStan\Type\Php\VersionCompareFunctionDynamicReturnTypeExtension
