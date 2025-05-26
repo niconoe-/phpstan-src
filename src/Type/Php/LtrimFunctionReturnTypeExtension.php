@@ -4,7 +4,6 @@ namespace PHPStan\Type\Php;
 
 use PhpParser\Node\Expr\FuncCall;
 use PHPStan\Analyser\Scope;
-use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\FunctionReflection;
 use PHPStan\Type\ClassStringType;
 use PHPStan\Type\Constant\ConstantStringType;
@@ -13,7 +12,6 @@ use PHPStan\Type\Type;
 use function count;
 use function ltrim;
 
-#[AutowiredService]
 final class LtrimFunctionReturnTypeExtension implements DynamicFunctionReturnTypeExtension
 {
 
