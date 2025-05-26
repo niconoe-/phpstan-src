@@ -49,7 +49,7 @@ jobs:
 
       - name: "Compiler PHPStan"
         working-directory: "compiler"
-        run: "../bin/phpstan analyse -l 8 src tests"
+        run: "vendor/bin/phpstan analyse -l 8 src tests"
 
       - name: "Prepare for PHAR compilation"
         working-directory: "compiler"
