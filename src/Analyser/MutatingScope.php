@@ -2674,9 +2674,7 @@ final class MutatingScope implements Scope
 				$templateTags,
 				$throwPoints,
 				$impurePoints,
-				[],
-				[],
-				$acceptsNamedArguments,
+				acceptsNamedArguments: $acceptsNamedArguments,
 			);
 		}
 
