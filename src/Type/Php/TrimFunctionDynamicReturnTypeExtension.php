@@ -21,7 +21,7 @@ final class TrimFunctionDynamicReturnTypeExtension implements DynamicFunctionRet
 
 	public function isFunctionSupported(FunctionReflection $functionReflection): bool
 	{
-		return in_array($functionReflection->getName(), ['trim', 'rtrim', 'ltrim'], true);
+		return in_array($functionReflection->getName(), ['trim', 'rtrim'], true);
 	}
 
 	public function getTypeFromFunctionCall(
