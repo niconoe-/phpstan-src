@@ -99,9 +99,8 @@ jobs:
       - name: "Transform source code"
         if: matrix.php-version != '8.1' && matrix.php-version != '8.2' && matrix.php-version != '8.3' && matrix.php-version != '8.4'
         run: |
-          composer global require --dev ondrejmirtes/simple-downgrader:^2.1
-          echo "$(composer global config bin-dir --absolute -q)"  >> "$GITHUB_PATH"
-          simple-downgrade downgrade -c build/downgrade.php ${{ matrix.php-version }}
+          composer install --no-interaction --no-progress --working-dir=compiler
+          ./compiler/vendor/bin/simple-downgrade downgrade -c build/downgrade.php ${{ matrix.php-version }}
 
       - name: "Install dependencies"
         run: "composer install --no-interaction --no-progress"
@@ -120,9 +119,8 @@ jobs:
       - name: "Transform source code"
         if: matrix.php-version != '8.1' && matrix.php-version != '8.2' && matrix.php-version != '8.3' && matrix.php-version != '8.4'
         run: |
-          composer global require --dev ondrejmirtes/simple-downgrader:^2.1
-          echo "$(composer global config bin-dir --absolute -q)"  >> "$GITHUB_PATH"
-          simple-downgrade downgrade -c build/downgrade.php ${{ matrix.php-version }}
+          composer install --no-interaction --no-progress --working-dir=compiler
+          ./compiler/vendor/bin/simple-downgrade downgrade -c build/downgrade.php ${{ matrix.php-version }}
 
       - name: "Install dependencies"
         run: "composer install --no-interaction --no-progress"
