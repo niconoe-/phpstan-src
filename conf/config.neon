@@ -768,11 +768,6 @@ services:
 			- phpstan.broker.dynamicFunctionReturnTypeExtension
 
 	-
-		class: PHPStan\Type\Php\TrimFunctionDynamicReturnTypeExtension
-		tags:
-			- phpstan.broker.dynamicFunctionReturnTypeExtension
-
-	-
 		class: PHPStan\Type\ClosureTypeFactory
 		arguments:
 			parser: @currentPhpVersionPhpParser
