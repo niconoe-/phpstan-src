@@ -215,6 +215,7 @@ extensions:
 	parametersSchema: PHPStan\DependencyInjection\ParametersSchemaExtension
 	validateIgnoredErrors: PHPStan\DependencyInjection\ValidateIgnoredErrorsExtension
 	validateExcludePaths: PHPStan\DependencyInjection\ValidateExcludePathsExtension
+	validateServiceTags: PHPStan\DependencyInjection\ValidateServiceTagsExtension
 
 conditionalTags:
 	PHPStan\Rules\Exceptions\MissingCheckedExceptionInFunctionThrowsRule:
