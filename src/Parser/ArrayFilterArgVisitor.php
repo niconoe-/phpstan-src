@@ -4,7 +4,9 @@ namespace PHPStan\Parser;
 
 use PhpParser\Node;
 use PhpParser\NodeVisitorAbstract;
+use PHPStan\DependencyInjection\AutowiredService;
 
+#[AutowiredService]
 final class ArrayFilterArgVisitor extends NodeVisitorAbstract
 {
 

@@ -6,6 +6,7 @@ use PhpParser\Node;
 use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\NodeVisitorAbstract;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\ParametersAcceptor;
 use function array_key_exists;
 use function array_pop;
@@ -13,6 +14,7 @@ use function count;
 use function in_array;
 use function sprintf;
 
+#[AutowiredService]
 final class VariadicMethodsVisitor extends NodeVisitorAbstract
 {
 

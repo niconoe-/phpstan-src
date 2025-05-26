@@ -4,9 +4,11 @@ namespace PHPStan\Parser;
 
 use PhpParser\Node;
 use PhpParser\NodeVisitorAbstract;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Node\AnonymousClassNode;
 use function count;
 
+#[AutowiredService]
 final class AnonymousClassVisitor extends NodeVisitorAbstract
 {
 

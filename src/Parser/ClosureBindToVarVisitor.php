@@ -5,7 +5,9 @@ namespace PHPStan\Parser;
 use PhpParser\Node;
 use PhpParser\Node\Identifier;
 use PhpParser\NodeVisitorAbstract;
+use PHPStan\DependencyInjection\AutowiredService;
 
+#[AutowiredService]
 final class ClosureBindToVarVisitor extends NodeVisitorAbstract
 {
 

@@ -5,8 +5,10 @@ namespace PHPStan\Parser;
 use PhpParser\Node;
 use PhpParser\Node\Identifier;
 use PhpParser\NodeVisitorAbstract;
+use PHPStan\DependencyInjection\AutowiredService;
 use function count;
 
+#[AutowiredService]
 final class ClosureBindArgVisitor extends NodeVisitorAbstract
 {
 

@@ -4,10 +4,12 @@ namespace PHPStan\Parser;
 
 use PhpParser\Node;
 use PhpParser\NodeVisitorAbstract;
+use PHPStan\DependencyInjection\AutowiredService;
 use function array_pop;
 use function count;
 use function get_class;
 
+#[AutowiredService]
 final class ParentStmtTypesVisitor extends NodeVisitorAbstract
 {
 

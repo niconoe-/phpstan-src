@@ -4,10 +4,12 @@ namespace PHPStan\Parser;
 
 use PhpParser\Node;
 use PhpParser\NodeVisitorAbstract;
+use PHPStan\DependencyInjection\AutowiredService;
 use function array_pop;
 use function array_reverse;
 use function count;
 
+#[AutowiredService]
 final class TryCatchTypeVisitor extends NodeVisitorAbstract
 {
 
