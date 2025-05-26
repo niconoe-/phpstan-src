@@ -536,9 +536,6 @@ services:
 			reflector: @betterReflectionReflector
 
 	-
-		class: PHPStan\Reflection\SignatureMap\SignatureMapParser
-
-	-
 		class: PHPStan\Reflection\SignatureMap\FunctionSignatureMapProvider
 		arguments:
 			stricterFunctionMap: %featureToggles.stricterFunctionMap%
@@ -551,14 +548,8 @@ services:
 			- PHPStan\Reflection\SignatureMap\Php8SignatureMapProvider
 
 	-
-		class: PHPStan\Reflection\SignatureMap\SignatureMapProviderFactory
-
-	-
 		class: PHPStan\Reflection\SignatureMap\SignatureMapProvider
 		factory: @PHPStan\Reflection\SignatureMap\SignatureMapProviderFactory::create()
-
-	-
-		class: PHPStan\Rules\Api\ApiRuleHelper
 
 	-
 		class: PHPStan\Rules\AttributesCheck
@@ -573,15 +564,9 @@ services:
 			reportPossiblyNonexistentConstantArrayOffset: %reportPossiblyNonexistentConstantArrayOffset%
 
 	-
-		class: PHPStan\Rules\ClassNameCheck
-
-	-
 		class: PHPStan\Rules\ClassCaseSensitivityCheck
 		arguments:
 			checkInternalClassCaseSensitivity: %checkInternalClassCaseSensitivity%
-
-	-
-		class: PHPStan\Rules\ClassForbiddenNameCheck
 
 	-
 		class: PHPStan\Rules\Classes\LocalTypeAliasesCheck
@@ -632,15 +617,6 @@ services:
 			checkedExceptionClasses: %exceptions.checkedExceptionClasses%
 		autowired:
 			- PHPStan\Rules\Exceptions\DefaultExceptionTypeResolver
-
-	-
-		class: PHPStan\Rules\Exceptions\MissingCheckedExceptionInFunctionThrowsRule
-
-	-
-		class: PHPStan\Rules\Exceptions\MissingCheckedExceptionInMethodThrowsRule
-
-	-
-		class: PHPStan\Rules\Exceptions\MissingCheckedExceptionInPropertyHookThrowsRule
 
 	-
 		class: PHPStan\Rules\Exceptions\MissingCheckedExceptionInThrowsCheck
@@ -726,9 +702,6 @@ services:
 		arguments:
 			reportMagicProperties: %reportMagicProperties%
 			checkDynamicProperties: %checkDynamicProperties%
-
-	-
-		class: PHPStan\Rules\Properties\UninitializedPropertyRule
 
 	-
 		class: PHPStan\Rules\RuleLevelHelper
