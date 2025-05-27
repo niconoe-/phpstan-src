@@ -9,9 +9,9 @@ use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\CloningVisitor;
 use PhpParser\Parser;
 use PHPStan\File\FileReader;
+use PHPStan\Fixable\PhpPrinter;
 use PHPStan\Fixable\PhpPrinterIndentationDetectorVisitor;
 use PHPStan\Fixable\ReplacingNodeVisitor;
-use PHPStan\Node\Printer\Printer;
 use PHPStan\Node\VirtualNode;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FixableNodeRuleError;
@@ -126,7 +126,7 @@ final class RuleErrorTransformer
 			/** @var Stmt[] $newStmts */
 			$newStmts = $traverser->traverse($newStmts);
 
-			$printer = new Printer(['indent' => str_repeat($indentDetector->indentCharacter, $indentDetector->indentSize)]);
+			$printer = new PhpPrinter(['indent' => str_repeat($indentDetector->indentCharacter, $indentDetector->indentSize)]);
 			$newCode = $printer->printFormatPreserving($newStmts, $fileNodes, $oldTokens);
 			$differ = new Differ();
 
