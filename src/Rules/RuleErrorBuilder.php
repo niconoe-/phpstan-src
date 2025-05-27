@@ -2,6 +2,7 @@
 
 namespace PHPStan\Rules;
 
+use PhpParser\Node;
 use PHPStan\Analyser\Error;
 use PHPStan\ShouldNotHappenException;
 use function array_map;
@@ -25,6 +26,7 @@ final class RuleErrorBuilder
 	private const TYPE_IDENTIFIER = 16;
 	private const TYPE_METADATA = 32;
 	private const TYPE_NON_IGNORABLE = 64;
+	private const TYPE_FIXABLE_NODE = 128;
 
 	private int $type;
 
@@ -50,9 +52,9 @@ final class RuleErrorBuilder
 				RuleError::class,
 				[
 					[
-						'message',
-						'string',
-						'string',
+						'message', // property name
+						'string', // native type
+						'string', // PHPDoc type
 					],
 				],
 			],
@@ -114,6 +116,16 @@ final class RuleErrorBuilder
 			self::TYPE_NON_IGNORABLE => [
 				NonIgnorableRuleError::class,
 				[],
+			],
+			self::TYPE_FIXABLE_NODE => [
+				FixableNodeRuleError::class,
+				[
+					[
+						'newNodeCallable',
+						null,
+						'callable(\PhpParser\Node): \PhpParser\Node',
+					],
+				],
 			],
 		];
 	}
@@ -250,6 +262,20 @@ final class RuleErrorBuilder
 	public function nonIgnorable(): self
 	{
 		$this->type |= self::TYPE_NON_IGNORABLE;
+
+		return $this;
+	}
+
+	/**
+	 * @internal Experimental
+	 * @param callable(Node): Node $cb
+	 * @phpstan-this-out self<T&FixableNodeRuleError>
+	 * @return self<T&FixableNodeRuleError>
+	 */
+	public function fixNode(callable $cb): self
+	{
+		$this->properties['newNodeCallable'] = $cb;
+		$this->type |= self::TYPE_FIXABLE_NODE;
 
 		return $this;
 	}
