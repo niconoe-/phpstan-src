@@ -287,6 +287,11 @@ services:
 			parser: @defaultAnalysisParser
 
 	-
+		class: PHPStan\Analyser\RuleErrorTransformer
+		arguments:
+			parser: @currentPhpVersionPhpParser
+
+	-
 		class: PHPStan\Analyser\Ignore\IgnoredErrorHelper
 		arguments:
 			ignoreErrors: %ignoreErrors%

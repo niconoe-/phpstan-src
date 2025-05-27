@@ -2,31 +2,51 @@
 
 namespace PHPStan\Analyser;
 
+use PhpParser\Internal\TokenStream;
 use PhpParser\Node;
-use PHPStan\DependencyInjection\AutowiredService;
+use PhpParser\Node\Stmt;
+use PhpParser\NodeTraverser;
+use PhpParser\NodeVisitor\CloningVisitor;
+use PhpParser\Parser;
+use PHPStan\File\FileReader;
+use PHPStan\Fixable\PhpPrinterIndentationDetectorVisitor;
+use PHPStan\Fixable\ReplacingNodeVisitor;
+use PHPStan\Node\Printer\Printer;
+use PHPStan\Node\VirtualNode;
 use PHPStan\Rules\FileRuleError;
+use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\LineRuleError;
 use PHPStan\Rules\MetadataRuleError;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
+use PHPStan\ShouldNotHappenException;
+use SebastianBergmann\Diff\Differ;
+use function get_class;
+use function sha1;
+use function str_repeat;
 
-#[AutowiredService]
 final class RuleErrorTransformer
 {
 
+	public function __construct(
+		private Parser $parser,
+	)
+	{
+	}
+
 	/**
-	 * @param class-string<Node> $nodeType
+	 * @param Node\Stmt[] $fileNodes
 	 */
 	public function transform(
 		RuleError $ruleError,
 		Scope $scope,
-		string $nodeType,
-		int $nodeLine,
+		array $fileNodes,
+		Node $node,
 	): Error
 	{
-		$line = $nodeLine;
+		$line = $node->getStartLine();
 		$canBeIgnored = true;
 		$fileName = $scope->getFileDescription();
 		$filePath = $scope->getFile();
@@ -72,6 +92,47 @@ final class RuleErrorTransformer
 			$canBeIgnored = false;
 		}
 
+		$fixedErrorDiff = null;
+		if ($ruleError instanceof FixableNodeRuleError) {
+			if ($node instanceof VirtualNode) {
+				throw new ShouldNotHappenException('Cannot fix virtual node');
+			}
+			$fixingFile = $filePath;
+			if ($traitFilePath !== null) {
+				$fixingFile = $traitFilePath;
+			}
+
+			$oldCode = FileReader::read($fixingFile);
+
+			$this->parser->parse($oldCode);
+			$hash = sha1($oldCode);
+			$oldTokens = $this->parser->getTokens();
+
+			$indentTraverser = new NodeTraverser();
+			$indentDetector = new PhpPrinterIndentationDetectorVisitor(new TokenStream($oldTokens, PhpPrinter::TAB_WIDTH));
+			$indentTraverser->addVisitor($indentDetector);
+			$indentTraverser->traverse($fileNodes);
+
+			$cloningTraverser = new NodeTraverser();
+			$cloningTraverser->addVisitor(new CloningVisitor());
+
+			/** @var Stmt[] $newStmts */
+			$newStmts = $cloningTraverser->traverse($fileNodes);
+
+			$traverser = new NodeTraverser();
+			$visitor = new ReplacingNodeVisitor($node, $ruleError->getNewNodeCallable());
+			$traverser->addVisitor($visitor);
+
+			/** @var Stmt[] $newStmts */
+			$newStmts = $traverser->traverse($newStmts);
+
+			$printer = new Printer(['indent' => str_repeat($indentDetector->indentCharacter, $indentDetector->indentSize)]);
+			$newCode = $printer->printFormatPreserving($newStmts, $fileNodes, $oldTokens);
+			$differ = new Differ();
+
+			$fixedErrorDiff = new FixedErrorDiff($hash, $differ->diffToArray($oldCode, $newCode));
+		}
+
 		return new Error(
 			$ruleError->getMessage(),
 			$fileName,
@@ -80,10 +141,11 @@ final class RuleErrorTransformer
 			$filePath,
 			$traitFilePath,
 			$tip,
-			$nodeLine,
-			$nodeType,
+			$node->getStartLine(),
+			get_class($node),
 			$identifier,
 			$metadata,
+			$fixedErrorDiff,
 		);
 	}
 

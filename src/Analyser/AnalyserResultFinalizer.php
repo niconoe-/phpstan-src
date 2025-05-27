@@ -89,7 +89,7 @@ final class AnalyserResultFinalizer
 			}
 
 			foreach ($ruleErrors as $ruleError) {
-				$error = $this->ruleErrorTransformer->transform($ruleError, $scope, $nodeType, $node->getStartLine());
+				$error = $this->ruleErrorTransformer->transform($ruleError, $scope, [], $node);
 
 				if ($error->canBeIgnored()) {
 					foreach ($this->ignoreErrorExtensionProvider->getExtensions() as $ignoreErrorExtension) {

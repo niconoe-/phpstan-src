@@ -2,7 +2,12 @@
 
 namespace PHPStan\Command;
 
+use Nette\Utils\Strings;
 use OndraM\CiDetector\CiDetector;
+use PhpMerge\internal\Hunk;
+use PhpMerge\internal\Line;
+use PhpMerge\MergeConflict;
+use PhpMerge\PhpMerge;
 use PHPStan\Analyser\InternalError;
 use PHPStan\Command\ErrorFormatter\BaselineNeonErrorFormatter;
 use PHPStan\Command\ErrorFormatter\BaselinePhpErrorFormatter;
@@ -23,6 +28,8 @@ use PHPStan\Internal\BytesHelper;
 use PHPStan\Internal\DirectoryCreator;
 use PHPStan\Internal\DirectoryCreatorException;
 use PHPStan\ShouldNotHappenException;
+use ReflectionClass;
+use SebastianBergmann\Diff\Differ;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -51,6 +58,7 @@ use function is_file;
 use function is_string;
 use function pathinfo;
 use function rewind;
+use function sha1;
 use function sprintf;
 use function str_contains;
 use function stream_get_contents;
@@ -58,6 +66,8 @@ use function strlen;
 use function substr;
 use const PATHINFO_BASENAME;
 use const PATHINFO_EXTENSION;
+use const PREG_SPLIT_DELIM_CAPTURE;
+use const PREG_SPLIT_NO_EMPTY;
 
 /**
  * @phpstan-import-type Trace from InternalError as InternalErrorTrace
@@ -100,7 +110,7 @@ final class AnalyseCommand extends Command
 				new InputOption('xdebug', null, InputOption::VALUE_NONE, 'Allow running with Xdebug for debugging purposes'),
 				new InputOption('tmp-file', null, InputOption::VALUE_REQUIRED, '(Editor mode) Edited file used in place of --instead-of file'),
 				new InputOption('instead-of', null, InputOption::VALUE_REQUIRED, '(Editor mode) File being replaced by --tmp-file'),
-				new InputOption('fix', null, InputOption::VALUE_NONE, 'Launch PHPStan Pro'),
+				new InputOption('fix', null, InputOption::VALUE_NONE, 'Fix auto-fixable errors (experimental)'),
 				new InputOption('watch', null, InputOption::VALUE_NONE, 'Launch PHPStan Pro'),
 				new InputOption('pro', null, InputOption::VALUE_NONE, 'Launch PHPStan Pro'),
 				new InputOption('fail-without-result-cache', null, InputOption::VALUE_NONE, 'Return non-zero exit code when result cache is not used'),
@@ -136,7 +146,8 @@ final class AnalyseCommand extends Command
 		$level = $input->getOption(self::OPTION_LEVEL);
 		$allowXdebug = $input->getOption('xdebug');
 		$debugEnabled = (bool) $input->getOption('debug');
-		$fix = (bool) $input->getOption('fix') || (bool) $input->getOption('watch') || (bool) $input->getOption('pro');
+		$pro = (bool) $input->getOption('watch') || (bool) $input->getOption('pro');
+		$fix = (bool) $input->getOption('fix');
 		$failWithoutResultCache = (bool) $input->getOption('fail-without-result-cache');
 
 		/** @var string|false|null $generateBaselineFile */
@@ -196,10 +207,23 @@ final class AnalyseCommand extends Command
 				$inceptionResult->getStdOutput()->getStyle()->error('Editor mode options --tmp-file and --instead-of cannot be used when generating the baseline.');
 				return $inceptionResult->handleReturn(1, null, $this->analysisStartTime);
 			}
-			if ($fix) {
+			if ($pro) {
 				$inceptionResult->getStdOutput()->getStyle()->error('Editor mode options --tmp-file and --instead-of cannot be used with PHPStan Pro.');
 				return $inceptionResult->handleReturn(1, null, $this->analysisStartTime);
 			}
+			if ($fix) {
+				$inceptionResult->getStdOutput()->getStyle()->error('Editor mode options --tmp-file and --instead-of cannot be used with --fix.');
+				return $inceptionResult->handleReturn(1, null, $this->analysisStartTime);
+			}
+		}
+
+		if ($fix) {
+			if ($generateBaselineFile !== null) {
+				$inceptionResult->getStdOutput()->getStyle()->error('Errors cannot be fixed when generating the baseline.');
+				return $inceptionResult->handleReturn(1, null, $this->analysisStartTime);
+			}
+
+			$inceptionResult->getErrorOutput()->getStyle()->note('The --fix CLI option no longer launches PHPStan Pro. Use --pro instead if you want to launch PHPStan Pro');
 		}
 
 		$errorOutput = $inceptionResult->getErrorOutput();
@@ -296,7 +320,7 @@ final class AnalyseCommand extends Command
 			));
 		}
 
-		if ($fix) {
+		if ($pro) {
 			if ($generateBaselineFile !== null) {
 				$inceptionResult->getStdOutput()->getStyle()->error('You cannot pass the --generate-baseline option when running PHPStan Pro.');
 				return $inceptionResult->handleReturn(1, null, $this->analysisStartTime);
@@ -484,7 +508,119 @@ final class AnalyseCommand extends Command
 			);
 		}
 
-		$exitCode = $errorFormatter->formatErrors($analysisResult, $inceptionResult->getStdOutput());
+		if ($fix) {
+			$fixableErrors = [];
+			foreach ($analysisResult->getFileSpecificErrors() as $fileSpecificError) {
+				if ($fileSpecificError->getFixedErrorDiff() === null) {
+					continue;
+				}
+
+				$fixableErrors[] = $fileSpecificError;
+			}
+
+			$fixableErrorsCount = count($fixableErrors);
+			if (count($fixableErrors) === 0) {
+				$inceptionResult->getStdOutput()->getStyle()->error('No fixable errors found');
+				$exitCode = 1;
+			} else {
+				$skippedCount = 0;
+				$fixableErrorsByFile = [];
+				foreach ($fixableErrors as $fixableError) {
+					$fixFile = $fixableError->getFilePath();
+					if ($fixableError->getTraitFilePath() !== null) {
+						$fixFile = $fixableError->getTraitFilePath();
+					}
+
+					$fixableErrorsByFile[$fixFile][] = $fixableError;
+				}
+
+				$differ = new Differ();
+
+				foreach ($fixableErrorsByFile as $file => $fileFixableErrors) {
+					$fileContents = FileReader::read($file);
+					$fileHash = sha1($fileContents);
+					$diffHunks = [];
+					foreach ($fileFixableErrors as $fileFixableError) {
+						$diff = $fileFixableError->getFixedErrorDiff();
+						if ($diff === null) {
+							throw new ShouldNotHappenException();
+						}
+						if ($diff->originalHash !== $fileHash) {
+							$skippedCount++;
+							continue;
+						}
+
+						$diffHunks[] = Hunk::createArray(Line::createArray($diff->diff));
+					}
+
+					if (count($diffHunks) === 0) {
+						continue;
+					}
+
+					$baseLines = Line::createArray(array_map(
+						static fn ($l) => [$l, Differ::OLD],
+						self::splitStringByLines($fileContents),
+					));
+
+					$refMerge = new ReflectionClass(PhpMerge::class);
+					$refMergeMethod = $refMerge->getMethod('mergeHunks');
+					$refMergeMethod->setAccessible(true);
+
+					$result = Line::createArray(array_map(
+						static fn ($l) => [$l, Differ::OLD],
+						$refMergeMethod->invokeArgs(null, [
+							$baseLines,
+							$diffHunks[0],
+							[],
+						]),
+					));
+
+					for ($i = 0; $i < count($diffHunks); $i++) {
+						/** @var MergeConflict[] $conflicts */
+						$conflicts = [];
+						$merged = $refMergeMethod->invokeArgs(null, [
+							$baseLines,
+							Hunk::createArray(Line::createArray($differ->diffToArray($fileContents, implode('', array_map(static fn ($l) => $l->getContent(), $result))))),
+							$diffHunks[$i],
+							&$conflicts,
+						]);
+						if (count($conflicts) > 0) {
+							$skippedCount += count($diffHunks);
+							continue 2;
+						}
+
+						$result = Line::createArray(array_map(
+							static fn ($l) => [$l, Differ::OLD],
+							$merged,
+						));
+
+					}
+
+					$finalFileContents = implode('', array_map(static fn ($l) => $l->getContent(), $result));
+					FileWriter::write($file, $finalFileContents);
+				}
+
+				if ($skippedCount > 0) {
+					$inceptionResult->getStdOutput()->getStyle()->warning(sprintf(
+						'%d %s fixed, %d %s skipped',
+						$fixableErrorsCount,
+						$fixableErrorsCount === 1 ? 'error' : 'errors',
+						$skippedCount,
+						$skippedCount === 1 ? 'error' : 'errors',
+					));
+				} else {
+					$inceptionResult->getStdOutput()->getStyle()->success(sprintf(
+						'%d %s fixed',
+						$fixableErrorsCount,
+						$fixableErrorsCount === 1 ? 'error' : 'errors',
+					));
+				}
+				$exitCode = 0;
+			}
+		} else {
+			$exitCode = $errorFormatter->formatErrors($analysisResult, $inceptionResult->getStdOutput());
+		}
+
 		if ($exitCode === 0 && $failWithoutResultCache && !$analysisResult->isResultCacheUsed()) {
 			$exitCode = 2;
 		}
@@ -541,6 +677,14 @@ final class AnalyseCommand extends Command
 			$analysisResult->getPeakMemoryUsageBytes(),
 			$this->analysisStartTime,
 		);
+	}
+
+	/**
+	 * @return string[]
+	 */
+	private static function splitStringByLines(string $input): array
+	{
+		return Strings::split($input, '/(.*\R)/', PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
 	}
 
 	private function createStreamOutput(): StreamOutput
