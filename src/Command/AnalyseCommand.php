@@ -485,7 +485,7 @@ final class AnalyseCommand extends Command
 		}
 
 		$exitCode = $errorFormatter->formatErrors($analysisResult, $inceptionResult->getStdOutput());
-		if ($failWithoutResultCache && !$analysisResult->isResultCacheUsed()) {
+		if ($exitCode === 0 && $failWithoutResultCache && !$analysisResult->isResultCacheUsed()) {
 			$exitCode = 2;
 		}
 
