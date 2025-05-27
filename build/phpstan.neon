@@ -117,6 +117,7 @@ parameters:
 
 rules:
 	- PHPStan\Build\FinalClassRule
+	- PHPStan\Build\AttributeNamedArgumentsRule
 
 services:
 	-
