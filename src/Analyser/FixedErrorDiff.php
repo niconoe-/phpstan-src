@@ -2,17 +2,12 @@
 
 namespace PHPStan\Analyser;
 
-use SebastianBergmann\Diff\Differ;
-
 final class FixedErrorDiff
 {
 
-	/**
-	 * @param array<array{mixed, Differ::OLD|Differ::ADDED|Differ::REMOVED}> $diff
-	 */
 	public function __construct(
 		public readonly string $originalHash,
-		public readonly array $diff,
+		public readonly string $diff,
 	)
 	{
 	}

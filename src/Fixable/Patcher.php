@@ -16,6 +16,8 @@ use function array_map;
 use function count;
 use function implode;
 use function sha1;
+use function str_starts_with;
+use function substr;
 use const PREG_SPLIT_DELIM_CAPTURE;
 use const PREG_SPLIT_NO_EMPTY;
 
@@ -42,7 +44,7 @@ final class Patcher
 				throw new FileChangedException();
 			}
 
-			$diffHunks[] = Hunk::createArray(Line::createArray($diff->diff));
+			$diffHunks[] = Hunk::createArray(Line::createArray($this->reconstructFullDiff($fileContents, $diff->diff)));
 		}
 
 		if (count($diffHunks) === 0) {
@@ -88,6 +90,69 @@ final class Patcher
 		}
 
 		return implode('', array_map(static fn ($l) => $l->getContent(), $result));
+	}
+
+	/**
+	 * @return array<array{mixed, Differ::OLD|Differ::ADDED|Differ::REMOVED}>
+	 */
+	private function reconstructFullDiff(string $originalText, string $unifiedDiff): array
+	{
+		$originalLines = self::splitStringByLines($originalText);
+		$diffLines = self::splitStringByLines($unifiedDiff);
+		$result = [];
+
+		$origLineNo = 0;
+		$diffPos = 0;
+
+		while ($diffPos < count($diffLines)) {
+			$line = $diffLines[$diffPos];
+
+			$matches = Strings::match($line, '/^@@ -(\d+),?(\d*) \+(\d+),?(\d*) @@/');
+			if ($matches !== null) {
+				// Parse hunk header
+				$origStart = (int) $matches[1] - 1; // 0-based
+				$diffPos++;
+
+				// Emit kept lines before hunk
+				while ($origLineNo < $origStart) {
+					$result[] = [$originalLines[$origLineNo], Differ::OLD];
+					$origLineNo++;
+				}
+
+				// Process hunk
+				while ($diffPos < count($diffLines)) {
+					$line = $diffLines[$diffPos];
+					if (str_starts_with($line, '@@')) {
+						break; // next hunk
+					}
+
+					$prefix = $line[0] ?? '';
+					$content = substr($line, 1);
+
+					if ($prefix === ' ') {
+						$result[] = [$content, Differ::OLD];
+						$origLineNo++;
+					} elseif ($prefix === '-') {
+						$result[] = [$content, Differ::REMOVED];
+						$origLineNo++;
+					} elseif ($prefix === '+') {
+						$result[] = [$content, Differ::ADDED];
+					}
+
+					$diffPos++;
+				}
+			} else {
+				$diffPos++;
+			}
+		}
+
+		// Emit remaining lines as kept
+		while ($origLineNo < count($originalLines)) {
+			$result[] = [$originalLines[$origLineNo], Differ::OLD];
+			$origLineNo++;
+		}
+
+		return $result;
 	}
 
 	/**

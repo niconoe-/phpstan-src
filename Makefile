@@ -125,7 +125,7 @@ phpstan-result-cache:
 	php -d memory_limit=448M bin/phpstan
 
 phpstan-fix:
-	php -d memory_limit=2G bin/phpstan --fix
+	php -d memory_limit=448M bin/phpstan --fix
 
 phpstan-generate-baseline:
 	php -d memory_limit=448M bin/phpstan --generate-baseline
