@@ -780,9 +780,6 @@ services:
 		class: PHPStan\Analyser\TypeSpecifier
 		factory: @typeSpecifierFactory::create
 
-	typeSpecifierFactory:
-		class: PHPStan\Analyser\TypeSpecifierFactory
-
 	relativePathHelper:
 		class: PHPStan\File\RelativePathHelper
 		factory: PHPStan\File\FuzzyRelativePathHelper
