@@ -424,7 +424,7 @@ class BaselineNeonErrorFormatterTest extends ErrorFormatterTestCase
 		if ($resource === false) {
 			throw new ShouldNotHappenException();
 		}
-		$outputStream = new StreamOutput($resource, StreamOutput::VERBOSITY_NORMAL, false);
+		$outputStream = new StreamOutput($resource, decorated: false);
 
 		$errorConsoleStyle = new ErrorsConsoleStyle(new StringInput(''), $outputStream);
 		$output = new SymfonyOutput($outputStream, new SymfonyStyle($errorConsoleStyle));

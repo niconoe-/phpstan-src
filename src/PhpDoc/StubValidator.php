@@ -161,7 +161,7 @@ final class StubValidator
 				}
 
 				$internalErrorMessage = sprintf('Internal error: %s', $e->getMessage());
-				$errors[] = (new Error($internalErrorMessage, $stubFile, null, $e))
+				$errors[] = (new Error($internalErrorMessage, $stubFile, canBeIgnored: $e))
 					->withIdentifier('phpstan.internal')
 					->withMetadata([
 						InternalError::STACK_TRACE_METADATA_KEY => InternalError::prepareTrace($e),

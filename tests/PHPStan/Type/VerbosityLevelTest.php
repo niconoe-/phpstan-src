@@ -30,9 +30,7 @@ class VerbosityLevelTest extends PHPStanTestCase
 					new IntegerType(),
 					new IntersectionType([new StringType(), new AccessoryNonFalsyStringType()]),
 				],
-				null,
-				null,
-				[TemplateTypeVariance::createInvariant(), TemplateTypeVariance::createInvariant()],
+				variances: [TemplateTypeVariance::createInvariant(), TemplateTypeVariance::createInvariant()],
 			),
 			new GenericObjectType(
 				'ArrayAccess',
@@ -40,9 +38,7 @@ class VerbosityLevelTest extends PHPStanTestCase
 					new IntegerType(),
 					new IntersectionType([new StringType(), new AccessoryLowercaseStringType()]),
 				],
-				null,
-				null,
-				[TemplateTypeVariance::createInvariant(), TemplateTypeVariance::createInvariant()],
+				variances: [TemplateTypeVariance::createInvariant(), TemplateTypeVariance::createInvariant()],
 			),
 			VerbosityLevel::precise(),
 		];

@@ -103,7 +103,7 @@ final class Analyser
 					throw $t;
 				}
 				$internalErrorsCount++;
-				$errors[] = (new Error($t->getMessage(), $file, null, $t))
+				$errors[] = (new Error($t->getMessage(), $file, canBeIgnored: $t))
 					->withIdentifier('phpstan.internal')
 					->withMetadata([
 						InternalError::STACK_TRACE_METADATA_KEY => InternalError::prepareTrace($t),

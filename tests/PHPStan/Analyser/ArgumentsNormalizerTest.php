@@ -270,7 +270,7 @@ class ArgumentsNormalizerTest extends PHPStanTestCase
 
 		$arguments = [];
 		foreach ($argumentSettings as [$type, $name]) {
-			$arguments[] = new Arg(new TypeExpr($type), false, false, [], $name === null ? null : new Identifier($name));
+			$arguments[] = new Arg(new TypeExpr($type), name: $name === null ? null : new Identifier($name));
 		}
 
 		$normalized = ArgumentsNormalizer::reorderFuncArguments(
@@ -348,7 +348,7 @@ class ArgumentsNormalizerTest extends PHPStanTestCase
 
 		$arguments = [];
 		foreach ($argumentSettings as [$type, $name]) {
-			$arguments[] = new Arg(new TypeExpr($type), false, false, [], $name === null ? null : new Identifier($name));
+			$arguments[] = new Arg(new TypeExpr($type), name: $name === null ? null : new Identifier($name));
 		}
 
 		$normalized = ArgumentsNormalizer::reorderFuncArguments(

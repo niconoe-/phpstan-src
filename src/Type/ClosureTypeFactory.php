@@ -82,7 +82,7 @@ final class ClosureTypeFactory
 
 				public function getType(): Type
 				{
-					return TypehintHelper::decideTypeFromReflection(ReflectionType::fromTypeOrNull($this->reflection->getType()), null, null, $this->reflection->isVariadic());
+					return TypehintHelper::decideTypeFromReflection(ReflectionType::fromTypeOrNull($this->reflection->getType()), isVariadic: $this->reflection->isVariadic());
 				}
 
 				public function passedByReference(): PassedByReference

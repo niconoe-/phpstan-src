@@ -130,7 +130,7 @@ final class RegexGroupParser
 
 	private function createEmptyTokenTreeNode(TreeNode $parentAst): TreeNode
 	{
-		return new TreeNode('token', ['token' => 'literal', 'value' => '', 'namespace' => 'default'], [], $parentAst);
+		return new TreeNode('token', ['token' => 'literal', 'value' => '', 'namespace' => 'default'], parent: $parentAst);
 	}
 
 	private function updateAlternationAstRemoveVerticalBarsAndAddEmptyToken(TreeNode $ast): void
@@ -168,7 +168,7 @@ final class RegexGroupParser
 			return;
 		}
 
-		$emptyAlternationAst = new TreeNode('#alternation', null, [], $ast);
+		$emptyAlternationAst = new TreeNode('#alternation', parent: $ast);
 		$emptyAlternationAst->setChildren([$this->createEmptyTokenTreeNode($emptyAlternationAst)]);
 		$ast->setChildren([$emptyAlternationAst]);
 	}

@@ -57,12 +57,12 @@ class ArrayTypeTest extends PHPStanTestCase
 				TrinaryLogic::createYes(),
 			],
 			[
-				new ArrayType(new MixedType(), new MixedType(false, StaticTypeFactory::falsey())),
+				new ArrayType(new MixedType(), new MixedType(subtractedType: StaticTypeFactory::falsey())),
 				new ConstantArrayType([], []),
 				TrinaryLogic::createYes(),
 			],
 			[
-				new ArrayType(new MixedType(), new MixedType(false, new NullType())),
+				new ArrayType(new MixedType(), new MixedType(subtractedType: new NullType())),
 				new ConstantArrayType([], []),
 				TrinaryLogic::createYes(),
 			],

@@ -66,7 +66,7 @@ class TypeToPhpDocNodeTest extends PHPStanTestCase
 				new ConstantIntegerType(2),
 				new ConstantIntegerType(3),
 				new ConstantIntegerType(4),
-			], [0], [2]),
+			], optionalKeys: [2]),
 			'array{foo: 1, bar: 2, baz?: 3, \'$ref\': 4}',
 		];
 
@@ -104,7 +104,7 @@ class TypeToPhpDocNodeTest extends PHPStanTestCase
 				new ConstantStringType('foo'),
 				new ConstantStringType('bar'),
 				new ConstantStringType('baz'),
-			], [0], [2]),
+			], optionalKeys: [2]),
 			'array{1: \'foo\', 2: \'bar\', 3?: \'baz\'}',
 		];
 
@@ -151,7 +151,7 @@ class TypeToPhpDocNodeTest extends PHPStanTestCase
 				new StringType(),
 				new IntegerType(),
 				new MixedType(),
-			], null, null, [
+			], variances: [
 				TemplateTypeVariance::createInvariant(),
 				TemplateTypeVariance::createContravariant(),
 				TemplateTypeVariance::createBivariant(),

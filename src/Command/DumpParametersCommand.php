@@ -34,9 +34,9 @@ final class DumpParametersCommand extends Command
 				new InputOption('configuration', 'c', InputOption::VALUE_REQUIRED, 'Path to project configuration file'),
 				new InputOption(AnalyseCommand::OPTION_LEVEL, 'l', InputOption::VALUE_REQUIRED, 'Level of rule options - the higher the stricter'),
 				new InputOption('autoload-file', 'a', InputOption::VALUE_REQUIRED, 'Project\'s additional autoload file path'),
-				new InputOption('debug', null, InputOption::VALUE_NONE, 'Show debug information - which file is analysed, do not catch internal errors'),
-				new InputOption('memory-limit', null, InputOption::VALUE_REQUIRED, 'Memory limit for clearing result cache'),
-				new InputOption('json', null, InputOption::VALUE_NONE, 'Dump parameters as JSON instead of NEON'),
+				new InputOption('debug', mode: InputOption::VALUE_NONE, description: 'Show debug information - which file is analysed, do not catch internal errors'),
+				new InputOption('memory-limit', mode: InputOption::VALUE_REQUIRED, description: 'Memory limit for clearing result cache'),
+				new InputOption('json', mode: InputOption::VALUE_NONE, description: 'Dump parameters as JSON instead of NEON'),
 			]);
 	}
 

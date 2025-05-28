@@ -125,7 +125,7 @@ final class PhpMethodReflection implements ExtendedMethodReflection
 
 			$tentativeReturnType = null;
 			if ($prototypeMethod->getTentativeReturnType() !== null) {
-				$tentativeReturnType = TypehintHelper::decideTypeFromReflection($prototypeMethod->getTentativeReturnType(), null, $prototypeDeclaringClass);
+				$tentativeReturnType = TypehintHelper::decideTypeFromReflection($prototypeMethod->getTentativeReturnType(), selfClass: $prototypeDeclaringClass);
 			}
 
 			return new MethodPrototypeReflection(
@@ -345,8 +345,7 @@ final class PhpMethodReflection implements ExtendedMethodReflection
 		if ($this->nativeReturnType === null) {
 			$this->nativeReturnType = TypehintHelper::decideTypeFromReflection(
 				$this->reflection->getReturnType(),
-				null,
-				$this->declaringClass,
+				selfClass: $this->declaringClass,
 			);
 		}
 

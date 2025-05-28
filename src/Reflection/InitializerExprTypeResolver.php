@@ -2035,7 +2035,7 @@ final class InitializerExprTypeResolver
 				$constantType = $this->getType($reflectionConstant->getValueExpression(), InitializerExprContext::fromClass($reflectionConstantDeclaringClass->getName(), $reflectionConstantDeclaringClass->getFileName() ?: null));
 				$nativeType = null;
 				if ($reflectionConstant->getType() !== null) {
-					$nativeType = TypehintHelper::decideTypeFromReflection($reflectionConstant->getType(), null, $constantClassReflection);
+					$nativeType = TypehintHelper::decideTypeFromReflection($reflectionConstant->getType(), selfClass: $constantClassReflection);
 				}
 				$types[] = $this->constantResolver->resolveClassConstantType(
 					$constantClassReflection->getName(),

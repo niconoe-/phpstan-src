@@ -190,7 +190,7 @@ class ConstantArrayTypeTest extends PHPStanTestCase
 			], [
 				new StringType(),
 				new IntegerType(),
-			], [0], [0, 1]),
+			], optionalKeys: [0, 1]),
 			new ConstantArrayType([
 				new ConstantStringType('sorton'),
 				new ConstantStringType('limit'),
@@ -226,7 +226,7 @@ class ConstantArrayTypeTest extends PHPStanTestCase
 			], [
 				new StringType(),
 				new IntegerType(),
-			], [0], [1]),
+			], optionalKeys: [1]),
 			new ConstantArrayType([
 				new ConstantStringType('sorton'),
 				new ConstantStringType('limit'),
@@ -242,7 +242,7 @@ class ConstantArrayTypeTest extends PHPStanTestCase
 				new ConstantStringType('limit'),
 			], [
 				new IntegerType(),
-			], [0], [0]),
+			], optionalKeys: [0]),
 			new ConstantArrayType([
 				new ConstantStringType('limit'),
 			], [
@@ -272,7 +272,7 @@ class ConstantArrayTypeTest extends PHPStanTestCase
 			], [
 				new StringType(),
 				new StringType(),
-			], [0], [0, 1]),
+			], optionalKeys: [0, 1]),
 			new ConstantArrayType([
 				new ConstantStringType('sorton'),
 				new ConstantStringType('limit'),
@@ -290,7 +290,7 @@ class ConstantArrayTypeTest extends PHPStanTestCase
 			], [
 				new StringType(),
 				new StringType(),
-			], [0], [0, 1]),
+			], optionalKeys: [0, 1]),
 			new ConstantArrayType([
 				new ConstantStringType('color'),
 			], [
@@ -306,7 +306,7 @@ class ConstantArrayTypeTest extends PHPStanTestCase
 			], [
 				new StringType(),
 				new StringType(),
-			], [0], [0, 1]),
+			], optionalKeys: [0, 1]),
 			new ConstantArrayType([
 				new ConstantStringType('sound'),
 			], [
@@ -322,14 +322,14 @@ class ConstantArrayTypeTest extends PHPStanTestCase
 			], [
 				new StringType(),
 				new StringType(),
-			], [0], [0, 1]),
+			], optionalKeys: [0, 1]),
 			new ConstantArrayType([
 				new ConstantStringType('foo'),
 				new ConstantStringType('bar'),
 			], [
 				new ConstantStringType('s'),
 				new ConstantStringType('m'),
-			], [0], [0, 1]),
+			], optionalKeys: [0, 1]),
 			TrinaryLogic::createYes(),
 		];
 
@@ -340,7 +340,7 @@ class ConstantArrayTypeTest extends PHPStanTestCase
 			], [
 				new StringType(),
 				new IntegerType(),
-			], [0], [0, 1]),
+			], optionalKeys: [0, 1]),
 			new ConstantArrayType([
 				new ConstantStringType('sorton'),
 				new ConstantStringType('limit'),
@@ -923,14 +923,14 @@ class ConstantArrayTypeTest extends PHPStanTestCase
 			], [
 				new ConstantStringType('a'),
 				new ConstantStringType('b'),
-			], [20], [], TrinaryLogic::createNo()),
+			], [20], isList: TrinaryLogic::createNo()),
 			new ConstantArrayType([
 				new ConstantIntegerType(0),
 				new ConstantIntegerType(1),
 			], [
 				new ConstantStringType('a'),
 				new ConstantStringType('b'),
-			], [2], [], TrinaryLogic::createYes()),
+			], [2], isList: TrinaryLogic::createYes()),
 		];
 
 		yield 'optional-1' => [

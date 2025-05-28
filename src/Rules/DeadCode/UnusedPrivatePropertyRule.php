@@ -50,7 +50,7 @@ final class UnusedPrivatePropertyRule implements Rule
 			return [];
 		}
 		$classReflection = $node->getClassReflection();
-		$classType = new ObjectType($classReflection->getName(), null, $classReflection);
+		$classType = new ObjectType($classReflection->getName(), classReflection: $classReflection);
 		$properties = [];
 		foreach ($node->getProperties() as $property) {
 			if (!$property->isPrivate()) {

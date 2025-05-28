@@ -135,7 +135,7 @@ final class StrSplitFunctionReturnTypeExtension implements DynamicFunctionReturn
 			$i++;
 		}
 
-		return new ConstantArrayType($keyTypes, $valueTypes, $isList ? [$i] : [0], [], TrinaryLogic::createFromBoolean(array_is_list($constantArray)));
+		return new ConstantArrayType($keyTypes, $valueTypes, $isList ? [$i] : [0], isList: TrinaryLogic::createFromBoolean(array_is_list($constantArray)));
 	}
 
 }

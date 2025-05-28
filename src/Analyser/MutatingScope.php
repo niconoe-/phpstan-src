@@ -1415,12 +1415,11 @@ final class MutatingScope implements Scope
 						TemplateTypeMap::createEmpty(),
 						TemplateTypeMap::createEmpty(),
 						TemplateTypeVarianceMap::createEmpty(),
-						[],
-						$cachedClosureData['throwPoints'],
-						$cachedClosureData['impurePoints'],
-						$cachedClosureData['invalidateExpressions'],
-						$cachedClosureData['usedVariables'],
-						TrinaryLogic::createYes(),
+						throwPoints: $cachedClosureData['throwPoints'],
+						impurePoints: $cachedClosureData['impurePoints'],
+						invalidateExpressions: $cachedClosureData['invalidateExpressions'],
+						usedVariables: $cachedClosureData['usedVariables'],
+						acceptsNamedArguments: TrinaryLogic::createYes(),
 					);
 				}
 				if (self::$resolveClosureTypeDepth >= 2) {
@@ -1630,12 +1629,11 @@ final class MutatingScope implements Scope
 				TemplateTypeMap::createEmpty(),
 				TemplateTypeMap::createEmpty(),
 				TemplateTypeVarianceMap::createEmpty(),
-				[],
-				$throwPointsForClosureType,
-				$impurePointsForClosureType,
-				$invalidateExpressions,
-				$usedVariables,
-				TrinaryLogic::createYes(),
+				throwPoints: $throwPointsForClosureType,
+				impurePoints: $impurePointsForClosureType,
+				invalidateExpressions: $invalidateExpressions,
+				usedVariables: $usedVariables,
+				acceptsNamedArguments: TrinaryLogic::createYes(),
 			);
 		} elseif ($node instanceof New_) {
 			if ($node->class instanceof Name) {
@@ -3140,7 +3138,7 @@ final class MutatingScope implements Scope
 			if ($hook->params === []) {
 				$hook = clone $hook;
 				$hook->params = [
-					new Node\Param(new Variable('value'), null, $nativePropertyTypeNode),
+					new Node\Param(new Variable('value'), type: $nativePropertyTypeNode),
 				];
 			}
 
@@ -5805,7 +5803,7 @@ final class MutatingScope implements Scope
 			return $methodResult;
 		}
 
-		$objectType = $isStatic ? new StaticType($classReflection) : new ObjectType($resolvedClassName, null, $classReflection);
+		$objectType = $isStatic ? new StaticType($classReflection) : new ObjectType($resolvedClassName, classReflection: $classReflection);
 		if (!$classReflection->isGeneric()) {
 			return $objectType;
 		}
@@ -5831,7 +5829,7 @@ final class MutatingScope implements Scope
 
 			if (count($classTemplateTypes) === count($originalClassTemplateTypes)) {
 				$propertyType = TypeCombinator::removeNull($this->getType($assignedToProperty));
-				$nonFinalObjectType = $isStatic ? new StaticType($nonFinalClassReflection) : new ObjectType($resolvedClassName, null, $nonFinalClassReflection);
+				$nonFinalObjectType = $isStatic ? new StaticType($nonFinalClassReflection) : new ObjectType($resolvedClassName, classReflection: $nonFinalClassReflection);
 				if ($nonFinalObjectType->isSuperTypeOf($propertyType)->yes()) {
 					return $propertyType;
 				}
@@ -5852,8 +5850,7 @@ final class MutatingScope implements Scope
 			return new GenericObjectType(
 				$resolvedClassName,
 				$types,
-				null,
-				$classReflection->withTypes($types)->asFinal(),
+				classReflection: $classReflection->withTypes($types)->asFinal(),
 			);
 		}
 
@@ -5872,8 +5869,7 @@ final class MutatingScope implements Scope
 				return new GenericObjectType(
 					$resolvedClassName,
 					$types,
-					null,
-					$classReflection->withTypes($types)->asFinal(),
+					classReflection: $classReflection->withTypes($types)->asFinal(),
 				);
 			}
 			$newType = new GenericObjectType($resolvedClassName, $classReflection->typeMapToList($classReflection->getTemplateTypeMap()));
@@ -5892,8 +5888,7 @@ final class MutatingScope implements Scope
 				return new GenericObjectType(
 					$resolvedClassName,
 					$types,
-					null,
-					$classReflection->withTypes($types)->asFinal(),
+					classReflection: $classReflection->withTypes($types)->asFinal(),
 				);
 			}
 			$ancestorClassReflections = $ancestorType->getObjectClassReflections();
@@ -5911,8 +5906,7 @@ final class MutatingScope implements Scope
 				return new GenericObjectType(
 					$resolvedClassName,
 					$types,
-					null,
-					$classReflection->withTypes($types)->asFinal(),
+					classReflection: $classReflection->withTypes($types)->asFinal(),
 				);
 			}
 
@@ -5933,8 +5927,7 @@ final class MutatingScope implements Scope
 				return new GenericObjectType(
 					$resolvedClassName,
 					$types,
-					null,
-					$classReflection->withTypes($types)->asFinal(),
+					classReflection: $classReflection->withTypes($types)->asFinal(),
 				);
 			}
 			$newParentTypeClassReflection = $newParentTypeClassReflections[0];
@@ -5981,8 +5974,7 @@ final class MutatingScope implements Scope
 			return new GenericObjectType(
 				$resolvedClassName,
 				$types,
-				null,
-				$classReflection->withTypes($types)->asFinal(),
+				classReflection: $classReflection->withTypes($types)->asFinal(),
 			);
 		}
 
@@ -5998,8 +5990,7 @@ final class MutatingScope implements Scope
 		$newGenericType = new GenericObjectType(
 			$resolvedClassName,
 			$types,
-			null,
-			$classReflection->withTypes($types)->asFinal(),
+			classReflection: $classReflection->withTypes($types)->asFinal(),
 		);
 		if ($isStatic) {
 			$newGenericType = new GenericStaticType(

@@ -154,8 +154,7 @@ final class FileTypeMapper
 			$this->resolvedPhpDocBlockCache = array_slice(
 				$this->resolvedPhpDocBlockCache,
 				1,
-				null,
-				true,
+				preserve_keys: true,
 			);
 
 			$this->resolvedPhpDocBlockCacheCount--;
@@ -198,8 +197,7 @@ final class FileTypeMapper
 				$this->memoryCache = array_slice(
 					$this->memoryCache,
 					1,
-					null,
-					true,
+					preserve_keys: true,
 				);
 				$this->memoryCacheCount--;
 			}
@@ -541,7 +539,7 @@ final class FileTypeMapper
 							$typeMapCb = $typeMapStack[count($typeMapStack) - 1] ?? null;
 							$currentTypeMap = $typeMapCb !== null ? $typeMapCb() : null;
 							$typeAliasesMap = $typeAliasStack[count($typeAliasStack) - 1] ?? [];
-							$nameScope = new NameScope($namespace, $uses, $className, $functionName, $currentTypeMap, $typeAliasesMap, false, $constUses, $lookForTrait);
+							$nameScope = new NameScope($namespace, $uses, $className, $functionName, $currentTypeMap, $typeAliasesMap, constUses: $constUses, typeAliasClassName: $lookForTrait);
 							$templateTags = $this->phpDocNodeResolver->resolveTemplateTags($phpDocNode, $nameScope);
 							$templateTypeScope = $nameScope->getTemplateTypeScope();
 							if ($templateTypeScope === null) {
@@ -586,9 +584,8 @@ final class FileTypeMapper
 						$functionName,
 						($typeMapCb !== null ? $typeMapCb() : TemplateTypeMap::createEmpty()),
 						$typeAliasesMap,
-						false,
-						$constUses,
-						$lookForTrait,
+						constUses: $constUses,
+						typeAliasClassName: $lookForTrait,
 					);
 				}
 

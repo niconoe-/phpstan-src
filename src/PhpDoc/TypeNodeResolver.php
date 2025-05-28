@@ -392,7 +392,7 @@ final class TypeNodeResolver
 				return new CallableType();
 
 			case 'pure-callable':
-				return new CallableType(null, null, true, null, null, [], TrinaryLogic::createYes());
+				return new CallableType(isPure: TrinaryLogic::createYes());
 
 			case 'pure-closure':
 				return ClosureType::createPure();
@@ -836,7 +836,7 @@ final class TypeNodeResolver
 
 		if ($mainTypeClassName !== null) {
 			if (!$this->getReflectionProvider()->hasClass($mainTypeClassName)) {
-				return new GenericObjectType($mainTypeClassName, $genericTypes, null, null, $variances);
+				return new GenericObjectType($mainTypeClassName, $genericTypes, variances: $variances);
 			}
 
 			$classReflection = $this->getReflectionProvider()->getClass($mainTypeClassName);
@@ -859,7 +859,7 @@ final class TypeNodeResolver
 						return new GenericObjectType($mainTypeClassName, [
 							new MixedType(true),
 							$genericTypes[0],
-						], null, null, [
+						], variances: [
 							TemplateTypeVariance::createInvariant(),
 							$variances[0],
 						]);
@@ -869,7 +869,7 @@ final class TypeNodeResolver
 						return new GenericObjectType($mainTypeClassName, [
 							$genericTypes[0],
 							$genericTypes[1],
-						], null, null, [
+						], variances: [
 							$variances[0],
 							$variances[1],
 						]);
@@ -883,7 +883,7 @@ final class TypeNodeResolver
 							$genericTypes[0],
 							$mixed,
 							$mixed,
-						], null, null, [
+						], variances: [
 							TemplateTypeVariance::createInvariant(),
 							$variances[0],
 							TemplateTypeVariance::createInvariant(),
@@ -898,7 +898,7 @@ final class TypeNodeResolver
 							$genericTypes[1],
 							$mixed,
 							$mixed,
-						], null, null, [
+						], variances: [
 							$variances[0],
 							$variances[1],
 							TemplateTypeVariance::createInvariant(),
@@ -908,14 +908,14 @@ final class TypeNodeResolver
 				}
 
 				if (!$mainType->isIterable()->yes()) {
-					return new GenericObjectType($mainTypeClassName, $genericTypes, null, null, $variances);
+					return new GenericObjectType($mainTypeClassName, $genericTypes, variances: $variances);
 				}
 
 				if (
 					count($genericTypes) !== 1
 					|| $classReflection->getTemplateTypeMap()->count() === 1
 				) {
-					return new GenericObjectType($mainTypeClassName, $genericTypes, null, null, $variances);
+					return new GenericObjectType($mainTypeClassName, $genericTypes, variances: $variances);
 				}
 			}
 		}
@@ -951,7 +951,7 @@ final class TypeNodeResolver
 		}
 
 		if ($mainTypeClassName !== null) {
-			return new GenericObjectType($mainTypeClassName, $genericTypes, null, null, $variances);
+			return new GenericObjectType($mainTypeClassName, $genericTypes, variances: $variances);
 		}
 
 		return new ErrorType();
@@ -1017,13 +1017,13 @@ final class TypeNodeResolver
 				return new ErrorType();
 			}
 
-			return new CallableType($parameters, $returnType, $isVariadic, $templateTypeMap, null, $templateTags, $pure);
+			return new CallableType($parameters, $returnType, $isVariadic, $templateTypeMap, templateTags: $templateTags, isPure: $pure);
 
 		} elseif (
 			$mainType instanceof ObjectType
 			&& $mainType->getClassName() === Closure::class
 		) {
-			return new ClosureType($parameters, $returnType, $isVariadic, $templateTypeMap, null, null, $templateTags, [], [
+			return new ClosureType($parameters, $returnType, $isVariadic, $templateTypeMap, templateTags: $templateTags, impurePoints: [
 				new SimpleImpurePoint(
 					'functionCall',
 					'call to a Closure',
@@ -1031,7 +1031,7 @@ final class TypeNodeResolver
 				),
 			]);
 		} elseif ($mainType instanceof ClosureType) {
-			$closure = new ClosureType($parameters, $returnType, $isVariadic, $templateTypeMap, null, null, $templateTags, [], $mainType->getImpurePoints(), $mainType->getInvalidateExpressions(), $mainType->getUsedVariables(), $mainType->acceptsNamedArguments());
+			$closure = new ClosureType($parameters, $returnType, $isVariadic, $templateTypeMap, templateTags: $templateTags, impurePoints: $mainType->getImpurePoints(), invalidateExpressions: $mainType->getInvalidateExpressions(), usedVariables: $mainType->getUsedVariables(), acceptsNamedArguments: $mainType->acceptsNamedArguments());
 			if ($closure->isPure()->yes() && $returnType->isVoid()->yes()) {
 				return new ErrorType();
 			}

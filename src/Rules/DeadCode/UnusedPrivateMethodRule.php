@@ -38,7 +38,7 @@ final class UnusedPrivateMethodRule implements Rule
 			return [];
 		}
 		$classReflection = $node->getClassReflection();
-		$classType = new ObjectType($classReflection->getName(), null, $classReflection);
+		$classType = new ObjectType($classReflection->getName(), classReflection: $classReflection);
 		$constructor = null;
 		if ($classReflection->hasConstructor()) {
 			$constructor = $classReflection->getConstructor();

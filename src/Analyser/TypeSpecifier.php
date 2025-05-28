@@ -1898,7 +1898,7 @@ final class TypeSpecifier
 			}
 		}
 
-		return (new SpecifiedTypes([], $sureNotTypes))->setRootExpr($rootExpr);
+		return (new SpecifiedTypes(sureNotTypes: $sureNotTypes))->setRootExpr($rootExpr);
 	}
 
 	/**
@@ -2263,7 +2263,7 @@ final class TypeSpecifier
 			if ($rightType instanceof ConstantStringType && $this->reflectionProvider->hasClass($rightType->getValue())) {
 				return $this->create(
 					$unwrappedLeftExpr->getArgs()[0]->value,
-					new ObjectType($rightType->getValue(), null, $this->reflectionProvider->getClass($rightType->getValue())->asFinal()),
+					new ObjectType($rightType->getValue(), classReflection: $this->reflectionProvider->getClass($rightType->getValue())->asFinal()),
 					$context,
 					$scope,
 				)->unionWith($this->create($leftExpr, $rightType, $context, $scope))->setRootExpr($expr);
@@ -2370,7 +2370,7 @@ final class TypeSpecifier
 			if ($this->reflectionProvider->hasClass($rightType->getValue())) {
 				return $this->create(
 					$unwrappedLeftExpr->class,
-					new ObjectType($rightType->getValue(), null, $this->reflectionProvider->getClass($rightType->getValue())->asFinal()),
+					new ObjectType($rightType->getValue(), classReflection: $this->reflectionProvider->getClass($rightType->getValue())->asFinal()),
 					$context,
 					$scope,
 				)->unionWith($this->create($leftExpr, $rightType, $context, $scope))->setRootExpr($expr);
@@ -2401,7 +2401,7 @@ final class TypeSpecifier
 			if ($this->reflectionProvider->hasClass($leftType->getValue())) {
 				return $this->create(
 					$unwrappedRightExpr->class,
-					new ObjectType($leftType->getValue(), null, $this->reflectionProvider->getClass($leftType->getValue())->asFinal()),
+					new ObjectType($leftType->getValue(), classReflection: $this->reflectionProvider->getClass($leftType->getValue())->asFinal()),
 					$context,
 					$scope,
 				)->unionWith($this->create($rightExpr, $leftType, $context, $scope)->setRootExpr($expr));

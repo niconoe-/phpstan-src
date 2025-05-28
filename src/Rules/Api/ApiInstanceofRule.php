@@ -93,7 +93,7 @@ final class ApiInstanceofRule implements Rule
 			return [];
 		}
 
-		$classType = new ObjectType($classReflection->getName(), null, $classReflection);
+		$classType = new ObjectType($classReflection->getName(), classReflection: $classReflection);
 
 		$exprType = $scope->getType($node->expr);
 		if ($exprType instanceof UnionType) {

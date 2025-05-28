@@ -123,7 +123,7 @@ final class ParallelAnalyser
 			// phpcs:disable SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly
 			$jsonInvalidUtf8Ignore = defined('JSON_INVALID_UTF8_IGNORE') ? JSON_INVALID_UTF8_IGNORE : 0;
 			// phpcs:enable
-			$decoder = new Decoder($connection, true, 512, $jsonInvalidUtf8Ignore, $this->decoderBufferSize);
+			$decoder = new Decoder($connection, true, options: $jsonInvalidUtf8Ignore, maxlength: $this->decoderBufferSize);
 			$encoder = new Encoder($connection, $jsonInvalidUtf8Ignore);
 			$decoder->on('data', function (array $data) use (&$jobs, $decoder, $encoder): void {
 				if ($data['action'] !== 'hello') {

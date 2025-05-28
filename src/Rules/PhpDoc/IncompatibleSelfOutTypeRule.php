@@ -42,7 +42,7 @@ final class IncompatibleSelfOutTypeRule implements Rule
 		}
 
 		$classReflection = $method->getDeclaringClass();
-		$classType = new ObjectType($classReflection->getName(), null, $classReflection);
+		$classType = new ObjectType($classReflection->getName(), classReflection: $classReflection);
 
 		$errors = [];
 		if (!$classType->isSuperTypeOf($selfOutType)->yes()) {

@@ -61,7 +61,7 @@ final class AssertRuleHelper
 
 		if ($reflection instanceof ExtendedMethodReflection && !$reflection->isStatic()) {
 			$class = $reflection->getDeclaringClass();
-			$parametersByName['this'] = new ObjectType($class->getName(), null, $class);
+			$parametersByName['this'] = new ObjectType($class->getName(), classReflection: $class);
 		}
 
 		$context = InitializerExprContext::createEmpty();

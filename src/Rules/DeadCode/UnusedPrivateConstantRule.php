@@ -33,7 +33,7 @@ final class UnusedPrivateConstantRule implements Rule
 		}
 
 		$classReflection = $node->getClassReflection();
-		$classType = new ObjectType($classReflection->getName(), null, $classReflection);
+		$classType = new ObjectType($classReflection->getName(), classReflection: $classReflection);
 
 		$constants = [];
 		foreach ($node->getConstants() as $constant) {

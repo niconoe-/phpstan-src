@@ -141,9 +141,8 @@ class CheckstyleErrorFormatterTest extends ErrorFormatterTestCase
 			'Foo',
 			__DIR__ . '/FooTrait.php (in context of class Foo)',
 			5,
-			true,
-			__DIR__ . '/Foo.php',
-			__DIR__ . '/FooTrait.php',
+			filePath: __DIR__ . '/Foo.php',
+			traitFilePath: __DIR__ . '/FooTrait.php',
 		);
 		$formatter->formatErrors(new AnalysisResult(
 			[$error],
@@ -172,9 +171,7 @@ class CheckstyleErrorFormatterTest extends ErrorFormatterTestCase
 			'Foo',
 			__DIR__ . '/FooTrait.php',
 			5,
-			true,
-			__DIR__ . '/Foo.php',
-			null,
+			filePath: __DIR__ . '/Foo.php',
 		))->withIdentifier('argument.type');
 		$formatter->formatErrors(new AnalysisResult(
 			[$error],

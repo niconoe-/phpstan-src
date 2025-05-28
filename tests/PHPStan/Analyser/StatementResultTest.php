@@ -533,7 +533,7 @@ class StatementResultTest extends PHPStanTestCase
 			->assignVariable('cond', new MixedType(), new MixedType(), TrinaryLogic::createYes())
 			->assignVariable('arr', new ArrayType(new MixedType(), new MixedType()), new ArrayType(new MixedType(), new MixedType()), TrinaryLogic::createYes());
 		$result = $nodeScopeResolver->processStmtNodes(
-			new Stmt\Namespace_(null, $stmts),
+			new Stmt\Namespace_(stmts: $stmts),
 			$stmts,
 			$scope,
 			static function (): void {

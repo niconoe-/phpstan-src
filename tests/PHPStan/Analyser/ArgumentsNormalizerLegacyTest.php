@@ -38,17 +38,11 @@ final class ArgumentsNormalizerLegacyTest extends PHPStanTestCase
 		$args = [
 			new Arg(
 				new LNumber(0),
-				false,
-				false,
-				[],
-				new Identifier('flags'),
+				name: new Identifier('flags'),
 			),
 			new Arg(
 				new String_('my json value'),
-				false,
-				false,
-				[],
-				new Identifier('value'),
+				name: new Identifier('value'),
 			),
 		];
 		$funcCall = new FuncCall($funcName, $args);
@@ -88,17 +82,11 @@ final class ArgumentsNormalizerLegacyTest extends PHPStanTestCase
 		$args = [
 			new Arg(
 				new LNumber(128),
-				false,
-				false,
-				[],
-				new Identifier('depth'),
+				name: new Identifier('depth'),
 			),
 			new Arg(
 				new String_('my json value'),
-				false,
-				false,
-				[],
-				new Identifier('value'),
+				name: new Identifier('value'),
 			),
 		];
 		$funcCall = new FuncCall($funcName, $args);
@@ -141,10 +129,7 @@ final class ArgumentsNormalizerLegacyTest extends PHPStanTestCase
 		$args = [
 			new Arg(
 				new LNumber(128),
-				false,
-				false,
-				[],
-				new Identifier('depth'),
+				name: new Identifier('depth'),
 			),
 		];
 		$funcCall = new FuncCall($funcName, $args);

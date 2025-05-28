@@ -491,7 +491,7 @@ class ReflectionProviderGoldenTest extends PHPStanTestCase
 	{
 		$symbols = self::scrapeInputSymbols();
 		$symbolsFile = self::getPhpSymbolsFile();
-		@mkdir(dirname($symbolsFile), 0777, true);
+		@mkdir(dirname($symbolsFile), recursive: true);
 		$result = file_put_contents($symbolsFile, implode("\n", $symbols));
 
 		if ($result !== false) {

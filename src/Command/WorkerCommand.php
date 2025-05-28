@@ -61,12 +61,12 @@ final class WorkerCommand extends Command
 				new InputOption('configuration', 'c', InputOption::VALUE_REQUIRED, 'Path to project configuration file'),
 				new InputOption(AnalyseCommand::OPTION_LEVEL, 'l', InputOption::VALUE_REQUIRED, 'Level of rule options - the higher the stricter'),
 				new InputOption('autoload-file', 'a', InputOption::VALUE_REQUIRED, 'Project\'s additional autoload file path'),
-				new InputOption('memory-limit', null, InputOption::VALUE_REQUIRED, 'Memory limit for analysis'),
-				new InputOption('xdebug', null, InputOption::VALUE_NONE, 'Allow running with Xdebug for debugging purposes'),
-				new InputOption('port', null, InputOption::VALUE_REQUIRED),
-				new InputOption('identifier', null, InputOption::VALUE_REQUIRED),
-				new InputOption('tmp-file', null, InputOption::VALUE_REQUIRED),
-				new InputOption('instead-of', null, InputOption::VALUE_REQUIRED),
+				new InputOption('memory-limit', mode: InputOption::VALUE_REQUIRED, description: 'Memory limit for analysis'),
+				new InputOption('xdebug', mode: InputOption::VALUE_NONE, description: 'Allow running with Xdebug for debugging purposes'),
+				new InputOption('port', mode: InputOption::VALUE_REQUIRED),
+				new InputOption('identifier', mode: InputOption::VALUE_REQUIRED),
+				new InputOption('tmp-file', mode: InputOption::VALUE_REQUIRED),
+				new InputOption('instead-of', mode: InputOption::VALUE_REQUIRED),
 			])
 			->setHidden(true);
 	}
@@ -144,7 +144,7 @@ final class WorkerCommand extends Command
 			$jsonInvalidUtf8Ignore = defined('JSON_INVALID_UTF8_IGNORE') ? JSON_INVALID_UTF8_IGNORE : 0;
 			// phpcs:enable
 			$out = new Encoder($connection, $jsonInvalidUtf8Ignore);
-			$in = new Decoder($connection, true, 512, $jsonInvalidUtf8Ignore, $container->getParameter('parallel')['buffer']);
+			$in = new Decoder($connection, true, options: $jsonInvalidUtf8Ignore, maxlength: $container->getParameter('parallel')['buffer']);
 			$out->write(['action' => 'hello', 'identifier' => $identifier]);
 			$this->runWorker($container, $out, $in, $output, $analysedFiles, $tmpFile, $insteadOfFile);
 		});

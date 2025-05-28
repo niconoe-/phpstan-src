@@ -50,12 +50,11 @@ final class ClosureFromCallableDynamicReturnTypeExtension implements DynamicStat
 				$variant->getTemplateTypeMap(),
 				$variant->getResolvedTemplateTypeMap(),
 				$variant instanceof ExtendedParametersAcceptor ? $variant->getCallSiteVarianceMap() : TemplateTypeVarianceMap::createEmpty(),
-				[],
-				$variant->getThrowPoints(),
-				$variant->getImpurePoints(),
-				$variant->getInvalidateExpressions(),
-				$variant->getUsedVariables(),
-				$variant->acceptsNamedArguments(),
+				throwPoints: $variant->getThrowPoints(),
+				impurePoints: $variant->getImpurePoints(),
+				invalidateExpressions: $variant->getInvalidateExpressions(),
+				usedVariables: $variant->getUsedVariables(),
+				acceptsNamedArguments: $variant->acceptsNamedArguments(),
 			);
 		}
 

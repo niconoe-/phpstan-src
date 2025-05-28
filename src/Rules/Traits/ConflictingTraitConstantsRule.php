@@ -190,7 +190,7 @@ final class ConflictingTraitConstantsRule implements Rule
 					->build();
 			}
 		} elseif ($constantNativeType === null) {
-			$traitNativeTypeType = TypehintHelper::decideTypeFromReflection($traitNativeType, null, $this->reflectionProvider->getClass($traitDeclaringClass->getName()));
+			$traitNativeTypeType = TypehintHelper::decideTypeFromReflection($traitNativeType, selfClass: $this->reflectionProvider->getClass($traitDeclaringClass->getName()));
 			$errors[] = RuleErrorBuilder::message(sprintf(
 				'Constant %s::%s overriding constant %s::%s (%s) should also have native type %s.',
 				$classReflection->getDisplayName(),
@@ -204,7 +204,7 @@ final class ConflictingTraitConstantsRule implements Rule
 				->identifier('classConstant.missingNativeType')
 				->build();
 		} else {
-			$traitNativeTypeType = TypehintHelper::decideTypeFromReflection($traitNativeType, null, $this->reflectionProvider->getClass($traitDeclaringClass->getName()));
+			$traitNativeTypeType = TypehintHelper::decideTypeFromReflection($traitNativeType, selfClass: $this->reflectionProvider->getClass($traitDeclaringClass->getName()));
 			$constantNativeTypeType = ParserNodeTypeToPHPStanType::resolve($constantNativeType, $classReflection);
 			if (!$traitNativeTypeType->equals($constantNativeTypeType)) {
 				$errors[] = RuleErrorBuilder::message(sprintf(

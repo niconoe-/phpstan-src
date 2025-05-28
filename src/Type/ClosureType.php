@@ -459,8 +459,7 @@ class ClosureType implements TypeWithClassName, CallableParametersAcceptor
 			[new ConstantIntegerType(0)],
 			[$this],
 			[1],
-			[],
-			TrinaryLogic::createYes(),
+			isList: TrinaryLogic::createYes(),
 		);
 	}
 
