@@ -330,6 +330,10 @@ final class AnalyseCommand extends Command
 			throw new ShouldNotHappenException();
 		}
 
+		if ($fix) {
+			$inceptionResult->getErrorOutput()->writeLineFormatted('Analysing files...');
+		}
+
 		try {
 			$analysisResult = $application->analyse(
 				$files,
@@ -512,7 +516,7 @@ final class AnalyseCommand extends Command
 			}
 
 			$fixableErrorsCount = count($fixableErrors);
-			if (count($fixableErrors) === 0) {
+			if ($fixableErrorsCount === 0) {
 				$inceptionResult->getStdOutput()->getStyle()->error('No fixable errors found');
 				$exitCode = 1;
 			} else {
@@ -531,17 +535,25 @@ final class AnalyseCommand extends Command
 					$diffsByFile[$fixFile][] = $fixableError->getFixedErrorDiff();
 				}
 
+				$inceptionResult->getErrorOutput()->writeLineFormatted('Fixing errors...');
+				$errorOutput->getStyle()->progressStart($fixableErrorsCount);
+
 				$patcher = $container->getByType(Patcher::class);
 				foreach ($diffsByFile as $file => $diffs) {
+					$diffsCount = count($diffs);
 					try {
 						$finalFileContents = $patcher->applyDiffs($file, $diffs);
+						$errorOutput->getStyle()->progressAdvance($diffsCount);
 					} catch (FileChangedException | MergeConflictException) {
-						$skippedCount += count($diffs);
+						$skippedCount += $diffsCount;
+						$errorOutput->getStyle()->progressAdvance($diffsCount);
 						continue;
 					}
 
 					FileWriter::write($file, $finalFileContents);
 				}
+
+				$errorOutput->getStyle()->progressFinish();
 
 				if ($skippedCount > 0) {
 					$inceptionResult->getStdOutput()->getStyle()->warning(sprintf(
