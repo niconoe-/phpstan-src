@@ -2,12 +2,7 @@
 
 namespace PHPStan\Command;
 
-use Nette\Utils\Strings;
 use OndraM\CiDetector\CiDetector;
-use PhpMerge\internal\Hunk;
-use PhpMerge\internal\Line;
-use PhpMerge\MergeConflict;
-use PhpMerge\PhpMerge;
 use PHPStan\Analyser\InternalError;
 use PHPStan\Command\ErrorFormatter\BaselineNeonErrorFormatter;
 use PHPStan\Command\ErrorFormatter\BaselinePhpErrorFormatter;
@@ -24,12 +19,13 @@ use PHPStan\File\FileWriter;
 use PHPStan\File\ParentDirectoryRelativePathHelper;
 use PHPStan\File\PathNotFoundException;
 use PHPStan\File\RelativePathHelper;
+use PHPStan\Fixable\FileChangedException;
+use PHPStan\Fixable\MergeConflictException;
+use PHPStan\Fixable\Patcher;
 use PHPStan\Internal\BytesHelper;
 use PHPStan\Internal\DirectoryCreator;
 use PHPStan\Internal\DirectoryCreatorException;
 use PHPStan\ShouldNotHappenException;
-use ReflectionClass;
-use SebastianBergmann\Diff\Differ;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -58,7 +54,6 @@ use function is_file;
 use function is_string;
 use function pathinfo;
 use function rewind;
-use function sha1;
 use function sprintf;
 use function str_contains;
 use function stream_get_contents;
@@ -66,8 +61,6 @@ use function strlen;
 use function substr;
 use const PATHINFO_BASENAME;
 use const PATHINFO_EXTENSION;
-use const PREG_SPLIT_DELIM_CAPTURE;
-use const PREG_SPLIT_NO_EMPTY;
 
 /**
  * @phpstan-import-type Trace from InternalError as InternalErrorTrace
@@ -524,79 +517,29 @@ final class AnalyseCommand extends Command
 				$exitCode = 1;
 			} else {
 				$skippedCount = 0;
-				$fixableErrorsByFile = [];
+				$diffsByFile = [];
 				foreach ($fixableErrors as $fixableError) {
 					$fixFile = $fixableError->getFilePath();
 					if ($fixableError->getTraitFilePath() !== null) {
 						$fixFile = $fixableError->getTraitFilePath();
 					}
 
-					$fixableErrorsByFile[$fixFile][] = $fixableError;
-				}
-
-				$differ = $container->getByType(Differ::class);
-
-				foreach ($fixableErrorsByFile as $file => $fileFixableErrors) {
-					$fileContents = FileReader::read($file);
-					$fileHash = sha1($fileContents);
-					$diffHunks = [];
-					foreach ($fileFixableErrors as $fileFixableError) {
-						$diff = $fileFixableError->getFixedErrorDiff();
-						if ($diff === null) {
-							throw new ShouldNotHappenException();
-						}
-						if ($diff->originalHash !== $fileHash) {
-							$skippedCount++;
-							continue;
-						}
-
-						$diffHunks[] = Hunk::createArray(Line::createArray($diff->diff));
+					if ($fixableError->getFixedErrorDiff() === null) {
+						throw new ShouldNotHappenException();
 					}
 
-					if (count($diffHunks) === 0) {
+					$diffsByFile[$fixFile][] = $fixableError->getFixedErrorDiff();
+				}
+
+				$patcher = $container->getByType(Patcher::class);
+				foreach ($diffsByFile as $file => $diffs) {
+					try {
+						$finalFileContents = $patcher->applyDiffs($file, $diffs);
+					} catch (FileChangedException | MergeConflictException) {
+						$skippedCount += count($diffs);
 						continue;
 					}
 
-					$baseLines = Line::createArray(array_map(
-						static fn ($l) => [$l, Differ::OLD],
-						self::splitStringByLines($fileContents),
-					));
-
-					$refMerge = new ReflectionClass(PhpMerge::class);
-					$refMergeMethod = $refMerge->getMethod('mergeHunks');
-					$refMergeMethod->setAccessible(true);
-
-					$result = Line::createArray(array_map(
-						static fn ($l) => [$l, Differ::OLD],
-						$refMergeMethod->invokeArgs(null, [
-							$baseLines,
-							$diffHunks[0],
-							[],
-						]),
-					));
-
-					for ($i = 0; $i < count($diffHunks); $i++) {
-						/** @var MergeConflict[] $conflicts */
-						$conflicts = [];
-						$merged = $refMergeMethod->invokeArgs(null, [
-							$baseLines,
-							Hunk::createArray(Line::createArray($differ->diffToArray($fileContents, implode('', array_map(static fn ($l) => $l->getContent(), $result))))),
-							$diffHunks[$i],
-							&$conflicts,
-						]);
-						if (count($conflicts) > 0) {
-							$skippedCount += count($diffHunks);
-							continue 2;
-						}
-
-						$result = Line::createArray(array_map(
-							static fn ($l) => [$l, Differ::OLD],
-							$merged,
-						));
-
-					}
-
-					$finalFileContents = implode('', array_map(static fn ($l) => $l->getContent(), $result));
 					FileWriter::write($file, $finalFileContents);
 				}
 
@@ -677,14 +620,6 @@ final class AnalyseCommand extends Command
 			$analysisResult->getPeakMemoryUsageBytes(),
 			$this->analysisStartTime,
 		);
-	}
-
-	/**
-	 * @return string[]
-	 */
-	private static function splitStringByLines(string $input): array
-	{
-		return Strings::split($input, '/(.*\R)/', PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
 	}
 
 	private function createStreamOutput(): StreamOutput
