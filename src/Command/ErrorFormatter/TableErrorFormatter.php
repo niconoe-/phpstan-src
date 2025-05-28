@@ -77,10 +77,15 @@ final class TableErrorFormatter implements ErrorFormatter
 			$fileErrors[$fileSpecificError->getFile()][] = $fileSpecificError;
 		}
 
+		$fixableErrorsCount = 0;
 		foreach ($fileErrors as $file => $errors) {
 			$rows = [];
 			foreach ($errors as $error) {
 				$message = $error->getMessage();
+				if ($error->getFixedErrorDiff() !== null) {
+					$message .= ' 🔧';
+					$fixableErrorsCount++;
+				}
 				$filePath = $error->getTraitFilePath() ?? $error->getFilePath();
 				if ($error->getIdentifier() !== null && $error->canBeIgnored()) {
 					$message .= "\n";
@@ -155,6 +160,11 @@ final class TableErrorFormatter implements ErrorFormatter
 			$style->error($finalMessage);
 		} else {
 			$style->warning($finalMessage);
+		}
+
+		if ($fixableErrorsCount > 0) {
+			$output->writeLineFormatted(sprintf('🔧 %d %s can be fixed automatically. Run PHPStan again with <fg=cyan>--fix</>.', $fixableErrorsCount, $fixableErrorsCount === 1 ? 'error' : 'errors'));
+			$output->writeLineFormatted('');
 		}
 
 		return $analysisResult->getTotalErrorsCount() > 0 ? 1 : 0;
