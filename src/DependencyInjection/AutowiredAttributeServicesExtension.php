@@ -17,8 +17,9 @@ final class AutowiredAttributeServicesExtension extends CompilerExtension
 
 		foreach ($autowiredServiceClasses as $class) {
 			$reflection = new ReflectionClass($class->name);
+			$attribute = $class->attribute;
 
-			$definition = $builder->addDefinition(null)
+			$definition = $builder->addDefinition($attribute->name)
 				->setType($class->name)
 				->setAutowired();
 

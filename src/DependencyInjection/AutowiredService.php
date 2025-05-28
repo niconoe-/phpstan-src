@@ -16,4 +16,8 @@ use Attribute;
 final class AutowiredService
 {
 
+	public function __construct(public ?string $name = null)
+	{
+	}
+
 }
