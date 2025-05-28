@@ -12,6 +12,12 @@ use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\File\FileReader;
 use ReflectionClass;
 use SebastianBergmann\Diff\Differ;
+use function array_map;
+use function count;
+use function implode;
+use function sha1;
+use const PREG_SPLIT_DELIM_CAPTURE;
+use const PREG_SPLIT_NO_EMPTY;
 
 #[AutowiredService]
 final class Patcher

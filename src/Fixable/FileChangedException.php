@@ -4,7 +4,7 @@ namespace PHPStan\Fixable;
 
 use Exception;
 
-class FileChangedException extends Exception
+final class FileChangedException extends Exception
 {
 
 }

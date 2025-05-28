@@ -4,7 +4,7 @@ namespace PHPStan\Fixable;
 
 use Exception;
 
-class MergeConflictException extends Exception
+final class MergeConflictException extends Exception
 {
 
 }

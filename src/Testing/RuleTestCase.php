@@ -20,6 +20,8 @@ use PHPStan\DependencyInjection\Type\DynamicThrowTypeExtensionProvider;
 use PHPStan\DependencyInjection\Type\ParameterClosureTypeExtensionProvider;
 use PHPStan\DependencyInjection\Type\ParameterOutTypeExtensionProvider;
 use PHPStan\File\FileHelper;
+use PHPStan\File\FileReader;
+use PHPStan\Fixable\Patcher;
 use PHPStan\Php\PhpVersion;
 use PHPStan\PhpDoc\PhpDocInheritanceResolver;
 use PHPStan\PhpDoc\StubPhpDocProvider;
@@ -34,6 +36,8 @@ use PHPStan\Rules\Properties\ReadWritePropertiesExtension;
 use PHPStan\Rules\Properties\ReadWritePropertiesExtensionProvider;
 use PHPStan\Rules\Rule;
 use PHPStan\Type\FileTypeMapper;
+use SebastianBergmann\Diff\Differ;
+use SebastianBergmann\Diff\Output\DiffOnlyOutputBuilder;
 use function array_map;
 use function array_merge;
 use function count;
@@ -191,6 +195,25 @@ abstract class RuleTestCase extends PHPStanTestCase
 		}
 
 		$this->assertSame($expectedErrorsString, $actualErrorsString);
+	}
+
+	public function fix(string $file, string $expectedDiff): void
+	{
+		[$errors] = $this->gatherAnalyserErrorsWithDelayedErrors([$file]);
+		$diffs = [];
+		foreach ($errors as $error) {
+			if ($error->getFixedErrorDiff() === null) {
+				continue;
+			}
+			$diffs[] = $error->getFixedErrorDiff();
+		}
+
+		$patcher = self::getContainer()->getByType(Patcher::class);
+		$originalFileContents = FileReader::read($file);
+		$newFileContents = $patcher->applyDiffs($file, $diffs); // @phpstan-ignore missingType.checkedException, missingType.checkedException
+
+		$differ = new Differ(new DiffOnlyOutputBuilder(''));
+		$this->assertSame($expectedDiff, $differ->diff($originalFileContents, $newFileContents));
 	}
 
 	/**

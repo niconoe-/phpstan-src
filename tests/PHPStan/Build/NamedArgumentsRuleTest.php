@@ -39,4 +39,22 @@ class NamedArgumentsRuleTest extends RuleTestCase
 		]);
 	}
 
+	public function testNoFix(): void
+	{
+		$this->fix(__DIR__ . '/data/named-arguments-no-errors.php', '');
+	}
+
+	public function testFix(): void
+	{
+		$this->fix(__DIR__ . '/data/named-arguments.php', <<<DIFF
+-		new Exception('foo', 0, new Exception('previous'));
+-		new Exception('foo', code: 0, previous: new Exception('previous'));
++		new Exception('foo', previous: new Exception('previous'));
++		new Exception(previous: new Exception('previous'));
+-		new Exception('', 0, new Exception('previous'));
++		new Exception(previous: new Exception('previous'));
+
+DIFF);
+	}
+
 }
