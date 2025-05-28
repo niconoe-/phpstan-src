@@ -339,16 +339,16 @@
         },
         {
             "name": "ondrejmirtes/simple-downgrader",
-            "version": "2.1.3",
+            "version": "2.1.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ondrejmirtes/simple-downgrader.git",
-                "reference": "fd1e6964abdd6594523093592afd637133fec329"
+                "reference": "3dc5bb651487e8abda78d9371144939ba92c0829"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ondrejmirtes/simple-downgrader/zipball/fd1e6964abdd6594523093592afd637133fec329",
-                "reference": "fd1e6964abdd6594523093592afd637133fec329",
+                "url": "https://api.github.com/repos/ondrejmirtes/simple-downgrader/zipball/3dc5bb651487e8abda78d9371144939ba92c0829",
+                "reference": "3dc5bb651487e8abda78d9371144939ba92c0829",
                 "shasum": ""
             },
             "require": {
@@ -383,9 +383,9 @@
             "description": "Simple Downgrader",
             "support": {
                 "issues": "https://github.com/ondrejmirtes/simple-downgrader/issues",
-                "source": "https://github.com/ondrejmirtes/simple-downgrader/tree/2.1.3"
+                "source": "https://github.com/ondrejmirtes/simple-downgrader/tree/2.1.4"
             },
-            "time": "2025-05-28T07:21:17+00:00"
+            "time": "2025-05-28T08:45:20+00:00"
         },
         {
             "name": "phpstan/phpdoc-parser",
