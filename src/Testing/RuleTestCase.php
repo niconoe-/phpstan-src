@@ -36,8 +36,6 @@ use PHPStan\Rules\Properties\ReadWritePropertiesExtension;
 use PHPStan\Rules\Properties\ReadWritePropertiesExtensionProvider;
 use PHPStan\Rules\Rule;
 use PHPStan\Type\FileTypeMapper;
-use SebastianBergmann\Diff\Differ;
-use SebastianBergmann\Diff\Output\DiffOnlyOutputBuilder;
 use function array_map;
 use function array_merge;
 use function count;
@@ -197,7 +195,7 @@ abstract class RuleTestCase extends PHPStanTestCase
 		$this->assertSame($expectedErrorsString, $actualErrorsString);
 	}
 
-	public function fix(string $file, string $expectedDiff): void
+	public function fix(string $file, string $expectedFile): void
 	{
 		[$errors] = $this->gatherAnalyserErrorsWithDelayedErrors([$file]);
 		$diffs = [];
@@ -209,11 +207,11 @@ abstract class RuleTestCase extends PHPStanTestCase
 		}
 
 		$patcher = self::getContainer()->getByType(Patcher::class);
-		$originalFileContents = FileReader::read($file);
 		$newFileContents = $patcher->applyDiffs($file, $diffs); // @phpstan-ignore missingType.checkedException, missingType.checkedException
 
-		$differ = new Differ(new DiffOnlyOutputBuilder(''));
-		$this->assertSame($expectedDiff, $differ->diff($originalFileContents, $newFileContents));
+		$fixedFileContents = FileReader::read($expectedFile);
+
+		$this->assertSame($fixedFileContents, $newFileContents);
 	}
 
 	/**
