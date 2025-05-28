@@ -4,63 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c5f97c88abdd81aefa9b1b3e48fd0999",
+    "content-hash": "8c786f1dc6ae74db5aa83e606ca74f28",
     "packages": [
-        {
-            "name": "bircher/php-merge",
-            "version": "4.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/bircher/php-merge.git",
-                "reference": "db19f6e02c606cba3f4e59b2189c0df89cd2570d"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/bircher/php-merge/zipball/db19f6e02c606cba3f4e59b2189c0df89cd2570d",
-                "reference": "db19f6e02c606cba3f4e59b2189c0df89cd2570d",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.3",
-                "sebastian/diff": "^2.0|^3.0|^4.0"
-            },
-            "require-dev": {
-                "escapestudios/symfony2-coding-standard": "^3.5",
-                "phpstan/phpstan": "~1",
-                "phpstan/phpstan-deprecation-rules": "^1.0",
-                "phpunit/phpunit": "~6|~7|~8|~9",
-                "squizlabs/php_codesniffer": "~3",
-                "symplify/git-wrapper": "^9.1|^10.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "PhpMerge": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Fabian Bircher",
-                    "email": "opensource@fabianbircher.com"
-                }
-            ],
-            "description": "A PHP merge utility using the Diff php library or the command line git.",
-            "homepage": "https://github.com/bircher/php-merge",
-            "keywords": [
-                "git",
-                "merge",
-                "php-merge"
-            ],
-            "support": {
-                "issues": "https://github.com/bircher/php-merge/issues",
-                "source": "https://github.com/bircher/php-merge/tree/4.0.0"
-            },
-            "time": "2021-12-27T15:04:20+00:00"
-        },
         {
             "name": "clue/ndjson-react",
             "version": "v1.3.0",
@@ -2374,6 +2319,64 @@
                 "source": "https://github.com/ondrejmirtes/composer-attribute-collector/tree/1.0.0"
             },
             "time": "2025-05-24T23:38:56+00:00"
+        },
+        {
+            "name": "ondrejmirtes/php-merge",
+            "version": "4.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ondrejmirtes/php-merge.git",
+                "reference": "1c8cd6d7d9d0e327a5f4fe7689de3dbf99a75003"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ondrejmirtes/php-merge/zipball/1c8cd6d7d9d0e327a5f4fe7689de3dbf99a75003",
+                "reference": "1c8cd6d7d9d0e327a5f4fe7689de3dbf99a75003",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.4 || ^8.0",
+                "sebastian/diff": "^2.0|^3.0|^4.0|^5.0"
+            },
+            "require-dev": {
+                "escapestudios/symfony2-coding-standard": "^3.5",
+                "phpstan/phpstan": "~1",
+                "phpstan/phpstan-deprecation-rules": "^1.0",
+                "phpunit/phpunit": "~6|~7|~8|~9|~10",
+                "squizlabs/php_codesniffer": "~3",
+                "symplify/git-wrapper": "^9.1|^10.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "PhpMerge": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabian Bircher",
+                    "email": "opensource@fabianbircher.com"
+                },
+                {
+                    "name": "Ondrej Mirtes",
+                    "email": "ondrej@mirtes.cz"
+                }
+            ],
+            "description": "A PHP merge utility using the Diff php library or the command line git.",
+            "homepage": "https://github.com/bircher/php-merge",
+            "keywords": [
+                "git",
+                "merge",
+                "php-merge"
+            ],
+            "support": {
+                "source": "https://github.com/ondrejmirtes/php-merge/tree/4.1.0"
+            },
+            "time": "2025-05-28T13:29:07+00:00"
         },
         {
             "name": "phpstan/php-8-stubs",
@@ -6603,7 +6606,7 @@
         "php": "^8.1",
         "composer-runtime-api": "^2.0"
     },
-    "platform-dev": {},
+    "platform-dev": [],
     "platform-overrides": {
         "php": "8.1.99"
     },
