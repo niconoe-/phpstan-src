@@ -252,6 +252,9 @@ final class Error implements JsonSerializable
 		return $this->metadata;
 	}
 
+	/**
+	 * @internal Experimental
+	 */
 	public function getFixedErrorDiff(): ?FixedErrorDiff
 	{
 		return $this->fixedErrorDiff;
