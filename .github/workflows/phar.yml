@@ -55,6 +55,9 @@ jobs:
         working-directory: "compiler"
         run: "php bin/prepare"
 
+      - name: "Dump autoloader one more time for attributes"
+        run: "composer dump"
+
       - name: "Compile PHAR"
         working-directory: "compiler/build"
         run: "php box.phar compile --no-parallel"
