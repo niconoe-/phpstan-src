@@ -41,6 +41,7 @@ use function array_merge;
 use function count;
 use function implode;
 use function sprintf;
+use function str_replace;
 
 /**
  * @api
@@ -211,7 +212,12 @@ abstract class RuleTestCase extends PHPStanTestCase
 
 		$fixedFileContents = FileReader::read($expectedFile);
 
-		$this->assertSame($fixedFileContents, $newFileContents);
+		$this->assertSame($this->normalizeLineEndings($fixedFileContents), $this->normalizeLineEndings($newFileContents));
+	}
+
+	private function normalizeLineEndings(string $string): string
+	{
+		return str_replace("\r\n", "\n", $string);
 	}
 
 	/**
