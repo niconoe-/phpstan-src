@@ -670,7 +670,7 @@ class AnalyserTest extends PHPStanTestCase
 		$finalizer = new AnalyserResultFinalizer(
 			new DirectRuleRegistry([]),
 			new IgnoreErrorExtensionProvider(new NetteContainer(new Container([]))),
-			new RuleErrorTransformer(self::getContainer()->getService('currentPhpVersionPhpParser')),
+			self::getContainer()->getByType(RuleErrorTransformer::class),
 			$this->createScopeFactory(
 				$this->createReflectionProvider(),
 				self::getContainer()->getService('typeSpecifier'),
@@ -749,7 +749,7 @@ class AnalyserTest extends PHPStanTestCase
 			),
 			new DependencyResolver($fileHelper, $reflectionProvider, new ExportedNodeResolver($reflectionProvider, $fileTypeMapper, new ExprPrinter(new Printer())), $fileTypeMapper),
 			new IgnoreErrorExtensionProvider(new NetteContainer(new Container([]))),
-			new RuleErrorTransformer(self::getContainer()->getService('currentPhpVersionPhpParser')),
+			self::getContainer()->getByType(RuleErrorTransformer::class),
 			new LocalIgnoresProcessor(),
 		);
 

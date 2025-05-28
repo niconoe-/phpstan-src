@@ -534,7 +534,7 @@ final class AnalyseCommand extends Command
 					$fixableErrorsByFile[$fixFile][] = $fixableError;
 				}
 
-				$differ = new Differ();
+				$differ = $container->getByType(Differ::class);
 
 				foreach ($fixableErrorsByFile as $file => $fileFixableErrors) {
 					$fileContents = FileReader::read($file);

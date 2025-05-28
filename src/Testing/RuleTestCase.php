@@ -120,7 +120,7 @@ abstract class RuleTestCase extends PHPStanTestCase
 				$this->getParser(),
 				self::getContainer()->getByType(DependencyResolver::class),
 				new IgnoreErrorExtensionProvider(self::getContainer()),
-				new RuleErrorTransformer(self::getContainer()->getService('currentPhpVersionPhpParser')),
+				self::getContainer()->getByType(RuleErrorTransformer::class),
 				new LocalIgnoresProcessor(),
 			);
 			$this->analyser = new Analyser(
@@ -237,7 +237,7 @@ abstract class RuleTestCase extends PHPStanTestCase
 		$finalizer = new AnalyserResultFinalizer(
 			$ruleRegistry,
 			new IgnoreErrorExtensionProvider(self::getContainer()),
-			new RuleErrorTransformer(self::getContainer()->getService('currentPhpVersionPhpParser')),
+			self::getContainer()->getByType(RuleErrorTransformer::class),
 			$this->createScopeFactory($reflectionProvider, $this->getTypeSpecifier()),
 			new LocalIgnoresProcessor(),
 			true,

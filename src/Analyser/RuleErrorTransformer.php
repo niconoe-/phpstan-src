@@ -32,6 +32,7 @@ final class RuleErrorTransformer
 
 	public function __construct(
 		private Parser $parser,
+		private Differ $differ,
 	)
 	{
 	}
@@ -128,9 +129,8 @@ final class RuleErrorTransformer
 
 			$printer = new PhpPrinter(['indent' => str_repeat($indentDetector->indentCharacter, $indentDetector->indentSize)]);
 			$newCode = $printer->printFormatPreserving($newStmts, $fileNodes, $oldTokens);
-			$differ = new Differ();
 
-			$fixedErrorDiff = new FixedErrorDiff($hash, $differ->diffToArray($oldCode, $newCode));
+			$fixedErrorDiff = new FixedErrorDiff($hash, $this->differ->diffToArray($oldCode, $newCode));
 		}
 
 		return new Error(

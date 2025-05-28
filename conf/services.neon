@@ -160,6 +160,9 @@ services:
 	-
 		class: PHPStan\Rules\Properties\UninitializedPropertyRule
 
+	-
+		class: SebastianBergmann\Diff\Differ
+
 	betterReflectionSourceLocator:
 		class: PHPStan\BetterReflection\SourceLocator\Type\SourceLocator
 		factory: @PHPStan\Reflection\BetterReflection\BetterReflectionSourceLocatorFactory::create
