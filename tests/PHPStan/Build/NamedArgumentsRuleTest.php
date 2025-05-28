@@ -2,6 +2,7 @@
 
 namespace PHPStan\Build;
 
+use PHPStan\Php\PhpVersion;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
 use const PHP_VERSION_ID;
@@ -14,7 +15,7 @@ class NamedArgumentsRuleTest extends RuleTestCase
 
 	protected function getRule(): Rule
 	{
-		return new NamedArgumentsRule($this->createReflectionProvider());
+		return new NamedArgumentsRule($this->createReflectionProvider(), new PhpVersion(PHP_VERSION_ID));
 	}
 
 	public function testRule(): void
@@ -41,6 +42,10 @@ class NamedArgumentsRuleTest extends RuleTestCase
 
 	public function testNoFix(): void
 	{
+		if (PHP_VERSION_ID < 80000) {
+			$this->markTestSkipped('Test requires PHP 8.0.');
+		}
+
 		$this->fix(
 			__DIR__ . '/data/named-arguments-no-errors.php',
 			__DIR__ . '/data/named-arguments-no-errors.php',
@@ -49,6 +54,10 @@ class NamedArgumentsRuleTest extends RuleTestCase
 
 	public function testFix(): void
 	{
+		if (PHP_VERSION_ID < 80000) {
+			$this->markTestSkipped('Test requires PHP 8.0.');
+		}
+
 		$this->fix(
 			__DIR__ . '/data/named-arguments.php',
 			__DIR__ . '/data/named-arguments.php.fixed',

@@ -5,6 +5,7 @@ namespace PHPStan\Build;
 use PhpParser\Node;
 use PHPStan\Analyser\ArgumentsNormalizer;
 use PHPStan\Analyser\Scope;
+use PHPStan\Php\PhpVersion;
 use PHPStan\Reflection\ExtendedParametersAcceptor;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\IdentifierRuleError;
@@ -22,7 +23,10 @@ use function sprintf;
 final class NamedArgumentsRule implements Rule
 {
 
-	public function __construct(private ReflectionProvider $reflectionProvider)
+	public function __construct(
+		private ReflectionProvider $reflectionProvider,
+		private PhpVersion $phpVersion,
+	)
 	{
 	}
 
@@ -33,6 +37,10 @@ final class NamedArgumentsRule implements Rule
 
 	public function processNode(Node $node, Scope $scope): array
 	{
+		if (!$this->phpVersion->supportsNamedArguments()) {
+			return [];
+		}
+
 		if ($node->isFirstClassCallable()) {
 			return [];
 		}
