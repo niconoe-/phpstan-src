@@ -156,43 +156,43 @@ class GenericObjectTypeTest extends PHPStanTestCase
 				TrinaryLogic::createNo(),
 			],
 			[
-				new GenericObjectType(C\Invariant::class, [new ObjectType('DateTimeInterface')], null, null, [TemplateTypeVariance::createInvariant()]),
-				new GenericObjectType(C\Invariant::class, [new ObjectType('DateTime')], null, null, [TemplateTypeVariance::createCovariant()]),
+				new GenericObjectType(C\Invariant::class, [new ObjectType('DateTimeInterface')], variances: [TemplateTypeVariance::createInvariant()]),
+				new GenericObjectType(C\Invariant::class, [new ObjectType('DateTime')], variances: [TemplateTypeVariance::createCovariant()]),
 				TrinaryLogic::createNo(),
 			],
 			[
-				new GenericObjectType(C\Invariant::class, [new ObjectType('DateTime')], null, null, [TemplateTypeVariance::createInvariant()]),
-				new GenericObjectType(C\Invariant::class, [new ObjectType('DateTimeInterface')], null, null, [TemplateTypeVariance::createContravariant()]),
+				new GenericObjectType(C\Invariant::class, [new ObjectType('DateTime')], variances: [TemplateTypeVariance::createInvariant()]),
+				new GenericObjectType(C\Invariant::class, [new ObjectType('DateTimeInterface')], variances: [TemplateTypeVariance::createContravariant()]),
 				TrinaryLogic::createNo(),
 			],
 			[
-				new GenericObjectType(C\Invariant::class, [new ObjectType('DateTimeInterface')], null, null, [TemplateTypeVariance::createCovariant()]),
-				new GenericObjectType(C\Invariant::class, [new ObjectType('DateTime')], null, null, [TemplateTypeVariance::createInvariant()]),
+				new GenericObjectType(C\Invariant::class, [new ObjectType('DateTimeInterface')], variances: [TemplateTypeVariance::createCovariant()]),
+				new GenericObjectType(C\Invariant::class, [new ObjectType('DateTime')], variances: [TemplateTypeVariance::createInvariant()]),
 				TrinaryLogic::createYes(),
 			],
 			[
-				new GenericObjectType(C\Invariant::class, [new ObjectType('DateTimeInterface')], null, null, [TemplateTypeVariance::createCovariant()]),
-				new GenericObjectType(C\Invariant::class, [new ObjectType('DateTime')], null, null, [TemplateTypeVariance::createCovariant()]),
+				new GenericObjectType(C\Invariant::class, [new ObjectType('DateTimeInterface')], variances: [TemplateTypeVariance::createCovariant()]),
+				new GenericObjectType(C\Invariant::class, [new ObjectType('DateTime')], variances: [TemplateTypeVariance::createCovariant()]),
 				TrinaryLogic::createYes(),
 			],
 			[
-				new GenericObjectType(C\Invariant::class, [new ObjectType('DateTimeInterface')], null, null, [TemplateTypeVariance::createCovariant()]),
-				new GenericObjectType(C\Invariant::class, [new ObjectType('DateTime')], null, null, [TemplateTypeVariance::createContravariant()]),
+				new GenericObjectType(C\Invariant::class, [new ObjectType('DateTimeInterface')], variances: [TemplateTypeVariance::createCovariant()]),
+				new GenericObjectType(C\Invariant::class, [new ObjectType('DateTime')], variances: [TemplateTypeVariance::createContravariant()]),
 				TrinaryLogic::createNo(),
 			],
 			[
-				new GenericObjectType(C\Invariant::class, [new ObjectType('DateTime')], null, null, [TemplateTypeVariance::createContravariant()]),
-				new GenericObjectType(C\Invariant::class, [new ObjectType('DateTimeInterface')], null, null, [TemplateTypeVariance::createInvariant()]),
+				new GenericObjectType(C\Invariant::class, [new ObjectType('DateTime')], variances: [TemplateTypeVariance::createContravariant()]),
+				new GenericObjectType(C\Invariant::class, [new ObjectType('DateTimeInterface')], variances: [TemplateTypeVariance::createInvariant()]),
 				TrinaryLogic::createYes(),
 			],
 			[
-				new GenericObjectType(C\Invariant::class, [new ObjectType('DateTime')], null, null, [TemplateTypeVariance::createContravariant()]),
-				new GenericObjectType(C\Invariant::class, [new ObjectType('DateTimeInterface')], null, null, [TemplateTypeVariance::createInvariant()]),
+				new GenericObjectType(C\Invariant::class, [new ObjectType('DateTime')], variances: [TemplateTypeVariance::createContravariant()]),
+				new GenericObjectType(C\Invariant::class, [new ObjectType('DateTimeInterface')], variances: [TemplateTypeVariance::createInvariant()]),
 				TrinaryLogic::createYes(),
 			],
 			[
-				new GenericObjectType(C\Invariant::class, [new ObjectType('DateTime')], null, null, [TemplateTypeVariance::createContravariant()]),
-				new GenericObjectType(C\Invariant::class, [new ObjectType('DateTimeInterface')], null, null, [TemplateTypeVariance::createCovariant()]),
+				new GenericObjectType(C\Invariant::class, [new ObjectType('DateTime')], variances: [TemplateTypeVariance::createContravariant()]),
+				new GenericObjectType(C\Invariant::class, [new ObjectType('DateTimeInterface')], variances: [TemplateTypeVariance::createCovariant()]),
 				TrinaryLogic::createNo(),
 			],
 		];
@@ -200,19 +200,19 @@ class GenericObjectTypeTest extends PHPStanTestCase
 
 	public function dataTypeProjections(): array
 	{
-		$invariantA = new GenericObjectType(E\Foo::class, [new ObjectType(E\A::class)], null, null, [TemplateTypeVariance::createInvariant()]);
-		$invariantB = new GenericObjectType(E\Foo::class, [new ObjectType(E\B::class)], null, null, [TemplateTypeVariance::createInvariant()]);
-		$invariantC = new GenericObjectType(E\Foo::class, [new ObjectType(E\C::class)], null, null, [TemplateTypeVariance::createInvariant()]);
+		$invariantA = new GenericObjectType(E\Foo::class, [new ObjectType(E\A::class)], variances: [TemplateTypeVariance::createInvariant()]);
+		$invariantB = new GenericObjectType(E\Foo::class, [new ObjectType(E\B::class)], variances: [TemplateTypeVariance::createInvariant()]);
+		$invariantC = new GenericObjectType(E\Foo::class, [new ObjectType(E\C::class)], variances: [TemplateTypeVariance::createInvariant()]);
 
-		$covariantA = new GenericObjectType(E\Foo::class, [new ObjectType(E\A::class)], null, null, [TemplateTypeVariance::createCovariant()]);
-		$covariantB = new GenericObjectType(E\Foo::class, [new ObjectType(E\B::class)], null, null, [TemplateTypeVariance::createCovariant()]);
-		$covariantC = new GenericObjectType(E\Foo::class, [new ObjectType(E\C::class)], null, null, [TemplateTypeVariance::createCovariant()]);
+		$covariantA = new GenericObjectType(E\Foo::class, [new ObjectType(E\A::class)], variances: [TemplateTypeVariance::createCovariant()]);
+		$covariantB = new GenericObjectType(E\Foo::class, [new ObjectType(E\B::class)], variances: [TemplateTypeVariance::createCovariant()]);
+		$covariantC = new GenericObjectType(E\Foo::class, [new ObjectType(E\C::class)], variances: [TemplateTypeVariance::createCovariant()]);
 
-		$contravariantA = new GenericObjectType(E\Foo::class, [new ObjectType(E\A::class)], null, null, [TemplateTypeVariance::createContravariant()]);
-		$contravariantB = new GenericObjectType(E\Foo::class, [new ObjectType(E\B::class)], null, null, [TemplateTypeVariance::createContravariant()]);
-		$contravariantC = new GenericObjectType(E\Foo::class, [new ObjectType(E\C::class)], null, null, [TemplateTypeVariance::createContravariant()]);
+		$contravariantA = new GenericObjectType(E\Foo::class, [new ObjectType(E\A::class)], variances: [TemplateTypeVariance::createContravariant()]);
+		$contravariantB = new GenericObjectType(E\Foo::class, [new ObjectType(E\B::class)], variances: [TemplateTypeVariance::createContravariant()]);
+		$contravariantC = new GenericObjectType(E\Foo::class, [new ObjectType(E\C::class)], variances: [TemplateTypeVariance::createContravariant()]);
 
-		$bivariant = new GenericObjectType(E\Foo::class, [new MixedType(true)], null, null, [TemplateTypeVariance::createBivariant()]);
+		$bivariant = new GenericObjectType(E\Foo::class, [new MixedType(true)], variances: [TemplateTypeVariance::createBivariant()]);
 
 		return [
 			[$invariantB, $invariantA, TrinaryLogic::createNo()],
@@ -813,7 +813,7 @@ class GenericObjectTypeTest extends PHPStanTestCase
 				TemplateTypeVariance::createContravariant(),
 				new GenericObjectType(D\Invariant::class, [
 					$templateType('T'),
-				], null, null, [
+				], variances: [
 					TemplateTypeVariance::createCovariant(),
 				]),
 				[
@@ -827,7 +827,7 @@ class GenericObjectTypeTest extends PHPStanTestCase
 				TemplateTypeVariance::createContravariant(),
 				new GenericObjectType(D\Invariant::class, [
 					$templateType('T'),
-				], null, null, [
+				], variances: [
 					TemplateTypeVariance::createContravariant(),
 				]),
 				[
@@ -929,7 +929,7 @@ class GenericObjectTypeTest extends PHPStanTestCase
 				TemplateTypeVariance::createCovariant(),
 				new GenericObjectType(D\Invariant::class, [
 					$templateType('T'),
-				], null, null, [
+				], variances: [
 					TemplateTypeVariance::createCovariant(),
 				]),
 				[
@@ -943,7 +943,7 @@ class GenericObjectTypeTest extends PHPStanTestCase
 				TemplateTypeVariance::createCovariant(),
 				new GenericObjectType(D\Invariant::class, [
 					$templateType('T'),
-				], null, null, [
+				], variances: [
 					TemplateTypeVariance::createContravariant(),
 				]),
 				[

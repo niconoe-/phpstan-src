@@ -995,16 +995,16 @@ class TypeCombinatorTest extends PHPStanTestCase
 			],
 			[
 				[
-					new MixedType(false, new IntegerType()),
-					new MixedType(false, new StringType()),
+					new MixedType(subtractedType: new IntegerType()),
+					new MixedType(subtractedType: new StringType()),
 				],
 				MixedType::class,
 				'mixed=implicit',
 			],
 			[
 				[
-					new MixedType(false, new IntegerType()),
-					new MixedType(false, new UnionType([
+					new MixedType(subtractedType: new IntegerType()),
+					new MixedType(subtractedType: new UnionType([
 						new IntegerType(),
 						new StringType(),
 					])),
@@ -1014,8 +1014,8 @@ class TypeCombinatorTest extends PHPStanTestCase
 			],
 			[
 				[
-					new MixedType(false, new IntegerType()),
-					new MixedType(false, new UnionType([
+					new MixedType(subtractedType: new IntegerType()),
+					new MixedType(subtractedType: new UnionType([
 						new ConstantIntegerType(1),
 						new StringType(),
 					])),
@@ -1025,8 +1025,8 @@ class TypeCombinatorTest extends PHPStanTestCase
 			],
 			[
 				[
-					new MixedType(false, new ConstantIntegerType(2)),
-					new MixedType(false, new UnionType([
+					new MixedType(subtractedType: new ConstantIntegerType(2)),
+					new MixedType(subtractedType: new UnionType([
 						new ConstantIntegerType(1),
 						new StringType(),
 					])),
@@ -1036,8 +1036,8 @@ class TypeCombinatorTest extends PHPStanTestCase
 			],
 			[
 				[
-					new MixedType(false, new IntegerType()),
-					new MixedType(false, new ConstantIntegerType(1)),
+					new MixedType(subtractedType: new IntegerType()),
+					new MixedType(subtractedType: new ConstantIntegerType(1)),
 				],
 				MixedType::class,
 				'mixed~1=implicit',
@@ -1045,14 +1045,14 @@ class TypeCombinatorTest extends PHPStanTestCase
 			[
 				[
 					new MixedType(false),
-					new MixedType(false, new ConstantIntegerType(1)),
+					new MixedType(subtractedType: new ConstantIntegerType(1)),
 				],
 				MixedType::class,
 				'mixed=implicit',
 			],
 			[
 				[
-					new MixedType(false, new NullType()),
+					new MixedType(subtractedType: new NullType()),
 					new UnionType([
 						new StringType(),
 						new NullType(),
@@ -1079,7 +1079,7 @@ class TypeCombinatorTest extends PHPStanTestCase
 			],
 			[
 				[
-					new MixedType(false, new IntegerType()),
+					new MixedType(subtractedType: new IntegerType()),
 					new ObjectWithoutClassType(new ObjectType('A')),
 				],
 				MixedType::class,
@@ -1087,7 +1087,7 @@ class TypeCombinatorTest extends PHPStanTestCase
 			],
 			[
 				[
-					new MixedType(false, new ObjectType('A')),
+					new MixedType(subtractedType: new ObjectType('A')),
 					new ObjectWithoutClassType(new ObjectType('A')),
 				],
 				MixedType::class,
@@ -1095,7 +1095,7 @@ class TypeCombinatorTest extends PHPStanTestCase
 			],
 			[
 				[
-					new MixedType(false, new NullType()),
+					new MixedType(subtractedType: new NullType()),
 					new NullType(),
 				],
 				MixedType::class,
@@ -1103,7 +1103,7 @@ class TypeCombinatorTest extends PHPStanTestCase
 			],
 			[
 				[
-					new MixedType(false, new IntegerType()),
+					new MixedType(subtractedType: new IntegerType()),
 					new IntegerType(),
 				],
 				MixedType::class,
@@ -1111,7 +1111,7 @@ class TypeCombinatorTest extends PHPStanTestCase
 			],
 			[
 				[
-					new MixedType(false, new ConstantIntegerType(1)),
+					new MixedType(subtractedType: new ConstantIntegerType(1)),
 					new ConstantIntegerType(1),
 				],
 				MixedType::class,
@@ -1119,7 +1119,7 @@ class TypeCombinatorTest extends PHPStanTestCase
 			],
 			[
 				[
-					new MixedType(false, new ObjectType('Exception')),
+					new MixedType(subtractedType: new ObjectType('Exception')),
 					new ObjectType('Throwable'),
 				],
 				MixedType::class,
@@ -1127,7 +1127,7 @@ class TypeCombinatorTest extends PHPStanTestCase
 			],
 			[
 				[
-					new MixedType(false, new ObjectType('Exception')),
+					new MixedType(subtractedType: new ObjectType('Exception')),
 					new ObjectType('Exception'),
 				],
 				MixedType::class,
@@ -1135,7 +1135,7 @@ class TypeCombinatorTest extends PHPStanTestCase
 			],
 			[
 				[
-					new MixedType(false, new ObjectType('Exception')),
+					new MixedType(subtractedType: new ObjectType('Exception')),
 					new ObjectType('InvalidArgumentException'),
 				],
 				MixedType::class,
@@ -1144,7 +1144,7 @@ class TypeCombinatorTest extends PHPStanTestCase
 			[
 				[
 					new NullType(),
-					new MixedType(false, new NullType()),
+					new MixedType(subtractedType: new NullType()),
 				],
 				MixedType::class,
 				'mixed=implicit',
@@ -1152,7 +1152,7 @@ class TypeCombinatorTest extends PHPStanTestCase
 			[
 				[
 					new MixedType(),
-					new MixedType(false, new NullType()),
+					new MixedType(subtractedType: new NullType()),
 				],
 				MixedType::class,
 				'mixed=implicit',
@@ -1802,7 +1802,7 @@ class TypeCombinatorTest extends PHPStanTestCase
 			[
 				[
 					new StringType(),
-					new MixedType(false, new StringType()),
+					new MixedType(subtractedType: new StringType()),
 				],
 				MixedType::class,
 				'mixed=implicit',
@@ -2220,7 +2220,7 @@ class TypeCombinatorTest extends PHPStanTestCase
 		];
 		yield [
 			[
-				new MixedType(false, IntegerRangeType::fromInterval(17, null)),
+				new MixedType(subtractedType: IntegerRangeType::fromInterval(17, null)),
 				IntegerRangeType::fromInterval(19, null),
 			],
 			MixedType::class,
@@ -2447,14 +2447,12 @@ class TypeCombinatorTest extends PHPStanTestCase
 				new ConstantArrayType(
 					[new ConstantStringType('default'), new ConstantStringType('range')],
 					[new ObjectType(Foo::class), new ObjectType(Foo::class)],
-					[0],
-					[0, 1],
+					optionalKeys: [0, 1],
 				),
 				new ConstantArrayType(
 					[new ConstantStringType('range')],
 					[new ObjectType(Foo::class)],
-					[0],
-					[0],
+					optionalKeys: [0],
 				),
 			],
 			ConstantArrayType::class,
@@ -2467,16 +2465,14 @@ class TypeCombinatorTest extends PHPStanTestCase
 					new ConstantArrayType(
 						[new ConstantStringType('default'), new ConstantStringType('range')],
 						[new ObjectType(Foo::class), new ObjectType(Foo::class)],
-						[0],
-						[0, 1],
+						optionalKeys: [0, 1],
 					),
 					new NonEmptyArrayType(),
 				]),
 				new ConstantArrayType(
 					[new ConstantStringType('range')],
 					[new ObjectType(Foo::class)],
-					[0],
-					[0],
+					optionalKeys: [0],
 				),
 			],
 			ConstantArrayType::class,
@@ -2603,14 +2599,14 @@ class TypeCombinatorTest extends PHPStanTestCase
 				], [
 					new ConstantBooleanType(true),
 					new ConstantBooleanType(true),
-				], [0], [0]),
+				], optionalKeys: [0]),
 				new ConstantArrayType([
 					new ConstantStringType('a'),
 					new ConstantStringType('c'),
 				], [
 					new ConstantBooleanType(true),
 					new ConstantBooleanType(true),
-				], [0], [0, 1]),
+				], optionalKeys: [0, 1]),
 			],
 			UnionType::class,
 			'array{a?: true, b: true}|array{a?: true, c?: true}',
@@ -2624,7 +2620,7 @@ class TypeCombinatorTest extends PHPStanTestCase
 				], [
 					new ConstantBooleanType(true),
 					new ConstantBooleanType(true),
-				], [0], [0]),
+				], optionalKeys: [0]),
 				new IntersectionType([
 					new ConstantArrayType([
 						new ConstantStringType('a'),
@@ -2632,7 +2628,7 @@ class TypeCombinatorTest extends PHPStanTestCase
 					], [
 						new ConstantBooleanType(true),
 						new ConstantBooleanType(true),
-					], [0], [0, 1]),
+					], optionalKeys: [0, 1]),
 					new NonEmptyArrayType(),
 				]),
 			],
@@ -2669,7 +2665,7 @@ class TypeCombinatorTest extends PHPStanTestCase
 		];
 		yield [
 			[
-				new CallableType(null, null, true, null, null, [], TrinaryLogic::createYes()),
+				new CallableType(isPure: TrinaryLogic::createYes()),
 				new CallableType(),
 			],
 			CallableType::class,
@@ -2677,7 +2673,7 @@ class TypeCombinatorTest extends PHPStanTestCase
 		];
 		yield [
 			[
-				new CallableType(null, null, true, null, null, [], TrinaryLogic::createYes()),
+				new CallableType(isPure: TrinaryLogic::createYes()),
 				ClosureType::createPure(),
 			],
 			CallableType::class,
@@ -2685,15 +2681,15 @@ class TypeCombinatorTest extends PHPStanTestCase
 		];
 		yield [
 			[
-				new CallableType(null, null, true, null, null, [], TrinaryLogic::createMaybe()),
-				new CallableType(null, null, true, null, null, [], TrinaryLogic::createYes()),
+				new CallableType(isPure: TrinaryLogic::createMaybe()),
+				new CallableType(isPure: TrinaryLogic::createYes()),
 			],
 			CallableType::class,
 			'callable(): mixed',
 		];
 		yield [
 			[
-				new ClosureType([], new MixedType(), true, null, null, null, [], [], [
+				new ClosureType([], new MixedType(), impurePoints: [
 					new SimpleImpurePoint('functionCall', 'foo', true),
 				]),
 				ClosureType::createPure(),
@@ -2703,7 +2699,7 @@ class TypeCombinatorTest extends PHPStanTestCase
 		];
 		yield [
 			[
-				new ClosureType([], new MixedType(), true, null, null, null, [], [], [
+				new ClosureType([], new MixedType(), impurePoints: [
 					new SimpleImpurePoint('functionCall', 'foo', false),
 				]),
 				ClosureType::createPure(),
@@ -2791,8 +2787,8 @@ class TypeCombinatorTest extends PHPStanTestCase
 
 		yield [
 			[
-				new ObjectType($finalClass->getName(), null, $finalClass),
-				new ObjectType($nonFinalClass->getName(), null, $nonFinalClass),
+				new ObjectType($finalClass->getName(), classReflection: $finalClass),
+				new ObjectType($nonFinalClass->getName(), classReflection: $nonFinalClass),
 			],
 			ObjectType::class,
 			$nonFinalClass->getDisplayName(),
@@ -3494,7 +3490,7 @@ class TypeCombinatorTest extends PHPStanTestCase
 			],
 			[
 				[
-					new MixedType(false, new StringType()),
+					new MixedType(subtractedType: new StringType()),
 					new StringType(),
 				],
 				NeverType::class,
@@ -3502,7 +3498,7 @@ class TypeCombinatorTest extends PHPStanTestCase
 			],
 			[
 				[
-					new MixedType(false, new StringType()),
+					new MixedType(subtractedType: new StringType()),
 					new ConstantStringType('foo'),
 				],
 				NeverType::class,
@@ -3510,7 +3506,7 @@ class TypeCombinatorTest extends PHPStanTestCase
 			],
 			[
 				[
-					new MixedType(false, new StringType()),
+					new MixedType(subtractedType: new StringType()),
 					new ConstantIntegerType(1),
 				],
 				ConstantIntegerType::class,
@@ -3518,8 +3514,8 @@ class TypeCombinatorTest extends PHPStanTestCase
 			],
 			[
 				[
-					new MixedType(false, new StringType()),
-					new MixedType(false, new IntegerType()),
+					new MixedType(subtractedType: new StringType()),
+					new MixedType(subtractedType: new IntegerType()),
 				],
 				MixedType::class,
 				'mixed~(int|string)=implicit',
@@ -4226,7 +4222,7 @@ class TypeCombinatorTest extends PHPStanTestCase
 		];
 		yield [
 			[
-				new MixedType(false, IntegerRangeType::fromInterval(17, null)),
+				new MixedType(subtractedType: IntegerRangeType::fromInterval(17, null)),
 				new MixedType(),
 			],
 			MixedType::class,
@@ -4271,7 +4267,7 @@ class TypeCombinatorTest extends PHPStanTestCase
 		yield [
 			[
 				new EnumCaseObjectType('PHPStan\Fixture\ManyCasesTestEnum', 'A'),
-				new MixedType(false, new EnumCaseObjectType('PHPStan\Fixture\ManyCasesTestEnum', 'A')),
+				new MixedType(subtractedType: new EnumCaseObjectType('PHPStan\Fixture\ManyCasesTestEnum', 'A')),
 			],
 			NeverType::class,
 			'*NEVER*=implicit',
@@ -4283,7 +4279,7 @@ class TypeCombinatorTest extends PHPStanTestCase
 					new EnumCaseObjectType('PHPStan\Fixture\ManyCasesTestEnum', 'A'),
 					new EnumCaseObjectType('PHPStan\Fixture\ManyCasesTestEnum', 'B'),
 				]),
-				new MixedType(false, new EnumCaseObjectType('PHPStan\Fixture\ManyCasesTestEnum', 'A')),
+				new MixedType(subtractedType: new EnumCaseObjectType('PHPStan\Fixture\ManyCasesTestEnum', 'A')),
 			],
 			EnumCaseObjectType::class,
 			'PHPStan\Fixture\ManyCasesTestEnum::B',
@@ -4479,14 +4475,14 @@ class TypeCombinatorTest extends PHPStanTestCase
 					], [
 						new ConstantBooleanType(true),
 						new ConstantBooleanType(true),
-					], [0], [0]),
+					], optionalKeys: [0]),
 					new ConstantArrayType([
 						new ConstantStringType('a'),
 						new ConstantStringType('c'),
 					], [
 						new ConstantBooleanType(true),
 						new ConstantBooleanType(true),
-					], [0], [0, 1]),
+					], optionalKeys: [0, 1]),
 				]),
 				new NonEmptyArrayType(),
 			],
@@ -4509,7 +4505,7 @@ class TypeCombinatorTest extends PHPStanTestCase
 				], [
 					new ConstantBooleanType(true),
 					new ConstantBooleanType(true),
-				], [0], [0]),
+				], optionalKeys: [0]),
 				new NonEmptyArrayType(),
 			],
 			ConstantArrayType::class,
@@ -4523,7 +4519,7 @@ class TypeCombinatorTest extends PHPStanTestCase
 				], [
 					new ConstantBooleanType(true),
 					new ConstantBooleanType(true),
-				], [0], [0, 1]),
+				], optionalKeys: [0, 1]),
 				new NonEmptyArrayType(),
 			],
 			IntersectionType::class,
@@ -4531,7 +4527,7 @@ class TypeCombinatorTest extends PHPStanTestCase
 		];
 		yield [
 			[
-				new CallableType(null, null, true, null, null, [], TrinaryLogic::createYes()),
+				new CallableType(isPure: TrinaryLogic::createYes()),
 				new CallableType(),
 			],
 			CallableType::class,
@@ -4539,7 +4535,7 @@ class TypeCombinatorTest extends PHPStanTestCase
 		];
 		yield [
 			[
-				new CallableType(null, null, true, null, null, [], TrinaryLogic::createYes()),
+				new CallableType(isPure: TrinaryLogic::createYes()),
 				ClosureType::createPure(),
 			],
 			ClosureType::class,
@@ -4547,15 +4543,15 @@ class TypeCombinatorTest extends PHPStanTestCase
 		];
 		yield [
 			[
-				new CallableType(null, null, true, null, null, [], TrinaryLogic::createMaybe()),
-				new CallableType(null, null, true, null, null, [], TrinaryLogic::createYes()),
+				new CallableType(isPure: TrinaryLogic::createMaybe()),
+				new CallableType(isPure: TrinaryLogic::createYes()),
 			],
 			CallableType::class,
 			'pure-callable(): mixed',
 		];
 		yield [
 			[
-				new ClosureType([], new MixedType(), true, null, null, null, [], [], [
+				new ClosureType([], new MixedType(), impurePoints: [
 					new SimpleImpurePoint('functionCall', 'foo', true),
 				]),
 				ClosureType::createPure(),
@@ -4565,7 +4561,7 @@ class TypeCombinatorTest extends PHPStanTestCase
 		];
 		yield [
 			[
-				new ClosureType([], new MixedType(), true, null, null, null, [], [], [
+				new ClosureType([], new MixedType(), impurePoints: [
 					new SimpleImpurePoint('functionCall', 'foo', false),
 				]),
 				ClosureType::createPure(),
@@ -4722,8 +4718,8 @@ class TypeCombinatorTest extends PHPStanTestCase
 
 		yield [
 			[
-				new ObjectType($finalClass->getName(), null, $finalClass),
-				new ObjectType($nonFinalClass->getName(), null, $nonFinalClass),
+				new ObjectType($finalClass->getName(), classReflection: $finalClass),
+				new ObjectType($nonFinalClass->getName(), classReflection: $nonFinalClass),
 			],
 			ObjectType::class,
 			$nonFinalClass->getDisplayName() . '=final',
@@ -5087,13 +5083,13 @@ class TypeCombinatorTest extends PHPStanTestCase
 				'mixed~int',
 			],
 			[
-				new MixedType(false, new IntegerType()),
+				new MixedType(subtractedType: new IntegerType()),
 				new IntegerType(),
 				MixedType::class,
 				'mixed~int',
 			],
 			[
-				new MixedType(false, new IntegerType()),
+				new MixedType(subtractedType: new IntegerType()),
 				new StringType(),
 				MixedType::class,
 				'mixed~(int|string)',
@@ -5105,19 +5101,19 @@ class TypeCombinatorTest extends PHPStanTestCase
 				'*NEVER*=implicit',
 			],
 			[
-				new MixedType(false, new StringType()),
+				new MixedType(subtractedType: new StringType()),
 				new MixedType(),
 				NeverType::class,
 				'*NEVER*=implicit',
 			],
 			[
 				new MixedType(false),
-				new MixedType(false, new StringType()),
+				new MixedType(subtractedType: new StringType()),
 				StringType::class,
 				'string',
 			],
 			[
-				new MixedType(false, new StringType()),
+				new MixedType(subtractedType: new StringType()),
 				new NeverType(),
 				MixedType::class,
 				'mixed~string',
