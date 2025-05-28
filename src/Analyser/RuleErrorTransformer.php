@@ -23,6 +23,7 @@ use PHPStan\Rules\RuleError;
 use PHPStan\Rules\TipRuleError;
 use PHPStan\ShouldNotHappenException;
 use SebastianBergmann\Diff\Differ;
+use SebastianBergmann\Diff\Output\UnifiedDiffOutputBuilder;
 use function get_class;
 use function sha1;
 use function str_repeat;
@@ -30,11 +31,13 @@ use function str_repeat;
 final class RuleErrorTransformer
 {
 
+	private Differ $differ;
+
 	public function __construct(
 		private Parser $parser,
-		private Differ $differ,
 	)
 	{
+		$this->differ = new Differ(new UnifiedDiffOutputBuilder('', addLineNumbers: true));
 	}
 
 	/**

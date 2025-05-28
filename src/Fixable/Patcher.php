@@ -25,8 +25,11 @@ use const PREG_SPLIT_NO_EMPTY;
 final class Patcher
 {
 
-	public function __construct(private Differ $differ)
+	private Differ $differ;
+
+	public function __construct()
 	{
+		$this->differ = new Differ();
 	}
 
 	/**
