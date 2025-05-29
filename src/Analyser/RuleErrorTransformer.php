@@ -130,11 +130,13 @@ final class RuleErrorTransformer
 			/** @var Stmt[] $newStmts */
 			$newStmts = $traverser->traverse($newStmts);
 
-			$printer = new PhpPrinter(['indent' => str_repeat($indentDetector->indentCharacter, $indentDetector->indentSize)]);
-			$newCode = $printer->printFormatPreserving($newStmts, $fileNodes, $oldTokens);
+			if ($visitor->isFound()) {
+				$printer = new PhpPrinter(['indent' => str_repeat($indentDetector->indentCharacter, $indentDetector->indentSize)]);
+				$newCode = $printer->printFormatPreserving($newStmts, $fileNodes, $oldTokens);
 
-			if ($oldCode !== $newCode) {
-				$fixedErrorDiff = new FixedErrorDiff($hash, $this->differ->diff($oldCode, $newCode));
+				if ($oldCode !== $newCode) {
+					$fixedErrorDiff = new FixedErrorDiff($hash, $this->differ->diff($oldCode, $newCode));
+				}
 			}
 		}
 

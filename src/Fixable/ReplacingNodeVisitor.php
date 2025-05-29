@@ -10,6 +10,8 @@ use PHPStan\ShouldNotHappenException;
 final class ReplacingNodeVisitor extends NodeVisitorAbstract
 {
 
+	private bool $found = false;
+
 	/**
 	 * @param callable(Node): Node $newNodeCallable
 	 */
@@ -24,6 +26,8 @@ final class ReplacingNodeVisitor extends NodeVisitorAbstract
 			return null;
 		}
 
+		$this->found = true;
+
 		$callable = $this->newNodeCallable;
 		$newNode = $callable($node);
 		if ($newNode instanceof VirtualNode) {
@@ -31,6 +35,11 @@ final class ReplacingNodeVisitor extends NodeVisitorAbstract
 		}
 
 		return $newNode;
+	}
+
+	public function isFound(): bool
+	{
+		return $this->found;
 	}
 
 }
