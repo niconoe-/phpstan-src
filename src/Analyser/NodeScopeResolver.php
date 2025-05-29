@@ -6291,16 +6291,17 @@ final class NodeScopeResolver
 				$adaptations[] = $adaptation;
 			}
 			$parserNodes = $this->parser->parseFile($fileName);
-			$this->processNodesForTraitUse($parserNodes, $traitReflection, $classScope, $adaptations, $nodeCallback);
+			$this->processNodesForTraitUse($parserNodes, $parserNodes, $traitReflection, $classScope, $adaptations, $nodeCallback);
 		}
 	}
 
 	/**
+	 * @param Node\Stmt[] $parserNodes
 	 * @param Node[]|Node|scalar|null $node
 	 * @param Node\Stmt\TraitUseAdaptation[] $adaptations
 	 * @param callable(Node $node, Scope $scope): void $nodeCallback
 	 */
-	private function processNodesForTraitUse($node, ClassReflection $traitReflection, MutatingScope $scope, array $adaptations, callable $nodeCallback): void
+	private function processNodesForTraitUse(array $parserNodes, $node, ClassReflection $traitReflection, MutatingScope $scope, array $adaptations, callable $nodeCallback): void
 	{
 		if ($node instanceof Node) {
 			if ($node instanceof Node\Stmt\Trait_ && $traitReflection->getName() === (string) $node->namespacedName && $traitReflection->getNativeReflection()->getStartLine() === $node->getStartLine()) {
@@ -6347,7 +6348,7 @@ final class NodeScopeResolver
 					throw new ShouldNotHappenException();
 				}
 				$traitScope = $scope->enterTrait($traitReflection);
-				$nodeCallback(new InTraitNode($node, $traitReflection, $scope->getClassReflection()), $traitScope);
+				$nodeCallback(new InTraitNode($node, $parserNodes, $traitReflection, $scope->getClassReflection()), $traitScope);
 				$this->processStmtNodes($node, $stmts, $traitScope, $nodeCallback, StatementContext::createTopLevel());
 				return;
 			}
@@ -6359,11 +6360,11 @@ final class NodeScopeResolver
 			}
 			foreach ($node->getSubNodeNames() as $subNodeName) {
 				$subNode = $node->{$subNodeName};
-				$this->processNodesForTraitUse($subNode, $traitReflection, $scope, $adaptations, $nodeCallback);
+				$this->processNodesForTraitUse($parserNodes, $subNode, $traitReflection, $scope, $adaptations, $nodeCallback);
 			}
 		} elseif (is_array($node)) {
 			foreach ($node as $subNode) {
-				$this->processNodesForTraitUse($subNode, $traitReflection, $scope, $adaptations, $nodeCallback);
+				$this->processNodesForTraitUse($parserNodes, $subNode, $traitReflection, $scope, $adaptations, $nodeCallback);
 			}
 		}
 	}
