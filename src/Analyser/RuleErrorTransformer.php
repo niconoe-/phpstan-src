@@ -133,7 +133,9 @@ final class RuleErrorTransformer
 			$printer = new PhpPrinter(['indent' => str_repeat($indentDetector->indentCharacter, $indentDetector->indentSize)]);
 			$newCode = $printer->printFormatPreserving($newStmts, $fileNodes, $oldTokens);
 
-			$fixedErrorDiff = new FixedErrorDiff($hash, $this->differ->diff($oldCode, $newCode));
+			if ($oldCode !== $newCode) {
+				$fixedErrorDiff = new FixedErrorDiff($hash, $this->differ->diff($oldCode, $newCode));
+			}
 		}
 
 		return new Error(
