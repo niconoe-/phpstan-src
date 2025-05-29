@@ -24,6 +24,8 @@ final class RuleError179 implements RuleError, LineRuleError, IdentifierRuleErro
 	/** @var mixed[] */
 	public array $metadata;
 
+	public Node $originalNode;
+
 	/** @var callable(Node): Node */
 	public $newNodeCallable;
 
@@ -48,6 +50,11 @@ final class RuleError179 implements RuleError, LineRuleError, IdentifierRuleErro
 	public function getMetadata(): array
 	{
 		return $this->metadata;
+	}
+
+	public function getOriginalNode(): Node
+	{
+		return $this->originalNode;
 	}
 
 	/**

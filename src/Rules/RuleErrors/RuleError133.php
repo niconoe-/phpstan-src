@@ -19,6 +19,8 @@ final class RuleError133 implements RuleError, FileRuleError, FixableNodeRuleErr
 
 	public string $fileDescription;
 
+	public Node $originalNode;
+
 	/** @var callable(Node): Node */
 	public $newNodeCallable;
 
@@ -35,6 +37,11 @@ final class RuleError133 implements RuleError, FileRuleError, FixableNodeRuleErr
 	public function getFileDescription(): string
 	{
 		return $this->fileDescription;
+	}
+
+	public function getOriginalNode(): Node
+	{
+		return $this->originalNode;
 	}
 
 	/**

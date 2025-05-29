@@ -22,6 +22,8 @@ final class RuleError141 implements RuleError, FileRuleError, TipRuleError, Fixa
 
 	public string $tip;
 
+	public Node $originalNode;
+
 	/** @var callable(Node): Node */
 	public $newNodeCallable;
 
@@ -43,6 +45,11 @@ final class RuleError141 implements RuleError, FileRuleError, TipRuleError, Fixa
 	public function getTip(): string
 	{
 		return $this->tip;
+	}
+
+	public function getOriginalNode(): Node
+	{
+		return $this->originalNode;
 	}
 
 	/**

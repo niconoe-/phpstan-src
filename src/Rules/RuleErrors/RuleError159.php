@@ -28,6 +28,8 @@ final class RuleError159 implements RuleError, LineRuleError, FileRuleError, Tip
 
 	public string $identifier;
 
+	public Node $originalNode;
+
 	/** @var callable(Node): Node */
 	public $newNodeCallable;
 
@@ -59,6 +61,11 @@ final class RuleError159 implements RuleError, LineRuleError, FileRuleError, Tip
 	public function getIdentifier(): string
 	{
 		return $this->identifier;
+	}
+
+	public function getOriginalNode(): Node
+	{
+		return $this->originalNode;
 	}
 
 	/**

@@ -21,6 +21,8 @@ final class RuleError211 implements RuleError, LineRuleError, IdentifierRuleErro
 
 	public string $identifier;
 
+	public Node $originalNode;
+
 	/** @var callable(Node): Node */
 	public $newNodeCallable;
 
@@ -37,6 +39,11 @@ final class RuleError211 implements RuleError, LineRuleError, IdentifierRuleErro
 	public function getIdentifier(): string
 	{
 		return $this->identifier;
+	}
+
+	public function getOriginalNode(): Node
+	{
+		return $this->originalNode;
 	}
 
 	/**

@@ -14,12 +14,19 @@ final class RuleError129 implements RuleError, FixableNodeRuleError
 
 	public string $message;
 
+	public Node $originalNode;
+
 	/** @var callable(Node): Node */
 	public $newNodeCallable;
 
 	public function getMessage(): string
 	{
 		return $this->message;
+	}
+
+	public function getOriginalNode(): Node
+	{
+		return $this->originalNode;
 	}
 
 	/**

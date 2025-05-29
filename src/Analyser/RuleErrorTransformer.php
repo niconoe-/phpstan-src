@@ -98,7 +98,7 @@ final class RuleErrorTransformer
 
 		$fixedErrorDiff = null;
 		if ($ruleError instanceof FixableNodeRuleError) {
-			if ($node instanceof VirtualNode) {
+			if ($ruleError->getOriginalNode() instanceof VirtualNode) {
 				throw new ShouldNotHappenException('Cannot fix virtual node');
 			}
 			$fixingFile = $filePath;
@@ -124,7 +124,7 @@ final class RuleErrorTransformer
 			$newStmts = $cloningTraverser->traverse($fileNodes);
 
 			$traverser = new NodeTraverser();
-			$visitor = new ReplacingNodeVisitor($node, $ruleError->getNewNodeCallable());
+			$visitor = new ReplacingNodeVisitor($ruleError->getOriginalNode(), $ruleError->getNewNodeCallable());
 			$traverser->addVisitor($visitor);
 
 			/** @var Stmt[] $newStmts */

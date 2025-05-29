@@ -23,6 +23,8 @@ final class RuleError199 implements RuleError, LineRuleError, FileRuleError, Non
 
 	public string $fileDescription;
 
+	public Node $originalNode;
+
 	/** @var callable(Node): Node */
 	public $newNodeCallable;
 
@@ -44,6 +46,11 @@ final class RuleError199 implements RuleError, LineRuleError, FileRuleError, Non
 	public function getFileDescription(): string
 	{
 		return $this->fileDescription;
+	}
+
+	public function getOriginalNode(): Node
+	{
+		return $this->originalNode;
 	}
 
 	/**

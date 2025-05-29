@@ -25,6 +25,8 @@ final class RuleError235 implements RuleError, LineRuleError, TipRuleError, Meta
 	/** @var mixed[] */
 	public array $metadata;
 
+	public Node $originalNode;
+
 	/** @var callable(Node): Node */
 	public $newNodeCallable;
 
@@ -49,6 +51,11 @@ final class RuleError235 implements RuleError, LineRuleError, TipRuleError, Meta
 	public function getMetadata(): array
 	{
 		return $this->metadata;
+	}
+
+	public function getOriginalNode(): Node
+	{
+		return $this->originalNode;
 	}
 
 	/**

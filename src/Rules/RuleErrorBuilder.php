@@ -121,6 +121,11 @@ final class RuleErrorBuilder
 				FixableNodeRuleError::class,
 				[
 					[
+						'originalNode',
+						'\PhpParser\Node',
+						'\PhpParser\Node',
+					],
+					[
 						'newNodeCallable',
 						null,
 						'callable(\PhpParser\Node): \PhpParser\Node',
@@ -268,12 +273,15 @@ final class RuleErrorBuilder
 
 	/**
 	 * @internal Experimental
-	 * @param callable(Node): Node $cb
+	 * @template TNode of Node
+	 * @param TNode $node
+	 * @param callable(TNode): Node $cb
 	 * @phpstan-this-out self<T&FixableNodeRuleError>
 	 * @return self<T&FixableNodeRuleError>
 	 */
-	public function fixNode(callable $cb): self
+	public function fixNode(Node $node, callable $cb): self
 	{
+		$this->properties['originalNode'] = $node;
 		$this->properties['newNodeCallable'] = $cb;
 		$this->type |= self::TYPE_FIXABLE_NODE;
 

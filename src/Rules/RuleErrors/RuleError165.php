@@ -23,6 +23,8 @@ final class RuleError165 implements RuleError, FileRuleError, MetadataRuleError,
 	/** @var mixed[] */
 	public array $metadata;
 
+	public Node $originalNode;
+
 	/** @var callable(Node): Node */
 	public $newNodeCallable;
 
@@ -47,6 +49,11 @@ final class RuleError165 implements RuleError, FileRuleError, MetadataRuleError,
 	public function getMetadata(): array
 	{
 		return $this->metadata;
+	}
+
+	public function getOriginalNode(): Node
+	{
+		return $this->originalNode;
 	}
 
 	/**

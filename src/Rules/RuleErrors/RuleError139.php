@@ -20,6 +20,8 @@ final class RuleError139 implements RuleError, LineRuleError, TipRuleError, Fixa
 
 	public string $tip;
 
+	public Node $originalNode;
+
 	/** @var callable(Node): Node */
 	public $newNodeCallable;
 
@@ -36,6 +38,11 @@ final class RuleError139 implements RuleError, LineRuleError, TipRuleError, Fixa
 	public function getTip(): string
 	{
 		return $this->tip;
+	}
+
+	public function getOriginalNode(): Node
+	{
+		return $this->originalNode;
 	}
 
 	/**

@@ -21,6 +21,8 @@ final class RuleError163 implements RuleError, LineRuleError, MetadataRuleError,
 	/** @var mixed[] */
 	public array $metadata;
 
+	public Node $originalNode;
+
 	/** @var callable(Node): Node */
 	public $newNodeCallable;
 
@@ -40,6 +42,11 @@ final class RuleError163 implements RuleError, LineRuleError, MetadataRuleError,
 	public function getMetadata(): array
 	{
 		return $this->metadata;
+	}
+
+	public function getOriginalNode(): Node
+	{
+		return $this->originalNode;
 	}
 
 	/**

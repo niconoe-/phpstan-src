@@ -20,6 +20,8 @@ final class RuleError153 implements RuleError, TipRuleError, IdentifierRuleError
 
 	public string $identifier;
 
+	public Node $originalNode;
+
 	/** @var callable(Node): Node */
 	public $newNodeCallable;
 
@@ -36,6 +38,11 @@ final class RuleError153 implements RuleError, TipRuleError, IdentifierRuleError
 	public function getIdentifier(): string
 	{
 		return $this->identifier;
+	}
+
+	public function getOriginalNode(): Node
+	{
+		return $this->originalNode;
 	}
 
 	/**

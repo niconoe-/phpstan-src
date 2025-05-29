@@ -17,6 +17,8 @@ final class RuleError145 implements RuleError, IdentifierRuleError, FixableNodeR
 
 	public string $identifier;
 
+	public Node $originalNode;
+
 	/** @var callable(Node): Node */
 	public $newNodeCallable;
 
@@ -28,6 +30,11 @@ final class RuleError145 implements RuleError, IdentifierRuleError, FixableNodeR
 	public function getIdentifier(): string
 	{
 		return $this->identifier;
+	}
+
+	public function getOriginalNode(): Node
+	{
+		return $this->originalNode;
 	}
 
 	/**

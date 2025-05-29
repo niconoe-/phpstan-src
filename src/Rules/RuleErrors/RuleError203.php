@@ -21,6 +21,8 @@ final class RuleError203 implements RuleError, LineRuleError, TipRuleError, NonI
 
 	public string $tip;
 
+	public Node $originalNode;
+
 	/** @var callable(Node): Node */
 	public $newNodeCallable;
 
@@ -37,6 +39,11 @@ final class RuleError203 implements RuleError, LineRuleError, TipRuleError, NonI
 	public function getTip(): string
 	{
 		return $this->tip;
+	}
+
+	public function getOriginalNode(): Node
+	{
+		return $this->originalNode;
 	}
 
 	/**

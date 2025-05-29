@@ -22,6 +22,8 @@ final class RuleError241 implements RuleError, IdentifierRuleError, MetadataRule
 	/** @var mixed[] */
 	public array $metadata;
 
+	public Node $originalNode;
+
 	/** @var callable(Node): Node */
 	public $newNodeCallable;
 
@@ -41,6 +43,11 @@ final class RuleError241 implements RuleError, IdentifierRuleError, MetadataRule
 	public function getMetadata(): array
 	{
 		return $this->metadata;
+	}
+
+	public function getOriginalNode(): Node
+	{
+		return $this->originalNode;
 	}
 
 	/**

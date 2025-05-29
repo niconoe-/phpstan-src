@@ -17,6 +17,8 @@ final class RuleError137 implements RuleError, TipRuleError, FixableNodeRuleErro
 
 	public string $tip;
 
+	public Node $originalNode;
+
 	/** @var callable(Node): Node */
 	public $newNodeCallable;
 
@@ -28,6 +30,11 @@ final class RuleError137 implements RuleError, TipRuleError, FixableNodeRuleErro
 	public function getTip(): string
 	{
 		return $this->tip;
+	}
+
+	public function getOriginalNode(): Node
+	{
+		return $this->originalNode;
 	}
 
 	/**

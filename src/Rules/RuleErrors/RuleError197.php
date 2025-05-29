@@ -20,6 +20,8 @@ final class RuleError197 implements RuleError, FileRuleError, NonIgnorableRuleEr
 
 	public string $fileDescription;
 
+	public Node $originalNode;
+
 	/** @var callable(Node): Node */
 	public $newNodeCallable;
 
@@ -36,6 +38,11 @@ final class RuleError197 implements RuleError, FileRuleError, NonIgnorableRuleEr
 	public function getFileDescription(): string
 	{
 		return $this->fileDescription;
+	}
+
+	public function getOriginalNode(): Node
+	{
+		return $this->originalNode;
 	}
 
 	/**

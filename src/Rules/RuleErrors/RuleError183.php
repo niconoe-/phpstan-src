@@ -29,6 +29,8 @@ final class RuleError183 implements RuleError, LineRuleError, FileRuleError, Ide
 	/** @var mixed[] */
 	public array $metadata;
 
+	public Node $originalNode;
+
 	/** @var callable(Node): Node */
 	public $newNodeCallable;
 
@@ -63,6 +65,11 @@ final class RuleError183 implements RuleError, LineRuleError, FileRuleError, Ide
 	public function getMetadata(): array
 	{
 		return $this->metadata;
+	}
+
+	public function getOriginalNode(): Node
+	{
+		return $this->originalNode;
 	}
 
 	/**

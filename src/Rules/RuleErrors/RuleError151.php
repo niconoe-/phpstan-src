@@ -25,6 +25,8 @@ final class RuleError151 implements RuleError, LineRuleError, FileRuleError, Ide
 
 	public string $identifier;
 
+	public Node $originalNode;
+
 	/** @var callable(Node): Node */
 	public $newNodeCallable;
 
@@ -51,6 +53,11 @@ final class RuleError151 implements RuleError, LineRuleError, FileRuleError, Ide
 	public function getIdentifier(): string
 	{
 		return $this->identifier;
+	}
+
+	public function getOriginalNode(): Node
+	{
+		return $this->originalNode;
 	}
 
 	/**

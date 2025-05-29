@@ -18,6 +18,8 @@ final class RuleError195 implements RuleError, LineRuleError, NonIgnorableRuleEr
 
 	public int $line;
 
+	public Node $originalNode;
+
 	/** @var callable(Node): Node */
 	public $newNodeCallable;
 
@@ -29,6 +31,11 @@ final class RuleError195 implements RuleError, LineRuleError, NonIgnorableRuleEr
 	public function getLine(): int
 	{
 		return $this->line;
+	}
+
+	public function getOriginalNode(): Node
+	{
+		return $this->originalNode;
 	}
 
 	/**

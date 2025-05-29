@@ -29,6 +29,8 @@ final class RuleError189 implements RuleError, FileRuleError, TipRuleError, Iden
 	/** @var mixed[] */
 	public array $metadata;
 
+	public Node $originalNode;
+
 	/** @var callable(Node): Node */
 	public $newNodeCallable;
 
@@ -63,6 +65,11 @@ final class RuleError189 implements RuleError, FileRuleError, TipRuleError, Iden
 	public function getMetadata(): array
 	{
 		return $this->metadata;
+	}
+
+	public function getOriginalNode(): Node
+	{
+		return $this->originalNode;
 	}
 
 	/**

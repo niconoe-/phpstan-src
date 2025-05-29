@@ -15,12 +15,19 @@ final class RuleError193 implements RuleError, NonIgnorableRuleError, FixableNod
 
 	public string $message;
 
+	public Node $originalNode;
+
 	/** @var callable(Node): Node */
 	public $newNodeCallable;
 
 	public function getMessage(): string
 	{
 		return $this->message;
+	}
+
+	public function getOriginalNode(): Node
+	{
+		return $this->originalNode;
 	}
 
 	/**

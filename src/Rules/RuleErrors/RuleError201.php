@@ -18,6 +18,8 @@ final class RuleError201 implements RuleError, TipRuleError, NonIgnorableRuleErr
 
 	public string $tip;
 
+	public Node $originalNode;
+
 	/** @var callable(Node): Node */
 	public $newNodeCallable;
 
@@ -29,6 +31,11 @@ final class RuleError201 implements RuleError, TipRuleError, NonIgnorableRuleErr
 	public function getTip(): string
 	{
 		return $this->tip;
+	}
+
+	public function getOriginalNode(): Node
+	{
+		return $this->originalNode;
 	}
 
 	/**

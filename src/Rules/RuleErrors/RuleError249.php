@@ -25,6 +25,8 @@ final class RuleError249 implements RuleError, TipRuleError, IdentifierRuleError
 	/** @var mixed[] */
 	public array $metadata;
 
+	public Node $originalNode;
+
 	/** @var callable(Node): Node */
 	public $newNodeCallable;
 
@@ -49,6 +51,11 @@ final class RuleError249 implements RuleError, TipRuleError, IdentifierRuleError
 	public function getMetadata(): array
 	{
 		return $this->metadata;
+	}
+
+	public function getOriginalNode(): Node
+	{
+		return $this->originalNode;
 	}
 
 	/**

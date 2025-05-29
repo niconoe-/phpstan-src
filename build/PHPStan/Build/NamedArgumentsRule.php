@@ -92,10 +92,9 @@ final class NamedArgumentsRule implements Rule
 	}
 
 	/**
-	 * @param Node\Expr\FuncCall|Node\Expr\New_|Node\Expr\StaticCall $node
 	 * @return list<IdentifierRuleError>
 	 */
-	private function processArgs(ExtendedParametersAcceptor $acceptor, Scope $scope, Node\Expr\CallLike $node): array
+	private function processArgs(ExtendedParametersAcceptor $acceptor, Scope $scope, Node\Expr\FuncCall|Node\Expr\New_|Node\Expr\StaticCall $node): array
 	{
 		if ($acceptor->isVariadic()) {
 			return [];
@@ -169,8 +168,7 @@ final class NamedArgumentsRule implements Rule
 		}
 
 		if (count($errorBuilders) > 0) {
-			$errorBuilders[0]->fixNode(static function (Node $node) use ($acceptor, $hasNamedArgument, $parameters, $scope) {
-				/** @var Node\Expr\FuncCall|Node\Expr\New_|Node\Expr\StaticCall $node */
+			$errorBuilders[0]->fixNode($node, static function ($node) use ($acceptor, $hasNamedArgument, $parameters, $scope) {
 				$normalizedArgs = ArgumentsNormalizer::reorderArgs($acceptor, $node->getArgs());
 				if ($normalizedArgs === null) {
 					return $node;

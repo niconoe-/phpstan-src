@@ -26,6 +26,8 @@ final class RuleError207 implements RuleError, LineRuleError, FileRuleError, Tip
 
 	public string $tip;
 
+	public Node $originalNode;
+
 	/** @var callable(Node): Node */
 	public $newNodeCallable;
 
@@ -52,6 +54,11 @@ final class RuleError207 implements RuleError, LineRuleError, FileRuleError, Tip
 	public function getTip(): string
 	{
 		return $this->tip;
+	}
+
+	public function getOriginalNode(): Node
+	{
+		return $this->originalNode;
 	}
 
 	/**

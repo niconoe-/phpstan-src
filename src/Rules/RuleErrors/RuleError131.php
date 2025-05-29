@@ -17,6 +17,8 @@ final class RuleError131 implements RuleError, LineRuleError, FixableNodeRuleErr
 
 	public int $line;
 
+	public Node $originalNode;
+
 	/** @var callable(Node): Node */
 	public $newNodeCallable;
 
@@ -28,6 +30,11 @@ final class RuleError131 implements RuleError, LineRuleError, FixableNodeRuleErr
 	public function getLine(): int
 	{
 		return $this->line;
+	}
+
+	public function getOriginalNode(): Node
+	{
+		return $this->originalNode;
 	}
 
 	/**

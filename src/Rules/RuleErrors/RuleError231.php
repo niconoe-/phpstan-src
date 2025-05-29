@@ -27,6 +27,8 @@ final class RuleError231 implements RuleError, LineRuleError, FileRuleError, Met
 	/** @var mixed[] */
 	public array $metadata;
 
+	public Node $originalNode;
+
 	/** @var callable(Node): Node */
 	public $newNodeCallable;
 
@@ -56,6 +58,11 @@ final class RuleError231 implements RuleError, LineRuleError, FileRuleError, Met
 	public function getMetadata(): array
 	{
 		return $this->metadata;
+	}
+
+	public function getOriginalNode(): Node
+	{
+		return $this->originalNode;
 	}
 
 	/**
