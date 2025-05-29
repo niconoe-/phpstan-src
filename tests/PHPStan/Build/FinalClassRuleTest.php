@@ -14,7 +14,7 @@ class FinalClassRuleTest extends RuleTestCase
 
 	protected function getRule(): Rule
 	{
-		return new FinalClassRule(self::getContainer()->getByType(FileHelper::class), skipTests: false);
+		return new FinalClassRule(self::getContainer()->getByType(FileHelper::class), false);
 	}
 
 	public function testRule(): void
