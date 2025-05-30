@@ -108,6 +108,15 @@ final class FileAnalyser
 						$traitNode = $node->getOriginalNode();
 						$linesToIgnore[$scope->getFileDescription()] = $this->getLinesToIgnoreFromTokens([$traitNode]);
 					}
+
+					if ($scope->isInTrait()) {
+						$traitReflection = $scope->getTraitReflection();
+						if ($traitReflection->getFileName() !== null) {
+							$traitFilePath = $traitReflection->getFileName();
+							$parserNodes = $this->parser->parseFile($traitFilePath);
+						}
+					}
+
 					if ($outerNodeCallback !== null) {
 						$outerNodeCallback($node, $scope);
 					}
