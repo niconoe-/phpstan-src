@@ -21,3 +21,24 @@ class Foo
 	}
 
 }
+
+function (): void {
+	$output = null;
+	exec('exec', $output, $exitCode);
+};
+
+class Bar
+{
+
+	public static function doFoo($a, &$byRef = null, int $another = 1, int $yetAnother = 2): void
+	{
+
+	}
+
+	public function doBar(): void
+	{
+		$byRef = null;
+		self::doFoo('a', $byRef, yetAnother: 3);
+	}
+
+}

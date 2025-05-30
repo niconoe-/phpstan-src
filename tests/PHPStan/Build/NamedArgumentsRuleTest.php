@@ -37,6 +37,10 @@ class NamedArgumentsRuleTest extends RuleTestCase
 				'You\'re passing a non-default value Exception to parameter $previous but previous arguments are passing default values to their parameters ($message, $code). You can skip them and use named argument for $previous instead.',
 				20,
 			],
+			[
+				'You\'re passing a non-default value 3 to parameter $yetAnother but previous argument is passing default value to its parameter ($another). You can skip it and use named argument for $yetAnother instead.',
+				41,
+			],
 		]);
 	}
 

@@ -125,6 +125,9 @@ final class NamedArgumentsRule implements Rule
 			if ($parameter->getDefaultValue() === null) {
 				continue;
 			}
+			if (!$parameter->passedByReference()->no()) {
+				continue;
+			}
 			$argValue = $scope->getType($normalizedArg->value);
 			if ($normalizedArg->name !== null) {
 				continue;
@@ -189,6 +192,10 @@ final class NamedArgumentsRule implements Rule
 					}
 					$parameter = $parameters[$i];
 					if ($parameter->getDefaultValue() === null) {
+						$newArgs[] = $originalArg;
+						continue;
+					}
+					if (!$parameter->passedByReference()->no()) {
 						$newArgs[] = $originalArg;
 						continue;
 					}
