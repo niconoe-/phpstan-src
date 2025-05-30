@@ -42,3 +42,22 @@ class Bar
 	}
 
 }
+
+class Baz
+{
+
+	public const HIGH = 1;
+	public const MEDIUM = 2;
+
+	public static function send(Bar $message, ?string $queueName = null, ?Bar $mode = null, int $priority = self::HIGH)
+	{
+
+	}
+
+	public function doFoo(Bar $message): void
+	{
+		self::send($message, 'queue', priority: self::HIGH);
+		self::send($message, 'queue', priority: self::MEDIUM);
+	}
+
+}

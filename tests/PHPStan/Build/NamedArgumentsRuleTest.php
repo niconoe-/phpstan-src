@@ -41,6 +41,10 @@ class NamedArgumentsRuleTest extends RuleTestCase
 				'You\'re passing a non-default value 3 to parameter $yetAnother but previous argument is passing default value to its parameter ($another). You can skip it and use named argument for $yetAnother instead.',
 				41,
 			],
+			[
+				'Named argument $priority can be omitted, type 1 is the same as the default value.',
+				59,
+			],
 		]);
 	}
 

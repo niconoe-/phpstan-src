@@ -13,7 +13,7 @@ class Foo
 		new Exception('foo', 0, null);
 		new Exception('foo', previous: new Exception('previous'));
 		new Exception('foo', previous: new Exception('previous'));
-		new Exception(previous: new Exception('previous'));
+		new Exception('foo', previous: new Exception('previous'));
 		new Exception('foo', code: 1, previous: new Exception('previous'));
 		new Exception('foo', 1, new Exception('previous'));
 		new Exception('foo', 1);
@@ -39,6 +39,25 @@ class Bar
 	{
 		$byRef = null;
 		self::doFoo('a', $byRef, yetAnother: 3);
+	}
+
+}
+
+class Baz
+{
+
+	public const HIGH = 1;
+	public const MEDIUM = 2;
+
+	public static function send(Bar $message, ?string $queueName = null, ?Bar $mode = null, int $priority = self::HIGH)
+	{
+
+	}
+
+	public function doFoo(Bar $message): void
+	{
+		self::send($message, 'queue');
+		self::send($message, 'queue', priority: self::MEDIUM);
 	}
 
 }

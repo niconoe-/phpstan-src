@@ -222,7 +222,16 @@ final class ArgumentsNormalizer
 		foreach ($callArgs as $i => $arg) {
 			if ($arg->name === null) {
 				// add regular args as is
-				$reorderedArgs[$i] = $arg;
+
+				$attributes = $arg->getAttributes();
+				$attributes[self::ORIGINAL_ARG_ATTRIBUTE] = $arg;
+				$reorderedArgs[$i] = new Arg(
+					$arg->value,
+					$arg->byRef,
+					$arg->unpack,
+					$attributes,
+					null,
+				);
 			} elseif (array_key_exists($arg->name->toString(), $argumentPositions)) {
 				$argName = $arg->name->toString();
 				// order named args into the position the signature expects them
