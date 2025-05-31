@@ -5392,6 +5392,7 @@ final class NodeScopeResolver
 				}
 			}
 
+			$scopeBeforeAssignEval = $scope;
 			$scope = $result->getScope();
 			$truthySpecifiedTypes = $this->typeSpecifier->specifyTypesInCondition($scope, $assignedExpr, TypeSpecifierContext::createTruthy());
 			$falseySpecifiedTypes = $this->typeSpecifier->specifyTypesInCondition($scope, $assignedExpr, TypeSpecifierContext::createFalsey());
@@ -5404,7 +5405,7 @@ final class NodeScopeResolver
 			$conditionalExpressions = $this->processSureTypesForConditionalExpressionsAfterAssign($scope, $var->name, $conditionalExpressions, $falseySpecifiedTypes, $falseyType);
 			$conditionalExpressions = $this->processSureNotTypesForConditionalExpressionsAfterAssign($scope, $var->name, $conditionalExpressions, $falseySpecifiedTypes, $falseyType);
 
-			$nodeCallback(new VariableAssignNode($var, $assignedExpr), $result->getScope());
+			$nodeCallback(new VariableAssignNode($var, $assignedExpr), $scopeBeforeAssignEval);
 			$scope = $scope->assignVariable($var->name, $type, $scope->getNativeType($assignedExpr), TrinaryLogic::createYes());
 			foreach ($conditionalExpressions as $exprString => $holders) {
 				$scope = $scope->addConditionalExpressions($exprString, $holders);
@@ -5487,6 +5488,7 @@ final class NodeScopeResolver
 			$nativeValueToWrite = $scope->getNativeType($assignedExpr);
 			$originalValueToWrite = $valueToWrite;
 			$originalNativeValueToWrite = $nativeValueToWrite;
+			$scopeBeforeAssignEval = $scope;
 
 			// 3. eval assigned expr
 			$result = $processExprCallback($scope);
@@ -5542,11 +5544,11 @@ final class NodeScopeResolver
 
 			if ($varType->isArray()->yes() || !(new ObjectType(ArrayAccess::class))->isSuperTypeOf($varType)->yes()) {
 				if ($var instanceof Variable && is_string($var->name)) {
-					$nodeCallback(new VariableAssignNode($var, $assignedPropertyExpr), $scope);
+					$nodeCallback(new VariableAssignNode($var, $assignedPropertyExpr), $scopeBeforeAssignEval);
 					$scope = $scope->assignVariable($var->name, $valueToWrite, $nativeValueToWrite, TrinaryLogic::createYes());
 				} else {
 					if ($var instanceof PropertyFetch || $var instanceof StaticPropertyFetch) {
-						$nodeCallback(new PropertyAssignNode($var, $assignedPropertyExpr, $isAssignOp), $scope);
+						$nodeCallback(new PropertyAssignNode($var, $assignedPropertyExpr, $isAssignOp), $scopeBeforeAssignEval);
 						if ($var instanceof PropertyFetch && $var->name instanceof Node\Identifier && !$isAssignOp) {
 							$scope = $scope->assignInitializedProperty($scope->getType($var->var), $var->name->toString());
 						}
@@ -5574,9 +5576,9 @@ final class NodeScopeResolver
 				}
 			} else {
 				if ($var instanceof Variable) {
-					$nodeCallback(new VariableAssignNode($var, $assignedPropertyExpr), $scope);
+					$nodeCallback(new VariableAssignNode($var, $assignedPropertyExpr), $scopeBeforeAssignEval);
 				} elseif ($var instanceof PropertyFetch || $var instanceof StaticPropertyFetch) {
-					$nodeCallback(new PropertyAssignNode($var, $assignedPropertyExpr, $isAssignOp), $scope);
+					$nodeCallback(new PropertyAssignNode($var, $assignedPropertyExpr, $isAssignOp), $scopeBeforeAssignEval);
 					if ($var instanceof PropertyFetch && $var->name instanceof Node\Identifier && !$isAssignOp) {
 						$scope = $scope->assignInitializedProperty($scope->getType($var->var), $var->name->toString());
 					}
@@ -5611,6 +5613,7 @@ final class NodeScopeResolver
 				$scope = $propertyNameResult->getScope();
 			}
 
+			$scopeBeforeAssignEval = $scope;
 			$result = $processExprCallback($scope);
 			$hasYield = $hasYield || $result->hasYield();
 			$throwPoints = array_merge($throwPoints, $result->getThrowPoints());
@@ -5625,7 +5628,7 @@ final class NodeScopeResolver
 			if ($propertyName !== null && $propertyHolderType->hasProperty($propertyName)->yes()) {
 				$propertyReflection = $propertyHolderType->getProperty($propertyName, $scope);
 				$assignedExprType = $scope->getType($assignedExpr);
-				$nodeCallback(new PropertyAssignNode($var, $assignedExpr, $isAssignOp), $scope);
+				$nodeCallback(new PropertyAssignNode($var, $assignedExpr, $isAssignOp), $scopeBeforeAssignEval);
 				if ($propertyReflection->canChangeTypeAfterAssignment()) {
 					if ($propertyReflection->hasNativeType()) {
 						$propertyNativeType = $propertyReflection->getNativeType();
@@ -5671,7 +5674,7 @@ final class NodeScopeResolver
 			} else {
 				// fallback
 				$assignedExprType = $scope->getType($assignedExpr);
-				$nodeCallback(new PropertyAssignNode($var, $assignedExpr, $isAssignOp), $scope);
+				$nodeCallback(new PropertyAssignNode($var, $assignedExpr, $isAssignOp), $scopeBeforeAssignEval);
 				$scope = $scope->assignExpression($var, $assignedExprType, $scope->getNativeType($assignedExpr));
 				// simulate dynamic property assign by __set to get throw points
 				if (!$propertyHolderType->hasMethod('__set')->no()) {
@@ -5705,6 +5708,7 @@ final class NodeScopeResolver
 				$scope = $propertyNameResult->getScope();
 			}
 
+			$scopeBeforeAssignEval = $scope;
 			$result = $processExprCallback($scope);
 			$hasYield = $hasYield || $result->hasYield();
 			$throwPoints = array_merge($throwPoints, $result->getThrowPoints());
@@ -5714,7 +5718,7 @@ final class NodeScopeResolver
 			if ($propertyName !== null) {
 				$propertyReflection = $scope->getPropertyReflection($propertyHolderType, $propertyName);
 				$assignedExprType = $scope->getType($assignedExpr);
-				$nodeCallback(new PropertyAssignNode($var, $assignedExpr, $isAssignOp), $scope);
+				$nodeCallback(new PropertyAssignNode($var, $assignedExpr, $isAssignOp), $scopeBeforeAssignEval);
 				if ($propertyReflection !== null && $propertyReflection->canChangeTypeAfterAssignment()) {
 					if ($propertyReflection->hasNativeType()) {
 						$propertyNativeType = $propertyReflection->getNativeType();
@@ -5745,7 +5749,7 @@ final class NodeScopeResolver
 			} else {
 				// fallback
 				$assignedExprType = $scope->getType($assignedExpr);
-				$nodeCallback(new PropertyAssignNode($var, $assignedExpr, $isAssignOp), $scope);
+				$nodeCallback(new PropertyAssignNode($var, $assignedExpr, $isAssignOp), $scopeBeforeAssignEval);
 				$scope = $scope->assignExpression($var, $assignedExprType, $scope->getNativeType($assignedExpr));
 			}
 		} elseif ($var instanceof List_) {
