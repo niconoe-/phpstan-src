@@ -142,6 +142,10 @@ final class NamedArgumentsRule implements Rule
 				}
 			}
 
+			if (count($parameter->getDefaultValue()->getFiniteTypes()) === 0) {
+				continue;
+			}
+
 			if (!$argValue->equals($parameter->getDefaultValue())) {
 				if (count($defaultValueWasPassed) > 0) {
 					$errorBuilders[] = RuleErrorBuilder::message(sprintf(
@@ -196,6 +200,10 @@ final class NamedArgumentsRule implements Rule
 						continue;
 					}
 					if (!$parameter->passedByReference()->no()) {
+						$newArgs[] = $originalArg;
+						continue;
+					}
+					if (count($parameter->getDefaultValue()->getFiniteTypes()) === 0) {
 						$newArgs[] = $originalArg;
 						continue;
 					}

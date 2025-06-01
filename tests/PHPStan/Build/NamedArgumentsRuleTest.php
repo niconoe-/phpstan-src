@@ -84,4 +84,27 @@ class NamedArgumentsRuleTest extends RuleTestCase
 		);
 	}
 
+	public function testNewInInitializer(): void
+	{
+		if (PHP_VERSION_ID < 80100) {
+			$this->markTestSkipped('Test requires PHP 8.1.');
+		}
+
+		$this->analyse([__DIR__ . '/data/named-arguments-new.php'], [
+			[
+				'You\'re passing a non-default value \'bar\' to parameter $d but previous argument is passing default value to its parameter ($c). You can skip it and use named argument for $d instead.',
+				24,
+			],
+		]);
+	}
+
+	public function testFixNewInInitializer(): void
+	{
+		if (PHP_VERSION_ID < 80100) {
+			$this->markTestSkipped('Test requires PHP 8.1.');
+		}
+
+		$this->fix(__DIR__ . '/data/named-arguments-new.php', __DIR__ . '/data/named-arguments-new.php.fixed');
+	}
+
 }
