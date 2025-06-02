@@ -4,6 +4,7 @@ namespace PHPStan\Rules\Playground;
 
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
+use PHPStan\Rules\FixableNodeRuleError;
 use PHPStan\Rules\LineRuleError;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
@@ -51,6 +52,9 @@ final class PromoteParameterRule implements Rule
 				->tip(sprintf('This error would be reported if the <fg=cyan>%s: true</> parameter was enabled in your <fg=cyan>%%configurationFile%%</>.', $this->parameterName));
 			if ($error instanceof LineRuleError) {
 				$builder->line($error->getLine());
+			}
+			if ($error instanceof FixableNodeRuleError) {
+				$builder->fixNode($error->getOriginalNode(), $error->getNewNodeCallable());
 			}
 			$errors[] = $builder->build();
 		}
