@@ -58,6 +58,7 @@ parameters:
 			- 'PHPStan\Broker\ClassNotFoundException'
 			- 'PHPStan\Broker\FunctionNotFoundException'
 			- 'PHPStan\Broker\ConstantNotFoundException'
+			- 'PHPStan\DependencyInjection\MissingServiceException'
 			- 'PHPStan\Reflection\MissingMethodFromReflectionException'
 			- 'PHPStan\Reflection\MissingPropertyFromReflectionException'
 			- 'PHPStan\Reflection\MissingConstantFromReflectionException'
