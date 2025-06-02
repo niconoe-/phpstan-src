@@ -11,6 +11,7 @@ use PHPStan\Rules\Methods\MethodVisibilityComparisonHelper;
 use PHPStan\Rules\Methods\OverridingMethodRule;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
+use const PHP_VERSION_ID;
 
 /**
  * @extends RuleTestCase<PromoteParameterRule<InClassMethodNode>>
@@ -39,6 +40,10 @@ class PromoteParameterRuleWithOriginalRuleTest extends RuleTestCase
 
 	public function testRule(): void
 	{
+		if (PHP_VERSION_ID < 80300) {
+			$this->markTestSkipped('Test requires PHP 8.3.');
+		}
+
 		$this->analyse([__DIR__ . '/data/promote-missing-override.php'], [
 			[
 				'Method PromoteMissingOverride\Bar::doFoo() overrides method PromoteMissingOverride\Foo::doFoo() but is missing the #[\Override] attribute.',
