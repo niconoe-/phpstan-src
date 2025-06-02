@@ -3,6 +3,7 @@
 namespace PHPStan\Rules\Methods;
 
 use PhpParser\Node;
+use PhpParser\Node\Attribute;
 use PHPStan\Analyser\Scope;
 use PHPStan\Node\InClassMethodNode;
 use PHPStan\Php\PhpVersion;
@@ -94,6 +95,10 @@ final class OverridingMethodRule implements Rule
 					))
 						->nonIgnorable()
 						->identifier('method.override')
+						->fixNode($node->getOriginalNode(), function (Node\Stmt\ClassMethod $method) {
+							$method->attrGroups = $this->filterOverrideAttribute($method->attrGroups);
+							return $method;
+						})
 						->build(),
 				];
 			}
@@ -116,7 +121,16 @@ final class OverridingMethodRule implements Rule
 				$method->getName(),
 				$prototypeDeclaringClass->getDisplayName(true),
 				$prototype->getName(),
-			))->identifier('method.missingOverride')->build();
+			))
+				->identifier('method.missingOverride')
+				->fixNode($node->getOriginalNode(), static function (Node\Stmt\ClassMethod $method) {
+					$method->attrGroups[] = new Node\AttributeGroup([
+						new Attribute(new Node\Name\FullyQualified('Override')),
+					]);
+
+					return $method;
+				})
+				->build();
 		}
 		if ($prototype->isFinalByKeyword()->yes()) {
 			$messages[] = RuleErrorBuilder::message(sprintf(
@@ -276,6 +290,30 @@ final class OverridingMethodRule implements Rule
 		}
 
 		return $this->addErrors($messages, $node, $scope);
+	}
+
+	/**
+	 * @param Node\AttributeGroup[] $attrGroups
+	 * @return Node\AttributeGroup[]
+	 */
+	private function filterOverrideAttribute(array $attrGroups): array
+	{
+		foreach ($attrGroups as $i => $attrGroup) {
+			foreach ($attrGroup->attrs as $j => $attr) {
+				if ($attr->name->toLowerString() !== 'override') {
+					continue;
+				}
+
+				unset($attrGroup->attrs[$j]);
+				if (count($attrGroup->attrs) !== 0) {
+					continue;
+				}
+
+				unset($attrGroups[$i]);
+			}
+		}
+
+		return $attrGroups;
 	}
 
 	/**

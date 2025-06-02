@@ -834,4 +834,15 @@ class OverridingMethodRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/simple-xml-element-child.php'], []);
 	}
 
+	public function testFixOverride(): void
+	{
+		if (PHP_VERSION_ID < 80300) {
+			$this->markTestSkipped('Test requires PHP 8.3.');
+		}
+
+		$this->phpVersionId = PHP_VERSION_ID;
+		$this->checkMissingOverrideMethodAttribute = true;
+		$this->fix(__DIR__ . '/data/fix-override-attribute.php', __DIR__ . '/data/fix-override-attribute.php.fixed');
+	}
+
 }
