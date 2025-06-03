@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "68107fb5f84e93c0fe2cd357dd1c0552",
+    "content-hash": "c7980f8aa4ebf51f5e1af96e49410b09",
     "packages": [
         {
             "name": "clue/ndjson-react",
@@ -1442,12 +1442,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/JetBrains/phpstorm-stubs.git",
-                "reference": "ff5b25296e401bc3bd512354f9161d2adf64b8a2"
+                "reference": "0dd20984fb84cfc157f0ef46f6e9e5b5477b8c20"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/JetBrains/phpstorm-stubs/zipball/ff5b25296e401bc3bd512354f9161d2adf64b8a2",
-                "reference": "ff5b25296e401bc3bd512354f9161d2adf64b8a2",
+                "url": "https://api.github.com/repos/JetBrains/phpstorm-stubs/zipball/0dd20984fb84cfc157f0ef46f6e9e5b5477b8c20",
+                "reference": "0dd20984fb84cfc157f0ef46f6e9e5b5477b8c20",
                 "shasum": ""
             },
             "require-dev": {
@@ -1482,7 +1482,7 @@
             "support": {
                 "source": "https://github.com/JetBrains/phpstorm-stubs/tree/master"
             },
-            "time": "2025-06-02T07:38:28+00:00"
+            "time": "2025-05-21T19:01:16+00:00"
         },
         {
             "name": "nette/bootstrap",
@@ -2057,16 +2057,16 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v5.4.0",
+            "version": "v5.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "447a020a1f875a434d62f2a401f53b82a396e494"
+                "reference": "ae59794362fe85e051a58ad36b289443f57be7a9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/447a020a1f875a434d62f2a401f53b82a396e494",
-                "reference": "447a020a1f875a434d62f2a401f53b82a396e494",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/ae59794362fe85e051a58ad36b289443f57be7a9",
+                "reference": "ae59794362fe85e051a58ad36b289443f57be7a9",
                 "shasum": ""
             },
             "require": {
@@ -2109,9 +2109,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nikic/PHP-Parser/issues",
-                "source": "https://github.com/nikic/PHP-Parser/tree/v5.4.0"
+                "source": "https://github.com/nikic/PHP-Parser/tree/v5.5.0"
             },
-            "time": "2024-12-30T11:07:19+00:00"
+            "time": "2025-05-31T08:24:38+00:00"
         },
         {
             "name": "ondram/ci-detector",
@@ -2258,16 +2258,16 @@
         },
         {
             "name": "ondrejmirtes/composer-attribute-collector",
-            "version": "1.0.0",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ondrejmirtes/composer-attribute-collector.git",
-                "reference": "d285f54d139d1f14b5d4ae928c9fb45bff22fda1"
+                "reference": "bc4ca66239df03c35912807aa92435fe1e4e3323"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ondrejmirtes/composer-attribute-collector/zipball/d285f54d139d1f14b5d4ae928c9fb45bff22fda1",
-                "reference": "d285f54d139d1f14b5d4ae928c9fb45bff22fda1",
+                "url": "https://api.github.com/repos/ondrejmirtes/composer-attribute-collector/zipball/bc4ca66239df03c35912807aa92435fe1e4e3323",
+                "reference": "bc4ca66239df03c35912807aa92435fe1e4e3323",
                 "shasum": ""
             },
             "require": {
@@ -2316,9 +2316,9 @@
             ],
             "description": "A convenient and near zero-cost way to retrieve targets of PHP 8 attributes",
             "support": {
-                "source": "https://github.com/ondrejmirtes/composer-attribute-collector/tree/1.0.0"
+                "source": "https://github.com/ondrejmirtes/composer-attribute-collector/tree/1.1.0"
             },
-            "time": "2025-05-24T23:38:56+00:00"
+            "time": "2025-06-03T09:32:38+00:00"
         },
         {
             "name": "ondrejmirtes/php-merge",
