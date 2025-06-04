@@ -268,7 +268,10 @@ jobs:
         run: "php .github/scripts/listPrefix.php ${{ github.workspace }}/phar-new > phar-new.txt"
 
       - name: "Diff locations"
-        run: "diff -u phar-old.txt phar-new.txt"
+        run: "diff -u phar-old.txt phar-new.txt > diff.txt || true"
+
+      - name: "Diff files where prefix changed"
+        run: "php .github/scripts/diffPrefixes.php ${{ github.workspace }}/diff.txt ${{ github.workspace }}/phar-old ${{ github.workspace }}/phar-new"
 
   commit:
     name: "Commit PHAR"
