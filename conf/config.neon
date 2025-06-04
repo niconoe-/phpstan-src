@@ -236,28 +236,12 @@ services:
 			- PHPStan\Node\Printer\Printer
 
 	-
-		class: PHPStan\Broker\AnonymousClassNameHelper
-		arguments:
-			relativePathHelper: @simpleRelativePathHelper
-
-	-
 		class: PHPStan\Php\PhpVersion
 		factory: @PHPStan\Php\PhpVersionFactory::create
 
 	-
 		class: PHPStan\Php\PhpVersionFactory
 		factory: @PHPStan\Php\PhpVersionFactoryFactory::create
-
-	-
-		class: PHPStan\Php\PhpVersionFactoryFactory
-		arguments:
-			phpVersion: %phpVersion%
-			composerAutoloaderProjectPaths: %composerAutoloaderProjectPaths%
-
-	-
-		class: PHPStan\Php\ComposerPhpVersionFactory
-		arguments:
-			composerAutoloaderProjectPaths: %composerAutoloaderProjectPaths%
 
 	-
 		class: PHPStan\PhpDoc\TypeNodeResolverExtensionRegistryProvider
@@ -270,32 +254,6 @@ services:
 			composerAutoloaderProjectPaths: %composerAutoloaderProjectPaths%
 		autowired:
 			- PHPStan\PhpDoc\StubFilesProvider
-
-	-
-		class: PHPStan\Analyser\Analyser
-		arguments:
-			internalErrorsCountLimit: %internalErrorsCountLimit%
-
-	-
-		class: PHPStan\Analyser\AnalyserResultFinalizer
-		arguments:
-			reportUnmatchedIgnoredErrors: %reportUnmatchedIgnoredErrors%
-
-	-
-		class: PHPStan\Analyser\FileAnalyser
-		arguments:
-			parser: @defaultAnalysisParser
-
-	-
-		class: PHPStan\Analyser\RuleErrorTransformer
-		arguments:
-			parser: @currentPhpVersionPhpParser
-
-	-
-		class: PHPStan\Analyser\Ignore\IgnoredErrorHelper
-		arguments:
-			ignoreErrors: %ignoreErrors%
-			reportUnmatchedIgnoredErrors: %reportUnmatchedIgnoredErrors%
 
 	-
 		class: PHPStan\Analyser\LazyInternalScopeFactory
@@ -339,37 +297,8 @@ services:
 			skipResultCacheIfOlderThanDays: %resultCacheSkipIfOlderThanDays%
 
 	-
-		class: PHPStan\Analyser\ResultCache\ResultCacheClearer
-		arguments:
-			cacheFilePath: %resultCachePath%
-
-	-
-		class: PHPStan\Cache\Cache
-		arguments:
-			storage: @cacheStorage
-
-	-
 		class: PHPStan\Collectors\Registry
 		factory: @PHPStan\Collectors\RegistryFactory::create
-
-	-
-		class: PHPStan\Command\FixerApplication
-		arguments:
-			analysedPaths: %analysedPaths%
-			currentWorkingDirectory: %currentWorkingDirectory%
-			proTmpDir: %pro.tmpDir%
-			dnsServers: %pro.dnsServers%
-			composerAutoloaderProjectPaths: %composerAutoloaderProjectPaths%
-			allConfigFiles: %allConfigFiles%
-			cliAutoloadFile: %cliAutoloadFile%
-			bootstrapFiles: %bootstrapFiles%
-			editorUrl: %editorUrl%
-			usedLevel: %usedLevel%
-
-	-
-		class: PHPStan\Dependency\ExportedNodeFetcher
-		arguments:
-			parser: @defaultAnalysisParser
 
 	-
 		class: PHPStan\DependencyInjection\Container
@@ -381,21 +310,6 @@ services:
 		class: PHPStan\DependencyInjection\Nette\NetteContainer
 		autowired:
 			- PHPStan\DependencyInjection\Nette\NetteContainer
-
-	-
-		class: PHPStan\DependencyInjection\DerivativeContainerFactory
-		arguments:
-			currentWorkingDirectory: %currentWorkingDirectory%
-			tempDirectory: %tempDir%
-			additionalConfigFiles: %additionalConfigFiles%
-			analysedPaths: %analysedPaths%
-			composerAutoloaderProjectPaths: %composerAutoloaderProjectPaths%
-			analysedPathsFromConfig: %analysedPathsFromConfig%
-			usedLevel: %usedLevel%
-			generateBaselineFile: %generateBaselineFile%
-			cliAutoloadFile: %cliAutoloadFile%
-			singleReflectionFile: %singleReflectionFile%
-			singleReflectionInsteadOfFile: %singleReflectionInsteadOfFile%
 
 	-
 		class: PHPStan\DependencyInjection\Reflection\ClassReflectionExtensionRegistryProvider
@@ -424,16 +338,6 @@ services:
 	-
 		class: PHPStan\DependencyInjection\Type\ParameterClosureTypeExtensionProvider
 		factory: PHPStan\DependencyInjection\Type\LazyParameterClosureTypeExtensionProvider
-
-	-
-		class: PHPStan\File\FileHelper
-		arguments:
-			workingDirectory: %currentWorkingDirectory%
-
-	-
-		class: PHPStan\File\FileExcluderFactory
-		arguments:
-			excludePaths: %excludePaths%
 
 	-
 		implement: PHPStan\File\FileExcluderRawFactory
@@ -968,28 +872,3 @@ services:
 		class: PHPStan\Command\ErrorFormatter\CiDetectedErrorFormatter
 		autowired:
 			- PHPStan\Command\ErrorFormatter\CiDetectedErrorFormatter
-
-	errorFormatter.checkstyle:
-		class: PHPStan\Command\ErrorFormatter\CheckstyleErrorFormatter
-		arguments:
-			relativePathHelper: @simpleRelativePathHelper
-
-	errorFormatter.junit:
-		class: PHPStan\Command\ErrorFormatter\JunitErrorFormatter
-		arguments:
-			relativePathHelper: @simpleRelativePathHelper
-
-	errorFormatter.gitlab:
-		class: PHPStan\Command\ErrorFormatter\GitlabErrorFormatter
-		arguments:
-			relativePathHelper: @simpleRelativePathHelper
-
-	errorFormatter.github:
-		class: PHPStan\Command\ErrorFormatter\GithubErrorFormatter
-		arguments:
-			relativePathHelper: @simpleRelativePathHelper
-
-	errorFormatter.teamcity:
-		class: PHPStan\Command\ErrorFormatter\TeamcityErrorFormatter
-		arguments:
-			relativePathHelper: @simpleRelativePathHelper

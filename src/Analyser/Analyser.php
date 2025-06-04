@@ -5,6 +5,8 @@ namespace PHPStan\Analyser;
 use Closure;
 use PHPStan\Collectors\CollectedData;
 use PHPStan\Collectors\Registry as CollectorRegistry;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Rules\Registry as RuleRegistry;
 use Throwable;
 use function array_fill_keys;
@@ -15,6 +17,7 @@ use function memory_get_peak_usage;
 /**
  * @phpstan-import-type CollectorData from CollectedData
  */
+#[AutowiredService]
 final class Analyser
 {
 
@@ -23,6 +26,7 @@ final class Analyser
 		private RuleRegistry $ruleRegistry,
 		private CollectorRegistry $collectorRegistry,
 		private NodeScopeResolver $nodeScopeResolver,
+		#[AutowiredParameter]
 		private int $internalErrorsCountLimit,
 	)
 	{

@@ -6,6 +6,8 @@ use PHPStan\AnalysedCodeException;
 use PHPStan\BetterReflection\NodeCompiler\Exception\UnableToCompileNode;
 use PHPStan\BetterReflection\Reflection\Exception\CircularReference;
 use PHPStan\BetterReflection\Reflector\Exception\IdentifierNotFound;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Node\CollectedDataNode;
 use PHPStan\Rules\Registry as RuleRegistry;
 use Throwable;
@@ -14,6 +16,7 @@ use function count;
 use function get_class;
 use function sprintf;
 
+#[AutowiredService]
 final class AnalyserResultFinalizer
 {
 
@@ -23,6 +26,7 @@ final class AnalyserResultFinalizer
 		private RuleErrorTransformer $ruleErrorTransformer,
 		private ScopeFactory $scopeFactory,
 		private LocalIgnoresProcessor $localIgnoresProcessor,
+		#[AutowiredParameter]
 		private bool $reportUnmatchedIgnoredErrors,
 	)
 	{

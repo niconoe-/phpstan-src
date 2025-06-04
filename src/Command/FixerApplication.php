@@ -12,6 +12,8 @@ use Nette\Utils\Json;
 use Phar;
 use PHPStan\Analyser\Ignore\IgnoredErrorHelper;
 use PHPStan\Analyser\InternalError;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\File\FileMonitor;
 use PHPStan\File\FileMonitorResult;
 use PHPStan\File\FileReader;
@@ -64,6 +66,7 @@ use const PHP_BINARY;
 use const PHP_URL_PORT;
 use const PHP_VERSION_ID;
 
+#[AutowiredService]
 final class FixerApplication
 {
 
@@ -83,15 +86,25 @@ final class FixerApplication
 		private FileMonitor $fileMonitor,
 		private IgnoredErrorHelper $ignoredErrorHelper,
 		private StubFilesProvider $stubFilesProvider,
+		#[AutowiredParameter]
 		private array $analysedPaths,
+		#[AutowiredParameter]
 		private string $currentWorkingDirectory,
+		#[AutowiredParameter(ref: '%pro.tmpDir%')]
 		private string $proTmpDir,
+		#[AutowiredParameter(ref: '%pro.dnsServers%')]
 		private array $dnsServers,
+		#[AutowiredParameter]
 		private array $composerAutoloaderProjectPaths,
+		#[AutowiredParameter]
 		private array $allConfigFiles,
+		#[AutowiredParameter]
 		private ?string $cliAutoloadFile,
+		#[AutowiredParameter]
 		private array $bootstrapFiles,
+		#[AutowiredParameter]
 		private ?string $editorUrl,
+		#[AutowiredParameter]
 		private string $usedLevel,
 	)
 	{

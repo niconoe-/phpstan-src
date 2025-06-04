@@ -10,6 +10,8 @@ use PHPStan\BetterReflection\Reflector\Exception\IdentifierNotFound;
 use PHPStan\Collectors\CollectedData;
 use PHPStan\Collectors\Registry as CollectorRegistry;
 use PHPStan\Dependency\DependencyResolver;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Node\FileNode;
 use PHPStan\Node\InClassNode;
 use PHPStan\Node\InTraitNode;
@@ -41,6 +43,7 @@ use const E_WARNING;
 /**
  * @phpstan-import-type CollectorData from CollectedData
  */
+#[AutowiredService]
 final class FileAnalyser
 {
 
@@ -53,6 +56,7 @@ final class FileAnalyser
 	public function __construct(
 		private ScopeFactory $scopeFactory,
 		private NodeScopeResolver $nodeScopeResolver,
+		#[AutowiredParameter(ref: '@defaultAnalysisParser')]
 		private Parser $parser,
 		private DependencyResolver $dependencyResolver,
 		private IgnoreErrorExtensionProvider $ignoreErrorExtensionProvider,

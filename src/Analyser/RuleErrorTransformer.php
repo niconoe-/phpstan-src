@@ -8,6 +8,8 @@ use PhpParser\Node\Stmt;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\CloningVisitor;
 use PhpParser\Parser;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\File\FileReader;
 use PHPStan\Fixable\PhpPrinter;
 use PHPStan\Fixable\PhpPrinterIndentationDetectorVisitor;
@@ -29,12 +31,14 @@ use function get_class;
 use function sha1;
 use function str_repeat;
 
+#[AutowiredService]
 final class RuleErrorTransformer
 {
 
 	private Differ $differ;
 
 	public function __construct(
+		#[AutowiredParameter(ref: '@currentPhpVersionPhpParser')]
 		private Parser $parser,
 	)
 	{
