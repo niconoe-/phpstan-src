@@ -367,43 +367,7 @@ services:
 		autowired: false
 
 	-
-		class: PHPStan\File\FileMonitor
-		arguments:
-			analyseFileFinder: @fileFinderAnalyse
-			scanFileFinder: @fileFinderScan
-			analysedPaths: %analysedPaths%
-			analysedPathsFromConfig: %analysedPathsFromConfig%
-			scanFiles: %scanFiles%
-			scanDirectories: %scanDirectories%
-
-	-
-		class: PHPStan\Parallel\ParallelAnalyser
-		arguments:
-			internalErrorsCountLimit: %internalErrorsCountLimit%
-			processTimeout: %parallel.processTimeout%
-			decoderBufferSize: %parallel.buffer%
-
-	-
-		class: PHPStan\Parallel\Scheduler
-		arguments:
-			jobSize: %parallel.jobSize%
-			maximumNumberOfProcesses: %parallel.maximumNumberOfProcesses%
-			minimumNumberOfJobsPerProcess: %parallel.minimumNumberOfJobsPerProcess%
-		tags:
-			- phpstan.diagnoseExtension
-
-	-
 		implement: PHPStan\Reflection\FunctionReflectionFactory
-		arguments:
-			parser: @defaultAnalysisParser
-
-	-
-		class: PHPStan\Reflection\InitializerExprTypeResolver
-		arguments:
-			usePathConstantsAsConstantString: %usePathConstantsAsConstantString%
-
-	-
-		class: PHPStan\Reflection\BetterReflection\SourceLocator\FileNodesFetcher
 		arguments:
 			parser: @defaultAnalysisParser
 

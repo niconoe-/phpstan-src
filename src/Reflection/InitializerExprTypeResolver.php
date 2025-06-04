@@ -20,6 +20,8 @@ use PhpParser\Node\Scalar\MagicConst\Line;
 use PhpParser\Node\Scalar\String_;
 use PHPStan\Analyser\ConstantResolver;
 use PHPStan\Analyser\OutOfClassScope;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\DependencyInjection\Type\OperatorTypeSpecifyingExtensionRegistryProvider;
 use PHPStan\Node\Expr\TypeExpr;
 use PHPStan\Php\PhpVersion;
@@ -91,6 +93,7 @@ use function sprintf;
 use function strtolower;
 use const INF;
 
+#[AutowiredService]
 final class InitializerExprTypeResolver
 {
 
@@ -105,6 +108,7 @@ final class InitializerExprTypeResolver
 		private PhpVersion $phpVersion,
 		private OperatorTypeSpecifyingExtensionRegistryProvider $operatorTypeSpecifyingExtensionRegistryProvider,
 		private OversizedArrayBuilder $oversizedArrayBuilder,
+		#[AutowiredParameter]
 		private bool $usePathConstantsAsConstantString,
 	)
 	{

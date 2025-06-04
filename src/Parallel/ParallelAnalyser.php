@@ -10,6 +10,8 @@ use PHPStan\Analyser\AnalyserResult;
 use PHPStan\Analyser\Error;
 use PHPStan\Analyser\InternalError;
 use PHPStan\Dependency\RootExportedNode;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Process\ProcessHelper;
 use React\EventLoop\LoopInterface;
 use React\Promise\Deferred;
@@ -33,6 +35,7 @@ use function sprintf;
 use function str_contains;
 use const PHP_URL_PORT;
 
+#[AutowiredService]
 final class ParallelAnalyser
 {
 
@@ -43,8 +46,11 @@ final class ParallelAnalyser
 	private ProcessPool $processPool;
 
 	public function __construct(
+		#[AutowiredParameter]
 		private int $internalErrorsCountLimit,
+		#[AutowiredParameter(ref: '%parallel.processTimeout%')]
 		float $processTimeout,
+		#[AutowiredParameter(ref: '%parallel.buffer%')]
 		private int $decoderBufferSize,
 	)
 	{
