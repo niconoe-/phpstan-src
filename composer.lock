@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "749053a0ff72c9389eab76807faadf37",
+    "content-hash": "f63d6c4cfb3e491feae8088fedfd3cc2",
     "packages": [
         {
             "name": "clue/ndjson-react",
@@ -2258,16 +2258,16 @@
         },
         {
             "name": "ondrejmirtes/composer-attribute-collector",
-            "version": "1.1.0",
+            "version": "1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ondrejmirtes/composer-attribute-collector.git",
-                "reference": "bc4ca66239df03c35912807aa92435fe1e4e3323"
+                "reference": "48124ab07a5e19b7bd0ad20c791a8ff0bf3feab9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ondrejmirtes/composer-attribute-collector/zipball/bc4ca66239df03c35912807aa92435fe1e4e3323",
-                "reference": "bc4ca66239df03c35912807aa92435fe1e4e3323",
+                "url": "https://api.github.com/repos/ondrejmirtes/composer-attribute-collector/zipball/48124ab07a5e19b7bd0ad20c791a8ff0bf3feab9",
+                "reference": "48124ab07a5e19b7bd0ad20c791a8ff0bf3feab9",
                 "shasum": ""
             },
             "require": {
@@ -2316,9 +2316,9 @@
             ],
             "description": "A convenient and near zero-cost way to retrieve targets of PHP 8 attributes",
             "support": {
-                "source": "https://github.com/ondrejmirtes/composer-attribute-collector/tree/1.1.0"
+                "source": "https://github.com/ondrejmirtes/composer-attribute-collector/tree/1.1.1"
             },
-            "time": "2025-06-03T09:32:38+00:00"
+            "time": "2025-06-05T19:41:17+00:00"
         },
         {
             "name": "ondrejmirtes/php-merge",
