@@ -542,11 +542,6 @@ services:
 		autowired: false
 
 	-
-		implement: PHPStan\Reflection\BetterReflection\BetterReflectionProviderFactory
-		arguments:
-			universalObjectCratesClasses: %universalObjectCratesClasses%
-
-	-
 		factory: @PHPStan\Reflection\BetterReflection\SourceStubber\PhpStormStubsSourceStubberFactory::create()
 		autowired:
 			- PHPStan\BetterReflection\SourceLocator\SourceStubber\PhpStormStubsSourceStubber
