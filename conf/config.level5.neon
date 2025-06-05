@@ -15,26 +15,4 @@ autowiredAttributeServices:
 
 services:
 	-
-		class: PHPStan\Rules\Functions\RandomIntParametersRule
-		arguments:
-			reportMaybes: %reportMaybes%
-		tags:
-			- phpstan.rules.rule
-
-	-
-		class: PHPStan\Rules\Functions\ArrayFilterRule
-		arguments:
-			treatPhpDocTypesAsCertain: %treatPhpDocTypesAsCertain%
-			treatPhpDocTypesAsCertainTip: %tips.treatPhpDocTypesAsCertain%
-		tags:
-			- phpstan.rules.rule
-
-	-
-		class: PHPStan\Rules\Functions\ArrayValuesRule
-		arguments:
-			treatPhpDocTypesAsCertain: %treatPhpDocTypesAsCertain%
-			treatPhpDocTypesAsCertainTip: %tips.treatPhpDocTypesAsCertain%
-		tags:
-			- phpstan.rules.rule
-	-
 		class: PHPStan\Rules\Functions\ParameterCastableToNumberRule
