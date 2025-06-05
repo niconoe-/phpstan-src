@@ -245,18 +245,6 @@ services:
 		class: PHPStan\Rules\Properties\UninitializedPropertyRule
 
 	-
-		class: PHPStan\Php\PhpVersion
-		factory: @PHPStan\Php\PhpVersionFactory::create
-
-	-
-		class: PHPStan\Php\PhpVersionFactory
-		factory: @PHPStan\Php\PhpVersionFactoryFactory::create
-
-	-
-		class: PHPStan\Analyser\ConstantResolver
-		factory: @PHPStan\Analyser\ConstantResolverFactory::create()
-
-	-
 		implement: PHPStan\Analyser\ResultCache\ResultCacheManagerFactory
 		arguments:
 			scanFileFinder: @fileFinderScan
@@ -272,10 +260,6 @@ services:
 			checkDependenciesOfProjectExtensionFiles: %resultCacheChecksProjectExtensionFilesDependencies%
 			parametersNotInvalidatingCache: %parametersNotInvalidatingCache%
 			skipResultCacheIfOlderThanDays: %resultCacheSkipIfOlderThanDays%
-
-	-
-		class: PHPStan\Collectors\Registry
-		factory: @PHPStan\Collectors\RegistryFactory::create
 
 	-
 		implement: PHPStan\File\FileExcluderRawFactory
@@ -295,14 +279,6 @@ services:
 		implement: PHPStan\Reflection\Php\PhpMethodReflectionFactory
 		arguments:
 			parser: @defaultAnalysisParser
-
-	-
-		class: PHPStan\Reflection\SignatureMap\SignatureMapProvider
-		factory: @PHPStan\Reflection\SignatureMap\SignatureMapProviderFactory::create()
-
-	typeSpecifier:
-		class: PHPStan\Analyser\TypeSpecifier
-		factory: @typeSpecifierFactory::create
 
 	simpleRelativePathHelper:
 		class: PHPStan\File\RelativePathHelper

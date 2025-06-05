@@ -19,6 +19,7 @@ use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Expr\StaticPropertyFetch;
 use PhpParser\Node\Name;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Node\Expr\AlwaysRememberedExpr;
 use PHPStan\Node\IssetExpr;
 use PHPStan\Node\Printer\ExprPrinter;
@@ -86,6 +87,7 @@ use function strtolower;
 use function substr;
 use const COUNT_NORMAL;
 
+#[AutowiredService(name: 'typeSpecifier', factory: '@typeSpecifierFactory::create')]
 final class TypeSpecifier
 {
 

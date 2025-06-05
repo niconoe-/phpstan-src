@@ -3,6 +3,7 @@
 namespace PHPStan\Analyser;
 
 use PhpParser\Node\Name;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Php\ComposerPhpVersionFactory;
 use PHPStan\Php\PhpVersion;
 use PHPStan\Reflection\NamespaceAnswerer;
@@ -31,6 +32,7 @@ use const INF;
 use const NAN;
 use const PHP_INT_SIZE;
 
+#[AutowiredService(factory: '@PHPStan\Analyser\ConstantResolverFactory::create')]
 final class ConstantResolver
 {
 

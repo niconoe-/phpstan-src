@@ -5,6 +5,7 @@ namespace PHPStan\DependencyInjection;
 use Nette\DI\CompilerExtension;
 use Nette\DI\Definitions\Reference;
 use Nette\DI\Definitions\ServiceDefinition;
+use Nette\DI\Definitions\Statement;
 use Nette\DI\Helpers;
 use Nette\Schema\Expect;
 use Nette\Schema\Schema;
@@ -15,6 +16,7 @@ use PHPStan\Collectors\RegistryFactory;
 use PHPStan\Rules\LazyRegistry;
 use ReflectionClass;
 use stdClass;
+use function explode;
 use function strtolower;
 use function substr;
 
@@ -42,6 +44,11 @@ final class AutowiredAttributeServicesExtension extends CompilerExtension
 			$definition = $builder->addDefinition($attribute->name)
 				->setType($class->name)
 				->setAutowired($attribute->as);
+
+			if ($attribute->factory !== null) {
+				[$ref, $method] = explode('::', $attribute->factory);
+				$definition->setFactory(new Statement([new Reference(substr($ref, 1)), $method]));
+			}
 
 			$this->processParameters($class->name, $definition, $autowiredParameters);
 
