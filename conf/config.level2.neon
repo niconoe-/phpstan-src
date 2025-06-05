@@ -18,49 +18,6 @@ conditionalTags:
 
 services:
 	-
-		class: PHPStan\Rules\Classes\MixinRule
-		tags:
-			- phpstan.rules.rule
-
-	-
-		class: PHPStan\Rules\PhpDoc\RequireExtendsCheck
-		arguments:
-			checkClassCaseSensitivity: %checkClassCaseSensitivity%
-			discoveringSymbolsTip: %tips.discoveringSymbols%
-
-	-
-		class: PHPStan\Rules\PhpDoc\RequireImplementsDefinitionTraitRule
-		arguments:
-			checkClassCaseSensitivity: %checkClassCaseSensitivity%
-			discoveringSymbolsTip: %tips.discoveringSymbols%
-		tags:
-			- phpstan.rules.rule
-
-	-
-		class: PHPStan\Rules\Functions\CallCallablesRule
-		arguments:
-			reportMaybes: %reportMaybes%
-		tags:
-			- phpstan.rules.rule
-
-	-
-		class: PHPStan\Rules\PhpDoc\InvalidPhpDocTagValueRule
-		tags:
-			- phpstan.rules.rule
-	-
-		class: PHPStan\Rules\PhpDoc\InvalidPhpDocVarTagTypeRule
-		arguments:
-			checkClassCaseSensitivity: %checkClassCaseSensitivity%
-			checkMissingVarTagTypehint: %checkMissingVarTagTypehint%
-			discoveringSymbolsTip: %tips.discoveringSymbols%
-		tags:
-			- phpstan.rules.rule
-	-
-		class: PHPStan\Rules\PhpDoc\InvalidPHPStanDocTagRule
-		tags:
-			- phpstan.rules.rule
-
-	-
 		class: PHPStan\Rules\InternalTag\RestrictedInternalPropertyUsageExtension
 
 	-

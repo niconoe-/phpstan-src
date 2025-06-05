@@ -10,11 +10,3 @@ parameters:
 autowiredAttributeServices:
 	# registers rules with #[RegisteredRule] attribute
 	level: 1
-
-services:
-	-
-		class: PHPStan\Rules\Constants\ConstantRule
-		tags:
-			- phpstan.rules.rule
-		arguments:
-			discoveringSymbolsTip: %tips.discoveringSymbols%
