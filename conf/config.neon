@@ -415,33 +415,6 @@ services:
 		autowired:
 			- PHPStan\Rules\Exceptions\DefaultExceptionTypeResolver
 
-	-
-		class: PHPStan\Rules\Properties\AccessPropertiesCheck
-		arguments:
-			reportMagicProperties: %reportMagicProperties%
-			checkDynamicProperties: %checkDynamicProperties%
-
-	-
-		class: PHPStan\Rules\RuleLevelHelper
-		arguments:
-			checkNullables: %checkNullables%
-			checkThisOnly: %checkThisOnly%
-			checkUnionTypes: %checkUnionTypes%
-			checkExplicitMixed: %checkExplicitMixed%
-			checkImplicitMixed: %checkImplicitMixed%
-			checkBenevolentUnionTypes: %checkBenevolentUnionTypes%
-			discoveringSymbolsTip: %tips.discoveringSymbols%
-
-	-
-		class: PHPStan\Rules\UnusedFunctionParametersCheck
-		arguments:
-			reportExactLine: %featureToggles.reportPreciseLineForUnusedFunctionParameter%
-
-	-
-		class: PHPStan\Type\FileTypeMapper
-		arguments:
-			phpParser: @defaultAnalysisParser
-
 	stubFileTypeMapper:
 		class: PHPStan\Type\FileTypeMapper
 		arguments:
@@ -457,33 +430,6 @@ services:
 	-
 		class: PHPStan\Type\TypeAliasResolverProvider
 		factory: PHPStan\Type\LazyTypeAliasResolverProvider
-
-	-
-		class: PHPStan\Type\Php\CompactFunctionReturnTypeExtension
-		tags:
-			- phpstan.broker.dynamicFunctionReturnTypeExtension
-		arguments:
-			checkMaybeUndefinedVariables: %checkMaybeUndefinedVariables%
-
-	-
-		class: PHPStan\Type\Php\VersionCompareFunctionDynamicReturnTypeExtension
-		arguments:
-			configPhpVersion: %phpVersion%
-		tags:
-			- phpstan.broker.dynamicFunctionReturnTypeExtension
-
-	-
-		class: PHPStan\Type\Php\TypeSpecifyingFunctionsDynamicReturnTypeExtension
-		arguments:
-			treatPhpDocTypesAsCertain: %treatPhpDocTypesAsCertain%
-			universalObjectCratesClasses: %universalObjectCratesClasses%
-		tags:
-			- phpstan.broker.dynamicFunctionReturnTypeExtension
-
-	-
-		class: PHPStan\Type\ClosureTypeFactory
-		arguments:
-			parser: @currentPhpVersionPhpParser
 
 	exceptionTypeResolver:
 		class: PHPStan\Rules\Exceptions\ExceptionTypeResolver
@@ -571,18 +517,7 @@ services:
 		autowired:
 			- PHPStan\Rules\Registry
 
-	stubPhpDocProvider:
-		class: PHPStan\PhpDoc\StubPhpDocProvider
-		arguments:
-			parser: @stubParser
-			fileTypeMapper: @stubFileTypeMapper
-
 	# Reflection providers
-
-	reflectionProviderFactory:
-		class: PHPStan\Reflection\ReflectionProvider\ReflectionProviderFactory
-		arguments:
-			staticReflectionProvider: @betterReflectionProvider
 
 	reflectionProvider:
 		factory: @PHPStan\Reflection\ReflectionProvider\ReflectionProviderFactory::create
@@ -607,27 +542,9 @@ services:
 		autowired: false
 
 	-
-		class: PHPStan\Reflection\BetterReflection\BetterReflectionSourceLocatorFactory
-		arguments:
-			parser: @phpParserDecorator
-			php8Parser: @php8PhpParser
-			scanFiles: %scanFiles%
-			scanDirectories: %scanDirectories%
-			analysedPaths: %analysedPaths%
-			composerAutoloaderProjectPaths: %composerAutoloaderProjectPaths%
-			analysedPathsFromConfig: %analysedPathsFromConfig%
-			playgroundMode: %sourceLocatorPlaygroundMode%
-			singleReflectionFile: %singleReflectionFile%
-
-	-
 		implement: PHPStan\Reflection\BetterReflection\BetterReflectionProviderFactory
 		arguments:
 			universalObjectCratesClasses: %universalObjectCratesClasses%
-
-	-
-		class: PHPStan\Reflection\BetterReflection\SourceStubber\PhpStormStubsSourceStubberFactory
-		arguments:
-			phpParser: @php8PhpParser
 
 	-
 		factory: @PHPStan\Reflection\BetterReflection\SourceStubber\PhpStormStubsSourceStubberFactory::create()

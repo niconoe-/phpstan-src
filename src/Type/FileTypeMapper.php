@@ -7,6 +7,8 @@ use PhpParser\Node;
 use PHPStan\Analyser\NameScope;
 use PHPStan\BetterReflection\Util\GetLastDocComment;
 use PHPStan\Broker\AnonymousClassNameHelper;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\File\FileHelper;
 use PHPStan\Parser\Parser;
 use PHPStan\PhpDoc\NameScopeAlreadyBeingCreatedException;
@@ -39,6 +41,7 @@ use function sprintf;
 use function str_contains;
 use function strtolower;
 
+#[AutowiredService]
 final class FileTypeMapper
 {
 
@@ -60,6 +63,7 @@ final class FileTypeMapper
 
 	public function __construct(
 		private ReflectionProviderProvider $reflectionProviderProvider,
+		#[AutowiredParameter(ref: '@defaultAnalysisParser')]
 		private Parser $phpParser,
 		private PhpDocStringResolver $phpDocStringResolver,
 		private PhpDocNodeResolver $phpDocNodeResolver,
