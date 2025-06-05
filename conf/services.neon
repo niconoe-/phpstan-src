@@ -160,6 +160,13 @@ services:
 	-
 		class: PHPStan\Rules\Properties\UninitializedPropertyRule
 
+	-
+		# checked as part of OverridingMethodRule
+		class: PHPStan\Rules\Methods\MethodSignatureRule
+		arguments:
+			reportMaybes: %reportMaybesInMethodSignatures%
+			reportStatic: %reportStaticMethodSignatures%
+
 	betterReflectionSourceLocator:
 		class: PHPStan\BetterReflection\SourceLocator\Type\SourceLocator
 		factory: @PHPStan\Reflection\BetterReflection\BetterReflectionSourceLocatorFactory::create
