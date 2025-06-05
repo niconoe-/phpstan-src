@@ -232,6 +232,17 @@ conditionalTags:
 		phpstan.rules.rule: %checkUninitializedProperties%
 
 services:
+	-
+		class: PHPStan\Rules\Exceptions\MissingCheckedExceptionInFunctionThrowsRule
+
+	-
+		class: PHPStan\Rules\Exceptions\MissingCheckedExceptionInMethodThrowsRule
+
+	-
+		class: PHPStan\Rules\Exceptions\MissingCheckedExceptionInPropertyHookThrowsRule
+
+	-
+		class: PHPStan\Rules\Properties\UninitializedPropertyRule
 
 	-
 		class: PHPStan\Php\PhpVersion

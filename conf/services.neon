@@ -149,18 +149,6 @@ services:
 			dateTimeClass: DateTimeImmutable
 
 	-
-		class: PHPStan\Rules\Exceptions\MissingCheckedExceptionInFunctionThrowsRule
-
-	-
-		class: PHPStan\Rules\Exceptions\MissingCheckedExceptionInMethodThrowsRule
-
-	-
-		class: PHPStan\Rules\Exceptions\MissingCheckedExceptionInPropertyHookThrowsRule
-
-	-
-		class: PHPStan\Rules\Properties\UninitializedPropertyRule
-
-	-
 		# checked as part of OverridingMethodRule
 		class: PHPStan\Rules\Methods\MethodSignatureRule
 		arguments:
