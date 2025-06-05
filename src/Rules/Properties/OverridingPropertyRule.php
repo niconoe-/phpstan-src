@@ -28,7 +28,7 @@ final class OverridingPropertyRule implements Rule
 		private PhpVersion $phpVersion,
 		#[AutowiredParameter]
 		private bool $checkPhpDocMethodSignatures,
-		#[AutowiredParameter]
+		#[AutowiredParameter(ref: '%reportMaybesInPropertyPhpDocTypes%')]
 		private bool $reportMaybes,
 	)
 	{
