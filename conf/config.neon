@@ -253,10 +253,6 @@ services:
 		factory: @PHPStan\Php\PhpVersionFactoryFactory::create
 
 	-
-		class: PHPStan\PhpDoc\TypeNodeResolverExtensionRegistryProvider
-		factory: PHPStan\PhpDoc\LazyTypeNodeResolverExtensionRegistryProvider
-
-	-
 		class: PHPStan\Analyser\ConstantResolver
 		factory: @PHPStan\Analyser\ConstantResolverFactory::create()
 
@@ -280,12 +276,6 @@ services:
 	-
 		class: PHPStan\Collectors\Registry
 		factory: @PHPStan\Collectors\RegistryFactory::create
-
-	-
-		class: PHPStan\DependencyInjection\Container
-		factory: PHPStan\DependencyInjection\MemoizingContainer
-		arguments:
-			originalContainer: @PHPStan\DependencyInjection\Nette\NetteContainer
 
 	-
 		class: PHPStan\DependencyInjection\Reflection\ClassReflectionExtensionRegistryProvider
