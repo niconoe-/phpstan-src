@@ -213,16 +213,6 @@ return [
 			return str_replace(sprintf('%s\\PropertyHookType', $prefix), 'PropertyHookType', $content);
 		},
 		function (string $filePath, string $prefix, string $content): string {
-			if (
-				$filePath !== 'vendor/nette/utils/src/Utils/Strings.php'
-				&& $filePath !== 'vendor/nette/utils/src/Utils/Arrays.php'
-			) {
-				return $content;
-			}
-
-			return str_replace('#[Language(\'RegExp\')] ', '', $content);
-		},
-		function (string $filePath, string $prefix, string $content): string {
 			if (strpos($filePath, 'src/') !== 0) {
 				return $content;
 			}
