@@ -16,7 +16,11 @@ use Attribute;
 final class AutowiredService
 {
 
-	public function __construct(public ?string $name = null)
+	/**
+	 * @param string|null $name
+	 * @param true|list<class-string>|class-string $as
+	 */
+	public function __construct(public ?string $name = null, public bool|array|string $as = true)
 	{
 	}
 

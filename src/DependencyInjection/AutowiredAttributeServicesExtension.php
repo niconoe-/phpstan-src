@@ -41,7 +41,7 @@ final class AutowiredAttributeServicesExtension extends CompilerExtension
 
 			$definition = $builder->addDefinition($attribute->name)
 				->setType($class->name)
-				->setAutowired();
+				->setAutowired($attribute->as);
 
 			$this->processParameters($class->name, $definition, $autowiredParameters);
 

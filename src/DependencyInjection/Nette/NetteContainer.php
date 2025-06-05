@@ -2,6 +2,7 @@
 
 namespace PHPStan\DependencyInjection\Nette;
 
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\DependencyInjection\Container;
 use PHPStan\DependencyInjection\MissingServiceException;
 use PHPStan\DependencyInjection\ParameterNotFoundException;
@@ -12,6 +13,7 @@ use function array_map;
 /**
  * @internal
  */
+#[AutowiredService(as: NetteContainer::class)]
 final class NetteContainer implements Container
 {
 
