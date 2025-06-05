@@ -2,7 +2,6 @@ parameters:
 	customRulesetUsed: false
 
 rules:
-	- PHPStan\Rules\Api\ApiInstanceofRule
 	- PHPStan\Rules\Api\ApiInstanceofTypeRule
 	- PHPStan\Rules\Api\ApiInstantiationRule
 	- PHPStan\Rules\Api\ApiClassConstFetchRule
@@ -102,6 +101,10 @@ rules:
 	- PHPStan\Rules\Types\InvalidTypesInUnionRule
 	- PHPStan\Rules\Variables\UnsetRule
 	- PHPStan\Rules\Whitespace\FileWhitespaceRule
+
+autowiredAttributeServices:
+	# registers rules with #[RegisteredRule] attribute
+	level: 0
 
 conditionalTags:
 	PHPStan\Rules\InternalTag\RestrictedInternalClassConstantUsageExtension:

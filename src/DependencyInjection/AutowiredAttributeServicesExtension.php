@@ -6,25 +6,35 @@ use Nette\DI\CompilerExtension;
 use Nette\DI\Definitions\Reference;
 use Nette\DI\Definitions\ServiceDefinition;
 use Nette\DI\Helpers;
+use Nette\Schema\Expect;
+use Nette\Schema\Schema;
 use Nette\Utils\Strings;
 use olvlvl\ComposerAttributeCollector\Attributes;
 use olvlvl\ComposerAttributeCollector\TargetMethodParameter;
+use PHPStan\Rules\LazyRegistry;
 use ReflectionClass;
+use stdClass;
 use function strtolower;
 use function substr;
 
 final class AutowiredAttributeServicesExtension extends CompilerExtension
 {
 
+	public function getConfigSchema(): Schema
+	{
+		return Expect::structure([
+			'level' => Expect::int()->nullable()->required(),
+		]);
+	}
+
 	public function loadConfiguration(): void
 	{
 		require_once __DIR__ . '/../../vendor/attributes.php';
-		$autowiredServiceClasses = Attributes::findTargetClasses(AutowiredService::class);
 		$builder = $this->getContainerBuilder();
 
 		$autowiredParameters = Attributes::findTargetMethodParameters(AutowiredParameter::class);
 
-		foreach ($autowiredServiceClasses as $class) {
+		foreach (Attributes::findTargetClasses(AutowiredService::class) as $class) {
 			$reflection = new ReflectionClass($class->name);
 			$attribute = $class->attribute;
 
@@ -41,6 +51,24 @@ final class AutowiredAttributeServicesExtension extends CompilerExtension
 
 				$definition->addTag($tag);
 			}
+		}
+
+		/** @var stdClass&object{level: int|null} $config */
+		$config = $this->getConfig();
+		if ($config->level === null) {
+			return;
+		}
+
+		foreach (Attributes::findTargetClasses(RegisteredRule::class) as $class) {
+			$attribute = $class->attribute;
+			if ($attribute->level > $config->level) {
+				continue;
+			}
+
+			$builder->addDefinition(null)
+				->setFactory($class->name)
+				->setAutowired($class->name)
+				->addTag(LazyRegistry::RULE_TAG);
 		}
 	}
 

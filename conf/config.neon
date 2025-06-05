@@ -218,6 +218,9 @@ extensions:
 	autowiredAttributeServices: PHPStan\DependencyInjection\AutowiredAttributeServicesExtension
 	validateServiceTags: PHPStan\DependencyInjection\ValidateServiceTagsExtension
 
+autowiredAttributeServices:
+	level: null
+
 conditionalTags:
 	PHPStan\Rules\Exceptions\MissingCheckedExceptionInFunctionThrowsRule:
 		phpstan.rules.rule: %exceptions.check.missingCheckedExceptionInThrows%

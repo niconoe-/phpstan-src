@@ -67,6 +67,10 @@ rules:
 	- PHPStan\Rules\Pure\PureFunctionRule
 	- PHPStan\Rules\Pure\PureMethodRule
 
+autowiredAttributeServices:
+	# registers rules with #[RegisteredRule] attribute
+	level: 2
+
 conditionalTags:
 	PHPStan\Rules\InternalTag\RestrictedInternalPropertyUsageExtension:
 		phpstan.restrictedPropertyUsageExtension: %featureToggles.internalTag%

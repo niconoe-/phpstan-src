@@ -26,6 +26,10 @@ rules:
 	- PHPStan\Rules\TooWideTypehints\TooWidePropertyTypeRule
 	- PHPStan\Rules\Traits\NotAnalysedTraitRule
 
+autowiredAttributeServices:
+	# registers rules with #[RegisteredRule] attribute
+	level: 4
+
 conditionalTags:
 	PHPStan\Rules\Exceptions\TooWideFunctionThrowTypeRule:
 		phpstan.rules.rule: %exceptions.check.tooWideThrowType%

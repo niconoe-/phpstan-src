@@ -27,6 +27,10 @@ rules:
 	- PHPStan\Rules\Variables\ParameterOutExecutionEndTypeRule
 	- PHPStan\Rules\Variables\VariableCloningRule
 
+autowiredAttributeServices:
+	# registers rules with #[RegisteredRule] attribute
+	level: 3
+
 parameters:
 	checkPhpDocMethodSignatures: true
 

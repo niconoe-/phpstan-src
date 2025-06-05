@@ -17,6 +17,10 @@ rules:
 	- PHPStan\Rules\Functions\SortParameterCastableToStringRule
 	- PHPStan\Rules\Regexp\RegularExpressionQuotingRule
 
+autowiredAttributeServices:
+	# registers rules with #[RegisteredRule] attribute
+	level: 5
+
 services:
 	-
 		class: PHPStan\Rules\Functions\RandomIntParametersRule
