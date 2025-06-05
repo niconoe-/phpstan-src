@@ -5,6 +5,7 @@ namespace PHPStan\Rules\Traits;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\BetterReflection\Reflection\Adapter\ReflectionClassConstant;
+use PHPStan\DependencyInjection\RegisteredRule;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\InitializerExprContext;
 use PHPStan\Reflection\InitializerExprTypeResolver;
@@ -20,6 +21,7 @@ use function sprintf;
 /**
  * @implements Rule<Node\Stmt\ClassConst>
  */
+#[RegisteredRule(level: 0)]
 final class ConflictingTraitConstantsRule implements Rule
 {
 

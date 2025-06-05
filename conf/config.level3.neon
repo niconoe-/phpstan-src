@@ -1,32 +1,6 @@
 includes:
 	- config.level2.neon
 
-rules:
-	- PHPStan\Rules\Arrays\ArrayDestructuringRule
-	- PHPStan\Rules\Arrays\ArrayUnpackingRule
-	- PHPStan\Rules\Arrays\IterableInForeachRule
-	- PHPStan\Rules\Arrays\OffsetAccessAssignmentRule
-	- PHPStan\Rules\Arrays\OffsetAccessAssignOpRule
-	- PHPStan\Rules\Arrays\OffsetAccessValueAssignmentRule
-	- PHPStan\Rules\Arrays\UnpackIterableInArrayRule
-	- PHPStan\Rules\Exceptions\ThrowExprTypeRule
-	- PHPStan\Rules\Functions\ArrowFunctionReturnTypeRule
-	- PHPStan\Rules\Functions\ClosureReturnTypeRule
-	- PHPStan\Rules\Functions\ReturnTypeRule
-	- PHPStan\Rules\Generators\YieldTypeRule
-	- PHPStan\Rules\Methods\ReturnTypeRule
-	- PHPStan\Rules\Properties\DefaultValueTypesAssignedToPropertiesRule
-	- PHPStan\Rules\Properties\GetNonVirtualPropertyHookReadRule
-	- PHPStan\Rules\Properties\ReadOnlyPropertyAssignRule
-	- PHPStan\Rules\Properties\ReadOnlyByPhpDocPropertyAssignRule
-	- PHPStan\Rules\Properties\ReadOnlyPropertyAssignRefRule
-	- PHPStan\Rules\Properties\ReadOnlyByPhpDocPropertyAssignRefRule
-	- PHPStan\Rules\Properties\SetNonVirtualPropertyHookAssignRule
-	- PHPStan\Rules\Properties\TypesAssignedToPropertiesRule
-	- PHPStan\Rules\Variables\ParameterOutAssignedTypeRule
-	- PHPStan\Rules\Variables\ParameterOutExecutionEndTypeRule
-	- PHPStan\Rules\Variables\VariableCloningRule
-
 autowiredAttributeServices:
 	# registers rules with #[RegisteredRule] attribute
 	level: 3

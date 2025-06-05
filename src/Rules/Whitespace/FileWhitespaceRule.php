@@ -8,6 +8,7 @@ use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor;
 use PhpParser\NodeVisitorAbstract;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\RegisteredRule;
 use PHPStan\Node\FileNode;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
@@ -16,6 +17,7 @@ use function count;
 /**
  * @implements Rule<FileNode>
  */
+#[RegisteredRule(level: 0)]
 final class FileWhitespaceRule implements Rule
 {
 

@@ -9,14 +9,6 @@ conditionalTags:
 	PHPStan\Rules\Functions\ParameterCastableToNumberRule:
 		phpstan.rules.rule: %featureToggles.checkParameterCastableToNumberFunctions%
 
-rules:
-	- PHPStan\Rules\DateTimeInstantiationRule
-	- PHPStan\Rules\Functions\CallUserFuncRule
-	- PHPStan\Rules\Functions\ParameterCastableToStringRule
-	- PHPStan\Rules\Functions\ImplodeParameterCastableToStringRule
-	- PHPStan\Rules\Functions\SortParameterCastableToStringRule
-	- PHPStan\Rules\Regexp\RegularExpressionQuotingRule
-
 autowiredAttributeServices:
 	# registers rules with #[RegisteredRule] attribute
 	level: 5

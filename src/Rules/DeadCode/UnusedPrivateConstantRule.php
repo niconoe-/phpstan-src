@@ -4,6 +4,7 @@ namespace PHPStan\Rules\DeadCode;
 
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\RegisteredRule;
 use PHPStan\Node\ClassConstantsNode;
 use PHPStan\Rules\Constants\AlwaysUsedClassConstantsExtensionProvider;
 use PHPStan\Rules\Rule;
@@ -14,6 +15,7 @@ use function sprintf;
 /**
  * @implements Rule<ClassConstantsNode>
  */
+#[RegisteredRule(level: 4)]
 final class UnusedPrivateConstantRule implements Rule
 {
 

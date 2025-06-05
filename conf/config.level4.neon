@@ -1,31 +1,6 @@
 includes:
 	- config.level3.neon
 
-rules:
-	- PHPStan\Rules\Arrays\DeadForeachRule
-	- PHPStan\Rules\DeadCode\CallToConstructorStatementWithoutImpurePointsRule
-	- PHPStan\Rules\DeadCode\CallToFunctionStatementWithoutImpurePointsRule
-	- PHPStan\Rules\DeadCode\CallToMethodStatementWithoutImpurePointsRule
-	- PHPStan\Rules\DeadCode\CallToStaticMethodStatementWithoutImpurePointsRule
-	- PHPStan\Rules\DeadCode\NoopRule
-	- PHPStan\Rules\DeadCode\UnreachableStatementRule
-	- PHPStan\Rules\DeadCode\UnusedPrivateConstantRule
-	- PHPStan\Rules\DeadCode\UnusedPrivateMethodRule
-	- PHPStan\Rules\Exceptions\OverwrittenExitPointByFinallyRule
-	- PHPStan\Rules\Functions\CallToFunctionStatementWithoutSideEffectsRule
-	- PHPStan\Rules\Functions\UselessFunctionReturnValueRule
-	- PHPStan\Rules\Methods\CallToConstructorStatementWithoutSideEffectsRule
-	- PHPStan\Rules\Methods\CallToMethodStatementWithoutSideEffectsRule
-	- PHPStan\Rules\Methods\CallToStaticMethodStatementWithoutSideEffectsRule
-	- PHPStan\Rules\Methods\NullsafeMethodCallRule
-	- PHPStan\Rules\TooWideTypehints\TooWideArrowFunctionReturnTypehintRule
-	- PHPStan\Rules\TooWideTypehints\TooWideClosureReturnTypehintRule
-	- PHPStan\Rules\TooWideTypehints\TooWideFunctionReturnTypehintRule
-	- PHPStan\Rules\TooWideTypehints\TooWideFunctionParameterOutTypeRule
-	- PHPStan\Rules\TooWideTypehints\TooWideMethodParameterOutTypeRule
-	- PHPStan\Rules\TooWideTypehints\TooWidePropertyTypeRule
-	- PHPStan\Rules\Traits\NotAnalysedTraitRule
-
 autowiredAttributeServices:
 	# registers rules with #[RegisteredRule] attribute
 	level: 4
