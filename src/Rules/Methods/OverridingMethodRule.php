@@ -5,6 +5,8 @@ namespace PHPStan\Rules\Methods;
 use PhpParser\Node;
 use PhpParser\Node\Attribute;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\RegisteredRule;
 use PHPStan\Node\InClassMethodNode;
 use PHPStan\Php\PhpVersion;
 use PHPStan\Reflection\ClassReflection;
@@ -28,16 +30,19 @@ use function strtolower;
 /**
  * @implements Rule<InClassMethodNode>
  */
+#[RegisteredRule(level: 0)]
 final class OverridingMethodRule implements Rule
 {
 
 	public function __construct(
 		private PhpVersion $phpVersion,
 		private MethodSignatureRule $methodSignatureRule,
+		#[AutowiredParameter]
 		private bool $checkPhpDocMethodSignatures,
 		private MethodParameterComparisonHelper $methodParameterComparisonHelper,
 		private MethodVisibilityComparisonHelper $methodVisibilityComparisonHelper,
 		private PhpClassReflectionExtension $phpClassReflectionExtension,
+		#[AutowiredParameter]
 		private bool $checkMissingOverrideMethodAttribute,
 	)
 	{

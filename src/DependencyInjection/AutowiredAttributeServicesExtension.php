@@ -65,10 +65,12 @@ final class AutowiredAttributeServicesExtension extends CompilerExtension
 				continue;
 			}
 
-			$builder->addDefinition(null)
+			$definition = $builder->addDefinition(null)
 				->setFactory($class->name)
 				->setAutowired($class->name)
 				->addTag(LazyRegistry::RULE_TAG);
+
+			$this->processParameters($class->name, $definition, $autowiredParameters);
 		}
 	}
 
