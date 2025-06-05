@@ -4,9 +4,11 @@ namespace PHPStan\DependencyInjection;
 
 use Nette\DI\CompilerExtension;
 use Nette\DI\Definitions\Reference;
+use Nette\DI\Definitions\ServiceDefinition;
 use Nette\DI\Helpers;
 use Nette\Utils\Strings;
 use olvlvl\ComposerAttributeCollector\Attributes;
+use olvlvl\ComposerAttributeCollector\TargetMethodParameter;
 use ReflectionClass;
 use function strtolower;
 use function substr;
@@ -30,29 +32,7 @@ final class AutowiredAttributeServicesExtension extends CompilerExtension
 				->setType($class->name)
 				->setAutowired();
 
-			foreach ($autowiredParameters as $autowiredParameter) {
-				if (strtolower($autowiredParameter->method) !== '__construct') {
-					continue;
-				}
-				if (strtolower($autowiredParameter->class) !== strtolower($class->name)) {
-					continue;
-				}
-				$ref = $autowiredParameter->attribute->ref;
-				if ($ref === null) {
-					$argument = Helpers::expand(
-						'%' . Helpers::escape($autowiredParameter->name) . '%',
-						$builder->parameters,
-					);
-				} elseif (Strings::match($ref, '#^@[\w\\\\]+$#D') !== null) {
-					$argument = new Reference(substr($ref, 1));
-				} else {
-					$argument = Helpers::expand(
-						$ref,
-						$builder->parameters,
-					);
-				}
-				$definition->setArgument($autowiredParameter->name, $argument);
-			}
+			$this->processParameters($class->name, $definition, $autowiredParameters);
 
 			foreach (ValidateServiceTagsExtension::INTERFACE_TAG_MAPPING as $interface => $tag) {
 				if (!$reflection->implementsInterface($interface)) {
@@ -61,6 +41,38 @@ final class AutowiredAttributeServicesExtension extends CompilerExtension
 
 				$definition->addTag($tag);
 			}
+		}
+	}
+
+	/**
+	 * @param class-string $className
+	 * @param TargetMethodParameter<AutowiredParameter>[] $autowiredParameters
+	 */
+	private function processParameters(string $className, ServiceDefinition $definition, array $autowiredParameters): void
+	{
+		$builder = $this->getContainerBuilder();
+		foreach ($autowiredParameters as $autowiredParameter) {
+			if (strtolower($autowiredParameter->method) !== '__construct') {
+				continue;
+			}
+			if (strtolower($autowiredParameter->class) !== strtolower($className)) {
+				continue;
+			}
+			$ref = $autowiredParameter->attribute->ref;
+			if ($ref === null) {
+				$argument = Helpers::expand(
+					'%' . Helpers::escape($autowiredParameter->name) . '%',
+					$builder->parameters,
+				);
+			} elseif (Strings::match($ref, '#^@[\w\\\\]+$#D') !== null) {
+				$argument = new Reference(substr($ref, 1));
+			} else {
+				$argument = Helpers::expand(
+					$ref,
+					$builder->parameters,
+				);
+			}
+			$definition->setArgument($autowiredParameter->name, $argument);
 		}
 	}
 
