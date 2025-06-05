@@ -345,30 +345,6 @@ services:
 	-
 		implement: PHPStan\File\FileExcluderRawFactory
 
-	fileExcluderAnalyse:
-		class: PHPStan\File\FileExcluder
-		factory: @PHPStan\File\FileExcluderFactory::createAnalyseFileExcluder()
-		autowired: false
-
-	fileExcluderScan:
-		class: PHPStan\File\FileExcluder
-		factory: @PHPStan\File\FileExcluderFactory::createScanFileExcluder()
-		autowired: false
-
-	fileFinderAnalyse:
-		class: PHPStan\File\FileFinder
-		arguments:
-			fileExcluder: @fileExcluderAnalyse
-			fileExtensions: %fileExtensions%
-		autowired: false
-
-	fileFinderScan:
-		class: PHPStan\File\FileFinder
-		arguments:
-			fileExcluder: @fileExcluderScan
-			fileExtensions: %fileExtensions%
-		autowired: false
-
 	-
 		implement: PHPStan\Reflection\FunctionReflectionFactory
 		arguments:
@@ -415,12 +391,6 @@ services:
 		autowired:
 			- PHPStan\Rules\Exceptions\DefaultExceptionTypeResolver
 
-	stubFileTypeMapper:
-		class: PHPStan\Type\FileTypeMapper
-		arguments:
-			phpParser: @stubParser
-		autowired: false
-
 	-
 		class: PHPStan\Type\TypeAliasResolver
 		factory: PHPStan\Type\UsefulTypeAliasResolver
@@ -460,69 +430,12 @@ services:
 			parentDirectory: %currentWorkingDirectory%
 		autowired: false
 
-	cacheStorage:
-		class: PHPStan\Cache\FileCacheStorage
-		arguments:
-			directory: %tmpDir%/cache/PHPStan
-		autowired: no
-
-	currentPhpVersionRichParser:
-		class: PHPStan\Parser\RichParser
-		arguments:
-			parser: @currentPhpVersionPhpParser
-		autowired: no
-
-	currentPhpVersionSimpleParser:
-		class: PHPStan\Parser\CleaningParser
-		arguments:
-			wrappedParser: @currentPhpVersionSimpleDirectParser
-		autowired: no
-
-	currentPhpVersionSimpleDirectParser:
-		class: PHPStan\Parser\SimpleParser
-		arguments:
-			parser: @currentPhpVersionPhpParser
-		autowired: no
-
-	defaultAnalysisParser:
-		class: PHPStan\Parser\CachedParser
-		arguments:
-			originalParser: @pathRoutingParser
-			cachedNodesByStringCountMax: %cache.nodesByStringCountMax%
-		autowired: false
-
-	phpParserDecorator:
-		class: PHPStan\Parser\PhpParserDecorator
-		arguments:
-			wrappedParser: @defaultAnalysisParser
-		autowired: false
-
-	currentPhpVersionLexer:
-		class: PhpParser\Lexer
-		factory: @PHPStan\Parser\LexerFactory::create()
-		autowired: false
-
-	currentPhpVersionPhpParser:
-		factory: @currentPhpVersionPhpParserFactory::create()
-		autowired: false
-
-	currentPhpVersionPhpParserFactory:
-		class: PHPStan\Parser\PhpParserFactory
-		arguments:
-			lexer: @currentPhpVersionLexer
-		autowired: false
-
 	registry:
 		class: PHPStan\Rules\LazyRegistry
 		autowired:
 			- PHPStan\Rules\Registry
 
 	# Reflection providers
-
-	reflectionProvider:
-		factory: @PHPStan\Reflection\ReflectionProvider\ReflectionProviderFactory::create
-		autowired:
-			- PHPStan\Reflection\ReflectionProvider
 
 	betterReflectionReflector:
 		class: PHPStan\Reflection\BetterReflection\Reflector\MemoizingReflector
@@ -550,32 +463,6 @@ services:
 		factory: @PHPStan\Reflection\BetterReflection\SourceStubber\ReflectionSourceStubberFactory::create()
 		autowired:
 			- PHPStan\BetterReflection\SourceLocator\SourceStubber\ReflectionSourceStubber
-
-	php8Lexer:
-		class: PhpParser\Lexer\Emulative
-		factory: @PHPStan\Parser\LexerFactory::createEmulative()
-		autowired: false
-
-	php8PhpParser:
-		class: PhpParser\Parser\Php8
-		arguments:
-			lexer: @php8Lexer
-		autowired: false
-
-	php8Parser:
-		class: PHPStan\Parser\SimpleParser
-		arguments:
-			parser: @php8PhpParser
-		autowired: false
-
-	pathRoutingParser:
-		class: PHPStan\Parser\PathRoutingParser
-		arguments:
-			currentPhpVersionRichParser: @currentPhpVersionRichParser
-			currentPhpVersionSimpleParser: @currentPhpVersionSimpleParser
-			php8Parser: @php8Parser
-			singleReflectionFile: %singleReflectionFile%
-		autowired: false
 
 	freshStubParser:
 		class: PHPStan\Parser\StubParser
