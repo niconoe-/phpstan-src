@@ -11,6 +11,7 @@ use Nette\Schema\Schema;
 use Nette\Utils\Strings;
 use olvlvl\ComposerAttributeCollector\Attributes;
 use olvlvl\ComposerAttributeCollector\TargetMethodParameter;
+use PHPStan\Collectors\RegistryFactory;
 use PHPStan\Rules\LazyRegistry;
 use ReflectionClass;
 use stdClass;
@@ -69,6 +70,20 @@ final class AutowiredAttributeServicesExtension extends CompilerExtension
 				->setFactory($class->name)
 				->setAutowired($class->name)
 				->addTag(LazyRegistry::RULE_TAG);
+
+			$this->processParameters($class->name, $definition, $autowiredParameters);
+		}
+
+		foreach (Attributes::findTargetClasses(RegisteredCollector::class) as $class) {
+			$attribute = $class->attribute;
+			if ($attribute->level > $config->level) {
+				continue;
+			}
+
+			$definition = $builder->addDefinition(null)
+				->setFactory($class->name)
+				->setAutowired($class->name)
+				->addTag(RegistryFactory::COLLECTOR_TAG);
 
 			$this->processParameters($class->name, $definition, $autowiredParameters);
 		}
