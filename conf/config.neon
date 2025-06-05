@@ -278,34 +278,6 @@ services:
 		factory: @PHPStan\Collectors\RegistryFactory::create
 
 	-
-		class: PHPStan\DependencyInjection\Reflection\ClassReflectionExtensionRegistryProvider
-		factory: PHPStan\DependencyInjection\Reflection\LazyClassReflectionExtensionRegistryProvider
-
-	-
-		class: PHPStan\DependencyInjection\Type\DynamicReturnTypeExtensionRegistryProvider
-		factory: PHPStan\DependencyInjection\Type\LazyDynamicReturnTypeExtensionRegistryProvider
-
-	-
-		class: PHPStan\DependencyInjection\Type\ParameterOutTypeExtensionProvider
-		factory: PHPStan\DependencyInjection\Type\LazyParameterOutTypeExtensionProvider
-
-	-
-		class: PHPStan\DependencyInjection\Type\ExpressionTypeResolverExtensionRegistryProvider
-		factory: PHPStan\DependencyInjection\Type\LazyExpressionTypeResolverExtensionRegistryProvider
-
-	-
-		class: PHPStan\DependencyInjection\Type\OperatorTypeSpecifyingExtensionRegistryProvider
-		factory: PHPStan\DependencyInjection\Type\LazyOperatorTypeSpecifyingExtensionRegistryProvider
-
-	-
-		class: PHPStan\DependencyInjection\Type\DynamicThrowTypeExtensionProvider
-		factory: PHPStan\DependencyInjection\Type\LazyDynamicThrowTypeExtensionProvider
-
-	-
-		class: PHPStan\DependencyInjection\Type\ParameterClosureTypeExtensionProvider
-		factory: PHPStan\DependencyInjection\Type\LazyParameterClosureTypeExtensionProvider
-
-	-
 		implement: PHPStan\File\FileExcluderRawFactory
 
 	-
@@ -325,34 +297,12 @@ services:
 			parser: @defaultAnalysisParser
 
 	-
-		class: PHPStan\Reflection\ReflectionProvider\ReflectionProviderProvider
-		factory: PHPStan\Reflection\ReflectionProvider\LazyReflectionProviderProvider
-
-	-
 		class: PHPStan\Reflection\SignatureMap\SignatureMapProvider
 		factory: @PHPStan\Reflection\SignatureMap\SignatureMapProviderFactory::create()
-
-	-
-		class: PHPStan\Type\TypeAliasResolver
-		factory: PHPStan\Type\UsefulTypeAliasResolver
-		arguments:
-			globalTypeAliases: %typeAliases%
-
-	-
-		class: PHPStan\Type\TypeAliasResolverProvider
-		factory: PHPStan\Type\LazyTypeAliasResolverProvider
 
 	typeSpecifier:
 		class: PHPStan\Analyser\TypeSpecifier
 		factory: @typeSpecifierFactory::create
-
-	relativePathHelper:
-		class: PHPStan\File\RelativePathHelper
-		factory: PHPStan\File\FuzzyRelativePathHelper
-		arguments:
-			currentWorkingDirectory: %currentWorkingDirectory%
-			analysedPaths: %analysedPaths%
-			fallbackRelativePathHelper: @parentDirectoryRelativePathHelper
 
 	simpleRelativePathHelper:
 		class: PHPStan\File\RelativePathHelper
