@@ -341,10 +341,6 @@ services:
 		class: PHPStan\Type\TypeAliasResolverProvider
 		factory: PHPStan\Type\LazyTypeAliasResolverProvider
 
-	exceptionTypeResolver:
-		class: PHPStan\Rules\Exceptions\ExceptionTypeResolver
-		factory: @PHPStan\Rules\Exceptions\DefaultExceptionTypeResolver
-
 	typeSpecifier:
 		class: PHPStan\Analyser\TypeSpecifier
 		factory: @typeSpecifierFactory::create

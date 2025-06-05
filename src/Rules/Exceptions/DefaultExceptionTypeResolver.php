@@ -12,7 +12,7 @@ use function count;
 /**
  * @api
  */
-#[AutowiredService(as: DefaultExceptionTypeResolver::class)]
+#[AutowiredService(name: 'exceptionTypeResolver', as: [ExceptionTypeResolver::class, DefaultExceptionTypeResolver::class])]
 final class DefaultExceptionTypeResolver implements ExceptionTypeResolver
 {
 
