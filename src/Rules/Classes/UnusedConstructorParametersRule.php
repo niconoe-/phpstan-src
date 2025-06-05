@@ -22,7 +22,6 @@ use function sprintf;
  * @implements Rule<InClassMethodNode>
  */
 #[RegisteredRule(level: 1)]
-#[RegisteredRule(level: 1)]
 final class UnusedConstructorParametersRule implements Rule
 {
 
