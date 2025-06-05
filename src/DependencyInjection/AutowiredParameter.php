@@ -5,7 +5,7 @@ namespace PHPStan\DependencyInjection;
 use Attribute;
 
 /**
- * Autowires constructor parameters in service classes using #[AutowiredService] attribute.
+ * Autowires constructor parameters in service classes using #[AutowiredService] or #[RegisteredRule] attributes.
  *
  * If ref is omitted, it looks for parameter of the same name.
  *
