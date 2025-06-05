@@ -246,21 +246,6 @@ services:
 		factory: PHPStan\PhpDoc\LazyTypeNodeResolverExtensionRegistryProvider
 
 	-
-		class: PHPStan\Analyser\NodeScopeResolver
-		arguments:
-			parser: @defaultAnalysisParser
-			reflector: @nodeScopeResolverReflector
-			polluteScopeWithLoopInitialAssignments: %polluteScopeWithLoopInitialAssignments%
-			polluteScopeWithAlwaysIterableForeach: %polluteScopeWithAlwaysIterableForeach%
-			polluteScopeWithBlock: %polluteScopeWithBlock%
-			earlyTerminatingMethodCalls: %earlyTerminatingMethodCalls%
-			earlyTerminatingFunctionCalls: %earlyTerminatingFunctionCalls%
-			implicitThrows: %exceptions.implicitThrows%
-			treatPhpDocTypesAsCertain: %treatPhpDocTypesAsCertain%
-			universalObjectCratesClasses: %universalObjectCratesClasses%
-			narrowMethodScopeFromConstructor: true
-
-	-
 		class: PHPStan\Analyser\ConstantResolver
 		factory: @PHPStan\Analyser\ConstantResolverFactory::create()
 

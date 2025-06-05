@@ -62,6 +62,8 @@ use PHPStan\BetterReflection\Reflection\ReflectionEnum;
 use PHPStan\BetterReflection\Reflector\Reflector;
 use PHPStan\BetterReflection\SourceLocator\Ast\Strategy\NodeToReflection;
 use PHPStan\BetterReflection\SourceLocator\Located\LocatedSource;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\DependencyInjection\Reflection\ClassReflectionExtensionRegistryProvider;
 use PHPStan\DependencyInjection\Type\DynamicThrowTypeExtensionProvider;
 use PHPStan\DependencyInjection\Type\ParameterClosureTypeExtensionProvider;
@@ -223,6 +225,7 @@ use function usort;
 use const PHP_VERSION_ID;
 use const SORT_NUMERIC;
 
+#[AutowiredService]
 final class NodeScopeResolver
 {
 
@@ -249,9 +252,11 @@ final class NodeScopeResolver
 	public function __construct(
 		private readonly ReflectionProvider $reflectionProvider,
 		private readonly InitializerExprTypeResolver $initializerExprTypeResolver,
+		#[AutowiredParameter(ref: '@nodeScopeResolverReflector')]
 		private readonly Reflector $reflector,
 		private readonly ClassReflectionExtensionRegistryProvider $classReflectionExtensionRegistryProvider,
 		private readonly ParameterOutTypeExtensionProvider $parameterOutTypeExtensionProvider,
+		#[AutowiredParameter(ref: '@defaultAnalysisParser')]
 		private readonly Parser $parser,
 		private readonly FileTypeMapper $fileTypeMapper,
 		private readonly StubPhpDocProvider $stubPhpDocProvider,
@@ -266,15 +271,23 @@ final class NodeScopeResolver
 		private readonly ReadWritePropertiesExtensionProvider $readWritePropertiesExtensionProvider,
 		private readonly ParameterClosureTypeExtensionProvider $parameterClosureTypeExtensionProvider,
 		private readonly ScopeFactory $scopeFactory,
+		#[AutowiredParameter]
 		private readonly bool $polluteScopeWithLoopInitialAssignments,
+		#[AutowiredParameter]
 		private readonly bool $polluteScopeWithAlwaysIterableForeach,
+		#[AutowiredParameter]
 		private readonly bool $polluteScopeWithBlock,
+		#[AutowiredParameter]
 		private readonly array $earlyTerminatingMethodCalls,
+		#[AutowiredParameter]
 		private readonly array $earlyTerminatingFunctionCalls,
+		#[AutowiredParameter]
 		private readonly array $universalObjectCratesClasses,
+		#[AutowiredParameter(ref: '%exceptions.implicitThrows%')]
 		private readonly bool $implicitThrows,
+		#[AutowiredParameter]
 		private readonly bool $treatPhpDocTypesAsCertain,
-		private readonly bool $narrowMethodScopeFromConstructor,
+		private readonly bool $narrowMethodScopeFromConstructor = true,
 	)
 	{
 		$earlyTerminatingMethodNames = [];
