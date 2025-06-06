@@ -2023,12 +2023,6 @@ parameters:
 			path: tests/PHPStan/Reflection/SignatureMap/Php8SignatureMapProviderTest.php
 
 		-
-			message: '#^Catching internal class PHPUnit\\Framework\\AssertionFailedError\.$#'
-			identifier: catch.internalClass
-			count: 1
-			path: tests/PHPStan/Rules/WarningEmittingRuleTest.php
-
-		-
 			message: '#^Call to method getComparisonFailure\(\) of internal class PHPUnit\\Framework\\ExpectationFailedException from outside its root namespace PHPUnit\.$#'
 			identifier: method.internalClass
 			count: 2
