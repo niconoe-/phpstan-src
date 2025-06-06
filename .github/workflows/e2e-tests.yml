@@ -313,6 +313,7 @@ jobs:
     timeout-minutes: 60
 
     strategy:
+      fail-fast: false
       matrix:
         include:
           - script: "bin/phpstan analyse -l 8 -a tests/e2e/data/timecop.php -c tests/e2e/data/empty.neon tests/e2e/data/timecop.php"
