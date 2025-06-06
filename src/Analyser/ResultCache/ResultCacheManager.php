@@ -11,7 +11,9 @@ use PHPStan\Command\Output;
 use PHPStan\Dependency\ExportedNode\ExportedTraitNode;
 use PHPStan\Dependency\ExportedNodeFetcher;
 use PHPStan\Dependency\RootExportedNode;
+use PHPStan\DependencyInjection\AutowiredParameter;
 use PHPStan\DependencyInjection\Container;
+use PHPStan\DependencyInjection\GenerateFactory;
 use PHPStan\DependencyInjection\ProjectConfigHelper;
 use PHPStan\File\CouldNotReadFileException;
 use PHPStan\File\FileFinder;
@@ -53,6 +55,7 @@ use const PHP_VERSION_ID;
  * @phpstan-import-type LinesToIgnore from FileAnalyserResult
  * @phpstan-import-type CollectorData from CollectedData
  */
+#[GenerateFactory(interface: ResultCacheManagerFactory::class)]
 final class ResultCacheManager
 {
 
@@ -77,22 +80,35 @@ final class ResultCacheManager
 	public function __construct(
 		private Container $container,
 		private ExportedNodeFetcher $exportedNodeFetcher,
+		#[AutowiredParameter(ref: '@fileFinderScan')]
 		private FileFinder $scanFileFinder,
 		private ReflectionProvider $reflectionProvider,
 		private StubFilesProvider $stubFilesProvider,
 		private FileHelper $fileHelper,
+		#[AutowiredParameter(ref: '%resultCachePath%')]
 		private string $cacheFilePath,
+		#[AutowiredParameter]
 		private array $analysedPaths,
+		#[AutowiredParameter]
 		private array $analysedPathsFromConfig,
+		#[AutowiredParameter]
 		private array $composerAutoloaderProjectPaths,
+		#[AutowiredParameter]
 		private string $usedLevel,
+		#[AutowiredParameter]
 		private ?string $cliAutoloadFile,
+		#[AutowiredParameter]
 		private array $bootstrapFiles,
+		#[AutowiredParameter]
 		private array $scanFiles,
+		#[AutowiredParameter]
 		private array $scanDirectories,
 		private array $fileReplacements,
+		#[AutowiredParameter(ref: '%resultCacheChecksProjectExtensionFilesDependencies%')]
 		private bool $checkDependenciesOfProjectExtensionFiles,
+		#[AutowiredParameter]
 		private array $parametersNotInvalidatingCache,
+		#[AutowiredParameter(ref: '%resultCacheSkipIfOlderThanDays%')]
 		private int $skipResultCacheIfOlderThanDays,
 	)
 	{

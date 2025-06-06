@@ -8,8 +8,10 @@ use PHPStan\BetterReflection\Reflection\Reflection;
 use PHPStan\BetterReflection\Reflector\Reflector;
 use PHPStan\BetterReflection\SourceLocator\Type\Composer\Psr\PsrAutoloaderMapping;
 use PHPStan\BetterReflection\SourceLocator\Type\SourceLocator;
+use PHPStan\DependencyInjection\GenerateFactory;
 use function is_file;
 
+#[GenerateFactory(interface: OptimizedPsrAutoloaderLocatorFactory::class)]
 final class OptimizedPsrAutoloaderLocator implements SourceLocator
 {
 

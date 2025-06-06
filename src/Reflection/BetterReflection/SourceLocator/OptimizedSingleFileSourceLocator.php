@@ -12,12 +12,14 @@ use PHPStan\BetterReflection\Reflection\ReflectionFunction;
 use PHPStan\BetterReflection\Reflector\Reflector;
 use PHPStan\BetterReflection\SourceLocator\Ast\Strategy\NodeToReflection;
 use PHPStan\BetterReflection\SourceLocator\Type\SourceLocator;
+use PHPStan\DependencyInjection\GenerateFactory;
 use PHPStan\Reflection\ConstantNameHelper;
 use PHPStan\ShouldNotHappenException;
 use function array_key_exists;
 use function array_keys;
 use function strtolower;
 
+#[GenerateFactory(interface: OptimizedSingleFileSourceLocatorFactory::class)]
 final class OptimizedSingleFileSourceLocator implements SourceLocator
 {
 

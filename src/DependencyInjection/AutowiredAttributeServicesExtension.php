@@ -61,6 +61,15 @@ final class AutowiredAttributeServicesExtension extends CompilerExtension
 			}
 		}
 
+		foreach (Attributes::findTargetClasses(GenerateFactory::class) as $class) {
+			$attribute = $class->attribute;
+			$definition = $builder->addFactoryDefinition(null)
+				->setImplement($attribute->interface);
+
+			$resultDefinition = $definition->getResultDefinition();
+			$this->processParameters($class->name, $resultDefinition, $autowiredParameters);
+		}
+
 		/** @var stdClass&object{level: int|null} $config */
 		$config = $this->getConfig();
 		if ($config->level === null) {
