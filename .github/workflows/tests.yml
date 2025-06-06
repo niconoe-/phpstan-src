@@ -107,8 +107,8 @@ jobs:
           ini-file: development
           ini-values: memory_limit=1G
 
-      - name: "Install PHPUnit 10.x"
-        run: "composer remove --dev brianium/paratest && composer require --dev --with-all-dependencies phpunit/phpunit:^10 sebastian/diff:^5.0"
+      - name: "Install dependencies"
+        run: "composer install --no-interaction --no-progress"
 
       - id: set-matrix
         run: echo "matrix=$(php .github/workflows/tests-levels-matrix.php)" >> $GITHUB_OUTPUT
@@ -175,11 +175,12 @@ jobs:
           ini-file: development
           ini-values: memory_limit=2G
 
+      - name: "Downgrade PHPUnit"
+        shell: bash
+        run: "composer require --dev phpunit/phpunit:^9.6 sebastian/diff:^4.0 --update-with-dependencies --ignore-platform-reqs"
+
       - name: "Install dependencies"
         run: "composer install --no-interaction --no-progress"
-
-      - name: "Downgrade PHPUnit"
-        run: "composer require --dev phpunit/phpunit:^9.6 --update-with-dependencies"
 
       - name: "Transform source code"
         shell: bash

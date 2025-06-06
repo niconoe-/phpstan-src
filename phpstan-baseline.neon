@@ -748,12 +748,6 @@ parameters:
 			path: src/Rules/RuleLevelHelper.php
 
 		-
-			message: '#^Call to an undefined static method PHPUnit\\Framework\\TestCase\:\:assertFileNotExists\(\)\.$#'
-			identifier: staticMethod.notFound
-			count: 1
-			path: src/Testing/LevelsTestCase.php
-
-		-
 			message: '#^Call to function method_exists\(\) with ''PHPUnit\\\\Framework\\\\TestCase'' and ''assertFileDoesNotEx…'' will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 1
