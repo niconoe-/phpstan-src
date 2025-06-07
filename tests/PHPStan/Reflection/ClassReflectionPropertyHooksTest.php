@@ -23,6 +23,10 @@ class ClassReflectionPropertyHooksTest extends PHPStanTestCase
 
 	public static function dataPropertyHooks(): iterable
 	{
+		if (PHP_VERSION_ID < 80100) {
+			return [];
+		}
+
 		$reflectionProvider = self::createReflectionProvider();
 
 		yield [
