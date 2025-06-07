@@ -10,7 +10,7 @@ use PHPStan\Testing\PHPStanTestCase;
 class IgnoredRegexValidatorTest extends PHPStanTestCase
 {
 
-	public function dataValidate(): array
+	public static function dataValidate(): array
 	{
 		return [
 			[

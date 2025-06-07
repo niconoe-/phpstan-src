@@ -26,6 +26,7 @@ parameters:
 	excludePaths:
 		- ../tests/*/data/*
 		- ../tests/tmp/*
+		- ../tests/vendor/*
 		- ../tests/PHPStan/Analyser/nsrt/*
 		- ../tests/PHPStan/Analyser/traits/*
 		- ../tests/notAutoloaded/*
