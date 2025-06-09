@@ -2,6 +2,7 @@
 
 namespace PHPStan\Analyser;
 
+use Override;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\BinaryOp\Equal;
@@ -56,6 +57,7 @@ class TypeSpecifierTest extends PHPStanTestCase
 
 	private Scope $scope;
 
+	#[Override]
 	protected function setUp(): void
 	{
 		$reflectionProvider = self::createReflectionProvider();

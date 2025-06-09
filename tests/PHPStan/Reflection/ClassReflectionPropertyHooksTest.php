@@ -2,6 +2,7 @@
 
 namespace PHPStan\Reflection;
 
+use Override;
 use PHPStan\Testing\PHPStanTestCase;
 use PHPStan\Type\Generic\GenericObjectType;
 use PHPStan\Type\IntegerType;
@@ -12,6 +13,7 @@ use const PHP_VERSION_ID;
 class ClassReflectionPropertyHooksTest extends PHPStanTestCase
 {
 
+	#[Override]
 	protected function setUp(): void
 	{
 		if (PHP_VERSION_ID >= 80400) {

@@ -3,6 +3,7 @@
 namespace PHPStan\Command;
 
 use Clue\React\NDJson\Encoder;
+use Override;
 use PHPStan\Analyser\AnalyserResult;
 use PHPStan\Analyser\AnalyserResultFinalizer;
 use PHPStan\Analyser\Error;
@@ -57,6 +58,7 @@ final class FixerWorkerCommand extends Command
 		parent::__construct();
 	}
 
+	#[Override]
 	protected function configure(): void
 	{
 		$this->setName(self::NAME)
@@ -73,6 +75,7 @@ final class FixerWorkerCommand extends Command
 			->setHidden(true);
 	}
 
+	#[Override]
 	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
 		$paths = $input->getArgument('paths');

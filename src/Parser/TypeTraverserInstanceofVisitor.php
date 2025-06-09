@@ -2,6 +2,7 @@
 
 namespace PHPStan\Parser;
 
+use Override;
 use PhpParser\Node;
 use PhpParser\NodeVisitorAbstract;
 use PHPStan\DependencyInjection\AutowiredService;
@@ -14,12 +15,14 @@ final class TypeTraverserInstanceofVisitor extends NodeVisitorAbstract
 
 	private int $depth = 0;
 
+	#[Override]
 	public function beforeTraverse(array $nodes): ?array
 	{
 		$this->depth = 0;
 		return null;
 	}
 
+	#[Override]
 	public function enterNode(Node $node): ?Node
 	{
 		if ($node instanceof Node\Expr\Instanceof_ && $this->depth > 0) {
@@ -40,6 +43,7 @@ final class TypeTraverserInstanceofVisitor extends NodeVisitorAbstract
 		return null;
 	}
 
+	#[Override]
 	public function leaveNode(Node $node): ?Node
 	{
 		if (

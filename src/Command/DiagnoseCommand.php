@@ -2,6 +2,7 @@
 
 namespace PHPStan\Command;
 
+use Override;
 use PHPStan\Diagnose\DiagnoseExtension;
 use PHPStan\Diagnose\PHPStanDiagnoseExtension;
 use PHPStan\ShouldNotHappenException;
@@ -26,6 +27,7 @@ final class DiagnoseCommand extends Command
 		parent::__construct();
 	}
 
+	#[Override]
 	protected function configure(): void
 	{
 		$this->setName(self::NAME)
@@ -39,6 +41,7 @@ final class DiagnoseCommand extends Command
 			]);
 	}
 
+	#[Override]
 	protected function initialize(InputInterface $input, OutputInterface $output): void
 	{
 		if ((bool) $input->getOption('debug')) {
@@ -51,6 +54,7 @@ final class DiagnoseCommand extends Command
 		}
 	}
 
+	#[Override]
 	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
 		$memoryLimit = $input->getOption('memory-limit');

@@ -4,6 +4,7 @@ namespace PHPStan\Command;
 
 use Nette\Neon\Neon;
 use Nette\Utils\Json;
+use Override;
 use PHPStan\ShouldNotHappenException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -26,6 +27,7 @@ final class DumpParametersCommand extends Command
 		parent::__construct();
 	}
 
+	#[Override]
 	protected function configure(): void
 	{
 		$this->setName(self::NAME)
@@ -40,6 +42,7 @@ final class DumpParametersCommand extends Command
 			]);
 	}
 
+	#[Override]
 	protected function initialize(InputInterface $input, OutputInterface $output): void
 	{
 		if ((bool) $input->getOption('debug')) {
@@ -52,6 +55,7 @@ final class DumpParametersCommand extends Command
 		}
 	}
 
+	#[Override]
 	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
 		$memoryLimit = $input->getOption('memory-limit');

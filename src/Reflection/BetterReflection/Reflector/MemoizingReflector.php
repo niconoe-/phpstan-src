@@ -2,6 +2,7 @@
 
 namespace PHPStan\Reflection\BetterReflection\Reflector;
 
+use Override;
 use PHPStan\BetterReflection\Identifier\Identifier;
 use PHPStan\BetterReflection\Identifier\IdentifierType;
 use PHPStan\BetterReflection\Reflection\ReflectionClass;
@@ -28,6 +29,7 @@ final class MemoizingReflector implements Reflector
 	{
 	}
 
+	#[Override]
 	public function reflectClass(string $className): ReflectionClass
 	{
 		$lowerClassName = strtolower($className);
@@ -52,6 +54,7 @@ final class MemoizingReflector implements Reflector
 		}
 	}
 
+	#[Override]
 	public function reflectConstant(string $constantName): ReflectionConstant
 	{
 		if (array_key_exists($constantName, $this->constantReflections)) {
@@ -72,6 +75,7 @@ final class MemoizingReflector implements Reflector
 		}
 	}
 
+	#[Override]
 	public function reflectFunction(string $functionName): ReflectionFunction
 	{
 		$lowerFunctionName = strtolower($functionName);
@@ -93,16 +97,19 @@ final class MemoizingReflector implements Reflector
 		}
 	}
 
+	#[Override]
 	public function reflectAllClasses(): iterable
 	{
 		return $this->reflector->reflectAllClasses();
 	}
 
+	#[Override]
 	public function reflectAllFunctions(): iterable
 	{
 		return $this->reflector->reflectAllFunctions();
 	}
 
+	#[Override]
 	public function reflectAllConstants(): iterable
 	{
 		return $this->reflector->reflectAllConstants();

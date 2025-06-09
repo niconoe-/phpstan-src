@@ -2,6 +2,7 @@
 
 namespace PHPStan\Parser;
 
+use Override;
 use PhpParser\Node;
 use PhpParser\Node\Identifier;
 use PhpParser\NodeVisitorAbstract;
@@ -13,6 +14,7 @@ final class ClosureBindToVarVisitor extends NodeVisitorAbstract
 
 	public const ATTRIBUTE_NAME = 'closureBindToVar';
 
+	#[Override]
 	public function enterNode(Node $node): ?Node
 	{
 		if (

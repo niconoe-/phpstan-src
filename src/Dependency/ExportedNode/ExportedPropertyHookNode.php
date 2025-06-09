@@ -3,6 +3,7 @@
 namespace PHPStan\Dependency\ExportedNode;
 
 use JsonSerializable;
+use Override;
 use PHPStan\Dependency\ExportedNode;
 use PHPStan\ShouldNotHappenException;
 use ReturnTypeWillChange;
@@ -96,6 +97,7 @@ final class ExportedPropertyHookNode implements ExportedNode, JsonSerializable
 	 * @return mixed
 	 */
 	#[ReturnTypeWillChange]
+	#[Override]
 	public function jsonSerialize()
 	{
 		return [

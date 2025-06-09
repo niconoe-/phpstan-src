@@ -12,6 +12,7 @@ use Nette\Schema\Schema;
 use Nette\Utils\Strings;
 use olvlvl\ComposerAttributeCollector\Attributes;
 use olvlvl\ComposerAttributeCollector\TargetMethodParameter;
+use Override;
 use PHPStan\Collectors\RegistryFactory;
 use PHPStan\Rules\LazyRegistry;
 use ReflectionClass;
@@ -23,6 +24,7 @@ use function substr;
 final class AutowiredAttributeServicesExtension extends CompilerExtension
 {
 
+	#[Override]
 	public function getConfigSchema(): Schema
 	{
 		return Expect::structure([
@@ -30,6 +32,7 @@ final class AutowiredAttributeServicesExtension extends CompilerExtension
 		]);
 	}
 
+	#[Override]
 	public function loadConfiguration(): void
 	{
 		require_once __DIR__ . '/../../vendor/attributes.php';

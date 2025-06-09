@@ -2,6 +2,7 @@
 
 namespace PHPStan\Parser;
 
+use Override;
 use PhpParser\Node;
 use PhpParser\NodeVisitorAbstract;
 use PHPStan\DependencyInjection\AutowiredService;
@@ -15,12 +16,14 @@ final class DeclarePositionVisitor extends NodeVisitorAbstract
 
 	public const ATTRIBUTE_NAME = 'isFirstStatement';
 
+	#[Override]
 	public function beforeTraverse(array $nodes): ?array
 	{
 		$this->isFirstStatement = true;
 		return null;
 	}
 
+	#[Override]
 	public function enterNode(Node $node): ?Node
 	{
 		// ignore shebang

@@ -3,6 +3,7 @@
 namespace PHPStan\Command;
 
 use OndraM\CiDetector\CiDetector;
+use Override;
 use PHPStan\Analyser\InternalError;
 use PHPStan\Command\ErrorFormatter\BaselineNeonErrorFormatter;
 use PHPStan\Command\ErrorFormatter\BaselinePhpErrorFormatter;
@@ -85,6 +86,7 @@ final class AnalyseCommand extends Command
 		parent::__construct();
 	}
 
+	#[Override]
 	protected function configure(): void
 	{
 		$this->setName(self::NAME)
@@ -113,11 +115,13 @@ final class AnalyseCommand extends Command
 	/**
 	 * @return string[]
 	 */
+	#[Override]
 	public function getAliases(): array
 	{
 		return ['analyze'];
 	}
 
+	#[Override]
 	protected function initialize(InputInterface $input, OutputInterface $output): void
 	{
 		if ((bool) $input->getOption('debug')) {
@@ -130,6 +134,7 @@ final class AnalyseCommand extends Command
 		}
 	}
 
+	#[Override]
 	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
 		$paths = $input->getArgument('paths');

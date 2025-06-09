@@ -2,6 +2,7 @@
 
 namespace PHPStan\Parser;
 
+use Override;
 use PhpParser\Node;
 use PhpParser\NodeVisitorAbstract;
 use PHPStan\DependencyInjection\AutowiredService;
@@ -14,6 +15,7 @@ final class LastConditionVisitor extends NodeVisitorAbstract
 	public const ATTRIBUTE_NAME = 'isLastCondition';
 	public const ATTRIBUTE_IS_MATCH_NAME = 'isMatch';
 
+	#[Override]
 	public function enterNode(Node $node): ?Node
 	{
 		if ($node instanceof Node\Stmt\If_ && $node->elseifs !== []) {

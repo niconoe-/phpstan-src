@@ -2,6 +2,7 @@
 
 namespace PHPStan\Fixable;
 
+use Override;
 use PhpParser\Node;
 use PhpParser\PrettyPrinter\Standard;
 use function count;
@@ -16,6 +17,7 @@ final class PhpPrinter extends Standard
 	/**
 	 * @param Node[] $nodes
 	 */
+	#[Override]
 	protected function pCommaSeparated(array $nodes): string
 	{
 		$result = parent::pCommaSeparated($nodes);

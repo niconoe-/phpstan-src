@@ -2,6 +2,7 @@
 
 namespace PHPStan\Parser;
 
+use Override;
 use PhpParser\Node;
 use PhpParser\Node\Name;
 use PhpParser\NodeVisitorAbstract;
@@ -29,6 +30,7 @@ final class VariadicFunctionsVisitor extends NodeVisitorAbstract
 
 	public const ATTRIBUTE_NAME = 'variadicFunctions';
 
+	#[Override]
 	public function beforeTraverse(array $nodes): ?array
 	{
 		$this->topNode = null;
@@ -39,6 +41,7 @@ final class VariadicFunctionsVisitor extends NodeVisitorAbstract
 		return null;
 	}
 
+	#[Override]
 	public function enterNode(Node $node): ?Node
 	{
 		if ($this->topNode === null) {
@@ -66,6 +69,7 @@ final class VariadicFunctionsVisitor extends NodeVisitorAbstract
 		return null;
 	}
 
+	#[Override]
 	public function leaveNode(Node $node): ?Node
 	{
 		if ($node instanceof Node\Stmt\Namespace_ && $node->name !== null) {
@@ -80,6 +84,7 @@ final class VariadicFunctionsVisitor extends NodeVisitorAbstract
 		return null;
 	}
 
+	#[Override]
 	public function afterTraverse(array $nodes): ?array
 	{
 		if ($this->topNode !== null && $this->variadicFunctions !== []) {

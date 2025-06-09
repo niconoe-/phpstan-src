@@ -5,6 +5,7 @@ namespace PHPStan\Analyser;
 use Exception;
 use JsonSerializable;
 use Nette\Utils\Strings;
+use Override;
 use PhpParser\Node;
 use PHPStan\ShouldNotHappenException;
 use ReturnTypeWillChange;
@@ -264,6 +265,7 @@ final class Error implements JsonSerializable
 	 * @return mixed
 	 */
 	#[ReturnTypeWillChange]
+	#[Override]
 	public function jsonSerialize()
 	{
 		$fixedErrorDiffHash = null;

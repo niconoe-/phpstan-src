@@ -2,6 +2,7 @@
 
 namespace PHPStan\Command\ErrorFormatter;
 
+use Override;
 use PHPStan\Analyser\Error;
 use PHPStan\Command\AnalysisResult;
 use PHPStan\File\FuzzyRelativePathHelper;
@@ -15,11 +16,13 @@ use function sprintf;
 class TableErrorFormatterTest extends ErrorFormatterTestCase
 {
 
+	#[Override]
 	protected function setUp(): void
 	{
 		putenv('GITHUB_ACTIONS');
 	}
 
+	#[Override]
 	protected function tearDown(): void
 	{
 		putenv('COLUMNS');

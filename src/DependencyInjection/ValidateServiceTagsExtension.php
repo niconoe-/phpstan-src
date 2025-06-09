@@ -3,6 +3,7 @@
 namespace PHPStan\DependencyInjection;
 
 use Nette\DI\CompilerExtension;
+use Override;
 use PhpParser\NodeVisitor;
 use PHPStan\Analyser\ResultCache\ResultCacheMetaExtension;
 use PHPStan\Analyser\TypeSpecifierFactory;
@@ -111,6 +112,7 @@ final class ValidateServiceTagsExtension extends CompilerExtension
 	/**
 	 * @throws MissingImplementedInterfaceInServiceWithTagException
 	 */
+	#[Override]
 	public function beforeCompile(): void
 	{
 		$builder = $this->getContainerBuilder();

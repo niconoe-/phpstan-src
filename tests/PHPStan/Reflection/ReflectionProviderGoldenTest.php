@@ -3,6 +3,7 @@
 namespace PHPStan\Reflection;
 
 use JetBrains\PHPStormStub\PhpStormStubsMap;
+use Override;
 use PhpParser\Node;
 use PhpParser\Node\Name;
 use PhpParser\NodeTraverser;
@@ -634,6 +635,7 @@ class ReflectionProviderGoldenTest extends PHPStanTestCase
 
 			private Node\Stmt\ClassLike $classLike;
 
+			#[Override]
 			public function enterNode(Node $node)
 			{
 				if ($node instanceof Node\Stmt\ClassLike && $node->namespacedName !== null) {
@@ -656,6 +658,7 @@ class ReflectionProviderGoldenTest extends PHPStanTestCase
 				return null;
 			}
 
+			#[Override]
 			public function leaveNode(Node $node)
 			{
 				if ($node instanceof Node\Stmt\ClassLike) {

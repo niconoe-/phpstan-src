@@ -2,6 +2,7 @@
 
 namespace PHPStan\Fixable;
 
+use Override;
 use PhpParser\Node;
 use PhpParser\NodeVisitorAbstract;
 use PHPStan\Node\Expr\AlwaysRememberedExpr;
@@ -9,6 +10,7 @@ use PHPStan\Node\Expr\AlwaysRememberedExpr;
 final class UnwrapVirtualNodesVisitor extends NodeVisitorAbstract
 {
 
+	#[Override]
 	public function enterNode(Node $node): ?Node
 	{
 		if (!$node instanceof Node\Expr\Match_) {

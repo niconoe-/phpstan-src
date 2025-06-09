@@ -3,6 +3,7 @@
 namespace PHPStan\Rules\Whitespace;
 
 use Nette\Utils\Strings;
+use Override;
 use PhpParser\Node;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor;
@@ -50,6 +51,7 @@ final class FileWhitespaceRule implements Rule
 			/**
 			 * @return int|null
 			 */
+			#[Override]
 			public function enterNode(Node $node)
 			{
 				if ($node instanceof Node\Stmt\Declare_) {

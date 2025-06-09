@@ -5,6 +5,7 @@ namespace PHPStan\Analyser;
 use ArrayAccess;
 use Closure;
 use DivisionByZeroError;
+use Override;
 use PhpParser\Comment\Doc;
 use PhpParser\Modifiers;
 use PhpParser\Node;
@@ -1880,6 +1881,7 @@ final class NodeScopeResolver
 					$traverser = new NodeTraverser();
 					$traverser->addVisitor(new class () extends NodeVisitorAbstract {
 
+						#[Override]
 						public function leaveNode(Node $node): ?ExistingArrayDimFetch
 						{
 							if (!$node instanceof ArrayDimFetch || $node->dim === null) {

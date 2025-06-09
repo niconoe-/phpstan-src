@@ -4,6 +4,7 @@ namespace PHPStan\Command\ErrorFormatter;
 
 use DOMDocument;
 use Generator;
+use Override;
 use PHPStan\File\SimpleRelativePathHelper;
 use PHPStan\Testing\ErrorFormatterTestCase;
 
@@ -12,6 +13,7 @@ class JunitErrorFormatterTest extends ErrorFormatterTestCase
 
 	private JunitErrorFormatter $formatter;
 
+	#[Override]
 	public function setUp(): void
 	{
 		parent::setUp();

@@ -2,6 +2,7 @@
 
 namespace PHPStan\Command;
 
+use Override;
 use PHPStan\Analyser\ResultCache\ResultCacheClearer;
 use PHPStan\ShouldNotHappenException;
 use Symfony\Component\Console\Command\Command;
@@ -26,6 +27,7 @@ final class ClearResultCacheCommand extends Command
 		parent::__construct();
 	}
 
+	#[Override]
 	protected function configure(): void
 	{
 		$this->setName(self::NAME)
@@ -39,6 +41,7 @@ final class ClearResultCacheCommand extends Command
 			]);
 	}
 
+	#[Override]
 	protected function initialize(InputInterface $input, OutputInterface $output): void
 	{
 		if ((bool) $input->getOption('debug')) {
@@ -51,6 +54,7 @@ final class ClearResultCacheCommand extends Command
 		}
 	}
 
+	#[Override]
 	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
 		$autoloadFile = $input->getOption('autoload-file');

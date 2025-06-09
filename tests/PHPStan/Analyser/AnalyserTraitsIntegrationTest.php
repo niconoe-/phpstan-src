@@ -2,6 +2,7 @@
 
 namespace PHPStan\Analyser;
 
+use Override;
 use PHPStan\File\FileHelper;
 use PHPStan\Testing\PHPStanTestCase;
 use function array_map;
@@ -16,6 +17,7 @@ class AnalyserTraitsIntegrationTest extends PHPStanTestCase
 
 	private FileHelper $fileHelper;
 
+	#[Override]
 	protected function setUp(): void
 	{
 		$this->fileHelper = self::getContainer()->getByType(FileHelper::class);

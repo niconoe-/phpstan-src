@@ -2,6 +2,7 @@
 
 namespace PHPStan\Fixable;
 
+use Override;
 use PhpParser\Node;
 use PhpParser\NodeVisitorAbstract;
 use PHPStan\Node\VirtualNode;
@@ -19,6 +20,7 @@ final class ReplacingNodeVisitor extends NodeVisitorAbstract
 	{
 	}
 
+	#[Override]
 	public function enterNode(Node $node): ?Node
 	{
 		$origNode = $node->getAttribute('origNode');

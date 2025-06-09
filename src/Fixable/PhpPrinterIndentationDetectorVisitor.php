@@ -2,6 +2,7 @@
 
 namespace PHPStan\Fixable;
 
+use Override;
 use PhpParser\Internal\TokenStream;
 use PhpParser\Node;
 use PhpParser\NodeVisitor;
@@ -25,6 +26,7 @@ final class PhpPrinterIndentationDetectorVisitor extends NodeVisitorAbstract
 	{
 	}
 
+	#[Override]
 	public function enterNode(Node $node): ?int
 	{
 		if ($node instanceof Node\Stmt\Namespace_ || $node instanceof Node\Stmt\Declare_) {

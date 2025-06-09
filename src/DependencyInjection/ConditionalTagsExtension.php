@@ -5,6 +5,7 @@ namespace PHPStan\DependencyInjection;
 use Nette;
 use Nette\DI\CompilerExtension;
 use Nette\Schema\Expect;
+use Override;
 use PHPStan\ShouldNotHappenException;
 use function array_fill_keys;
 use function array_reduce;
@@ -16,6 +17,7 @@ use function sprintf;
 final class ConditionalTagsExtension extends CompilerExtension
 {
 
+	#[Override]
 	public function getConfigSchema(): Nette\Schema\Schema
 	{
 		$tags = array_values(ValidateServiceTagsExtension::INTERFACE_TAG_MAPPING);
@@ -25,6 +27,7 @@ final class ConditionalTagsExtension extends CompilerExtension
 		)->min(1));
 	}
 
+	#[Override]
 	public function beforeCompile(): void
 	{
 		/** @var mixed[] $config */

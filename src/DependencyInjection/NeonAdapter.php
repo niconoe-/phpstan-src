@@ -9,6 +9,7 @@ use Nette\DI\InvalidConfigurationException;
 use Nette\Neon\Entity;
 use Nette\Neon\Exception;
 use Nette\Neon\Neon;
+use Override;
 use PHPStan\DependencyInjection\Neon\OptionalPath;
 use PHPStan\File\FileHelper;
 use PHPStan\File\FileReader;
@@ -46,6 +47,7 @@ final class NeonAdapter implements Adapter
 	/**
 	 * @return mixed[]
 	 */
+	#[Override]
 	public function load(string $file): array
 	{
 		$contents = FileReader::read($file);
