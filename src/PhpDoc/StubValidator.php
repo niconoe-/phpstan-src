@@ -68,6 +68,7 @@ use PHPStan\Rules\Generics\UsedTraitsRule;
 use PHPStan\Rules\Generics\VarianceCheck;
 use PHPStan\Rules\Methods\ExistingClassesInTypehintsRule;
 use PHPStan\Rules\Methods\MethodParameterComparisonHelper;
+use PHPStan\Rules\Methods\MethodPrototypeFinder;
 use PHPStan\Rules\Methods\MethodSignatureRule;
 use PHPStan\Rules\Methods\MethodVisibilityComparisonHelper;
 use PHPStan\Rules\Methods\MissingMethodParameterTypehintRule;
@@ -219,7 +220,7 @@ final class StubValidator
 				true,
 				new MethodParameterComparisonHelper($phpVersion),
 				new MethodVisibilityComparisonHelper(),
-				$phpClassReflectionExtension,
+				new MethodPrototypeFinder($phpVersion, $phpClassReflectionExtension),
 				$container->getParameter('checkMissingOverrideMethodAttribute'),
 			),
 			new DuplicateDeclarationRule(),

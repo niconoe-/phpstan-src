@@ -4,8 +4,8 @@ namespace PHPStan\Rules\Playground;
 
 use PHPStan\Node\InClassMethodNode;
 use PHPStan\Php\PhpVersion;
-use PHPStan\Reflection\Php\PhpClassReflectionExtension;
 use PHPStan\Rules\Methods\MethodParameterComparisonHelper;
+use PHPStan\Rules\Methods\MethodPrototypeFinder;
 use PHPStan\Rules\Methods\MethodSignatureRule;
 use PHPStan\Rules\Methods\MethodVisibilityComparisonHelper;
 use PHPStan\Rules\Methods\OverridingMethodRule;
@@ -28,7 +28,7 @@ class PromoteParameterRuleWithOriginalRuleTest extends RuleTestCase
 				true,
 				self::getContainer()->getByType(MethodParameterComparisonHelper::class),
 				self::getContainer()->getByType(MethodVisibilityComparisonHelper::class),
-				self::getContainer()->getByType(PhpClassReflectionExtension::class),
+				self::getContainer()->getByType(MethodPrototypeFinder::class),
 				true,
 			),
 			self::getContainer(),
