@@ -121,6 +121,7 @@ rules:
 	- PHPStan\Build\FinalClassRule
 	- PHPStan\Build\AttributeNamedArgumentsRule
 	- PHPStan\Build\NamedArgumentsRule
+	- PHPStan\Build\OverrideAttributeThirdPartyMethodRule
 
 services:
 	-
