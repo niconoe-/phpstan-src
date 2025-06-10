@@ -2,33 +2,19 @@
 
 namespace PHPStan\Reflection;
 
-use Override;
 use PHPStan\Testing\PHPStanTestCase;
 use PHPStan\Type\Generic\GenericObjectType;
 use PHPStan\Type\IntegerType;
 use PHPStan\Type\VerbosityLevel;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 use function count;
-use const PHP_VERSION_ID;
 
+#[RequiresPhp('>= 8.4')]
 class ClassReflectionPropertyHooksTest extends PHPStanTestCase
 {
 
-	#[Override]
-	protected function setUp(): void
-	{
-		if (PHP_VERSION_ID >= 80400) {
-			return;
-		}
-
-		self::markTestSkipped('Test requires PHP 8.4');
-	}
-
 	public static function dataPropertyHooks(): iterable
 	{
-		if (PHP_VERSION_ID < 80100) {
-			return [];
-		}
-
 		$reflectionProvider = self::createReflectionProvider();
 
 		yield [
