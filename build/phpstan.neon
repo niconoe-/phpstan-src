@@ -122,6 +122,7 @@ rules:
 	- PHPStan\Build\AttributeNamedArgumentsRule
 	- PHPStan\Build\NamedArgumentsRule
 	- PHPStan\Build\OverrideAttributeThirdPartyMethodRule
+	- PHPStan\Build\SkipTestsWithRequiresPhpAttributeRule
 
 services:
 	-
