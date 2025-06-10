@@ -35,6 +35,8 @@ use PHPStan\Type\Generic\TemplateTypeFactory;
 use PHPStan\Type\Generic\TemplateTypeScope;
 use PHPStan\Type\Generic\TemplateTypeVariance;
 use PHPStan\Type\Traits\ConstantNumericComparisonTypeTrait;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 use SimpleXMLElement;
 use stdClass;
 use Throwable;
@@ -57,9 +59,7 @@ class ObjectTypeTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataIsIterable
-	 */
+	#[DataProvider('dataIsIterable')]
 	public function testIsIterable(ObjectType $type, TrinaryLogic $expectedResult): void
 	{
 		$actualResult = $type->isIterable();
@@ -86,9 +86,7 @@ class ObjectTypeTest extends PHPStanTestCase
 		yield [new ObjectType('DateTime'), TrinaryLogic::createNo()];
 	}
 
-	/**
-	 * @dataProvider dataIsEnum
-	 */
+	#[DataProvider('dataIsEnum')]
 	public function testIsEnum(ObjectType $type, TrinaryLogic $expectedResult): void
 	{
 		$actualResult = $type->isEnum();
@@ -108,9 +106,7 @@ class ObjectTypeTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataIsCallable
-	 */
+	#[DataProvider('dataIsCallable')]
 	public function testIsCallable(ObjectType $type, TrinaryLogic $expectedResult): void
 	{
 		$actualResult = $type->isCallable();
@@ -485,9 +481,7 @@ class ObjectTypeTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataIsSuperTypeOf
-	 */
+	#[DataProvider('dataIsSuperTypeOf')]
 	public function testIsSuperTypeOf(ObjectType $type, Type $otherType, TrinaryLogic $expectedResult): void
 	{
 		$actualResult = $type->isSuperTypeOf($otherType);
@@ -549,9 +543,7 @@ class ObjectTypeTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataAccepts
-	 */
+	#[DataProvider('dataAccepts')]
 	public function testAccepts(
 		ObjectType $type,
 		Type $acceptedType,
@@ -629,9 +621,7 @@ class ObjectTypeTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataHasOffsetValueType
-	 */
+	#[DataProvider('dataHasOffsetValueType')]
 	public function testHasOffsetValueType(
 		ObjectType $type,
 		Type $offsetType,
@@ -678,18 +668,15 @@ class ObjectTypeTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataGetEnumCases
 	 * @param list<EnumCaseObjectType> $expectedEnumCases
 	 */
+	#[RequiresPhp('>= 8.1')]
+	#[DataProvider('dataGetEnumCases')]
 	public function testGetEnumCases(
 		ObjectType $type,
 		array $expectedEnumCases,
 	): void
 	{
-		if (PHP_VERSION_ID < 80100) {
-			$this->markTestSkipped('Test requires PHP 8.1.');
-		}
-
 		$enumCases = $type->getEnumCases();
 		$this->assertCount(count($expectedEnumCases), $enumCases);
 		foreach ($enumCases as $i => $enumCase) {

@@ -12,6 +12,7 @@ use PHPStan\Analyser\ScopeContext;
 use PHPStan\Analyser\ScopeFactory;
 use PHPStan\Testing\PHPStanTestCase;
 use PHPStan\TrinaryLogic;
+use PHPUnit\Framework\Attributes\DataProvider;
 use function defined;
 use function sprintf;
 
@@ -117,11 +118,11 @@ final class BitwiseFlagHelperTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataUnknownConstants
-	 * @dataProvider dataJsonExprContainsConst
 	 *
 	 * @param non-empty-string $constName
 	 */
+	#[DataProvider('dataUnknownConstants')]
+	#[DataProvider('dataJsonExprContainsConst')]
 	public function testExprContainsConst(Expr $expr, string $constName, TrinaryLogic $expected): void
 	{
 		/** @var ScopeFactory $scopeFactory */

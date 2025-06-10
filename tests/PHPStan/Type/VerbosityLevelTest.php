@@ -7,6 +7,7 @@ use PHPStan\Type\Accessory\AccessoryLowercaseStringType;
 use PHPStan\Type\Accessory\AccessoryNonFalsyStringType;
 use PHPStan\Type\Generic\GenericObjectType;
 use PHPStan\Type\Generic\TemplateTypeVariance;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class VerbosityLevelTest extends PHPStanTestCase
 {
@@ -44,9 +45,7 @@ class VerbosityLevelTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataGetRecommendedLevelByType
-	 */
+	#[DataProvider('dataGetRecommendedLevelByType')]
 	public function testGetRecommendedLevelByType(Type $acceptingType, ?Type $acceptedType, VerbosityLevel $expected): void
 	{
 		$level = VerbosityLevel::getRecommendedLevelByType($acceptingType, $acceptedType);

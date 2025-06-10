@@ -30,12 +30,13 @@ use NestedTraits\NoTrait;
 use PHPStan\Testing\PHPStanTestCase;
 use PHPStan\Testing\RuleTestCase;
 use PHPStan\Type\IntegerType;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use WrongClassConstantFile\SecuredRouter;
 use function array_map;
 use function array_values;
-use const PHP_VERSION_ID;
 
 class ClassReflectionTest extends PHPStanTestCase
 {
@@ -50,9 +51,9 @@ class ClassReflectionTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataHasTraitUse
 	 * @param class-string $className
 	 */
+	#[DataProvider('dataHasTraitUse')]
 	public function testHasTraitUse(string $className, bool $has): void
 	{
 		$reflectionProvider = self::createReflectionProvider();
@@ -93,10 +94,10 @@ class ClassReflectionTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataClassHierarchyDistances
 	 * @param class-string $class
 	 * @param int[] $expectedDistances
 	 */
+	#[DataProvider('dataClassHierarchyDistances')]
 	public function testClassHierarchyDistances(
 		string $class,
 		array $expectedDistances,
@@ -169,9 +170,7 @@ class ClassReflectionTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataIsAttributeClass
-	 */
+	#[DataProvider('dataIsAttributeClass')]
 	public function testIsAttributeClass(string $className, bool $expected, int $expectedFlags = Attribute::TARGET_ALL): void
 	{
 		$reflectionProvider = self::createReflectionProvider();
@@ -192,10 +191,10 @@ class ClassReflectionTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataNestedRecursiveTraits
 	 * @param class-string $className
 	 * @param array<class-string, class-string> $expected
 	 */
+	#[DataProvider('dataNestedRecursiveTraits')]
 	public function testGetTraits(string $className, array $expected, bool $recursive): void
 	{
 		$reflectionProvider = self::createReflectionProvider();
@@ -284,26 +283,22 @@ class ClassReflectionTest extends PHPStanTestCase
 		];
 	}
 
+	#[RequiresPhp('>= 8.1')]
 	public function testEnumIsFinal(): void
 	{
-		if (PHP_VERSION_ID < 80100) {
-			$this->markTestSkipped('Test requires PHP 8.1.');
-		}
-
 		$reflectionProvider = self::createReflectionProvider();
 		$enum = $reflectionProvider->getClass('PHPStan\Fixture\TestEnum');
 		$this->assertTrue($enum->isEnum());
-		$this->assertInstanceOf('ReflectionEnum', $enum->getNativeReflection()); // @phpstan-ignore-line Exact error differs on PHP 7.4 and others
+
+		// @phpstan-ignore-next-line Exact error differs on PHP 7.4 and others
+		$this->assertInstanceOf('ReflectionEnum', $enum->getNativeReflection());
 		$this->assertTrue($enum->isFinal());
 		$this->assertTrue($enum->isFinalByKeyword());
 	}
 
+	#[RequiresPhp('>= 8.1')]
 	public function testBackedEnumType(): void
 	{
-		if (PHP_VERSION_ID < 80100) {
-			$this->markTestSkipped('Test requires PHP 8.1.');
-		}
-
 		$reflectionProvider = self::createReflectionProvider();
 		$enum = $reflectionProvider->getClass('PHPStan\Fixture\TestEnum');
 		$this->assertInstanceOf(IntegerType::class, $enum->getBackedEnumType());

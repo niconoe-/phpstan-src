@@ -11,6 +11,7 @@ use InternalAnnotations\InternalFooTrait;
 use PhpParser\Node\Name;
 use PHPStan\Analyser\Scope;
 use PHPStan\Testing\PHPStanTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class InternalAnnotationsTest extends PHPStanTestCase
 {
@@ -110,9 +111,9 @@ class InternalAnnotationsTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataInternalAnnotations
 	 * @param array<string, mixed> $internalAnnotations
 	 */
+	#[DataProvider('dataInternalAnnotations')]
 	public function testInternalAnnotations(bool $internal, string $className, array $internalAnnotations): void
 	{
 		$reflectionProvider = self::createReflectionProvider();

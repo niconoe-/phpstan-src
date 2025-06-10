@@ -15,6 +15,7 @@ use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
 use PHPStan\Type\UnionType;
 use PHPStan\Type\VerbosityLevel;
+use PHPUnit\Framework\Attributes\DataProvider;
 use function sprintf;
 
 class TemplateTypeFactoryTest extends PHPStanTestCase
@@ -74,9 +75,7 @@ class TemplateTypeFactoryTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataCreate
-	 */
+	#[DataProvider('dataCreate')]
 	public function testCreate(?Type $bound, Type $expectedBound): void
 	{
 		$scope = TemplateTypeScope::createWithFunction('a');

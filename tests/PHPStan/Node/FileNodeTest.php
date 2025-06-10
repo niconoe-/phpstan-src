@@ -9,6 +9,7 @@ use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use function get_class;
 use function sprintf;
 use const DIRECTORY_SEPARATOR;
@@ -72,9 +73,7 @@ class FileNodeTest extends RuleTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataRule
-	 */
+	#[DataProvider('dataRule')]
 	public function testRule(string $file, string $expectedError, int $line): void
 	{
 		$this->analyse([$file], [

@@ -11,6 +11,7 @@ use PHPStan\Type\Generic\TemplateMixedType;
 use PHPStan\Type\Generic\TemplateTypeFactory;
 use PHPStan\Type\Generic\TemplateTypeScope;
 use PHPStan\Type\Generic\TemplateTypeVariance;
+use PHPUnit\Framework\Attributes\DataProvider;
 use function array_map;
 use function sprintf;
 
@@ -58,9 +59,7 @@ class IterableTypeTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataIsSuperTypeOf
-	 */
+	#[DataProvider('dataIsSuperTypeOf')]
 	public function testIsSuperTypeOf(IterableType $type, Type $otherType, TrinaryLogic $expectedResult): void
 	{
 		$actualResult = $type->isSuperTypeOf($otherType);
@@ -157,9 +156,7 @@ class IterableTypeTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataIsSubTypeOf
-	 */
+	#[DataProvider('dataIsSubTypeOf')]
 	public function testIsSubTypeOf(IterableType $type, Type $otherType, TrinaryLogic $expectedResult): void
 	{
 		$actualResult = $type->isSubTypeOf($otherType);
@@ -170,9 +167,7 @@ class IterableTypeTest extends PHPStanTestCase
 		);
 	}
 
-	/**
-	 * @dataProvider dataIsSubTypeOf
-	 */
+	#[DataProvider('dataIsSubTypeOf')]
 	public function testIsSubTypeOfInversed(IterableType $type, Type $otherType, TrinaryLogic $expectedResult): void
 	{
 		$actualResult = $otherType->isSuperTypeOf($type);
@@ -235,9 +230,9 @@ class IterableTypeTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataInferTemplateTypes
 	 * @param array<string,string> $expectedTypes
 	 */
+	#[DataProvider('dataInferTemplateTypes')]
 	public function testResolveTemplateTypes(Type $received, Type $template, array $expectedTypes): void
 	{
 		$result = $template->inferTemplateTypes($received);
@@ -285,9 +280,7 @@ class IterableTypeTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataDescribe
-	 */
+	#[DataProvider('dataDescribe')]
 	public function testDescribe(Type $type, string $expect): void
 	{
 		$result = $type->describe(VerbosityLevel::typeOnly());
@@ -324,9 +317,7 @@ class IterableTypeTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataAccepts
-	 */
+	#[DataProvider('dataAccepts')]
 	public function testAccepts(IterableType $iterableType, Type $otherType, TrinaryLogic $expectedResult): void
 	{
 		$actualResult = $iterableType->accepts($otherType, true)->result;

@@ -12,6 +12,7 @@ use PHPStan\Reflection\PassedByReference;
 use PHPStan\Reflection\Php\PhpMethodReflection;
 use PHPStan\Testing\PHPStanTestCase;
 use PHPStan\Type\VerbosityLevel;
+use PHPUnit\Framework\Attributes\DataProvider;
 use function array_merge;
 use function count;
 use function sprintf;
@@ -958,9 +959,9 @@ class AnnotationsMethodsClassReflectionExtensionTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataMethods
 	 * @param array<string, mixed> $methods
 	 */
+	#[DataProvider('dataMethods')]
 	public function testMethods(string $className, array $methods): void
 	{
 		$reflectionProvider = self::createReflectionProvider();

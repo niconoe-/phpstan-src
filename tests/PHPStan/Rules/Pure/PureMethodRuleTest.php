@@ -4,7 +4,8 @@ namespace PHPStan\Rules\Pure;
 
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
-use const PHP_VERSION_ID;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 
 /**
  * @extends RuleTestCase<PureMethodRule>
@@ -151,12 +152,9 @@ class PureMethodRuleTest extends RuleTestCase
 		]);
 	}
 
+	#[RequiresPhp('>= 8.0')]
 	public function testPureConstructor(): void
 	{
-		if (PHP_VERSION_ID < 80000) {
-			$this->markTestSkipped('Test requires PHP 8.0.');
-		}
-
 		$this->treatPhpDocTypesAsCertain = true;
 		$this->analyse([__DIR__ . '/data/pure-constructor.php'], [
 			[
@@ -189,9 +187,7 @@ class PureMethodRuleTest extends RuleTestCase
 		]);
 	}
 
-	/**
-	 * @dataProvider dataBug11207
-	 */
+	#[DataProvider('dataBug11207')]
 	public function testBug11207(bool $treatPhpDocTypesAsCertain): void
 	{
 		$this->treatPhpDocTypesAsCertain = $treatPhpDocTypesAsCertain;

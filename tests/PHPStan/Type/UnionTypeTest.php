@@ -27,6 +27,7 @@ use PHPStan\Type\Generic\GenericObjectType;
 use PHPStan\Type\Generic\TemplateTypeFactory;
 use PHPStan\Type\Generic\TemplateTypeScope;
 use PHPStan\Type\Generic\TemplateTypeVariance;
+use PHPUnit\Framework\Attributes\DataProvider;
 use RecursionCallable\Foo;
 use stdClass;
 use function array_merge;
@@ -75,9 +76,7 @@ class UnionTypeTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataIsCallable
-	 */
+	#[DataProvider('dataIsCallable')]
 	public function testIsCallable(UnionType $type, TrinaryLogic $expectedResult): void
 	{
 		$actualResult = $type->isCallable();
@@ -147,10 +146,7 @@ class UnionTypeTest extends PHPStanTestCase
 		yield [new VoidType()];
 	}
 
-	/**
-	 * @dataProvider dataSelfCompare
-	 *
-	 */
+	#[DataProvider('dataSelfCompare')]
 	public function testSelfCompare(Type $type): void
 	{
 		$description = $type->describe(VerbosityLevel::precise());
@@ -453,9 +449,7 @@ class UnionTypeTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataIsSuperTypeOf
-	 */
+	#[DataProvider('dataIsSuperTypeOf')]
 	public function testIsSuperTypeOf(UnionType $type, Type $otherType, TrinaryLogic $expectedResult): void
 	{
 		$actualResult = $type->isSuperTypeOf($otherType);
@@ -621,9 +615,7 @@ class UnionTypeTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataIsSubTypeOf
-	 */
+	#[DataProvider('dataIsSubTypeOf')]
 	public function testIsSubTypeOf(UnionType $type, Type $otherType, TrinaryLogic $expectedResult): void
 	{
 		$actualResult = $type->isSubTypeOf($otherType);
@@ -634,9 +626,7 @@ class UnionTypeTest extends PHPStanTestCase
 		);
 	}
 
-	/**
-	 * @dataProvider dataIsSubTypeOf
-	 */
+	#[DataProvider('dataIsSubTypeOf')]
 	public function testIsSubTypeOfInversed(UnionType $type, Type $otherType, TrinaryLogic $expectedResult): void
 	{
 		$actualResult = $otherType->isSuperTypeOf($type);
@@ -699,7 +689,7 @@ class UnionTypeTest extends PHPStanTestCase
 		];
 	}
 
-	/** @dataProvider dataIsScalar */
+	#[DataProvider('dataIsScalar')]
 	public function testIsScalar(UnionType $type, TrinaryLogic $expectedResult): void
 	{
 		$actualResult = $type->isScalar();
@@ -938,9 +928,7 @@ class UnionTypeTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataDescribe
-	 */
+	#[DataProvider('dataDescribe')]
 	public function testDescribe(
 		Type $type,
 		string $expectedPreciseDescription,
@@ -1294,9 +1282,7 @@ class UnionTypeTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataAccepts
-	 */
+	#[DataProvider('dataAccepts')]
 	public function testAccepts(
 		UnionType $type,
 		Type $acceptedType,
@@ -1336,9 +1322,7 @@ class UnionTypeTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataHasMethod
-	 */
+	#[DataProvider('dataHasMethod')]
 	public function testHasMethod(
 		UnionType $type,
 		string $methodName,
@@ -1389,10 +1373,10 @@ class UnionTypeTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataGetConstantArrays
 	 * @param Type[] $types
 	 * @param list<string> $expectedDescriptions
 	 */
+	#[DataProvider('dataGetConstantArrays')]
 	public function testGetConstantArrays(
 		array $types,
 		array $expectedDescriptions,
@@ -1452,9 +1436,9 @@ class UnionTypeTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataGetConstantStrings
 	 * @param list<string> $expectedDescriptions
 	 */
+	#[DataProvider('dataGetConstantStrings')]
 	public function testGetConstantStrings(
 		Type $unionType,
 		array $expectedDescriptions,
@@ -1526,9 +1510,9 @@ class UnionTypeTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataGetObjectClassNames
 	 * @param list<string> $expectedObjectClassNames
 	 */
+	#[DataProvider('dataGetObjectClassNames')]
 	public function testGetObjectClassNames(
 		Type $unionType,
 		array $expectedObjectClassNames,
@@ -1568,9 +1552,9 @@ class UnionTypeTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataGetArrays
 	 * @param list<string> $expectedDescriptions
 	 */
+	#[DataProvider('dataGetArrays')]
 	public function testGetArrays(
 		Type $unionType,
 		array $expectedDescriptions,

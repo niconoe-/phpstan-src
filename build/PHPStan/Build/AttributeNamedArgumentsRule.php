@@ -39,6 +39,10 @@ final class AttributeNamedArgumentsRule implements Rule
 			return [];
 		}
 		$constructor = $attributeReflection->getConstructor();
+		if (!$constructor->acceptsNamedArguments()->yes()) {
+			return [];
+		}
+
 		$variants = $constructor->getVariants();
 		if (count($variants) !== 1) {
 			return [];

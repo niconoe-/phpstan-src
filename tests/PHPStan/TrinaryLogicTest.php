@@ -3,6 +3,7 @@
 namespace PHPStan;
 
 use PHPStan\Testing\PHPStanTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class TrinaryLogicTest extends PHPStanTestCase
 {
@@ -28,9 +29,7 @@ class TrinaryLogicTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataAnd
-	 */
+	#[DataProvider('dataAnd')]
 	public function testAnd(
 		TrinaryLogic $expectedResult,
 		TrinaryLogic $value,
@@ -40,9 +39,7 @@ class TrinaryLogicTest extends PHPStanTestCase
 		$this->assertTrue($expectedResult->equals($value->and(...$operands)));
 	}
 
-	/**
-	 * @dataProvider dataAnd
-	 */
+	#[DataProvider('dataAnd')]
 	public function testLazyAnd(
 		TrinaryLogic $expectedResult,
 		TrinaryLogic $value,
@@ -73,9 +70,7 @@ class TrinaryLogicTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataOr
-	 */
+	#[DataProvider('dataOr')]
 	public function testOr(
 		TrinaryLogic $expectedResult,
 		TrinaryLogic $value,
@@ -85,9 +80,7 @@ class TrinaryLogicTest extends PHPStanTestCase
 		$this->assertTrue($expectedResult->equals($value->or(...$operands)));
 	}
 
-	/**
-	 * @dataProvider dataOr
-	 */
+	#[DataProvider('dataOr')]
 	public function testLazyOr(
 		TrinaryLogic $expectedResult,
 		TrinaryLogic $value,
@@ -106,9 +99,7 @@ class TrinaryLogicTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataNegate
-	 */
+	#[DataProvider('dataNegate')]
 	public function testNegate(TrinaryLogic $expectedResult, TrinaryLogic $operand): void
 	{
 		$this->assertTrue($expectedResult->equals($operand->negate()));
@@ -153,9 +144,7 @@ class TrinaryLogicTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataCompareTo
-	 */
+	#[DataProvider('dataCompareTo')]
 	public function testCompareTo(TrinaryLogic $first, TrinaryLogic $second, ?TrinaryLogic $expected): void
 	{
 		$this->assertSame(
@@ -164,9 +153,7 @@ class TrinaryLogicTest extends PHPStanTestCase
 		);
 	}
 
-	/**
-	 * @dataProvider dataCompareTo
-	 */
+	#[DataProvider('dataCompareTo')]
 	public function testCompareToInversed(TrinaryLogic $first, TrinaryLogic $second, ?TrinaryLogic $expected): void
 	{
 		$this->assertSame(

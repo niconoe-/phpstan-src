@@ -13,6 +13,7 @@ use PHPStan\Php8StubsMap;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\Testing\PHPStanTestCase;
 use PHPStan\Type\VerbosityLevel;
+use PHPUnit\Framework\Attributes\DataProvider;
 use ReflectionClass;
 use Symfony\Component\Finder\Finder;
 use Throwable;
@@ -64,7 +65,7 @@ class ReflectionProviderGoldenTest extends PHPStanTestCase
 		}
 	}
 
-	/** @dataProvider data */
+	#[DataProvider('data')]
 	public function test(string $input, string $expectedOutput): void
 	{
 		$output = self::generateSymbolDescription($input);

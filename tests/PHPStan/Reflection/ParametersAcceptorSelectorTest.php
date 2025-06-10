@@ -28,6 +28,7 @@ use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
 use PHPStan\Type\UnionType;
 use PHPStan\Type\VerbosityLevel;
+use PHPUnit\Framework\Attributes\DataProvider;
 use function count;
 
 class ParametersAcceptorSelectorTest extends PHPStanTestCase
@@ -423,10 +424,10 @@ class ParametersAcceptorSelectorTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataSelectFromTypes
 	 * @param Type[] $types
 	 * @param ParametersAcceptor[] $variants
 	 */
+	#[DataProvider('dataSelectFromTypes')]
 	public function testSelectFromTypes(
 		array $types,
 		array $variants,

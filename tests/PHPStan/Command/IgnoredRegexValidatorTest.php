@@ -6,6 +6,7 @@ use Hoa\Compiler\Llk\Llk;
 use Hoa\File\Read;
 use PHPStan\PhpDoc\TypeStringResolver;
 use PHPStan\Testing\PHPStanTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class IgnoredRegexValidatorTest extends PHPStanTestCase
 {
@@ -152,9 +153,9 @@ class IgnoredRegexValidatorTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataValidate
 	 * @param string[] $expectedTypes
 	 */
+	#[DataProvider('dataValidate')]
 	public function testValidate(
 		string $regex,
 		array $expectedTypes,

@@ -3,6 +3,7 @@
 namespace PHPStan\Analyser;
 
 use PHPStan\Testing\TypeInferenceTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class ParameterClosureTypeExtensionArrowFunctionTest extends TypeInferenceTestCase
 {
@@ -13,9 +14,9 @@ class ParameterClosureTypeExtensionArrowFunctionTest extends TypeInferenceTestCa
 	}
 
 	/**
-	 * @dataProvider dataFileAsserts
 	 * @param mixed ...$args
 	 */
+	#[DataProvider('dataFileAsserts')]
 	public function testFileAsserts(
 		string $assertType,
 		string $file,

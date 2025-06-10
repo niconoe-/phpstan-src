@@ -9,6 +9,7 @@ use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
 use PHPStan\Type\UnionType;
 use PHPStan\Type\VerbosityLevel;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use function sprintf;
 
@@ -76,9 +77,7 @@ class TemplateTypeVarianceTest extends TestCase
 		}
 	}
 
-	/**
-	 * @dataProvider dataIsValidVariance
-	 */
+	#[DataProvider('dataIsValidVariance')]
 	public function testIsValidVariance(
 		TemplateTypeVariance $variance,
 		Type $a,

@@ -5,6 +5,7 @@ namespace PHPStan\Type;
 use InvalidArgumentException;
 use PHPStan\Testing\PHPStanTestCase;
 use PHPStan\TrinaryLogic;
+use PHPUnit\Framework\Attributes\DataProvider;
 use function sprintf;
 
 class ObjectWithoutClassTypeTest extends PHPStanTestCase
@@ -61,9 +62,7 @@ class ObjectWithoutClassTypeTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataIsSuperTypeOf
-	 */
+	#[DataProvider('dataIsSuperTypeOf')]
 	public function testIsSuperTypeOf(ObjectWithoutClassType $type, Type $otherType, TrinaryLogic $expectedResult): void
 	{
 		$actualResult = $type->isSuperTypeOf($otherType);

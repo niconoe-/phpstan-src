@@ -3,14 +3,15 @@
 namespace PHPStan\File;
 
 use PHPStan\Testing\PHPStanTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class FileExcluderTest extends PHPStanTestCase
 {
 
 	/**
-	 * @dataProvider dataExcludeOnWindows
 	 * @param string[] $analyseExcludes
 	 */
+	#[DataProvider('dataExcludeOnWindows')]
 	public function testFilesAreExcludedFromAnalysingOnWindows(
 		string $filePath,
 		array $analyseExcludes,
@@ -116,9 +117,9 @@ class FileExcluderTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataExcludeOnUnix
 	 * @param string[] $analyseExcludes
 	 */
+	#[DataProvider('dataExcludeOnUnix')]
 	public function testFilesAreExcludedFromAnalysingOnUnix(
 		string $filePath,
 		array $analyseExcludes,
@@ -239,9 +240,9 @@ class FileExcluderTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataNoImplicitWildcard
 	 * @param string[] $analyseExcludes
 	 */
+	#[DataProvider('dataNoImplicitWildcard')]
 	public function testNoImplicitWildcard(
 		string $filePath,
 		array $analyseExcludes,

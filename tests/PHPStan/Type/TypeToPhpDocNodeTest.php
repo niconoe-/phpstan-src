@@ -20,6 +20,7 @@ use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\Generic\GenericClassStringType;
 use PHPStan\Type\Generic\GenericObjectType;
 use PHPStan\Type\Generic\TemplateTypeVariance;
+use PHPUnit\Framework\Attributes\DataProvider;
 use stdClass;
 use function sprintf;
 use const PHP_INT_MAX;
@@ -434,9 +435,7 @@ class TypeToPhpDocNodeTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataToPhpDocNode
-	 */
+	#[DataProvider('dataToPhpDocNode')]
 	public function testToPhpDocNode(Type $type, string $expected): void
 	{
 		$phpDocNode = $type->toPhpDocNode();
@@ -517,9 +516,7 @@ class TypeToPhpDocNodeTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataToPhpDocNodeWithoutCheckingEquals
-	 */
+	#[DataProvider('dataToPhpDocNodeWithoutCheckingEquals')]
 	public function testToPhpDocNodeWithoutCheckingEquals(Type $type, string $expected): void
 	{
 		$phpDocNode = $type->toPhpDocNode();
@@ -548,9 +545,7 @@ class TypeToPhpDocNodeTest extends PHPStanTestCase
 		yield ['Closure(Foo $foo=, Bar $bar=): (Closure(Foo): Bar)'];
 	}
 
-	/**
-	 * @dataProvider dataFromTypeStringToPhpDocNode
-	 */
+	#[DataProvider('dataFromTypeStringToPhpDocNode')]
 	public function testFromTypeStringToPhpDocNode(string $typeString): void
 	{
 		$typeStringResolver = self::getContainer()->getByType(TypeStringResolver::class);

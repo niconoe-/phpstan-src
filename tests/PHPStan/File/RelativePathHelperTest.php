@@ -2,6 +2,7 @@
 
 namespace PHPStan\File;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use function array_map;
 use function str_replace;
@@ -180,9 +181,9 @@ class RelativePathHelperTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider dataGetRelativePath
 	 * @param string[] $analysedPaths
 	 */
+	#[DataProvider('dataGetRelativePath')]
 	public function testGetRelativePathOnUnix(
 		string $currentWorkingDirectory,
 		array $analysedPaths,
@@ -198,9 +199,9 @@ class RelativePathHelperTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider dataGetRelativePath
 	 * @param string[] $analysedPaths
 	 */
+	#[DataProvider('dataGetRelativePath')]
 	public function testGetRelativePathOnWindows(
 		string $currentWorkingDirectory,
 		array $analysedPaths,
@@ -247,9 +248,9 @@ class RelativePathHelperTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider dataGetRelativePathWindowsSpecific
 	 * @param string[] $analysedPaths
 	 */
+	#[DataProvider('dataGetRelativePathWindowsSpecific')]
 	public function testGetRelativePathWindowsSpecific(
 		string $currentWorkingDirectory,
 		array $analysedPaths,

@@ -6,6 +6,8 @@ use Nette\Utils\FileSystem;
 use Nette\Utils\Json;
 use PHPStan\File\FileHelper;
 use PHPStan\ShouldNotHappenException;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
 use function array_map;
 use function escapeshellarg;
@@ -18,9 +20,7 @@ use function sys_get_temp_dir;
 use function uniqid;
 use const PHP_BINARY;
 
-/**
- * @group exec
- */
+#[Group('exec')]
 class ParallelAnalyserIntegrationTest extends TestCase
 {
 
@@ -32,9 +32,7 @@ class ParallelAnalyserIntegrationTest extends TestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataRun
-	 */
+	#[DataProvider('dataRun')]
 	public function testRun(string $command): void
 	{
 		$tmpDir = sys_get_temp_dir() . '/' . md5(uniqid());

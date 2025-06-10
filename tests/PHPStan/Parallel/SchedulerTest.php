@@ -2,6 +2,7 @@
 
 namespace PHPStan\Parallel;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use function array_fill;
 use function array_map;
@@ -71,13 +72,13 @@ class SchedulerTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider dataSchedule
 	 * @param positive-int $jobSize
 	 * @param positive-int $maximumNumberOfProcesses
 	 * @param positive-int $minimumNumberOfJobsPerProcess
 	 * @param 0|positive-int $numberOfFiles
 	 * @param array<int> $expectedJobSizes
 	 */
+	#[DataProvider('dataSchedule')]
 	public function testSchedule(
 		int $cpuCores,
 		int $maximumNumberOfProcesses,

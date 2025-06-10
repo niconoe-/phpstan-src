@@ -9,6 +9,8 @@ use PHPStan\Rules\ClassNameCheck;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleLevelHelper;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 use const PHP_VERSION_ID;
 
 /**
@@ -238,9 +240,9 @@ class ClassConstantRuleTest extends RuleTestCase
 	}
 
 	/**
-	 * @dataProvider dataClassConstantOnExpression
 	 * @param list<array{0: string, 1: int, 2?: string}> $errors
 	 */
+	#[DataProvider('dataClassConstantOnExpression')]
 	public function testClassConstantOnExpression(int $phpVersion, array $errors): void
 	{
 		$this->phpVersion = $phpVersion;
@@ -282,12 +284,9 @@ class ClassConstantRuleTest extends RuleTestCase
 		]);
 	}
 
+	#[RequiresPhp('>= 8.0')]
 	public function testRuleWithNullsafeVariant(): void
 	{
-		if (PHP_VERSION_ID < 80000) {
-			$this->markTestSkipped('Test requires PHP 8.0.');
-		}
-
 		$this->phpVersion = PHP_VERSION_ID;
 		$this->analyse([__DIR__ . '/data/class-constant-nullsafe.php'], []);
 	}
@@ -422,12 +421,9 @@ class ClassConstantRuleTest extends RuleTestCase
 		]);
 	}
 
+	#[RequiresPhp('>= 8.2')]
 	public function testClassConstantAccessedOnTrait(): void
 	{
-		if (PHP_VERSION_ID < 80200) {
-			$this->markTestSkipped('Test requires PHP 8.2.');
-		}
-
 		$this->phpVersion = PHP_VERSION_ID;
 		$this->analyse([__DIR__ . '/data/class-constant-accessed-on-trait.php'], [
 			[
@@ -437,12 +433,9 @@ class ClassConstantRuleTest extends RuleTestCase
 		]);
 	}
 
+	#[RequiresPhp('>= 8.3')]
 	public function testDynamicAccess(): void
 	{
-		if (PHP_VERSION_ID < 80300) {
-			$this->markTestSkipped('Test requires PHP 8.3.');
-		}
-
 		$this->phpVersion = PHP_VERSION_ID;
 
 		$this->analyse([__DIR__ . '/data/dynamic-constant-access.php'], [

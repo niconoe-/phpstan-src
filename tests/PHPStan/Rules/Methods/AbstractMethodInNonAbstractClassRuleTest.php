@@ -6,7 +6,7 @@ use Bug3406\AbstractFoo;
 use Bug3406\ClassFoo;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
-use const PHP_VERSION_ID;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 
 /**
  * @extends RuleTestCase<AbstractMethodInNonAbstractClassRule>
@@ -71,12 +71,9 @@ class AbstractMethodInNonAbstractClassRuleTest extends RuleTestCase
 		]);
 	}
 
+	#[RequiresPhp('>= 8.1')]
 	public function testEnum(): void
 	{
-		if (PHP_VERSION_ID < 80100) {
-			$this->markTestSkipped('Test requires PHP 8.1.');
-		}
-
 		$this->analyse([__DIR__ . '/data/method-in-enum-without-body.php'], [
 			[
 				'Non-abstract method MethodInEnumWithoutBody\Foo::doFoo() must contain a body.',
@@ -89,12 +86,9 @@ class AbstractMethodInNonAbstractClassRuleTest extends RuleTestCase
 		]);
 	}
 
+	#[RequiresPhp('>= 8.1')]
 	public function testBug11592(): void
 	{
-		if (PHP_VERSION_ID < 80100) {
-			$this->markTestSkipped('Test requires PHP 8.1');
-		}
-
 		$this->analyse([__DIR__ . '/../Classes/data/bug-11592.php'], [
 			[
 				'Enum Bug11592\Test contains abstract method from().',

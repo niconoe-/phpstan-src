@@ -36,6 +36,7 @@ use PHPStan\Type\ObjectWithoutClassType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\UnionType;
 use PHPStan\Type\VerbosityLevel;
+use PHPUnit\Framework\Attributes\DataProvider;
 use function implode;
 use function sprintf;
 use const PHP_INT_MAX;
@@ -82,10 +83,10 @@ class TypeSpecifierTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataCondition
 	 * @param mixed[] $expectedPositiveResult
 	 * @param mixed[] $expectedNegatedResult
 	 */
+	#[DataProvider('dataCondition')]
 	public function testCondition(Expr $expr, array $expectedPositiveResult, array $expectedNegatedResult): void
 	{
 		$specifiedTypes = $this->typeSpecifier->specifyTypesInCondition($this->scope, $expr, TypeSpecifierContext::createTruthy());

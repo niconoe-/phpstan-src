@@ -11,6 +11,7 @@ use AnnotationsProperties\FooInterface;
 use PHPStan\Analyser\Scope;
 use PHPStan\Testing\PHPStanTestCase;
 use PHPStan\Type\VerbosityLevel;
+use PHPUnit\Framework\Attributes\DataProvider;
 use function sprintf;
 
 class AnnotationsPropertiesClassReflectionExtensionTest extends PHPStanTestCase
@@ -272,9 +273,9 @@ class AnnotationsPropertiesClassReflectionExtensionTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataProperties
 	 * @param array<string, mixed> $properties
 	 */
+	#[DataProvider('dataProperties')]
 	public function testProperties(string $className, array $properties): void
 	{
 		$reflectionProvider = self::createReflectionProvider();

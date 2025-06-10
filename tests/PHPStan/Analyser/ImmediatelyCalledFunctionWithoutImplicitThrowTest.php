@@ -3,6 +3,7 @@
 namespace PHPStan\Analyser;
 
 use PHPStan\Testing\TypeInferenceTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use function array_merge;
 
 class ImmediatelyCalledFunctionWithoutImplicitThrowTest extends TypeInferenceTestCase
@@ -14,9 +15,9 @@ class ImmediatelyCalledFunctionWithoutImplicitThrowTest extends TypeInferenceTes
 	}
 
 	/**
-	 * @dataProvider dataFileAsserts
 	 * @param mixed ...$args
 	 */
+	#[DataProvider('dataFileAsserts')]
 	public function testFileAsserts(
 		string $assertType,
 		string $file,

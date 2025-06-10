@@ -6,6 +6,7 @@ use FinalAnnotations\FinalFoo;
 use FinalAnnotations\Foo;
 use PHPStan\Analyser\Scope;
 use PHPStan\Testing\PHPStanTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class FinalAnnotationsTest extends PHPStanTestCase
 {
@@ -37,9 +38,9 @@ class FinalAnnotationsTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataFinalAnnotations
 	 * @param array<string, mixed> $finalAnnotations
 	 */
+	#[DataProvider('dataFinalAnnotations')]
 	public function testFinalAnnotations(bool $final, string $className, array $finalAnnotations): void
 	{
 		$reflectionProvider = self::createReflectionProvider();

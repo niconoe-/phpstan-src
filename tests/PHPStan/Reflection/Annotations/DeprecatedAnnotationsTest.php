@@ -16,6 +16,8 @@ use PhpParser\Node\Name;
 use PHPStan\Analyser\Scope;
 use PHPStan\Testing\PHPStanTestCase;
 use PHPStan\TrinaryLogic;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 use const PHP_VERSION_ID;
 
 class DeprecatedAnnotationsTest extends PHPStanTestCase
@@ -88,9 +90,9 @@ class DeprecatedAnnotationsTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataDeprecatedAnnotations
 	 * @param array<string, mixed> $deprecatedAnnotations
 	 */
+	#[DataProvider('dataDeprecatedAnnotations')]
 	public function testDeprecatedAnnotations(bool $deprecated, string $className, ?string $classDeprecation, array $deprecatedAnnotations): void
 	{
 		$reflectionProvider = self::createReflectionProvider();
@@ -189,10 +191,9 @@ class DeprecatedAnnotationsTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataDeprecatedAttributeAboveFunction
-	 *
 	 * @param non-empty-string $functionName
 	 */
+	#[DataProvider('dataDeprecatedAttributeAboveFunction')]
 	public function testDeprecatedAttributeAboveFunction(string $functionName, TrinaryLogic $isDeprecated, ?string $deprecatedDescription): void
 	{
 		require_once __DIR__ . '/data/deprecated-attribute-functions.php';
@@ -231,9 +232,7 @@ class DeprecatedAnnotationsTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataDeprecatedAttributeAboveMethod
-	 */
+	#[DataProvider('dataDeprecatedAttributeAboveMethod')]
 	public function testDeprecatedAttributeAboveMethod(string $className, string $methodName, TrinaryLogic $isDeprecated, ?string $deprecatedDescription): void
 	{
 		$reflectionProvider = self::createReflectionProvider();
@@ -294,9 +293,7 @@ class DeprecatedAnnotationsTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataDeprecatedAttributeAboveClassConstant
-	 */
+	#[DataProvider('dataDeprecatedAttributeAboveClassConstant')]
 	public function testDeprecatedAttributeAboveClassConstant(string $className, string $constantName, TrinaryLogic $isDeprecated, ?string $deprecatedDescription): void
 	{
 		$reflectionProvider = self::createReflectionProvider();
@@ -328,15 +325,10 @@ class DeprecatedAnnotationsTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataDeprecatedAttributeAboveEnumCase
-	 */
+	#[RequiresPhp('>= 8.1')]
+	#[DataProvider('dataDeprecatedAttributeAboveEnumCase')]
 	public function testDeprecatedAttributeAboveEnumCase(string $className, string $caseName, TrinaryLogic $isDeprecated, ?string $deprecatedDescription): void
 	{
-		if (PHP_VERSION_ID < 80100) {
-			$this->markTestSkipped('Test requires PHP 8.1.');
-		}
-
 		$reflectionProvider = self::createReflectionProvider();
 		$class = $reflectionProvider->getClass($className);
 		$case = $class->getEnumCase($caseName);
@@ -384,15 +376,12 @@ class DeprecatedAnnotationsTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataDeprecatedAttributeAbovePropertyHook
 	 * @param 'get'|'set' $hookName
 	 */
+	#[RequiresPhp('>= 8.4')]
+	#[DataProvider('dataDeprecatedAttributeAbovePropertyHook')]
 	public function testDeprecatedAttributeAbovePropertyHook(string $className, string $propertyName, string $hookName, TrinaryLogic $isDeprecated, ?string $deprecatedDescription): void
 	{
-		if (PHP_VERSION_ID < 80400) {
-			$this->markTestSkipped('Test requires PHP 8.4.');
-		}
-
 		$reflectionProvider = self::createReflectionProvider();
 		$class = $reflectionProvider->getClass($className);
 		$property = $class->getNativeProperty($propertyName);

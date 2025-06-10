@@ -2,6 +2,7 @@
 
 namespace PHPStan\File;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ParentDirectoryRelativePathHelperTest extends TestCase
@@ -103,9 +104,7 @@ class ParentDirectoryRelativePathHelperTest extends TestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataGetRelativePath
-	 */
+	#[DataProvider('dataGetRelativePath')]
 	public function testGetRelativePath(
 		string $parentDirectory,
 		string $filename,

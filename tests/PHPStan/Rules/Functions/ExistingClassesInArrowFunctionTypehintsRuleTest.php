@@ -10,6 +10,8 @@ use PHPStan\Rules\FunctionDefinitionCheck;
 use PHPStan\Rules\PhpDoc\UnresolvableTypeHelper;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 use const PHP_VERSION_ID;
 
 /**
@@ -79,9 +81,9 @@ class ExistingClassesInArrowFunctionTypehintsRuleTest extends RuleTestCase
 	}
 
 	/**
-	 * @dataProvider dataNativeUnionTypes
 	 * @param list<array{0: string, 1: int, 2?: string}> $errors
 	 */
+	#[DataProvider('dataNativeUnionTypes')]
 	public function testNativeUnionTypes(int $phpVersionId, array $errors): void
 	{
 		$this->phpVersionId = $phpVersionId;
@@ -239,15 +241,12 @@ class ExistingClassesInArrowFunctionTypehintsRuleTest extends RuleTestCase
 	}
 
 	/**
-	 * @dataProvider dataRequiredParameterAfterOptional
 	 * @param list<array{0: string, 1: int, 2?: string}> $errors
 	 */
+	#[RequiresPhp('>= 8.0')]
+	#[DataProvider('dataRequiredParameterAfterOptional')]
 	public function testRequiredParameterAfterOptional(int $phpVersionId, array $errors): void
 	{
-		if (PHP_VERSION_ID < 80000) {
-			self::markTestSkipped('Test requires PHP 8.0.');
-		}
-
 		$this->phpVersionId = $phpVersionId;
 		$this->analyse([__DIR__ . '/data/required-parameter-after-optional-arrow.php'], $errors);
 	}
@@ -281,9 +280,9 @@ class ExistingClassesInArrowFunctionTypehintsRuleTest extends RuleTestCase
 	}
 
 	/**
-	 * @dataProvider dataIntersectionTypes
 	 * @param list<array{0: string, 1: int, 2?: string}> $errors
 	 */
+	#[DataProvider('dataIntersectionTypes')]
 	public function testIntersectionTypes(int $phpVersion, array $errors): void
 	{
 		$this->phpVersionId = $phpVersion;

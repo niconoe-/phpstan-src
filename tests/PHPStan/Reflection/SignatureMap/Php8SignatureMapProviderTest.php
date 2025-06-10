@@ -34,6 +34,7 @@ use PHPStan\Type\Type;
 use PHPStan\Type\UnionType;
 use PHPStan\Type\VerbosityLevel;
 use PHPStan\Type\VoidType;
+use PHPUnit\Framework\Attributes\DataProvider;
 use function array_map;
 use function array_merge;
 use function count;
@@ -132,9 +133,9 @@ class Php8SignatureMapProviderTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataFunctions
 	 * @param mixed[] $parameters
 	 */
+	#[DataProvider('dataFunctions')]
 	public function testFunctions(
 		string $functionName,
 		array $parameters,
@@ -262,9 +263,9 @@ class Php8SignatureMapProviderTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataMethods
 	 * @param mixed[] $parameters
 	 */
+	#[DataProvider('dataMethods')]
 	public function testMethods(
 		string $className,
 		string $methodName,
@@ -313,9 +314,7 @@ class Php8SignatureMapProviderTest extends PHPStanTestCase
 		return array_map(static fn (string $file): array => [__DIR__ . '/../../../../vendor/phpstan/php-8-stubs/' . $file], array_merge($map->classes, $map->functions));
 	}
 
-	/**
-	 * @dataProvider dataParseAll
-	 */
+	#[DataProvider('dataParseAll')]
 	public function testParseAll(string $stubFile): void
 	{
 		$parser = $this->getParser();

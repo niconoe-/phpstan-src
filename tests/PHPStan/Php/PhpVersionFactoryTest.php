@@ -2,6 +2,7 @@
 
 namespace PHPStan\Php;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use const PHP_VERSION_ID;
 
@@ -92,9 +93,7 @@ class PhpVersionFactoryTest extends TestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataCreate
-	 */
+	#[DataProvider('dataCreate')]
 	public function testCreate(
 		?int $versionId,
 		?string $composerPhpVersion,

@@ -4,6 +4,7 @@ namespace PHPStan\Analyser;
 
 use PHPStan\ShouldNotHappenException;
 use PHPStan\Testing\PHPStanTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class TypeSpecifierContextTest extends PHPStanTestCase
 {
@@ -35,9 +36,9 @@ class TypeSpecifierContextTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataContext
 	 * @param bool[] $results
 	 */
+	#[DataProvider('dataContext')]
 	public function testContext(TypeSpecifierContext $context, array $results): void
 	{
 		$this->assertSame($results[0], $context->true());
@@ -70,9 +71,9 @@ class TypeSpecifierContextTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataNegate
 	 * @param bool[] $results
 	 */
+	#[DataProvider('dataNegate')]
 	public function testNegate(TypeSpecifierContext $context, array $results): void
 	{
 		$this->assertSame($results[0], $context->true());

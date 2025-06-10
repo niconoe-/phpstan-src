@@ -21,6 +21,7 @@ use PHPStan\Type\Test\E;
 use PHPStan\Type\Type;
 use PHPStan\Type\UnionType;
 use PHPStan\Type\VerbosityLevel;
+use PHPUnit\Framework\Attributes\DataProvider;
 use ReflectionClass;
 use stdClass;
 use Traversable;
@@ -261,10 +262,8 @@ class GenericObjectTypeTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataIsSuperTypeOf
-	 * @dataProvider dataTypeProjections
-	 */
+	#[DataProvider('dataIsSuperTypeOf')]
+	#[DataProvider('dataTypeProjections')]
 	public function testIsSuperTypeOf(Type $type, Type $otherType, TrinaryLogic $expectedResult): void
 	{
 		$actualResult = $type->isSuperTypeOf($otherType);
@@ -331,10 +330,8 @@ class GenericObjectTypeTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataAccepts
-	 * @dataProvider dataTypeProjections
-	 */
+	#[DataProvider('dataAccepts')]
+	#[DataProvider('dataTypeProjections')]
 	public function testAccepts(
 		Type $acceptingType,
 		Type $acceptedType,
@@ -449,9 +446,9 @@ class GenericObjectTypeTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataInferTemplateTypes
 	 * @param array<string,string> $expectedTypes
 	 */
+	#[DataProvider('dataInferTemplateTypes')]
 	public function testResolveTemplateTypes(Type $received, Type $template, array $expectedTypes): void
 	{
 		$result = $template->inferTemplateTypes($received);
@@ -957,10 +954,9 @@ class GenericObjectTypeTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataGetReferencedTypeArguments
-	 *
 	 * @param array<TemplateTypeReference> $expectedReferences
 	 */
+	#[DataProvider('dataGetReferencedTypeArguments')]
 	public function testGetReferencedTypeArguments(TemplateTypeVariance $positionVariance, Type $type, array $expectedReferences): void
 	{
 		$result = [];

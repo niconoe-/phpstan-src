@@ -9,6 +9,8 @@ use PHPStan\TrinaryLogic;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 use PHPStan\Type\VerbosityLevel;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 use const PHP_VERSION_ID;
 
 class ReflectionProviderTest extends PHPStanTestCase
@@ -50,10 +52,9 @@ class ReflectionProviderTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataFunctionThrowType
-	 *
 	 * @param non-empty-string $functionName
 	 */
+	#[DataProvider('dataFunctionThrowType')]
 	public function testFunctionThrowType(string $functionName, ?Type $expectedThrowType): void
 	{
 		$reflectionProvider = self::createReflectionProvider();
@@ -97,10 +98,9 @@ class ReflectionProviderTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataFunctionDeprecated
-	 *
 	 * @param non-empty-string $functionName
 	 */
+	#[DataProvider('dataFunctionDeprecated')]
 	public function testFunctionDeprecated(string $functionName, bool $isDeprecated): void
 	{
 		$reflectionProvider = self::createReflectionProvider();
@@ -124,9 +124,7 @@ class ReflectionProviderTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataMethodThrowType
-	 */
+	#[DataProvider('dataMethodThrowType')]
 	public function testMethodThrowType(string $className, string $methodName, ?Type $expectedThrowType): void
 	{
 		$reflectionProvider = self::createReflectionProvider();
@@ -144,12 +142,9 @@ class ReflectionProviderTest extends PHPStanTestCase
 		);
 	}
 
+	#[RequiresPhp('>= 8.3')]
 	public function testNativeClassConstantTypeInEvaledClass(): void
 	{
-		if (PHP_VERSION_ID < 80300) {
-			$this->markTestSkipped('Test requires PHP 8.3.');
-		}
-
 		eval('namespace NativeClassConstantInEvaledClass; class Foo { public const int FOO = 1; }');
 
 		$reflectionProvider = self::createReflectionProvider();
