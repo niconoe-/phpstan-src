@@ -22,6 +22,11 @@ class PropertyInClassRuleTest extends RuleTestCase
 	#[RequiresPhp('< 8.4')]
 	public function testPhpLessThan84AndHookedPropertiesInClass(): void
 	{
+		// @phpstan-ignore phpstan.skipTestsRequiresPhp
+		if (PHP_VERSION_ID < 80000) {
+			$this->markTestSkipped('Property hooks cause syntax error on PHP 7.4');
+		}
+
 		$this->analyse([__DIR__ . '/data/hooked-properties-in-class.php'], [
 			[
 				'Property hooks are supported only on PHP 8.4 and later.',
@@ -33,6 +38,11 @@ class PropertyInClassRuleTest extends RuleTestCase
 	#[RequiresPhp('>= 8.4')]
 	public function testPhp84AndHookedPropertiesWithoutBodiesInClass(): void
 	{
+		// @phpstan-ignore phpstan.skipTestsRequiresPhp
+		if (PHP_VERSION_ID < 80000) {
+			$this->markTestSkipped('Property hooks cause syntax error on PHP 7.4');
+		}
+
 		$this->analyse([__DIR__ . '/data/hooked-properties-without-bodies-in-class.php'], [
 			[
 				'Non-abstract properties cannot include hooks without bodies.',
