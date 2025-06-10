@@ -15,7 +15,6 @@ use PHPStan\Testing\RuleTestCase;
 use PHPUnit\Framework\Attributes\RequiresPhp;
 use function array_merge;
 use function usort;
-use const PHP_VERSION_ID;
 
 /**
  * @extends RuleTestCase<CallStaticMethodsRule>
@@ -412,13 +411,10 @@ class CallStaticMethodsRuleTest extends RuleTestCase
 		]);
 	}
 
+	#[RequiresPhp('>= 8.0')]
 	public function testNamedArguments(): void
 	{
 		$this->checkThisOnly = false;
-
-		if (PHP_VERSION_ID < 80000) {
-			$this->markTestSkipped('Test requires PHP 8.0');
-		}
 
 		$this->analyse([__DIR__ . '/data/static-method-named-arguments.php'], [
 			[
