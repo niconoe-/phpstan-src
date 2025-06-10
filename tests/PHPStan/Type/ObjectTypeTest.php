@@ -35,6 +35,7 @@ use PHPStan\Type\Generic\TemplateTypeFactory;
 use PHPStan\Type\Generic\TemplateTypeScope;
 use PHPStan\Type\Generic\TemplateTypeVariance;
 use PHPStan\Type\Traits\ConstantNumericComparisonTypeTrait;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 use SimpleXMLElement;
 use stdClass;
 use Throwable;
@@ -681,15 +682,12 @@ class ObjectTypeTest extends PHPStanTestCase
 	 * @dataProvider dataGetEnumCases
 	 * @param list<EnumCaseObjectType> $expectedEnumCases
 	 */
+	#[RequiresPhp('>= 8.1')]
 	public function testGetEnumCases(
 		ObjectType $type,
 		array $expectedEnumCases,
 	): void
 	{
-		if (PHP_VERSION_ID < 80100) {
-			$this->markTestSkipped('Test requires PHP 8.1.');
-		}
-
 		$enumCases = $type->getEnumCases();
 		$this->assertCount(count($expectedEnumCases), $enumCases);
 		foreach ($enumCases as $i => $enumCase) {

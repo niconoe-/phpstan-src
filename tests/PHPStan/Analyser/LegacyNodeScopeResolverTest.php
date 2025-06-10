@@ -16,6 +16,7 @@ use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\Type;
 use PHPStan\Type\VerbosityLevel;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 use SomeNodeScopeResolverNamespace\Foo;
 use function define;
 use function defined;
@@ -8542,15 +8543,12 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 	/**
 	 * @dataProvider dataDynamicConstantsWithNativeTypes
 	 */
+	#[RequiresPhp('>= 8.3')]
 	public function testDynamicConstantsWithNativeTypes(
 		string $description,
 		string $expression,
 	): void
 	{
-		if (PHP_VERSION_ID < 80300) {
-			$this->markTestSkipped('Test requires PHP 8.3.');
-		}
-
 		$this->assertTypes(
 			__DIR__ . '/data/dynamic-constant-native-types.php',
 			$description,

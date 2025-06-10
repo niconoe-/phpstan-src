@@ -6,6 +6,7 @@ use PHPStan\Php\PhpVersion;
 use PHPStan\Reflection\Php\PhpClassReflectionExtension;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 use function array_filter;
 use function array_values;
 use const PHP_VERSION_ID;
@@ -231,16 +232,13 @@ class OverridingMethodRuleTest extends RuleTestCase
 	 * @dataProvider dataParameterContravariance
 	 * @param list<array{0: string, 1: int, 2?: string}> $expectedErrors
 	 */
+	#[RequiresPhp('>= 8.0')]
 	public function testParameterContravariance(
 		string $file,
 		int $phpVersion,
 		array $expectedErrors,
 	): void
 	{
-		if (PHP_VERSION_ID < 80000) {
-			self::markTestSkipped('Test requires PHP 8.0.');
-		}
-
 		$this->phpVersionId = $phpVersion;
 		$this->analyse([$file], $expectedErrors);
 	}
@@ -574,12 +572,9 @@ class OverridingMethodRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/bug-9391.php'], []);
 	}
 
+	#[RequiresPhp('>= 8.0')]
 	public function testBugWithIndirectPrototype(): void
 	{
-		if (PHP_VERSION_ID < 80000) {
-			$this->markTestSkipped('Test requires PHP 8.0.');
-		}
-
 		$this->phpVersionId = PHP_VERSION_ID;
 		$this->analyse([__DIR__ . '/data/overriding-indirect-prototype.php'], [
 			[
@@ -674,12 +669,9 @@ class OverridingMethodRuleTest extends RuleTestCase
 		]);
 	}
 
+	#[RequiresPhp('>= 8.1')]
 	public function testBug9615(): void
 	{
-		if (PHP_VERSION_ID < 80100) {
-			$this->markTestSkipped('Test requires PHP 8.1.');
-		}
-
 		$tipText = 'Make it covariant, or use the #[\ReturnTypeWillChange] attribute to temporarily suppress the error.';
 
 		$this->phpVersionId = PHP_VERSION_ID;
@@ -739,12 +731,9 @@ class OverridingMethodRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/overriding-trait-methods.php'], $errors);
 	}
 
+	#[RequiresPhp('>= 8.3')]
 	public function testOverrideAttribute(): void
 	{
-		if (PHP_VERSION_ID < 80300) {
-			$this->markTestSkipped('Test requires PHP 8.3.');
-		}
-
 		$this->phpVersionId = PHP_VERSION_ID;
 		$this->analyse([__DIR__ . '/data/override-attribute.php'], [
 			[
@@ -801,12 +790,9 @@ class OverridingMethodRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/bug-10153.php'], $errors);
 	}
 
+	#[RequiresPhp('>= 8.3')]
 	public function testBug12471(): void
 	{
-		if (PHP_VERSION_ID < 80300) {
-			$this->markTestSkipped('Test requires PHP 8.3.');
-		}
-
 		$this->checkMissingOverrideMethodAttribute = true;
 		$this->phpVersionId = PHP_VERSION_ID;
 		$this->analyse([__DIR__ . '/data/bug-12471.php'], []);
@@ -824,22 +810,16 @@ class OverridingMethodRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/bug-9524.php'], []);
 	}
 
+	#[RequiresPhp('>= 8.0')]
 	public function testSimpleXmlElementChildClass(): void
 	{
-		if (PHP_VERSION_ID < 80000) {
-			$this->markTestSkipped('Test requires PHP 8.0.');
-		}
-
 		$this->phpVersionId = PHP_VERSION_ID;
 		$this->analyse([__DIR__ . '/data/simple-xml-element-child.php'], []);
 	}
 
+	#[RequiresPhp('>= 8.3')]
 	public function testFixOverride(): void
 	{
-		if (PHP_VERSION_ID < 80300) {
-			$this->markTestSkipped('Test requires PHP 8.3.');
-		}
-
 		$this->phpVersionId = PHP_VERSION_ID;
 		$this->checkMissingOverrideMethodAttribute = true;
 		$this->fix(__DIR__ . '/data/fix-override-attribute.php', __DIR__ . '/data/fix-override-attribute.php.fixed');

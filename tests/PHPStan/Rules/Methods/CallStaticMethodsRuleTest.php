@@ -12,6 +12,7 @@ use PHPStan\Rules\Properties\PropertyReflectionFinder;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleLevelHelper;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 use function array_merge;
 use function usort;
 use const PHP_VERSION_ID;
@@ -452,12 +453,9 @@ class CallStaticMethodsRuleTest extends RuleTestCase
 		]);
 	}
 
+	#[RequiresPhp('< 8.0')]
 	public function testBug1971(): void
 	{
-		if (PHP_VERSION_ID >= 80000) {
-			$this->markTestSkipped('Test requires PHP 7.x');
-		}
-
 		$this->checkThisOnly = false;
 		$this->analyse([__DIR__ . '/data/bug-1971.php'], [
 			[
@@ -467,12 +465,9 @@ class CallStaticMethodsRuleTest extends RuleTestCase
 		]);
 	}
 
+	#[RequiresPhp('>= 8.0')]
 	public function testBug1971Php8(): void
 	{
-		if (PHP_VERSION_ID < 80000) {
-			$this->markTestSkipped('Test requires PHP 8.0');
-		}
-
 		$this->checkThisOnly = false;
 		$this->analyse([__DIR__ . '/data/bug-1971.php'], [
 			[
@@ -760,24 +755,18 @@ class CallStaticMethodsRuleTest extends RuleTestCase
 	 * @dataProvider dataMixed
 	 * @param list<array{0: string, 1: int, 2?: string}> $errors
 	 */
+	#[RequiresPhp('>= 8.0')]
 	public function testMixed(bool $checkExplicitMixed, bool $checkImplicitMixed, array $errors): void
 	{
-		if (PHP_VERSION_ID < 80000) {
-			self::markTestSkipped('Test requires PHP 8.0.');
-		}
-
 		$this->checkThisOnly = false;
 		$this->checkExplicitMixed = $checkExplicitMixed;
 		$this->checkImplicitMixed = $checkImplicitMixed;
 		$this->analyse([__DIR__ . '/data/call-static-method-mixed.php'], $errors);
 	}
 
+	#[RequiresPhp('>= 8.1')]
 	public function testBugWrongMethodNameWithTemplateMixed(): void
 	{
-		if (PHP_VERSION_ID < 80100) {
-			$this->markTestSkipped('Test requires PHP 8.1');
-		}
-
 		$this->checkThisOnly = false;
 		$this->checkExplicitMixed = true;
 		$this->checkImplicitMixed = true;

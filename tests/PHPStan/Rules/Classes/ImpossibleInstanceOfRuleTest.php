@@ -4,7 +4,7 @@ namespace PHPStan\Rules\Classes;
 
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
-use const PHP_VERSION_ID;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 
 /**
  * @extends RuleTestCase<ImpossibleInstanceOfRule>
@@ -261,12 +261,9 @@ class ImpossibleInstanceOfRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/bug-5333.php'], []);
 	}
 
+	#[RequiresPhp('>= 8.0')]
 	public function testBug8042(): void
 	{
-		if (PHP_VERSION_ID < 80000) {
-			$this->markTestSkipped('This test needs PHP 8.0');
-		}
-
 		$this->treatPhpDocTypesAsCertain = true;
 		$this->analyse([__DIR__ . '/data/bug-8042.php'], [
 			[
@@ -282,12 +279,9 @@ class ImpossibleInstanceOfRuleTest extends RuleTestCase
 		]);
 	}
 
+	#[RequiresPhp('>= 8.1')]
 	public function testBug7721(): void
 	{
-		if (PHP_VERSION_ID < 80100) {
-			$this->markTestSkipped('This test needs PHP 8.1');
-		}
-
 		$this->treatPhpDocTypesAsCertain = true;
 		$this->analyse([__DIR__ . '/data/bug-7721.php'], []);
 	}
@@ -475,12 +469,9 @@ class ImpossibleInstanceOfRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/impossible-instanceof-report-always-true-last-condition.php'], $expectedErrors);
 	}
 
+	#[RequiresPhp('>= 8.1')]
 	public function testBug10201(): void
 	{
-		if (PHP_VERSION_ID < 80100) {
-			$this->markTestSkipped('This test needs PHP 8.1');
-		}
-
 		$this->treatPhpDocTypesAsCertain = true;
 		$this->analyse([__DIR__ . '/../../Analyser/nsrt/bug-10201.php'], [
 			[
@@ -504,12 +495,9 @@ class ImpossibleInstanceOfRuleTest extends RuleTestCase
 		]);
 	}
 
+	#[RequiresPhp('>= 8.0')]
 	public function testNewIsAlwaysFinalClass(): void
 	{
-		if (PHP_VERSION_ID < 80000) {
-			$this->markTestSkipped('This test needs PHP 8.0.');
-		}
-
 		$this->treatPhpDocTypesAsCertain = true;
 		$this->analyse([__DIR__ . '/data/impossible-instanceof-new-is-always-final.php'], [
 			[

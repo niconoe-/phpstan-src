@@ -5,6 +5,7 @@ namespace PHPStan\Build;
 use PHPStan\Php\PhpVersion;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 use const PHP_VERSION_ID;
 
 /**
@@ -18,12 +19,9 @@ class NamedArgumentsRuleTest extends RuleTestCase
 		return new NamedArgumentsRule(self::createReflectionProvider(), new PhpVersion(PHP_VERSION_ID));
 	}
 
+	#[RequiresPhp('>= 8.0')]
 	public function testRule(): void
 	{
-		if (PHP_VERSION_ID < 80000) {
-			$this->markTestSkipped('Test requires PHP 8.0.');
-		}
-
 		$this->analyse([__DIR__ . '/data/named-arguments.php'], [
 			[
 				'You\'re passing a non-default value Exception to parameter $previous but previous argument is passing default value to its parameter ($code). You can skip it and use named argument for $previous instead.',
@@ -48,48 +46,36 @@ class NamedArgumentsRuleTest extends RuleTestCase
 		]);
 	}
 
+	#[RequiresPhp('>= 8.0')]
 	public function testNoFix(): void
 	{
-		if (PHP_VERSION_ID < 80000) {
-			$this->markTestSkipped('Test requires PHP 8.0.');
-		}
-
 		$this->fix(
 			__DIR__ . '/data/named-arguments-no-errors.php',
 			__DIR__ . '/data/named-arguments-no-errors.php',
 		);
 	}
 
+	#[RequiresPhp('>= 8.0')]
 	public function testFix(): void
 	{
-		if (PHP_VERSION_ID < 80000) {
-			$this->markTestSkipped('Test requires PHP 8.0.');
-		}
-
 		$this->fix(
 			__DIR__ . '/data/named-arguments.php',
 			__DIR__ . '/data/named-arguments.php.fixed',
 		);
 	}
 
+	#[RequiresPhp('>= 8.0')]
 	public function testFixFileWithMatch(): void
 	{
-		if (PHP_VERSION_ID < 80000) {
-			$this->markTestSkipped('Test requires PHP 8.0.');
-		}
-
 		$this->fix(
 			__DIR__ . '/data/named-arguments-match.php',
 			__DIR__ . '/data/named-arguments-match.php.fixed',
 		);
 	}
 
+	#[RequiresPhp('>= 8.1')]
 	public function testNewInInitializer(): void
 	{
-		if (PHP_VERSION_ID < 80100) {
-			$this->markTestSkipped('Test requires PHP 8.1.');
-		}
-
 		$this->analyse([__DIR__ . '/data/named-arguments-new.php'], [
 			[
 				'You\'re passing a non-default value \'bar\' to parameter $d but previous argument is passing default value to its parameter ($c). You can skip it and use named argument for $d instead.',
@@ -98,12 +84,9 @@ class NamedArgumentsRuleTest extends RuleTestCase
 		]);
 	}
 
+	#[RequiresPhp('>= 8.1')]
 	public function testFixNewInInitializer(): void
 	{
-		if (PHP_VERSION_ID < 80100) {
-			$this->markTestSkipped('Test requires PHP 8.1.');
-		}
-
 		$this->fix(__DIR__ . '/data/named-arguments-new.php', __DIR__ . '/data/named-arguments-new.php.fixed');
 	}
 

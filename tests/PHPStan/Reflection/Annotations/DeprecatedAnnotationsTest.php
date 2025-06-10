@@ -16,6 +16,7 @@ use PhpParser\Node\Name;
 use PHPStan\Analyser\Scope;
 use PHPStan\Testing\PHPStanTestCase;
 use PHPStan\TrinaryLogic;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 use const PHP_VERSION_ID;
 
 class DeprecatedAnnotationsTest extends PHPStanTestCase
@@ -331,12 +332,9 @@ class DeprecatedAnnotationsTest extends PHPStanTestCase
 	/**
 	 * @dataProvider dataDeprecatedAttributeAboveEnumCase
 	 */
+	#[RequiresPhp('>= 8.1')]
 	public function testDeprecatedAttributeAboveEnumCase(string $className, string $caseName, TrinaryLogic $isDeprecated, ?string $deprecatedDescription): void
 	{
-		if (PHP_VERSION_ID < 80100) {
-			$this->markTestSkipped('Test requires PHP 8.1.');
-		}
-
 		$reflectionProvider = self::createReflectionProvider();
 		$class = $reflectionProvider->getClass($className);
 		$case = $class->getEnumCase($caseName);
@@ -387,12 +385,9 @@ class DeprecatedAnnotationsTest extends PHPStanTestCase
 	 * @dataProvider dataDeprecatedAttributeAbovePropertyHook
 	 * @param 'get'|'set' $hookName
 	 */
+	#[RequiresPhp('>= 8.4')]
 	public function testDeprecatedAttributeAbovePropertyHook(string $className, string $propertyName, string $hookName, TrinaryLogic $isDeprecated, ?string $deprecatedDescription): void
 	{
-		if (PHP_VERSION_ID < 80400) {
-			$this->markTestSkipped('Test requires PHP 8.4.');
-		}
-
 		$reflectionProvider = self::createReflectionProvider();
 		$class = $reflectionProvider->getClass($className);
 		$property = $class->getNativeProperty($propertyName);

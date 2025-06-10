@@ -10,6 +10,7 @@ use PHPStan\Rules\FunctionDefinitionCheck;
 use PHPStan\Rules\PhpDoc\UnresolvableTypeHelper;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 use const PHP_VERSION_ID;
 
 /**
@@ -361,12 +362,9 @@ class ExistingClassesInTypehintsRuleTest extends RuleTestCase
 	 * @dataProvider dataRequiredParameterAfterOptional
 	 * @param list<array{0: string, 1: int, 2?: string}> $errors
 	 */
+	#[RequiresPhp('>= 8.0')]
 	public function testRequiredParameterAfterOptional(int $phpVersionId, array $errors): void
 	{
-		if (PHP_VERSION_ID < 80000) {
-			self::markTestSkipped('Test requires PHP 8.0.');
-		}
-
 		$this->phpVersionId = $phpVersionId;
 		$this->analyse([__DIR__ . '/data/required-parameter-after-optional.php'], $errors);
 	}
@@ -420,12 +418,9 @@ class ExistingClassesInTypehintsRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/intersection-types.php'], $errors);
 	}
 
+	#[RequiresPhp('>= 8.1')]
 	public function testEnums(): void
 	{
-		if (PHP_VERSION_ID < 80100) {
-			$this->markTestSkipped('This test needs PHP 8.1');
-		}
-
 		$this->analyse([__DIR__ . '/data/enums-typehints.php'], [
 			[
 				'Parameter $int of method EnumsTypehints\Foo::doFoo() has invalid type EnumsTypehints\intt.',
@@ -497,12 +492,9 @@ class ExistingClassesInTypehintsRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/true-typehint.php'], $errors);
 	}
 
+	#[RequiresPhp('>= 8.0')]
 	public function testConditionalReturnType(): void
 	{
-		if (PHP_VERSION_ID < 80000) {
-			self::markTestSkipped('Test requires PHP 8.0.');
-		}
-
 		$this->analyse([__DIR__ . '/data/conditional-return-type.php'], [
 			[
 				'Template type T of method MethodConditionalReturnType\Container::notGet() is not referenced in a parameter.',
@@ -516,12 +508,9 @@ class ExistingClassesInTypehintsRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/bug-7519.php'], []);
 	}
 
+	#[RequiresPhp('>= 8.0')]
 	public function testTemplateInParamOut(): void
 	{
-		if (PHP_VERSION_ID < 80000) {
-			self::markTestSkipped('Test requires PHP 8.0.');
-		}
-
 		$this->analyse([__DIR__ . '/data/param-out.php'], [
 			[
 				'Template type T of method ParamOutTemplate\FooBar::uselessLocalTemplate() is not referenced in a parameter.',
@@ -584,12 +573,9 @@ class ExistingClassesInTypehintsRuleTest extends RuleTestCase
 		]);
 	}
 
+	#[RequiresPhp('>= 8.4')]
 	public function testDeprecatedImplicitlyNullableParameterType(): void
 	{
-		if (PHP_VERSION_ID < 80400) {
-			self::markTestSkipped('Test requires PHP 8.4.');
-		}
-
 		$this->analyse([__DIR__ . '/data/method-implicitly-nullable.php'], [
 			[
 				'Deprecated in PHP 8.4: Parameter #3 $c (int) is implicitly nullable via default value null.',
@@ -606,11 +592,9 @@ class ExistingClassesInTypehintsRuleTest extends RuleTestCase
 		]);
 	}
 
+	#[RequiresPhp('>= 8.4')]
 	public function testBug12501(): void
 	{
-		if (PHP_VERSION_ID < 80400) {
-			self::markTestSkipped('This test needs PHP 8.4.');
-		}
 		$this->analyse([__DIR__ . '/data/bug-12501.php'], []);
 	}
 

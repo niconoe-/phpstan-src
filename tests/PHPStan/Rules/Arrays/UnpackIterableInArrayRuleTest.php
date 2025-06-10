@@ -5,9 +5,9 @@ namespace PHPStan\Rules\Arrays;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleLevelHelper;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 use function array_merge;
 use function usort;
-use const PHP_VERSION_ID;
 
 /**
  * @extends RuleTestCase<UnpackIterableInArrayRule>
@@ -42,12 +42,9 @@ class UnpackIterableInArrayRuleTest extends RuleTestCase
 		]);
 	}
 
+	#[RequiresPhp('>= 8.0')]
 	public function testRuleWithNullsafeVariant(): void
 	{
-		if (PHP_VERSION_ID < 80000) {
-			$this->markTestSkipped('Test requires PHP 8.0.');
-		}
-
 		$this->analyse([__DIR__ . '/data/unpack-iterable-nullsafe.php'], [
 			[
 				'Only iterables can be unpacked, array<int>|null given.',
@@ -105,12 +102,9 @@ class UnpackIterableInArrayRuleTest extends RuleTestCase
 	 * @dataProvider dataMixed
 	 * @param list<array{0: string, 1: int, 2?: string}> $errors
 	 */
+	#[RequiresPhp('>= 8.0')]
 	public function testMixed(bool $checkExplicitMixed, bool $checkImplicitMixed, array $errors): void
 	{
-		if (PHP_VERSION_ID < 80000) {
-			self::markTestSkipped('Test requires PHP 8.0.');
-		}
-
 		$this->checkExplicitMixed = $checkExplicitMixed;
 		$this->checkImplicitMixed = $checkImplicitMixed;
 		$this->analyse([__DIR__ . '/data/unpack-mixed.php'], $errors);

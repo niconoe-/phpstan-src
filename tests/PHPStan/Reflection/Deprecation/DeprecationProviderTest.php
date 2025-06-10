@@ -15,17 +15,14 @@ use PhpParser\Node\Name\FullyQualified;
 use PHPStan\Analyser\ScopeContext;
 use PHPStan\Analyser\ScopeFactory;
 use PHPStan\Testing\PHPStanTestCase;
-use const PHP_VERSION_ID;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 
 class DeprecationProviderTest extends PHPStanTestCase
 {
 
+	#[RequiresPhp('>= 8.0')]
 	public function testCustomDeprecations(): void
 	{
-		if (PHP_VERSION_ID < 80000) {
-			self::markTestSkipped('PHP 8.0+ is required as CustomDeprecationProvider uses unions.');
-		}
-
 		require __DIR__ . '/data/deprecations.php';
 
 		$reflectionProvider = self::createReflectionProvider();
@@ -185,12 +182,9 @@ class DeprecationProviderTest extends PHPStanTestCase
 		self::assertSame('attribute', $doubleDeprecatedFunctionOnlyAttributeMessage->getDeprecatedDescription());
 	}
 
+	#[RequiresPhp('>= 8.1')]
 	public function testCustomDeprecationsOfEnumCases(): void
 	{
-		if (PHP_VERSION_ID < 80100) {
-			self::markTestSkipped('PHP 8.1+ is required to test enums.');
-		}
-
 		require __DIR__ . '/data/deprecations-enums.php';
 
 		$reflectionProvider = self::createReflectionProvider();

@@ -4,12 +4,12 @@ namespace PHPStan\Rules\Comparison;
 
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 use stdClass;
 use function array_filter;
 use function array_map;
 use function array_values;
 use function count;
-use const PHP_VERSION_ID;
 
 /**
  * @extends RuleTestCase<ImpossibleCheckTypeFunctionCallRule>
@@ -41,12 +41,9 @@ class ImpossibleCheckTypeFunctionCallRuleTest extends RuleTestCase
 		return $this->treatPhpDocTypesAsCertain;
 	}
 
+	#[RequiresPhp('>= 8.0')]
 	public function testImpossibleCheckTypeFunctionCall(): void
 	{
-		if (PHP_VERSION_ID < 80000) {
-			self::markTestSkipped('Test requires PHP 8.0.');
-		}
-
 		$this->treatPhpDocTypesAsCertain = true;
 		$this->analyse(
 			[__DIR__ . '/data/check-type-function-call.php'],
@@ -360,12 +357,9 @@ class ImpossibleCheckTypeFunctionCallRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/bug-4999.php'], []);
 	}
 
+	#[RequiresPhp('>= 8.1')]
 	public function testArrayIsList(): void
 	{
-		if (PHP_VERSION_ID < 80100) {
-			$this->markTestSkipped('Test requires PHP 8.1.');
-		}
-
 		$this->treatPhpDocTypesAsCertain = true;
 		$this->analyse([__DIR__ . '/data/array-is-list.php'], [
 			[
@@ -497,12 +491,9 @@ class ImpossibleCheckTypeFunctionCallRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/bug-7079.php'], []);
 	}
 
+	#[RequiresPhp('>= 8.0')]
 	public function testConditionalTypesInference(): void
 	{
-		if (PHP_VERSION_ID < 80000) {
-			self::markTestSkipped('Test requires PHP 8.0.');
-		}
-
 		$this->treatPhpDocTypesAsCertain = true;
 		$this->analyse([__DIR__ . '/../../Analyser/nsrt/conditional-types-inference.php'], [
 			[
@@ -534,12 +525,9 @@ class ImpossibleCheckTypeFunctionCallRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/bug-6697.php'], []);
 	}
 
+	#[RequiresPhp('>= 8.0')]
 	public function testBug6443(): void
 	{
-		if (PHP_VERSION_ID < 80000) {
-			self::markTestSkipped('Test requires PHP 8.0.');
-		}
-
 		$this->treatPhpDocTypesAsCertain = true;
 		$this->analyse([__DIR__ . '/data/bug-6443.php'], []);
 	}
@@ -878,12 +866,9 @@ class ImpossibleCheckTypeFunctionCallRuleTest extends RuleTestCase
 		];
 	}
 
+	#[RequiresPhp('>= 8.1')]
 	public function testLooseComparisonAgainstEnums(): void
 	{
-		if (PHP_VERSION_ID < 80100) {
-			$this->markTestSkipped('Test requires PHP 8.1.');
-		}
-
 		$this->treatPhpDocTypesAsCertain = true;
 		$issues = array_map(
 			static function (array $i): array {
@@ -904,12 +889,9 @@ class ImpossibleCheckTypeFunctionCallRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/../../Analyser/nsrt/bug-9662.php'], []);
 	}
 
+	#[RequiresPhp('>= 8.1')]
 	public function testNonStrictInArrayEnums(): void
 	{
-		if (PHP_VERSION_ID < 80100) {
-			$this->markTestSkipped('Test requires PHP 8.1.');
-		}
-
 		$tipText = 'Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.';
 
 		$this->treatPhpDocTypesAsCertain = true;
@@ -935,12 +917,9 @@ class ImpossibleCheckTypeFunctionCallRuleTest extends RuleTestCase
 		]);
 	}
 
+	#[RequiresPhp('>= 8.1')]
 	public function testLooseComparisonAgainstEnumsNoPhpdoc(): void
 	{
-		if (PHP_VERSION_ID < 80100) {
-			$this->markTestSkipped('Test requires PHP 8.1.');
-		}
-
 		$this->treatPhpDocTypesAsCertain = false;
 		$issues = self::getLooseComparisonAgainsEnumsIssues();
 		$issues = array_values(array_filter($issues, static fn (array $i) => count($i) === 2));
@@ -977,12 +956,9 @@ class ImpossibleCheckTypeFunctionCallRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/bug-3979.php'], []);
 	}
 
+	#[RequiresPhp('>= 8.0')]
 	public function testBug8464(): void
 	{
-		if (PHP_VERSION_ID < 80000) {
-			$this->markTestSkipped('Test requires PHP 8.0.');
-		}
-
 		$this->treatPhpDocTypesAsCertain = true;
 		$this->analyse([__DIR__ . '/data/bug-8464.php'], []);
 	}

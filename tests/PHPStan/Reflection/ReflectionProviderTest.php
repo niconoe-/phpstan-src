@@ -9,6 +9,7 @@ use PHPStan\TrinaryLogic;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 use PHPStan\Type\VerbosityLevel;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 use const PHP_VERSION_ID;
 
 class ReflectionProviderTest extends PHPStanTestCase
@@ -144,12 +145,9 @@ class ReflectionProviderTest extends PHPStanTestCase
 		);
 	}
 
+	#[RequiresPhp('>= 8.3')]
 	public function testNativeClassConstantTypeInEvaledClass(): void
 	{
-		if (PHP_VERSION_ID < 80300) {
-			$this->markTestSkipped('Test requires PHP 8.3.');
-		}
-
 		eval('namespace NativeClassConstantInEvaledClass; class Foo { public const int FOO = 1; }');
 
 		$reflectionProvider = self::createReflectionProvider();

@@ -10,6 +10,7 @@ use PHPStan\Rules\FunctionDefinitionCheck;
 use PHPStan\Rules\PhpDoc\UnresolvableTypeHelper;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 use const PHP_VERSION_ID;
 
 /**
@@ -286,12 +287,9 @@ class ExistingClassesInClosureTypehintsRuleTest extends RuleTestCase
 	 * @dataProvider dataRequiredParameterAfterOptional
 	 * @param list<array{0: string, 1: int, 2?: string}> $errors
 	 */
+	#[RequiresPhp('>= 8.0')]
 	public function testRequiredParameterAfterOptional(int $phpVersionId, array $errors): void
 	{
-		if (PHP_VERSION_ID < 80000) {
-			self::markTestSkipped('Test requires PHP 8.0.');
-		}
-
 		$this->phpVersionId = $phpVersionId;
 		$this->analyse([__DIR__ . '/data/required-parameter-after-optional-closures.php'], $errors);
 	}
@@ -335,12 +333,9 @@ class ExistingClassesInClosureTypehintsRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/closure-intersection-types.php'], $errors);
 	}
 
+	#[RequiresPhp('>= 8.4')]
 	public function testDeprecatedImplicitlyNullableParameterType(): void
 	{
-		if (PHP_VERSION_ID < 80400) {
-			self::markTestSkipped('Test requires PHP 8.4.');
-		}
-
 		$this->analyse([__DIR__ . '/data/closure-implicitly-nullable.php'], [
 			[
 				'Deprecated in PHP 8.4: Parameter #3 $c (int) is implicitly nullable via default value null.',

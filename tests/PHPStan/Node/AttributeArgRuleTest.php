@@ -5,7 +5,7 @@ namespace PHPStan\Node;
 use PhpParser\Node;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
-use const PHP_VERSION_ID;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 
 /**
  * @extends RuleTestCase<Rule>
@@ -43,12 +43,9 @@ class AttributeArgRuleTest extends RuleTestCase
 		$this->analyse([$file], $errors);
 	}
 
+	#[RequiresPhp('>= 8.1')]
 	public function testEnumCaseAttribute(): void
 	{
-		if (PHP_VERSION_ID < 80100) {
-			$this->markTestSkipped('Test requires PHP 8.1.');
-		}
-
 		$this->analyse([__DIR__ . '/data/enum-case-attribute.php'], [
 			[
 				AttributeArgRule::ERROR_MESSAGE,
