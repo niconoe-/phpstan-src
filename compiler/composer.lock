@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2ba10cf4667614eb8fc8e210c6d791ff",
+    "content-hash": "4fa60d8069185677658793b274897b29",
     "packages": [
         {
             "name": "jetbrains/phpstorm-stubs",
@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/JetBrains/phpstorm-stubs.git",
-                "reference": "0dd20984fb84cfc157f0ef46f6e9e5b5477b8c20"
+                "reference": "ac36fd20eeaabc0284dff89d18f5d2862d137eb0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/JetBrains/phpstorm-stubs/zipball/0dd20984fb84cfc157f0ef46f6e9e5b5477b8c20",
-                "reference": "0dd20984fb84cfc157f0ef46f6e9e5b5477b8c20",
+                "url": "https://api.github.com/repos/JetBrains/phpstorm-stubs/zipball/ac36fd20eeaabc0284dff89d18f5d2862d137eb0",
+                "reference": "ac36fd20eeaabc0284dff89d18f5d2862d137eb0",
                 "shasum": ""
             },
             "require-dev": {
@@ -52,7 +52,7 @@
             "support": {
                 "source": "https://github.com/JetBrains/phpstorm-stubs/tree/master"
             },
-            "time": "2025-05-21T19:01:16+00:00"
+            "time": "2025-06-03T13:57:24+00:00"
         },
         {
             "name": "nette/neon",
@@ -339,16 +339,16 @@
         },
         {
             "name": "ondrejmirtes/simple-downgrader",
-            "version": "2.1.7",
+            "version": "2.1.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ondrejmirtes/simple-downgrader.git",
-                "reference": "c73a88c7d26ea9e5f0662b9587e7282a9c34c96b"
+                "reference": "d06358fee2f120c74b41f8c1f8b1f205e2b579c6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ondrejmirtes/simple-downgrader/zipball/c73a88c7d26ea9e5f0662b9587e7282a9c34c96b",
-                "reference": "c73a88c7d26ea9e5f0662b9587e7282a9c34c96b",
+                "url": "https://api.github.com/repos/ondrejmirtes/simple-downgrader/zipball/d06358fee2f120c74b41f8c1f8b1f205e2b579c6",
+                "reference": "d06358fee2f120c74b41f8c1f8b1f205e2b579c6",
                 "shasum": ""
             },
             "require": {
@@ -384,9 +384,9 @@
             "description": "Simple Downgrader",
             "support": {
                 "issues": "https://github.com/ondrejmirtes/simple-downgrader/issues",
-                "source": "https://github.com/ondrejmirtes/simple-downgrader/tree/2.1.7"
+                "source": "https://github.com/ondrejmirtes/simple-downgrader/tree/2.1.8"
             },
-            "time": "2025-06-03T13:58:28+00:00"
+            "time": "2025-06-10T08:25:55+00:00"
         },
         {
             "name": "phpstan/phpdoc-parser",
