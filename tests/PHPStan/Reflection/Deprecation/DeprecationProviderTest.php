@@ -29,12 +29,22 @@ class DeprecationProviderTest extends PHPStanTestCase
 
 		$notDeprecatedClass = $reflectionProvider->getClass(NotDeprecatedClass::class);
 		$attributeDeprecatedClass = $reflectionProvider->getClass(AttributeDeprecatedClass::class);
-		$phpDocDeprecatedClass = $reflectionProvider->getClass(PhpDocDeprecatedClass::class); // @phpstan-ignore classConstant.deprecatedClass
-		$phpDocDeprecatedClassWithMessages = $reflectionProvider->getClass(PhpDocDeprecatedClassWithMessage::class); // @phpstan-ignore classConstant.deprecatedClass
+
+		// @phpstan-ignore classConstant.deprecatedClass
+		$phpDocDeprecatedClass = $reflectionProvider->getClass(PhpDocDeprecatedClass::class);
+
+		// @phpstan-ignore classConstant.deprecatedClass
+		$phpDocDeprecatedClassWithMessages = $reflectionProvider->getClass(PhpDocDeprecatedClassWithMessage::class);
 		$attributeDeprecatedClassWithMessages = $reflectionProvider->getClass(AttributeDeprecatedClassWithMessage::class);
-		$doubleDeprecatedClass = $reflectionProvider->getClass(DoubleDeprecatedClass::class); // @phpstan-ignore classConstant.deprecatedClass
-		$doubleDeprecatedClassOnlyPhpDocMessage = $reflectionProvider->getClass(DoubleDeprecatedClassOnlyPhpDocMessage::class); // @phpstan-ignore classConstant.deprecatedClass
-		$doubleDeprecatedClassOnlyAttributeMessage = $reflectionProvider->getClass(DoubleDeprecatedClassOnlyAttributeMessage::class); // @phpstan-ignore classConstant.deprecatedClass
+
+		// @phpstan-ignore classConstant.deprecatedClass
+		$doubleDeprecatedClass = $reflectionProvider->getClass(DoubleDeprecatedClass::class);
+
+		// @phpstan-ignore classConstant.deprecatedClass
+		$doubleDeprecatedClassOnlyPhpDocMessage = $reflectionProvider->getClass(DoubleDeprecatedClassOnlyPhpDocMessage::class);
+
+		// @phpstan-ignore classConstant.deprecatedClass
+		$doubleDeprecatedClassOnlyAttributeMessage = $reflectionProvider->getClass(DoubleDeprecatedClassOnlyAttributeMessage::class);
 
 		$notDeprecatedFunction = $reflectionProvider->getFunction(new FullyQualified('CustomDeprecations\\notDeprecatedFunction'), null);
 		$phpDocDeprecatedFunction = $reflectionProvider->getFunction(new FullyQualified('CustomDeprecations\\phpDocDeprecatedFunction'), null);
