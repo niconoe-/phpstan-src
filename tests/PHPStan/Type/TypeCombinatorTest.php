@@ -48,6 +48,7 @@ use PHPStan\Type\Generic\TemplateType;
 use PHPStan\Type\Generic\TemplateTypeFactory;
 use PHPStan\Type\Generic\TemplateTypeScope;
 use PHPStan\Type\Generic\TemplateTypeVariance;
+use PHPUnit\Framework\Attributes\DataProvider;
 use RecursionCallable\Foo;
 use stdClass;
 use Test\ClassWithNullableProperty;
@@ -128,9 +129,9 @@ class TypeCombinatorTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataAddNull
 	 * @param class-string<Type> $expectedTypeClass
 	 */
+	#[DataProvider('dataAddNull')]
 	public function testAddNull(
 		Type $type,
 		string $expectedTypeClass,
@@ -143,9 +144,9 @@ class TypeCombinatorTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataAddNull
 	 * @param class-string<Type> $expectedTypeClass
 	 */
+	#[DataProvider('dataAddNull')]
 	public function testUnionWithNull(
 		Type $type,
 		string $expectedTypeClass,
@@ -246,9 +247,9 @@ class TypeCombinatorTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataRemoveNull
 	 * @param class-string<Type> $expectedTypeClass
 	 */
+	#[DataProvider('dataRemoveNull')]
 	public function testRemoveNull(
 		Type $type,
 		string $expectedTypeClass,
@@ -2796,10 +2797,10 @@ class TypeCombinatorTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataUnion
 	 * @param Type[] $types
 	 * @param class-string<Type> $expectedTypeClass
 	 */
+	#[DataProvider('dataUnion')]
 	public function testUnion(
 		array $types,
 		string $expectedTypeClass,
@@ -2852,10 +2853,10 @@ class TypeCombinatorTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataUnion
 	 * @param Type[] $types
 	 * @param class-string<Type> $expectedTypeClass
 	 */
+	#[DataProvider('dataUnion')]
 	public function testUnionInversed(
 		array $types,
 		string $expectedTypeClass,
@@ -4727,10 +4728,10 @@ class TypeCombinatorTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataIntersect
 	 * @param Type[] $types
 	 * @param class-string<Type> $expectedTypeClass
 	 */
+	#[DataProvider('dataIntersect')]
 	public function testIntersect(
 		array $types,
 		string $expectedTypeClass,
@@ -4770,10 +4771,10 @@ class TypeCombinatorTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataIntersect
 	 * @param Type[] $types
 	 * @param class-string<Type> $expectedTypeClass
 	 */
+	#[DataProvider('dataIntersect')]
 	public function testIntersectInversed(
 		array $types,
 		string $expectedTypeClass,
@@ -5310,9 +5311,9 @@ class TypeCombinatorTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataRemove
 	 * @param class-string<Type> $expectedTypeClass
 	 */
+	#[DataProvider('dataRemove')]
 	public function testRemove(
 		Type $fromType,
 		Type $type,
@@ -5352,9 +5353,7 @@ class TypeCombinatorTest extends PHPStanTestCase
 		$this->assertSame('array{0: string, 1?: string, 2?: string, 3?: string, 4?: string, test?: string}', $resultType->describe(VerbosityLevel::precise()));
 	}
 
-	/**
-	 * @dataProvider dataContainsNull
-	 */
+	#[DataProvider('dataContainsNull')]
 	public function testContainsNull(
 		Type $type,
 		bool $expectedResult,

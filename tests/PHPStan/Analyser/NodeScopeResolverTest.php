@@ -5,6 +5,7 @@ namespace PHPStan\Analyser;
 use EnumTypeAssertions\Foo;
 use PHPStan\File\FileHelper;
 use PHPStan\Testing\TypeInferenceTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use stdClass;
 use function array_shift;
 use function define;
@@ -234,9 +235,7 @@ class NodeScopeResolverTest extends TypeInferenceTestCase
 		}
 	}
 
-	/**
-	 * @dataProvider dataFile
-	 */
+	#[DataProvider('dataFile')]
 	public function testFile(string $file): void
 	{
 		$asserts = self::gatherAssertTypes($file);

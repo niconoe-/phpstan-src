@@ -4,6 +4,7 @@ namespace PHPStan\Rules\Comparison;
 
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * @extends RuleTestCase<BooleanAndConstantConditionRule>
@@ -272,9 +273,7 @@ class BooleanAndConstantConditionRuleTest extends RuleTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataTreatPhpDocTypesAsCertainRegression
-	 */
+	#[DataProvider('dataTreatPhpDocTypesAsCertainRegression')]
 	public function testTreatPhpDocTypesAsCertainRegression(bool $treatPhpDocTypesAsCertain): void
 	{
 		$this->treatPhpDocTypesAsCertain = $treatPhpDocTypesAsCertain;
@@ -357,9 +356,9 @@ class BooleanAndConstantConditionRuleTest extends RuleTestCase
 	}
 
 	/**
-	 * @dataProvider dataBug4969
 	 * @param list<array{0: string, 1: int, 2?: string}> $expectedErrors
 	 */
+	#[DataProvider('dataBug4969')]
 	public function testBug4969(bool $treatPhpDocTypesAsCertain, array $expectedErrors): void
 	{
 		$this->treatPhpDocTypesAsCertain = $treatPhpDocTypesAsCertain;
@@ -416,9 +415,9 @@ class BooleanAndConstantConditionRuleTest extends RuleTestCase
 	}
 
 	/**
-	 * @dataProvider dataReportAlwaysTrueInLastCondition
 	 * @param list<array{0: string, 1: int, 2?: string}> $expectedErrors
 	 */
+	#[DataProvider('dataReportAlwaysTrueInLastCondition')]
 	public function testReportAlwaysTrueInLastCondition(bool $reportAlwaysTrueInLastCondition, array $expectedErrors): void
 	{
 		$this->treatPhpDocTypesAsCertain = true;

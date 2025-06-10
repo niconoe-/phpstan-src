@@ -5,6 +5,7 @@ namespace PHPStan\Rules\Arrays;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleLevelHelper;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresPhp;
 use const PHP_VERSION_ID;
 
@@ -687,9 +688,9 @@ class NonexistentOffsetInArrayDimFetchRuleTest extends RuleTestCase
 	}
 
 	/**
-	 * @dataProvider dataReportPossiblyNonexistentArrayOffset
 	 * @param list<array{0: string, 1: int, 2?: string|null}> $errors
 	 */
+	#[DataProvider('dataReportPossiblyNonexistentArrayOffset')]
 	public function testReportPossiblyNonexistentArrayOffset(bool $reportPossiblyNonexistentGeneralArrayOffset, bool $reportPossiblyNonexistentConstantArrayOffset, array $errors): void
 	{
 		$this->reportPossiblyNonexistentGeneralArrayOffset = $reportPossiblyNonexistentGeneralArrayOffset;

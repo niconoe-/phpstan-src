@@ -18,6 +18,7 @@ use PHPStan\Type\Generic\GenericStaticType;
 use PHPStan\Type\Generic\TemplateTypeFactory;
 use PHPStan\Type\Generic\TemplateTypeScope;
 use PHPStan\Type\Generic\TemplateTypeVariance;
+use PHPUnit\Framework\Attributes\DataProvider;
 use StaticTypeTest\Base;
 use StaticTypeTest\Child;
 use StaticTypeTest\FinalChild;
@@ -39,9 +40,7 @@ class StaticTypeTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataIsIterable
-	 */
+	#[DataProvider('dataIsIterable')]
 	public function testIsIterable(StaticType $type, TrinaryLogic $expectedResult): void
 	{
 		$actualResult = $type->isIterable();
@@ -62,9 +61,7 @@ class StaticTypeTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataIsCallable
-	 */
+	#[DataProvider('dataIsCallable')]
 	public function testIsCallable(StaticType $type, TrinaryLogic $expectedResult): void
 	{
 		$actualResult = $type->isCallable();
@@ -291,9 +288,7 @@ class StaticTypeTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataIsSuperTypeOf
-	 */
+	#[DataProvider('dataIsSuperTypeOf')]
 	public function testIsSuperTypeOf(Type $type, Type $otherType, TrinaryLogic $expectedResult): void
 	{
 		$actualResult = $type->isSuperTypeOf($otherType);
@@ -332,9 +327,7 @@ class StaticTypeTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataEquals
-	 */
+	#[DataProvider('dataEquals')]
 	public function testEquals(StaticType $type, StaticType $otherType, bool $expected): void
 	{
 		$this->assertSame($expected, $type->equals($otherType));
@@ -455,9 +448,7 @@ class StaticTypeTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataAccepts
-	 */
+	#[DataProvider('dataAccepts')]
 	public function testAccepts(StaticType $type, Type $otherType, TrinaryLogic $expectedResult): void
 	{
 		$actualResult = $type->accepts($otherType, true);

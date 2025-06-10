@@ -28,6 +28,7 @@ use PHPStan\Type\StaticType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\UnionType;
 use PHPStan\Type\VerbosityLevel;
+use PHPUnit\Framework\Attributes\DataProvider;
 use ReflectionParameter;
 use Throwable;
 use function array_keys;
@@ -424,9 +425,9 @@ class SignatureMapParserTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataGetFunctions
 	 * @param mixed[] $map
 	 */
+	#[DataProvider('dataGetFunctions')]
 	public function testGetFunctions(
 		array $map,
 		?string $className,
@@ -490,9 +491,7 @@ class SignatureMapParserTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataParseAll
-	 */
+	#[DataProvider('dataParseAll')]
 	public function testParseAll(int $phpVersionId): void
 	{
 		$parser = self::getContainer()->getByType(SignatureMapParser::class);

@@ -10,6 +10,7 @@ use PHPStan\Testing\PHPStanTestCase;
 use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\NeverType;
 use PHPStan\Type\Type;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class InitializerExprTypeResolverTest extends PHPStanTestCase
 {
@@ -100,11 +101,11 @@ class InitializerExprTypeResolverTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataExplicitNever
 	 *
 	 * @param class-string $resultClass
 	 * @param callable(Expr): Type $callback
 	 */
+	#[DataProvider('dataExplicitNever')]
 	public function testExplicitNever(Expr $left, Expr $right, callable $callback, string $resultClass, ?bool $resultIsExplicit = null): void
 	{
 		$initializerExprTypeResolver = self::getContainer()->getByType(InitializerExprTypeResolver::class);

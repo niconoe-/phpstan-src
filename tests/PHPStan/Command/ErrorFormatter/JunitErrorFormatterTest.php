@@ -7,6 +7,7 @@ use Generator;
 use Override;
 use PHPStan\File\SimpleRelativePathHelper;
 use PHPStan\Testing\ErrorFormatterTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class JunitErrorFormatterTest extends ErrorFormatterTestCase
 {
@@ -132,9 +133,8 @@ class JunitErrorFormatterTest extends ErrorFormatterTestCase
 
 	/**
 	 * Test generated use cases for JUnit output format.
-	 *
-	 * @dataProvider dataFormatterOutputProvider
 	 */
+	#[DataProvider('dataFormatterOutputProvider')]
 	public function testFormatErrors(
 		int $exitCode,
 		int $numFileErrors,

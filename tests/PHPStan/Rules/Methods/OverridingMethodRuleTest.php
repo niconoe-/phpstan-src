@@ -6,6 +6,7 @@ use PHPStan\Php\PhpVersion;
 use PHPStan\Reflection\Php\PhpClassReflectionExtension;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresPhp;
 use function array_filter;
 use function array_values;
@@ -54,9 +55,7 @@ class OverridingMethodRuleTest extends RuleTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataOverridingFinalMethod
-	 */
+	#[DataProvider('dataOverridingFinalMethod')]
 	public function testOverridingFinalMethod(int $phpVersion, string $contravariantMessage): void
 	{
 		$errors = [
@@ -229,10 +228,10 @@ class OverridingMethodRuleTest extends RuleTestCase
 	}
 
 	/**
-	 * @dataProvider dataParameterContravariance
 	 * @param list<array{0: string, 1: int, 2?: string}> $expectedErrors
 	 */
 	#[RequiresPhp('>= 8.0')]
+	#[DataProvider('dataParameterContravariance')]
 	public function testParameterContravariance(
 		string $file,
 		int $phpVersion,
@@ -288,9 +287,9 @@ class OverridingMethodRuleTest extends RuleTestCase
 	}
 
 	/**
-	 * @dataProvider dataReturnTypeCovariance
 	 * @param list<array{0: string, 1: int, 2?: string}> $expectedErrors
 	 */
+	#[DataProvider('dataReturnTypeCovariance')]
 	public function testReturnTypeCovariance(
 		int $phpVersion,
 		array $expectedErrors,
@@ -300,9 +299,7 @@ class OverridingMethodRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/return-type-covariance.php'], $expectedErrors);
 	}
 
-	/**
-	 * @dataProvider dataOverridingFinalMethod
-	 */
+	#[DataProvider('dataOverridingFinalMethod')]
 	public function testParle(int $phpVersion, string $contravariantMessage, string $covariantMessage): void
 	{
 		$this->phpVersionId = $phpVersion;
@@ -324,9 +321,7 @@ class OverridingMethodRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/variadic-always-optional.php'], []);
 	}
 
-	/**
-	 * @dataProvider dataOverridingFinalMethod
-	 */
+	#[DataProvider('dataOverridingFinalMethod')]
 	public function testBug3403(int $phpVersion): void
 	{
 		$this->phpVersionId = $phpVersion;
@@ -433,9 +428,9 @@ class OverridingMethodRuleTest extends RuleTestCase
 	}
 
 	/**
-	 * @dataProvider dataLessOverridenParametersWithVariadic
 	 * @param list<array{0: string, 1: int, 2?: string}> $errors
 	 */
+	#[DataProvider('dataLessOverridenParametersWithVariadic')]
 	public function testLessOverridenParametersWithVariadic(int $phpVersionId, array $errors): void
 	{
 		$this->phpVersionId = $phpVersionId;
@@ -462,9 +457,9 @@ class OverridingMethodRuleTest extends RuleTestCase
 	}
 
 	/**
-	 * @dataProvider dataParameterTypeWidening
 	 * @param list<array{0: string, 1: int, 2?: string}> $errors
 	 */
+	#[DataProvider('dataParameterTypeWidening')]
 	public function testParameterTypeWidening(int $phpVersionId, array $errors): void
 	{
 		$this->phpVersionId = $phpVersionId;
@@ -526,9 +521,9 @@ class OverridingMethodRuleTest extends RuleTestCase
 	}
 
 	/**
-	 * @dataProvider dataTentativeReturnTypes
 	 * @param list<array{0: string, 1: int, 2?: string}> $errors
 	 */
+	#[DataProvider('dataTentativeReturnTypes')]
 	public function testTentativeReturnTypes(int $phpVersionId, array $errors): void
 	{
 		if (PHP_VERSION_ID < 80100) {
@@ -765,9 +760,9 @@ class OverridingMethodRuleTest extends RuleTestCase
 	}
 
 	/**
-	 * @dataProvider dataCheckMissingOverrideAttribute
 	 * @param list<array{0: string, 1: int, 2?: string}> $errors
 	 */
+	#[DataProvider('dataCheckMissingOverrideAttribute')]
 	public function testCheckMissingOverrideAttribute(bool $checkMissingOverrideMethodAttribute, int $phpVersionId, array $errors): void
 	{
 		$this->checkMissingOverrideMethodAttribute = $checkMissingOverrideMethodAttribute;

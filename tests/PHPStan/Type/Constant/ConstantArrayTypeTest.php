@@ -25,6 +25,7 @@ use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\UnionType;
 use PHPStan\Type\VerbosityLevel;
+use PHPUnit\Framework\Attributes\DataProvider;
 use function array_map;
 use function sprintf;
 
@@ -409,9 +410,7 @@ class ConstantArrayTypeTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataAccepts
-	 */
+	#[DataProvider('dataAccepts')]
 	public function testAccepts(Type $type, Type $otherType, TrinaryLogic $expectedResult): void
 	{
 		$actualResult = $type->accepts($otherType, true)->result;
@@ -693,9 +692,7 @@ class ConstantArrayTypeTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataIsSuperTypeOf
-	 */
+	#[DataProvider('dataIsSuperTypeOf')]
 	public function testIsSuperTypeOf(ConstantArrayType $type, Type $otherType, TrinaryLogic $expectedResult): void
 	{
 		$actualResult = $type->isSuperTypeOf($otherType);
@@ -811,9 +808,9 @@ class ConstantArrayTypeTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataInferTemplateTypes
 	 * @param array<string,string> $expectedTypes
 	 */
+	#[DataProvider('dataInferTemplateTypes')]
 	public function testResolveTemplateTypes(Type $received, Type $template, array $expectedTypes): void
 	{
 		$result = $template->inferTemplateTypes($received);
@@ -824,9 +821,7 @@ class ConstantArrayTypeTest extends PHPStanTestCase
 		);
 	}
 
-	/**
-	 * @dataProvider dataIsCallable
-	 */
+	#[DataProvider('dataIsCallable')]
 	public function testIsCallable(ConstantArrayType $type, TrinaryLogic $expectedResult): void
 	{
 		$actualResult = $type->isCallable();
@@ -1034,9 +1029,7 @@ class ConstantArrayTypeTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataValuesArray
-	 */
+	#[DataProvider('dataValuesArray')]
 	public function testValuesArray(ConstantArrayType $type, ConstantArrayType $expectedType): void
 	{
 		$actualType = $type->getValuesArray();

@@ -6,6 +6,7 @@ use PhpParser\Node\Name;
 use PHPStan\Analyser\Scope;
 use PHPStan\Testing\PHPStanTestCase;
 use PHPStan\Type\VerbosityLevel;
+use PHPUnit\Framework\Attributes\DataProvider;
 use RuntimeException;
 use ThrowsAnnotations\BarTrait;
 use ThrowsAnnotations\Foo;
@@ -68,9 +69,9 @@ class ThrowsAnnotationsTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataThrowsAnnotations
 	 * @param array<string, mixed> $throwsAnnotations
 	 */
+	#[DataProvider('dataThrowsAnnotations')]
 	public function testThrowsAnnotations(string $className, array $throwsAnnotations): void
 	{
 		$reflectionProvider = self::createReflectionProvider();

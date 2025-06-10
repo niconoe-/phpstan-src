@@ -9,6 +9,7 @@ use PHPStan\Rules\Properties\PropertyReflectionFinder;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleLevelHelper;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresPhp;
 use const PHP_VERSION_ID;
 
@@ -206,9 +207,9 @@ class CallCallablesRuleTest extends RuleTestCase
 	}
 
 	/**
-	 * @dataProvider dataBug3566
 	 * @param list<array{0: string, 1: int, 2?: string}> $errors
 	 */
+	#[DataProvider('dataBug3566')]
 	public function testBug3566(bool $checkExplicitMixed, array $errors): void
 	{
 		$this->checkExplicitMixed = $checkExplicitMixed;

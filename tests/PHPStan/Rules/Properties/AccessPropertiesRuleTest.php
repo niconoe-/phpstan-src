@@ -6,6 +6,7 @@ use PHPStan\Php\PhpVersion;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleLevelHelper;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresPhp;
 use function array_merge;
 use const PHP_VERSION_ID;
@@ -765,9 +766,9 @@ class AccessPropertiesRuleTest extends RuleTestCase
 	}
 
 	/**
-	 * @dataProvider dataDynamicProperties
 	 * @param list<array{0: string, 1: int, 2?: string}> $errors
 	 */
+	#[DataProvider('dataDynamicProperties')]
 	public function testDynamicProperties(bool $checkDynamicProperties, array $errors): void
 	{
 		$this->checkThisOnly = false;
@@ -809,9 +810,7 @@ class AccessPropertiesRuleTest extends RuleTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataTrueAndFalse
-	 */
+	#[DataProvider('dataTrueAndFalse')]
 	public function testPhp82AndDynamicProperties(bool $b): void
 	{
 		$errors = [];
@@ -862,9 +861,7 @@ class AccessPropertiesRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/php-82-dynamic-properties.php'], $errors);
 	}
 
-	/**
-	 * @dataProvider dataTrueAndFalse
-	 */
+	#[DataProvider('dataTrueAndFalse')]
 	public function testPhp82AndDynamicPropertiesAllow(bool $b): void
 	{
 		$errors = [];

@@ -9,6 +9,7 @@ use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
 use PHPStan\Type\FileTypeMapper;
 use PHPStan\Type\VerbosityLevel;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresPhp;
 
 /**
@@ -121,9 +122,7 @@ class InvalidThrowsPhpDocValueRuleTest extends RuleTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataMergeInheritedPhpDocs
-	 */
+	#[DataProvider('dataMergeInheritedPhpDocs')]
 	public function testMergeInheritedPhpDocs(
 		string $className,
 		string $method,

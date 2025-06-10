@@ -5,6 +5,7 @@ namespace PHPStan\Rules\Comparison;
 use PHPStan\Analyser\RicherScopeGetTypeHelper;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresPhp;
 use const PHP_INT_SIZE;
 use const PHP_VERSION_ID;
@@ -715,10 +716,10 @@ class StrictComparisonOfDifferentTypesRuleTest extends RuleTestCase
 	}
 
 	/**
-	 * @dataProvider dataLastMatchArm
 	 * @param list<array{0: string, 1: int, 2?: string}> $expectedErrors
 	 */
 	#[RequiresPhp('>= 8.1')]
+	#[DataProvider('dataLastMatchArm')]
 	public function testLastMatchArm(bool $reportAlwaysTrueInLastCondition, array $expectedErrors): void
 	{
 		$this->reportAlwaysTrueInLastCondition = $reportAlwaysTrueInLastCondition;

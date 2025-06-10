@@ -17,6 +17,7 @@ use PHPStan\Type\ObjectWithoutClassType;
 use PHPStan\Type\Type;
 use PHPStan\Type\UnionType;
 use PHPStan\Type\VerbosityLevel;
+use PHPUnit\Framework\Attributes\DataProvider;
 use function sprintf;
 
 class HasMethodTypeTest extends PHPStanTestCase
@@ -136,9 +137,7 @@ class HasMethodTypeTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataIsSuperTypeOf
-	 */
+	#[DataProvider('dataIsSuperTypeOf')]
 	public function testIsSuperTypeOf(HasMethodType $type, Type $otherType, TrinaryLogic $expectedResult): void
 	{
 		$actualResult = $type->isSuperTypeOf($otherType);
@@ -186,9 +185,7 @@ class HasMethodTypeTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataIsSubTypeOf
-	 */
+	#[DataProvider('dataIsSubTypeOf')]
 	public function testIsSubTypeOf(HasMethodType $type, Type $otherType, TrinaryLogic $expectedResult): void
 	{
 		$actualResult = $type->isSubTypeOf($otherType);
@@ -199,9 +196,7 @@ class HasMethodTypeTest extends PHPStanTestCase
 		);
 	}
 
-	/**
-	 * @dataProvider dataIsSubTypeOf
-	 */
+	#[DataProvider('dataIsSubTypeOf')]
 	public function testIsSubTypeOfInversed(HasMethodType $type, Type $otherType, TrinaryLogic $expectedResult): void
 	{
 		$actualResult = $otherType->isSuperTypeOf($type);

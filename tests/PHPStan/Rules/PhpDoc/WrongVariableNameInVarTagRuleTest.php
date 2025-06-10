@@ -6,6 +6,7 @@ use PHPStan\PhpDoc\TypeNodeResolver;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
 use PHPStan\Type\FileTypeMapper;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresPhp;
 
 /**
@@ -513,9 +514,7 @@ class WrongVariableNameInVarTagRuleTest extends RuleTestCase
 		]];
 	}
 
-	/**
-	 * @dataProvider dataPermutateCheckTypeAgainst
-	 */
+	#[DataProvider('dataPermutateCheckTypeAgainst')]
 	public function testEmptyArrayInitWithWiderPhpDoc(bool $checkTypeAgainstPhpDocType): void
 	{
 		$this->checkTypeAgainstPhpDocType = $checkTypeAgainstPhpDocType;
@@ -534,9 +533,9 @@ class WrongVariableNameInVarTagRuleTest extends RuleTestCase
 	}
 
 	/**
-	 * @dataProvider dataReportWrongType
 	 * @param list<array{0: string, 1: int, 2?: string}> $expectedErrors
 	 */
+	#[DataProvider('dataReportWrongType')]
 	public function testReportWrongType(
 		bool $checkTypeAgainstPhpDocType,
 		bool $strictWideningCheck,

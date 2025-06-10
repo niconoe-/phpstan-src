@@ -6,6 +6,7 @@ use PHPStan\Testing\PHPStanTestCase;
 use PHPStan\Type\Generic\GenericObjectType;
 use PHPStan\Type\IntegerType;
 use PHPStan\Type\VerbosityLevel;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresPhp;
 use function count;
 
@@ -320,10 +321,10 @@ class ClassReflectionPropertyHooksTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataPropertyHooks
 	 * @param ExtendedPropertyReflection::HOOK_* $hookName
 	 * @param string[] $parameterTypes
 	 */
+	#[DataProvider('dataPropertyHooks')]
 	public function testPropertyHooks(
 		ClassReflection $classReflection,
 		string $propertyName,

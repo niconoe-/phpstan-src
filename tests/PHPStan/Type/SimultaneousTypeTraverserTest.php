@@ -6,6 +6,7 @@ use PHPStan\Testing\PHPStanTestCase;
 use PHPStan\Type\Accessory\AccessoryNonEmptyStringType;
 use PHPStan\Type\Constant\ConstantArrayType;
 use PHPStan\Type\Constant\ConstantIntegerType;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class SimultaneousTypeTraverserTest extends PHPStanTestCase
 {
@@ -71,9 +72,7 @@ class SimultaneousTypeTraverserTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataChangeStringIntoNonEmptyString
-	 */
+	#[DataProvider('dataChangeStringIntoNonEmptyString')]
 	public function testChangeIntegerIntoString(Type $left, Type $right, string $expectedTypeDescription): void
 	{
 		$cb = static function (Type $left, Type $right, callable $traverse): Type {

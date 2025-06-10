@@ -3,6 +3,8 @@
 namespace PHPStan\Command;
 
 use PHPStan\ShouldNotHappenException;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\NullOutput;
@@ -13,9 +15,7 @@ use function rewind;
 use function stream_get_contents;
 use const DIRECTORY_SEPARATOR;
 
-/**
- * @group exec
- */
+#[Group('exec')]
 class CommandHelperTest extends TestCase
 {
 
@@ -94,9 +94,9 @@ class CommandHelperTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider dataBegin
 	 * @param mixed[] $expectedParameters
 	 */
+	#[DataProvider('dataBegin')]
 	public function testBegin(
 		string $input,
 		string $expectedOutput,
@@ -291,10 +291,10 @@ class CommandHelperTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider dataParameters
 	 * @param array<string, string> $expectedParameters
 	 * @throws InceptionNotSuccessfulException
 	 */
+	#[DataProvider('dataParameters')]
 	public function testResolveParameters(
 		string $configFile,
 		array $expectedParameters,

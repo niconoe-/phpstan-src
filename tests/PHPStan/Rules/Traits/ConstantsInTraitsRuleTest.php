@@ -44,11 +44,10 @@ class ConstantsInTraitsRuleTest extends RuleTestCase
 	}
 
 	/**
-	 * @dataProvider dataRule
-	 *
-	 * @param list<array{0: string, 1: int, 2?: string}> $errors
-	 */
-	public function testRule(int $phpVersionId, array $errors): void
+     * @param list<array{0: string, 1: int, 2?: string}> $errors
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('dataRule')]
+    public function testRule(int $phpVersionId, array $errors): void
 	{
 		$this->phpVersionId = $phpVersionId;
 		$this->analyse([__DIR__ . '/data/constants-in-traits.php'], $errors);

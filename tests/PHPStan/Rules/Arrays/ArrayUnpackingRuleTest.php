@@ -6,6 +6,7 @@ use PHPStan\Php\PhpVersion;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleLevelHelper;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresPhp;
 
 /**
@@ -115,10 +116,8 @@ class ArrayUnpackingRuleTest extends RuleTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataRuleOnPHP81
-	 */
 	#[RequiresPhp('>= 8.1')]
+	#[DataProvider('dataRuleOnPHP81')]
 	public function testRuleOnPHP81(bool $checkUnions): void
 	{
 		$this->checkUnions = $checkUnions;

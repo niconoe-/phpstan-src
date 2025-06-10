@@ -7,6 +7,7 @@ use AttributeReflectionTest\MyAttr;
 use PhpParser\Node\Name;
 use PHPStan\Testing\PHPStanTestCase;
 use PHPStan\Type\VerbosityLevel;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresPhp;
 use function count;
 use const PHP_VERSION_ID;
@@ -149,11 +150,11 @@ class AttributeReflectionTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataAttributeReflections
 	 * @param list<AttributeReflection> $attributeReflections
 	 * @param list<array{string, array<string, string>}> $expectations
 	 */
 	#[RequiresPhp('>= 8.0')]
+	#[DataProvider('dataAttributeReflections')]
 	public function testAttributeReflections(
 		array $attributeReflections,
 		array $expectations,

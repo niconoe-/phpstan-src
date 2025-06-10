@@ -5,6 +5,7 @@ namespace PHPStan\Rules\Constants;
 use PHPStan\Php\PhpVersion;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * @extends RuleTestCase<FinalConstantRule>
@@ -39,9 +40,9 @@ class FinalConstantRuleTest extends RuleTestCase
 	}
 
 	/**
-	 * @dataProvider dataRule
 	 * @param list<array{0: string, 1: int, 2?: string}> $errors
 	 */
+	#[DataProvider('dataRule')]
 	public function testRule(int $phpVersionId, array $errors): void
 	{
 		$this->phpVersionId = $phpVersionId;

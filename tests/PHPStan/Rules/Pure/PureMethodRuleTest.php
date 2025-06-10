@@ -4,6 +4,7 @@ namespace PHPStan\Rules\Pure;
 
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresPhp;
 
 /**
@@ -186,9 +187,7 @@ class PureMethodRuleTest extends RuleTestCase
 		]);
 	}
 
-	/**
-	 * @dataProvider dataBug11207
-	 */
+	#[DataProvider('dataBug11207')]
 	public function testBug11207(bool $treatPhpDocTypesAsCertain): void
 	{
 		$this->treatPhpDocTypesAsCertain = $treatPhpDocTypesAsCertain;

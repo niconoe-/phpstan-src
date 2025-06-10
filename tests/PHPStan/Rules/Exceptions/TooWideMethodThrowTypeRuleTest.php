@@ -5,6 +5,7 @@ namespace PHPStan\Rules\Exceptions;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
 use PHPStan\Type\FileTypeMapper;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresPhp;
 
 /**
@@ -93,9 +94,9 @@ class TooWideMethodThrowTypeRuleTest extends RuleTestCase
 	}
 
 	/**
-	 * @dataProvider dataRuleLookOnlyForExplicitThrowPoints
 	 * @param list<array{0: string, 1: int, 2?: string|null}> $errors
 	 */
+	#[DataProvider('dataRuleLookOnlyForExplicitThrowPoints')]
 	public function testRuleLookOnlyForExplicitThrowPoints(bool $implicitThrows, array $errors): void
 	{
 		$this->implicitThrows = $implicitThrows;

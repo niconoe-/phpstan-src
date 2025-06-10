@@ -4,6 +4,7 @@ namespace PHPStan\Rules\Exceptions;
 
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use ThrowsVoidFunction\MyException;
 
 /**
@@ -85,10 +86,10 @@ class ThrowsVoidFunctionWithExplicitThrowPointRuleTest extends RuleTestCase
 	}
 
 	/**
-	 * @dataProvider dataRule
 	 * @param string[] $checkedExceptionClasses
 	 * @param list<array{0: string, 1: int, 2?: string}> $errors
 	 */
+	#[DataProvider('dataRule')]
 	public function testRule(bool $missingCheckedExceptionInThrows, array $checkedExceptionClasses, array $errors): void
 	{
 		$this->missingCheckedExceptionInThrows = $missingCheckedExceptionInThrows;

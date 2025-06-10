@@ -6,6 +6,7 @@ use Nette\Utils\Json;
 use PHPStan\Analyser\Error;
 use PHPStan\Command\AnalysisResult;
 use PHPStan\Testing\ErrorFormatterTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use function sprintf;
 
 class JsonErrorFormatterTest extends ErrorFormatterTestCase
@@ -193,10 +194,7 @@ class JsonErrorFormatterTest extends ErrorFormatterTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataFormatterOutputProvider
-	 *
-	 */
+	#[DataProvider('dataFormatterOutputProvider')]
 	public function testPrettyFormatErrors(
 		string $message,
 		int $exitCode,
@@ -215,11 +213,7 @@ class JsonErrorFormatterTest extends ErrorFormatterTestCase
 		$this->assertJsonStringEqualsJsonString($expected, $this->getOutputContent());
 	}
 
-	/**
-	 * @dataProvider dataFormatterOutputProvider
-	 *
-	 *
-	 */
+	#[DataProvider('dataFormatterOutputProvider')]
 	public function testFormatErrors(
 		string $message,
 		int $exitCode,
@@ -245,9 +239,7 @@ class JsonErrorFormatterTest extends ErrorFormatterTestCase
 		yield ['this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.', 'this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%.'];
 	}
 
-	/**
-	 * @dataProvider dataFormatTip
-	 */
+	#[DataProvider('dataFormatTip')]
 	public function testFormatTip(string $tip, string $expectedTip): void
 	{
 		$formatter = new JsonErrorFormatter(false);

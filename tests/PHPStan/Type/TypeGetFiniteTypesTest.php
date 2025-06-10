@@ -10,6 +10,7 @@ use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\Generic\TemplateTypeFactory;
 use PHPStan\Type\Generic\TemplateTypeScope;
 use PHPStan\Type\Generic\TemplateTypeVariance;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class TypeGetFiniteTypesTest extends PHPStanTestCase
 {
@@ -124,9 +125,9 @@ class TypeGetFiniteTypesTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataGetFiniteTypes
 	 * @param list<Type> $expectedTypes
 	 */
+	#[DataProvider('dataGetFiniteTypes')]
 	public function testGetFiniteTypes(
 		Type $type,
 		array $expectedTypes,

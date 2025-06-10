@@ -9,6 +9,7 @@ use PHPStan\Rules\ClassNameCheck;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleLevelHelper;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresPhp;
 use const PHP_VERSION_ID;
 
@@ -239,9 +240,9 @@ class ClassConstantRuleTest extends RuleTestCase
 	}
 
 	/**
-	 * @dataProvider dataClassConstantOnExpression
 	 * @param list<array{0: string, 1: int, 2?: string}> $errors
 	 */
+	#[DataProvider('dataClassConstantOnExpression')]
 	public function testClassConstantOnExpression(int $phpVersion, array $errors): void
 	{
 		$this->phpVersion = $phpVersion;

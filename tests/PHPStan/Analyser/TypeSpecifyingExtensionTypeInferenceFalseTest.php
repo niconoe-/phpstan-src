@@ -3,6 +3,7 @@
 namespace PHPStan\Analyser;
 
 use PHPStan\Testing\TypeInferenceTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class TypeSpecifyingExtensionTypeInferenceFalseTest extends TypeInferenceTestCase
 {
@@ -15,9 +16,9 @@ class TypeSpecifyingExtensionTypeInferenceFalseTest extends TypeInferenceTestCas
 	}
 
 	/**
-	 * @dataProvider dataTypeSpecifyingExtensionsFalse
 	 * @param mixed ...$args
 	 */
+	#[DataProvider('dataTypeSpecifyingExtensionsFalse')]
 	public function testTypeSpecifyingExtensionsFalse(
 		string $assertType,
 		string $file,

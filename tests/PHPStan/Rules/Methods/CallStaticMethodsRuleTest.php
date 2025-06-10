@@ -12,6 +12,7 @@ use PHPStan\Rules\Properties\PropertyReflectionFinder;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleLevelHelper;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresPhp;
 use function array_merge;
 use function usort;
@@ -748,10 +749,10 @@ class CallStaticMethodsRuleTest extends RuleTestCase
 	}
 
 	/**
-	 * @dataProvider dataMixed
 	 * @param list<array{0: string, 1: int, 2?: string}> $errors
 	 */
 	#[RequiresPhp('>= 8.0')]
+	#[DataProvider('dataMixed')]
 	public function testMixed(bool $checkExplicitMixed, bool $checkImplicitMixed, array $errors): void
 	{
 		$this->checkThisOnly = false;

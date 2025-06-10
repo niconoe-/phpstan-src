@@ -6,6 +6,7 @@ use Exception;
 use InvalidArgumentException;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\VerbosityLevel;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class TemplateTypeMapTest extends TestCase
@@ -55,7 +56,7 @@ class TemplateTypeMapTest extends TestCase
 		];
 	}
 
-	/** @dataProvider dataUnionWithLowerBoundTypes */
+	#[DataProvider('dataUnionWithLowerBoundTypes')]
 	public function testUnionWithLowerBoundTypes(TemplateTypeMap $map, string $expectedTDescription): void
 	{
 		$this->assertFalse($map->isEmpty());

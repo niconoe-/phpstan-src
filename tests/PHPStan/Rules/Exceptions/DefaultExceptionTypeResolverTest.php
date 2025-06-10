@@ -8,6 +8,7 @@ use LogicException;
 use PHPStan\Analyser\ScopeContext;
 use PHPStan\Analyser\ScopeFactory;
 use PHPStan\Testing\PHPStanTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class DefaultExceptionTypeResolverTest extends PHPStanTestCase
 {
@@ -127,12 +128,12 @@ class DefaultExceptionTypeResolverTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataIsCheckedException
 	 * @param string[] $uncheckedExceptionRegexes
 	 * @param string[] $uncheckedExceptionClasses
 	 * @param string[] $checkedExceptionRegexes
 	 * @param string[] $checkedExceptionClasses
 	 */
+	#[DataProvider('dataIsCheckedException')]
 	public function testIsCheckedException(
 		array $uncheckedExceptionRegexes,
 		array $uncheckedExceptionClasses,

@@ -6,6 +6,7 @@ use PHPStan\Testing\PHPStanTestCase;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\Constant\ConstantBooleanType;
 use PHPStan\Type\Constant\ConstantIntegerType;
+use PHPUnit\Framework\Attributes\DataProvider;
 use function sprintf;
 
 class BooleanTypeTest extends PHPStanTestCase
@@ -47,9 +48,7 @@ class BooleanTypeTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataAccepts
-	 */
+	#[DataProvider('dataAccepts')]
 	public function testAccepts(BooleanType $type, Type $otherType, TrinaryLogic $expectedResult): void
 	{
 		$actualResult = $type->accepts($otherType, true)->result;
@@ -93,9 +92,7 @@ class BooleanTypeTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataIsSuperTypeOf
-	 */
+	#[DataProvider('dataIsSuperTypeOf')]
 	public function testIsSuperTypeOf(BooleanType $type, Type $otherType, TrinaryLogic $expectedResult): void
 	{
 		$actualResult = $type->isSuperTypeOf($otherType);
@@ -147,9 +144,7 @@ class BooleanTypeTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataEquals
-	 */
+	#[DataProvider('dataEquals')]
 	public function testEquals(BooleanType $type, Type $otherType, bool $expectedResult): void
 	{
 		$actualResult = $type->equals($otherType);

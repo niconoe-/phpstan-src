@@ -3,6 +3,7 @@
 namespace PHPStan\Rules\Api;
 
 use PHPStan\Analyser\Scope;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ApiRuleHelperTest extends TestCase
@@ -133,9 +134,7 @@ class ApiRuleHelperTest extends TestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataIsPhpStanCode
-	 */
+	#[DataProvider('dataIsPhpStanCode')]
 	public function testIsPhpStanCode(
 		?string $scopeNamespace,
 		string $scopeFile,

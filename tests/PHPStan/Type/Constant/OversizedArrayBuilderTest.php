@@ -10,6 +10,7 @@ use PHPStan\Reflection\InitializerExprTypeResolver;
 use PHPStan\Testing\PHPStanTestCase;
 use PHPStan\Type\Type;
 use PHPStan\Type\VerbosityLevel;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class OversizedArrayBuilderTest extends PHPStanTestCase
 {
@@ -62,9 +63,7 @@ class OversizedArrayBuilderTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataBuild
-	 */
+	#[DataProvider('dataBuild')]
 	public function testBuild(string $sourceCode, string $expectedTypeDescription): void
 	{
 		$parser = self::getParser();

@@ -17,6 +17,7 @@ use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 use PHPStan\Type\UnionType;
 use PHPStan\Type\VerbosityLevel;
+use PHPUnit\Framework\Attributes\DataProvider;
 use function count;
 use function get_class;
 use function sprintf;
@@ -422,9 +423,9 @@ class GenericParametersAcceptorResolverTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataResolve
 	 * @param Type[] $argTypes
 	 */
+	#[DataProvider('dataResolve')]
 	public function testResolve(array $argTypes, ParametersAcceptor $parametersAcceptor, ParametersAcceptor $expectedResult): void
 	{
 		self::getContainer(); // to initialize bleeding edge

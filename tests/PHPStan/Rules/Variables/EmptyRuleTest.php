@@ -7,6 +7,7 @@ use PHPStan\Rules\Properties\PropertyDescriptor;
 use PHPStan\Rules\Properties\PropertyReflectionFinder;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresPhp;
 
 /**
@@ -191,9 +192,7 @@ class EmptyRuleTest extends RuleTestCase
 		yield [false];
 	}
 
-	/**
-	 * @dataProvider dataBug9403
-	 */
+	#[DataProvider('dataBug9403')]
 	public function testBug9403(bool $treatPhpDocTypesAsCertain): void
 	{
 		$this->treatPhpDocTypesAsCertain = $treatPhpDocTypesAsCertain;

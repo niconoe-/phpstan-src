@@ -9,6 +9,7 @@ use PHPStan\Rules\ClassNameCheck;
 use PHPStan\Rules\PhpDoc\UnresolvableTypeHelper;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use const PHP_VERSION_ID;
 
 /**
@@ -167,9 +168,9 @@ class ExistingClassesInPropertiesRuleTest extends RuleTestCase
 	}
 
 	/**
-	 * @dataProvider dataIntersectionTypes
 	 * @param list<array{0: string, 1: int, 2?: string}> $errors
 	 */
+	#[DataProvider('dataIntersectionTypes')]
 	public function testIntersectionTypes(int $phpVersion, array $errors): void
 	{
 		$this->phpVersion = $phpVersion;

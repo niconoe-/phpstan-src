@@ -5,6 +5,7 @@ namespace PHPStan\Type;
 use Closure;
 use PHPStan\Testing\PHPStanTestCase;
 use PHPStan\TrinaryLogic;
+use PHPUnit\Framework\Attributes\DataProvider;
 use function sprintf;
 
 class ClosureTypeTest extends PHPStanTestCase
@@ -91,9 +92,7 @@ class ClosureTypeTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataIsSuperTypeOf
-	 */
+	#[DataProvider('dataIsSuperTypeOf')]
 	public function testIsSuperTypeOf(
 		Type $type,
 		Type $otherType,

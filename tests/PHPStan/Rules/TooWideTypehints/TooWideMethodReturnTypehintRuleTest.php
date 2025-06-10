@@ -4,6 +4,7 @@ namespace PHPStan\Rules\TooWideTypehints;
 
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresPhp;
 
 /**
@@ -178,9 +179,9 @@ class TooWideMethodReturnTypehintRuleTest extends RuleTestCase
 	}
 
 	/**
-	 * @dataProvider dataAlwaysCheckFinal
 	 * @param list<array{0: string, 1: int, 2?: string|null}> $expectedErrors
 	 */
+	#[DataProvider('dataAlwaysCheckFinal')]
 	public function testAlwaysCheckFinal(bool $checkProtectedAndPublicMethods, array $expectedErrors): void
 	{
 		$this->checkProtectedAndPublicMethods = $checkProtectedAndPublicMethods;

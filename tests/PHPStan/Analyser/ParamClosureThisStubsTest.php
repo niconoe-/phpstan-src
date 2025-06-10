@@ -3,6 +3,7 @@
 namespace PHPStan\Analyser;
 
 use PHPStan\Testing\TypeInferenceTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class ParamClosureThisStubsTest extends TypeInferenceTestCase
 {
@@ -13,9 +14,9 @@ class ParamClosureThisStubsTest extends TypeInferenceTestCase
 	}
 
 	/**
-	 * @dataProvider dataAsserts
 	 * @param mixed ...$args
 	 */
+	#[DataProvider('dataAsserts')]
 	public function testAsserts(
 		string $assertType,
 		string $file,

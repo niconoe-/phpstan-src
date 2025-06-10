@@ -3,6 +3,7 @@
 namespace PHPStan\Analyser;
 
 use PHPStan\Testing\TypeInferenceTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use const PHP_VERSION_ID;
 
 class DynamicReturnTypeExtensionTypeInferenceTest extends TypeInferenceTestCase
@@ -22,9 +23,9 @@ class DynamicReturnTypeExtensionTypeInferenceTest extends TypeInferenceTestCase
 	}
 
 	/**
-	 * @dataProvider dataAsserts
 	 * @param mixed ...$args
 	 */
+	#[DataProvider('dataAsserts')]
 	public function testAsserts(
 		string $assertType,
 		string $file,

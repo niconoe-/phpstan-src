@@ -3,6 +3,7 @@
 namespace PHPStan\Reflection;
 
 use PHPStan\Testing\TypeInferenceTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class AllowedSubTypesClassReflectionExtensionTest extends TypeInferenceTestCase
 {
@@ -13,9 +14,9 @@ class AllowedSubTypesClassReflectionExtensionTest extends TypeInferenceTestCase
 	}
 
 	/**
-	 * @dataProvider dataFileAsserts
 	 * @param mixed ...$args
 	 */
+	#[DataProvider('dataFileAsserts')]
 	public function testFileAsserts(
 		string $assertType,
 		string $file,

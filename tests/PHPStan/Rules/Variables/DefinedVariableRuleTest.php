@@ -4,6 +4,7 @@ namespace PHPStan\Rules\Variables;
 
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresPhp;
 
 /**
@@ -349,9 +350,9 @@ class DefinedVariableRuleTest extends RuleTestCase
 	}
 
 	/**
-	 * @dataProvider dataLoopInitialAssignments
 	 * @param list<array{0: string, 1: int, 2?: string}> $expectedErrors
 	 */
+	#[DataProvider('dataLoopInitialAssignments')]
 	public function testLoopInitialAssignments(
 		bool $polluteScopeWithLoopInitialAssignments,
 		bool $checkMaybeUndefinedVariables,
@@ -571,10 +572,9 @@ class DefinedVariableRuleTest extends RuleTestCase
 	}
 
 	/**
-	 * @dataProvider dataForeachPolluteScopeWithAlwaysIterableForeach
-	 *
 	 * @param list<array{0: string, 1: int, 2?: string}> $errors
 	 */
+	#[DataProvider('dataForeachPolluteScopeWithAlwaysIterableForeach')]
 	public function testForeachPolluteScopeWithAlwaysIterableForeach(bool $polluteScopeWithAlwaysIterableForeach, array $errors): void
 	{
 		$this->cliArgumentsVariablesRegistered = true;

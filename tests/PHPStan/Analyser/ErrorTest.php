@@ -3,6 +3,7 @@
 namespace PHPStan\Analyser;
 
 use PHPStan\Testing\PHPStanTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class ErrorTest extends PHPStanTestCase
 {
@@ -29,9 +30,7 @@ class ErrorTest extends PHPStanTestCase
 		yield ['3m.blah'];
 	}
 
-	/**
-	 * @dataProvider dataValidIdentifier
-	 */
+	#[DataProvider('dataValidIdentifier')]
 	public function testValidIdentifier(string $identifier): void
 	{
 		$this->assertTrue(Error::validateIdentifier($identifier));
@@ -48,9 +47,7 @@ class ErrorTest extends PHPStanTestCase
 		yield ['.'];
 	}
 
-	/**
-	 * @dataProvider dataInvalidIdentifier
-	 */
+	#[DataProvider('dataInvalidIdentifier')]
 	public function testInvalidIdentifier(string $identifier): void
 	{
 		$this->assertFalse(Error::validateIdentifier($identifier));

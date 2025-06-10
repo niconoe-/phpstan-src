@@ -10,6 +10,7 @@ use PHPStan\Reflection\InitializerExprContext;
 use PHPStan\Reflection\InitializerExprTypeResolver;
 use PHPStan\Testing\PHPStanTestCase;
 use PHPStan\Type\VerbosityLevel;
+use PHPUnit\Framework\Attributes\DataProvider;
 use SingleFileSourceLocatorTestClass;
 use TestSingleFileSourceLocator\AFoo;
 use function array_map;
@@ -127,9 +128,7 @@ class OptimizedSingleFileSourceLocatorTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataClass
-	 */
+	#[DataProvider('dataClass')]
 	public function testClass(string $className, string $expectedClassName, string $file): void
 	{
 		$factory = self::getContainer()->getByType(OptimizedSingleFileSourceLocatorFactory::class);
@@ -165,9 +164,7 @@ class OptimizedSingleFileSourceLocatorTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataFunction
-	 */
+	#[DataProvider('dataFunction')]
 	public function testFunction(string $functionName, string $expectedFunctionName, string $file): void
 	{
 		$factory = self::getContainer()->getByType(OptimizedSingleFileSourceLocatorFactory::class);
@@ -203,9 +200,7 @@ class OptimizedSingleFileSourceLocatorTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataConst
-	 */
+	#[DataProvider('dataConst')]
 	public function testConst(string $constantName, string $valueTypeDescription): void
 	{
 		$factory = self::getContainer()->getByType(OptimizedSingleFileSourceLocatorFactory::class);
@@ -229,9 +224,7 @@ class OptimizedSingleFileSourceLocatorTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataConstUnknown
-	 */
+	#[DataProvider('dataConstUnknown')]
 	public function testConstUnknown(string $constantName): void
 	{
 		$factory = self::getContainer()->getByType(OptimizedSingleFileSourceLocatorFactory::class);
@@ -242,9 +235,9 @@ class OptimizedSingleFileSourceLocatorTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataForIdenifiersByType
 	 * @param class-string[] $expectedIdentifiers
 	 */
+	#[DataProvider('dataForIdenifiersByType')]
 	public function testLocateIdentifiersByType(
 		IdentifierType $identifierType,
 		array $expectedIdentifiers,

@@ -9,6 +9,7 @@ use PHPStan\Rules\Properties\PropertyReflectionFinder;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleLevelHelper;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresPhp;
 use const PHP_VERSION_ID;
 
@@ -1316,9 +1317,7 @@ class CallMethodsRuleTest extends RuleTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataIterable
-	 */
+	#[DataProvider('dataIterable')]
 	public function testIterables(bool $checkNullables): void
 	{
 		$this->checkThisOnly = false;
@@ -1588,10 +1587,10 @@ class CallMethodsRuleTest extends RuleTestCase
 	}
 
 	/**
-	 * @dataProvider dataExplicitMixed
 	 * @param list<array{0: string, 1: int, 2?: string}> $errors
 	 */
 	#[RequiresPhp('>= 8.0')]
+	#[DataProvider('dataExplicitMixed')]
 	public function testExplicitMixed(bool $checkExplicitMixed, array $errors): void
 	{
 		$this->checkThisOnly = false;
@@ -1629,9 +1628,9 @@ class CallMethodsRuleTest extends RuleTestCase
 	}
 
 	/**
-	 * @dataProvider dataImplicitMixed
 	 * @param list<array{0: string, 1: int, 2?: string}> $errors
 	 */
+	#[DataProvider('dataImplicitMixed')]
 	public function testImplicitMixed(bool $checkImplicitMixed, array $errors): void
 	{
 		$this->checkThisOnly = false;
@@ -2882,9 +2881,9 @@ class CallMethodsRuleTest extends RuleTestCase
 	}
 
 	/**
-	 * @dataProvider dataCallablesWithoutCheckNullables
 	 * @param list<array{0: string, 1: int, 2?: string}> $expectedErrors
 	 */
+	#[DataProvider('dataCallablesWithoutCheckNullables')]
 	public function testCallablesWithoutCheckNullables(bool $checkNullables, bool $checkUnionTypes, array $expectedErrors): void
 	{
 		$this->checkThisOnly = false;

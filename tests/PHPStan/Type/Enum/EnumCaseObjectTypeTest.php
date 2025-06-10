@@ -10,6 +10,7 @@ use PHPStan\Type\ObjectWithoutClassType;
 use PHPStan\Type\Type;
 use PHPStan\Type\UnionType;
 use PHPStan\Type\VerbosityLevel;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresPhp;
 use function sprintf;
 
@@ -102,10 +103,8 @@ class EnumCaseObjectTypeTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataIsSuperTypeOf
-	 */
 	#[RequiresPhp('>= 8.1')]
+	#[DataProvider('dataIsSuperTypeOf')]
 	public function testIsSuperTypeOf(Type $type, Type $otherType, TrinaryLogic $expectedResult): void
 	{
 		$actualResult = $type->isSuperTypeOf($otherType);
@@ -202,10 +201,8 @@ class EnumCaseObjectTypeTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataAccepts
-	 */
 	#[RequiresPhp('>= 8.1')]
+	#[DataProvider('dataAccepts')]
 	public function testAccepts(
 		Type $type,
 		Type $acceptedType,

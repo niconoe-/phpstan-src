@@ -10,6 +10,7 @@ use PHPStan\Type\ArrayType;
 use PHPStan\Type\IntegerType;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\StringType;
+use PHPUnit\Framework\Attributes\DataProvider;
 use function sprintf;
 
 class StatementResultTest extends PHPStanTestCase
@@ -509,9 +510,7 @@ class StatementResultTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataIsAlwaysTerminating
-	 */
+	#[DataProvider('dataIsAlwaysTerminating')]
 	public function testIsAlwaysTerminating(
 		string $code,
 		bool $expectedIsAlwaysTerminating,

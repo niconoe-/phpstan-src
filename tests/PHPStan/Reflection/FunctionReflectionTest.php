@@ -6,6 +6,7 @@ use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Testing\PHPStanTestCase;
 use PHPStan\TrinaryLogic;
+use PHPUnit\Framework\Attributes\DataProvider;
 use const PHP_VERSION_ID;
 
 class FunctionReflectionTest extends PHPStanTestCase
@@ -36,10 +37,9 @@ class FunctionReflectionTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataPhpdocFunctions
-	 *
 	 * @param non-empty-string $functionName
 	 */
+	#[DataProvider('dataPhpdocFunctions')]
 	public function testFunctionHasPhpdoc(string $functionName, ?string $expectedDoc): void
 	{
 		require_once __DIR__ . '/data/function-with-phpdoc.php';
@@ -114,9 +114,7 @@ class FunctionReflectionTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataPhpdocMethods
-	 */
+	#[DataProvider('dataPhpdocMethods')]
 	public function testMethodHasPhpdoc(string $className, string $methodName, ?string $expectedDocComment): void
 	{
 		$reflectionProvider = self::createReflectionProvider();
@@ -142,9 +140,9 @@ class FunctionReflectionTest extends PHPStanTestCase
 	}
 
 	/**
-	 * @dataProvider dataFunctionReturnsByReference
 	 * @param non-empty-string $functionName
 	 */
+	#[DataProvider('dataFunctionReturnsByReference')]
 	public function testFunctionReturnsByReference(string $functionName, TrinaryLogic $expectedReturnsByRef): void
 	{
 		require_once __DIR__ . '/data/returns-by-reference.php';
@@ -177,9 +175,7 @@ class FunctionReflectionTest extends PHPStanTestCase
 		yield ['ReturnsByReference\\E', 'cases', TrinaryLogic::createNo()];
 	}
 
-	/**
-	 * @dataProvider dataMethodReturnsByReference
-	 */
+	#[DataProvider('dataMethodReturnsByReference')]
 	public function testMethodReturnsByReference(string $className, string $methodName, TrinaryLogic $expectedReturnsByRef): void
 	{
 		$reflectionProvider = self::createReflectionProvider();

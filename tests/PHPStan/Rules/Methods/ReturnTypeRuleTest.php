@@ -6,6 +6,7 @@ use PHPStan\Rules\FunctionReturnTypeCheck;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleLevelHelper;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresPhp;
 use const PHP_VERSION_ID;
 
@@ -587,9 +588,9 @@ class ReturnTypeRuleTest extends RuleTestCase
 	}
 
 	/**
-	 * @dataProvider dataBug5218
 	 * @param list<array{0: string, 1: int, 2?: string}> $errors
 	 */
+	#[DataProvider('dataBug5218')]
 	public function testBug5218(bool $checkExplicitMixed, array $errors): void
 	{
 		$this->checkExplicitMixed = $checkExplicitMixed;

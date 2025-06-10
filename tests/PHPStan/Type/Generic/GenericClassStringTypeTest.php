@@ -20,6 +20,7 @@ use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
 use PHPStan\Type\UnionType;
 use PHPStan\Type\VerbosityLevel;
+use PHPUnit\Framework\Attributes\DataProvider;
 use stdClass;
 use Throwable;
 use function sprintf;
@@ -158,9 +159,7 @@ class GenericClassStringTypeTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataIsSuperTypeOf
-	 */
+	#[DataProvider('dataIsSuperTypeOf')]
 	public function testIsSuperTypeOf(GenericClassStringType $type, Type $otherType, TrinaryLogic $expectedResult): void
 	{
 		$actualResult = $type->isSuperTypeOf($otherType);
@@ -275,9 +274,7 @@ class GenericClassStringTypeTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataAccepts
-	 */
+	#[DataProvider('dataAccepts')]
 	public function testAccepts(
 		GenericClassStringType $acceptingType,
 		Type $acceptedType,
@@ -320,9 +317,7 @@ class GenericClassStringTypeTest extends PHPStanTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataEquals
-	 */
+	#[DataProvider('dataEquals')]
 	public function testEquals(GenericClassStringType $type, Type $otherType, bool $expected): void
 	{
 		$verbosityLevel = VerbosityLevel::precise();

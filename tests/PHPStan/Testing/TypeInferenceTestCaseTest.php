@@ -4,6 +4,7 @@ namespace PHPStan\Testing;
 
 use PHPStan\File\FileHelper;
 use PHPUnit\Framework\AssertionFailedError;
+use PHPUnit\Framework\Attributes\DataProvider;
 use function array_values;
 use function sprintf;
 
@@ -80,9 +81,7 @@ final class TypeInferenceTestCaseTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataFileAssertionFailedErrors
-	 */
+	#[DataProvider('dataFileAssertionFailedErrors')]
 	public function testFileAssertionFailedErrors(string $filePath, string $errorMessage): void
 	{
 		$this->expectException(AssertionFailedError::class);

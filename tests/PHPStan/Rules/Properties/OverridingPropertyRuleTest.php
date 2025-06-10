@@ -5,6 +5,7 @@ namespace PHPStan\Rules\Properties;
 use PHPStan\Php\PhpVersion;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresPhp;
 use function sprintf;
 
@@ -156,9 +157,9 @@ class OverridingPropertyRuleTest extends RuleTestCase
 	}
 
 	/**
-	 * @dataProvider dataRulePHPDocTypes
 	 * @param list<array{0: string, 1: int, 2?: string}> $errors
 	 */
+	#[DataProvider('dataRulePHPDocTypes')]
 	public function testRulePHPDocTypes(bool $reportMaybes, array $errors): void
 	{
 		$this->reportMaybes = $reportMaybes;

@@ -4,6 +4,7 @@ namespace PHPStan\Rules\Missing;
 
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresPhp;
 
 /**
@@ -257,10 +258,10 @@ class MissingReturnRuleTest extends RuleTestCase
 	}
 
 	/**
-	 * @dataProvider dataCheckPhpDocMissingReturn
 	 * @param list<array{0: string, 1: int, 2?: string}> $errors
 	 */
 	#[RequiresPhp('>= 8.0')]
+	#[DataProvider('dataCheckPhpDocMissingReturn')]
 	public function testCheckPhpDocMissingReturn(bool $checkPhpDocMissingReturn, array $errors): void
 	{
 		$this->checkExplicitMixedMissingReturn = true;
@@ -280,10 +281,8 @@ class MissingReturnRuleTest extends RuleTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataModelMixin
-	 */
 	#[RequiresPhp('>= 8.0')]
+	#[DataProvider('dataModelMixin')]
 	public function testModelMixin(bool $checkExplicitMixedMissingReturn): void
 	{
 		$this->checkExplicitMixedMissingReturn = $checkExplicitMixedMissingReturn;

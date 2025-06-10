@@ -16,6 +16,7 @@ use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\Type;
 use PHPStan\Type\VerbosityLevel;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresPhp;
 use SomeNodeScopeResolverNamespace\Foo;
 use function define;
@@ -89,9 +90,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataUnionInCatch
-	 */
+	#[DataProvider('dataUnionInCatch')]
 	public function testUnionInCatch(
 		string $description,
 		string $expression,
@@ -214,9 +213,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataUnionAndIntersection
-	 */
+	#[DataProvider('dataUnionAndIntersection')]
 	public function testUnionAndIntersection(
 		string $description,
 		string $expression,
@@ -739,9 +736,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataAssignInIf
-	 */
+	#[DataProvider('dataAssignInIf')]
 	public function testAssignInIf(
 		Scope $scope,
 		string $variableName,
@@ -877,9 +872,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataConstantTypes
-	 */
+	#[DataProvider('dataConstantTypes')]
 	public function testConstantTypes(
 		Scope $scope,
 		string $variableName,
@@ -1212,9 +1205,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataArrayDestructuring
-	 */
+	#[DataProvider('dataArrayDestructuring')]
 	public function testArrayDestructuring(
 		string $description,
 		string $expression,
@@ -1293,9 +1284,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataParameterTypes
-	 */
+	#[DataProvider('dataParameterTypes')]
 	public function testTypehints(
 		string $typeClass,
 		string $expression,
@@ -1354,9 +1343,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataAnonymousFunctionParameterTypes
-	 */
+	#[DataProvider('dataAnonymousFunctionParameterTypes')]
 	public function testAnonymousFunctionTypehints(
 		string $description,
 		string $expression,
@@ -1435,9 +1422,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataVarAnnotations
-	 */
+	#[DataProvider('dataVarAnnotations')]
 	public function testVarAnnotations(
 		string $description,
 		string $expression,
@@ -1591,9 +1576,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataCasts
-	 */
+	#[DataProvider('dataCasts')]
 	public function testCasts(
 		string $desciptiion,
 		string $expression,
@@ -1720,9 +1703,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataDeductedTypes
-	 */
+	#[DataProvider('dataDeductedTypes')]
 	public function testDeductedTypes(
 		string $description,
 		string $expression,
@@ -1866,9 +1847,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataProperties
-	 */
+	#[DataProvider('dataProperties')]
 	public function testProperties(
 		string $description,
 		string $expression,
@@ -3183,9 +3162,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataBinaryOperations
-	 */
+	#[DataProvider('dataBinaryOperations')]
 	public function testBinaryOperations(
 		string $description,
 		string $expression,
@@ -3208,9 +3185,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataVarStatementAnnotation
-	 */
+	#[DataProvider('dataVarStatementAnnotation')]
 	public function testVarStatementAnnotation(
 		string $description,
 		string $expression,
@@ -3233,9 +3208,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataCloneOperators
-	 */
+	#[DataProvider('dataCloneOperators')]
 	public function testCloneOperators(
 		string $description,
 		string $expression,
@@ -3286,9 +3259,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataLiteralArrays
-	 */
+	#[DataProvider('dataLiteralArrays')]
 	public function testLiteralArrays(
 		string $description,
 		string $expression,
@@ -3363,9 +3334,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataLiteralArraysKeys
-	 */
+	#[DataProvider('dataLiteralArraysKeys')]
 	public function testLiteralArraysKeys(
 		string $description,
 		string $evaluatedPointExpressionType,
@@ -3405,9 +3374,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataStringArrayAccess
-	 */
+	#[DataProvider('dataStringArrayAccess')]
 	public function testStringArrayAccess(
 		string $description,
 		string $expression,
@@ -3580,10 +3547,8 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataTypeFromFunctionPhpDocs
-	 * @dataProvider dataTypeFromFunctionFunctionPhpDocs
-	 */
+	#[DataProvider('dataTypeFromFunctionPhpDocs')]
+	#[DataProvider('dataTypeFromFunctionFunctionPhpDocs')]
 	public function testTypeFromFunctionPhpDocs(
 		string $description,
 		string $expression,
@@ -3607,10 +3572,8 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataTypeFromFunctionPhpDocs
-	 * @dataProvider dataTypeFromFunctionPrefixedPhpDocs
-	 */
+	#[DataProvider('dataTypeFromFunctionPhpDocs')]
+	#[DataProvider('dataTypeFromFunctionPrefixedPhpDocs')]
 	public function testTypeFromFunctionPhpDocsPsalmPrefix(
 		string $description,
 		string $expression,
@@ -3624,10 +3587,8 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		);
 	}
 
-	/**
-	 * @dataProvider dataTypeFromFunctionPhpDocs
-	 * @dataProvider dataTypeFromFunctionPrefixedPhpDocs
-	 */
+	#[DataProvider('dataTypeFromFunctionPhpDocs')]
+	#[DataProvider('dataTypeFromFunctionPrefixedPhpDocs')]
 	public function testTypeFromFunctionPhpDocsPhpstanPrefix(
 		string $description,
 		string $expression,
@@ -3641,10 +3602,8 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		);
 	}
 
-	/**
-	 * @dataProvider dataTypeFromFunctionPhpDocs
-	 * @dataProvider dataTypeFromFunctionPrefixedPhpDocs
-	 */
+	#[DataProvider('dataTypeFromFunctionPhpDocs')]
+	#[DataProvider('dataTypeFromFunctionPrefixedPhpDocs')]
 	public function testTypeFromFunctionPhpDocsPhanPrefix(
 		string $description,
 		string $expression,
@@ -3800,10 +3759,8 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataTypeFromFunctionPhpDocs
-	 * @dataProvider dataTypeFromMethodPhpDocs
-	 */
+	#[DataProvider('dataTypeFromFunctionPhpDocs')]
+	#[DataProvider('dataTypeFromMethodPhpDocs')]
 	public function testTypeFromMethodPhpDocs(
 		string $description,
 		string $expression,
@@ -3816,10 +3773,8 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		);
 	}
 
-	/**
-	 * @dataProvider dataTypeFromFunctionPhpDocs
-	 * @dataProvider dataTypeFromMethodPhpDocs
-	 */
+	#[DataProvider('dataTypeFromFunctionPhpDocs')]
+	#[DataProvider('dataTypeFromMethodPhpDocs')]
 	public function testTypeFromMethodPhpDocsPsalmPrefix(
 		string $description,
 		string $expression,
@@ -3842,10 +3797,10 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 	}
 
 	/**
-	 * @dataProvider dataTypeFromFunctionPhpDocs
-	 * @dataProvider dataTypeFromMethodPhpDocs
 	 * @param bool $replaceClass = true
 	 */
+	#[DataProvider('dataTypeFromFunctionPhpDocs')]
+	#[DataProvider('dataTypeFromMethodPhpDocs')]
 	public function testTypeFromMethodPhpDocsPhpstanPrefix(
 		string $description,
 		string $expression,
@@ -3867,10 +3822,8 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		);
 	}
 
-	/**
-	 * @dataProvider dataTypeFromFunctionPhpDocs
-	 * @dataProvider dataTypeFromMethodPhpDocs
-	 */
+	#[DataProvider('dataTypeFromFunctionPhpDocs')]
+	#[DataProvider('dataTypeFromMethodPhpDocs')]
 	public function testTypeFromMethodPhpDocsPhanPrefix(
 		string $description,
 		string $expression,
@@ -3892,10 +3845,8 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		);
 	}
 
-	/**
-	 * @dataProvider dataTypeFromFunctionPhpDocs
-	 * @dataProvider dataTypeFromMethodPhpDocs
-	 */
+	#[DataProvider('dataTypeFromFunctionPhpDocs')]
+	#[DataProvider('dataTypeFromMethodPhpDocs')]
 	public function testTypeFromTraitPhpDocs(
 		string $description,
 		string $expression,
@@ -3917,10 +3868,8 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		);
 	}
 
-	/**
-	 * @dataProvider dataTypeFromFunctionPhpDocs
-	 * @dataProvider dataTypeFromMethodPhpDocs
-	 */
+	#[DataProvider('dataTypeFromFunctionPhpDocs')]
+	#[DataProvider('dataTypeFromMethodPhpDocs')]
 	public function testTypeFromMethodPhpDocsInheritDocWithoutCurlyBraces(
 		string $description,
 		string $expression,
@@ -3942,10 +3891,8 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		);
 	}
 
-	/**
-	 * @dataProvider dataTypeFromFunctionPhpDocs
-	 * @dataProvider dataTypeFromMethodPhpDocs
-	 */
+	#[DataProvider('dataTypeFromFunctionPhpDocs')]
+	#[DataProvider('dataTypeFromMethodPhpDocs')]
 	public function testTypeFromRecursiveTraitPhpDocs(
 		string $description,
 		string $expression,
@@ -3977,9 +3924,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataTypeFromTraitPhpDocsInSameFile
-	 */
+	#[DataProvider('dataTypeFromTraitPhpDocsInSameFile')]
 	public function testTypeFromTraitPhpDocsInSameFile(
 		string $description,
 		string $expression,
@@ -3992,10 +3937,8 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		);
 	}
 
-	/**
-	 * @dataProvider dataTypeFromFunctionPhpDocs
-	 * @dataProvider dataTypeFromMethodPhpDocs
-	 */
+	#[DataProvider('dataTypeFromFunctionPhpDocs')]
+	#[DataProvider('dataTypeFromMethodPhpDocs')]
 	public function testTypeFromMethodPhpDocsInheritDoc(
 		string $description,
 		string $expression,
@@ -4017,10 +3960,8 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		);
 	}
 
-	/**
-	 * @dataProvider dataTypeFromFunctionPhpDocs
-	 * @dataProvider dataTypeFromMethodPhpDocs
-	 */
+	#[DataProvider('dataTypeFromFunctionPhpDocs')]
+	#[DataProvider('dataTypeFromMethodPhpDocs')]
 	public function testTypeFromMethodPhpDocsImplicitInheritance(
 		string $description,
 		string $expression,
@@ -4069,9 +4010,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataSwitchInstanceOf
-	 */
+	#[DataProvider('dataSwitchInstanceOf')]
 	public function testSwitchInstanceof(
 		string $description,
 		string $expression,
@@ -4084,9 +4023,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		);
 	}
 
-	/**
-	 * @dataProvider dataSwitchInstanceOf
-	 */
+	#[DataProvider('dataSwitchInstanceOf')]
 	public function testSwitchInstanceofTruthy(
 		string $description,
 		string $expression,
@@ -4115,9 +4052,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataSwitchGetClass
-	 */
+	#[DataProvider('dataSwitchGetClass')]
 	public function testSwitchGetClass(
 		string $description,
 		string $expression,
@@ -4142,9 +4077,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataSwitchInstanceOfFallthrough
-	 */
+	#[DataProvider('dataSwitchInstanceOfFallthrough')]
 	public function testSwitchInstanceOfFallthrough(
 		string $description,
 		string $expression,
@@ -4167,9 +4100,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataSwitchTypeElimination
-	 */
+	#[DataProvider('dataSwitchTypeElimination')]
 	public function testSwitchTypeElimination(
 		string $description,
 		string $expression,
@@ -4203,9 +4134,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataOverwritingVariable
-	 */
+	#[DataProvider('dataOverwritingVariable')]
 	public function testOverwritingVariable(
 		string $description,
 		string $expression,
@@ -4270,9 +4199,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataNegatedInstanceof
-	 */
+	#[DataProvider('dataNegatedInstanceof')]
 	public function testNegatedInstanceof(
 		string $description,
 		string $expression,
@@ -4307,9 +4234,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataAnonymousFunction
-	 */
+	#[DataProvider('dataAnonymousFunction')]
 	public function testAnonymousFunction(
 		string $description,
 		string $expression,
@@ -4443,9 +4368,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataForeachArrayType
-	 */
+	#[DataProvider('dataForeachArrayType')]
 	public function testForeachArrayType(
 		string $file,
 		string $description,
@@ -4470,9 +4393,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataOverridingSpecifiedType
-	 */
+	#[DataProvider('dataOverridingSpecifiedType')]
 	public function testOverridingSpecifiedType(
 		string $file,
 		string $description,
@@ -4528,9 +4449,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataForeachObjectType
-	 */
+	#[DataProvider('dataForeachObjectType')]
 	public function testForeachObjectType(
 		string $file,
 		string $description,
@@ -5257,9 +5176,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataArrayFunctions
-	 */
+	#[DataProvider('dataArrayFunctions')]
 	public function testArrayFunctions(
 		string $description,
 		string $expression,
@@ -5635,9 +5552,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataFunctions
-	 */
+	#[DataProvider('dataFunctions')]
 	public function testFunctions(
 		string $description,
 		string $expression,
@@ -5660,9 +5575,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataDioFunctions
-	 */
+	#[DataProvider('dataDioFunctions')]
 	public function testDioFunctions(
 		string $description,
 		string $expression,
@@ -5688,9 +5601,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataSsh2Functions
-	 */
+	#[DataProvider('dataSsh2Functions')]
 	public function testSsh2Functions(
 		string $description,
 		string $expression,
@@ -5761,9 +5672,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataRangeFunction
-	 */
+	#[DataProvider('dataRangeFunction')]
 	public function testRangeFunction(
 		string $description,
 		string $expression,
@@ -5918,9 +5827,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataSpecifiedTypesUsingIsFunctions
-	 */
+	#[DataProvider('dataSpecifiedTypesUsingIsFunctions')]
 	public function testSpecifiedTypesUsingIsFunctions(
 		string $description,
 		string $expression,
@@ -6083,9 +5990,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataIterable
-	 */
+	#[DataProvider('dataIterable')]
 	public function testIterable(
 		string $description,
 		string $expression,
@@ -6120,9 +6025,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataArrayAccess
-	 */
+	#[DataProvider('dataArrayAccess')]
 	public function testArrayAccess(
 		string $description,
 		string $expression,
@@ -6153,9 +6056,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataVoid
-	 */
+	#[DataProvider('dataVoid')]
 	public function testVoid(
 		string $description,
 		string $expression,
@@ -6190,9 +6091,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataNullableReturnTypes
-	 */
+	#[DataProvider('dataNullableReturnTypes')]
 	public function testNullableReturnTypes(
 		string $description,
 		string $expression,
@@ -6235,9 +6134,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataTernary
-	 */
+	#[DataProvider('dataTernary')]
 	public function testTernary(
 		string $description,
 		string $expression,
@@ -6264,9 +6161,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataHeredoc
-	 */
+	#[DataProvider('dataHeredoc')]
 	public function testHeredoc(
 		string $description,
 		string $expression,
@@ -6435,9 +6330,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataTypeElimination
-	 */
+	#[DataProvider('dataTypeElimination')]
 	public function testTypeElimination(
 		string $description,
 		string $expression,
@@ -6470,9 +6363,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataMisleadingTypes
-	 */
+	#[DataProvider('dataMisleadingTypes')]
 	public function testMisleadingTypes(
 		string $description,
 		string $expression,
@@ -6499,9 +6390,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataMisleadingTypesWithoutNamespace
-	 */
+	#[DataProvider('dataMisleadingTypesWithoutNamespace')]
 	public function testMisleadingTypesWithoutNamespace(
 		string $description,
 		string $expression,
@@ -6532,9 +6421,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataUnresolvableTypes
-	 */
+	#[DataProvider('dataUnresolvableTypes')]
 	public function testUnresolvableTypes(
 		string $description,
 		string $expression,
@@ -6561,9 +6448,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataCombineTypes
-	 */
+	#[DataProvider('dataCombineTypes')]
 	public function testCombineTypes(
 		string $description,
 		string $expression,
@@ -6600,9 +6485,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataConstants
-	 */
+	#[DataProvider('dataConstants')]
 	public function testConstants(
 		string $description,
 		string $expression,
@@ -6629,9 +6512,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataFinally
-	 */
+	#[DataProvider('dataFinally')]
 	public function testFinally(
 		string $description,
 		string $expression,
@@ -6644,9 +6525,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		);
 	}
 
-	/**
-	 * @dataProvider dataFinally
-	 */
+	#[DataProvider('dataFinally')]
 	public function testFinallyWithEarlyTermination(
 		string $description,
 		string $expression,
@@ -6669,9 +6548,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataInheritDocFromInterface
-	 */
+	#[DataProvider('dataInheritDocFromInterface')]
 	public function testInheritDocFromInterface(
 		string $description,
 		string $expression,
@@ -6684,9 +6561,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		);
 	}
 
-	/**
-	 * @dataProvider dataInheritDocFromInterface
-	 */
+	#[DataProvider('dataInheritDocFromInterface')]
 	public function testInheritDocWithoutCurlyBracesFromInterface(
 		string $description,
 		string $expression,
@@ -6709,9 +6584,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataInheritDocFromInterface2
-	 */
+	#[DataProvider('dataInheritDocFromInterface2')]
 	public function testInheritDocFromInterface2(
 		string $description,
 		string $expression,
@@ -6725,9 +6598,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		);
 	}
 
-	/**
-	 * @dataProvider dataInheritDocFromInterface2
-	 */
+	#[DataProvider('dataInheritDocFromInterface2')]
 	public function testInheritDocWithoutCurlyBracesFromInterface2(
 		string $description,
 		string $expression,
@@ -6751,9 +6622,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataInheritDocFromTrait
-	 */
+	#[DataProvider('dataInheritDocFromTrait')]
 	public function testInheritDocFromTrait(
 		string $description,
 		string $expression,
@@ -6766,9 +6635,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		);
 	}
 
-	/**
-	 * @dataProvider dataInheritDocFromTrait
-	 */
+	#[DataProvider('dataInheritDocFromTrait')]
 	public function testInheritDocWithoutCurlyBracesFromTrait(
 		string $description,
 		string $expression,
@@ -6791,9 +6658,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataInheritDocFromTrait2
-	 */
+	#[DataProvider('dataInheritDocFromTrait2')]
 	public function testInheritDocFromTrait2(
 		string $description,
 		string $expression,
@@ -6808,9 +6673,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		);
 	}
 
-	/**
-	 * @dataProvider dataInheritDocFromTrait2
-	 */
+	#[DataProvider('dataInheritDocFromTrait2')]
 	public function testInheritDocWithoutCurlyBracesFromTrait2(
 		string $description,
 		string $expression,
@@ -6851,9 +6714,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataResolveStatic
-	 */
+	#[DataProvider('dataResolveStatic')]
 	public function testResolveStatic(
 		string $description,
 		string $expression,
@@ -7080,10 +6941,8 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataLoopVariables
-	 * @dataProvider dataForeachLoopVariables
-	 */
+	#[DataProvider('dataLoopVariables')]
+	#[DataProvider('dataForeachLoopVariables')]
 	public function testForeachLoopVariables(
 		string $description,
 		string $expression,
@@ -7098,10 +6957,8 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		);
 	}
 
-	/**
-	 * @dataProvider dataLoopVariables
-	 * @dataProvider dataWhileLoopVariables
-	 */
+	#[DataProvider('dataLoopVariables')]
+	#[DataProvider('dataWhileLoopVariables')]
 	public function testWhileLoopVariables(
 		string $description,
 		string $expression,
@@ -7116,10 +6973,8 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		);
 	}
 
-	/**
-	 * @dataProvider dataLoopVariables
-	 * @dataProvider dataForLoopVariables
-	 */
+	#[DataProvider('dataLoopVariables')]
+	#[DataProvider('dataForLoopVariables')]
 	public function testForLoopVariables(
 		string $description,
 		string $expression,
@@ -7226,9 +7081,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataDoWhileLoopVariables
-	 */
+	#[DataProvider('dataDoWhileLoopVariables')]
 	public function testDoWhileLoopVariables(
 		string $description,
 		string $expression,
@@ -7259,9 +7112,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataMultipleClassesInOneFile
-	 */
+	#[DataProvider('dataMultipleClassesInOneFile')]
 	public function testMultipleClassesInOneFile(
 		string $description,
 		string $expression,
@@ -7290,9 +7141,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataCallingMultipleClassesInOneFile
-	 */
+	#[DataProvider('dataCallingMultipleClassesInOneFile')]
 	public function testCallingMultipleClassesInOneFile(
 		string $description,
 		string $expression,
@@ -7331,9 +7180,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataExplode
-	 */
+	#[DataProvider('dataExplode')]
 	public function testExplode(
 		string $description,
 		string $expression,
@@ -7424,9 +7271,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataArrayPointerFunctions
-	 */
+	#[DataProvider('dataArrayPointerFunctions')]
 	public function testArrayPointerFunctions(
 		string $description,
 		string $expression,
@@ -7501,9 +7346,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataReplaceFunctions
-	 */
+	#[DataProvider('dataReplaceFunctions')]
 	public function testReplaceFunctions(
 		string $description,
 		string $expression,
@@ -7661,10 +7504,8 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataFilterVar
-	 * @dataProvider dataFilterVarUnchanged
-	 */
+	#[DataProvider('dataFilterVar')]
+	#[DataProvider('dataFilterVarUnchanged')]
 	public function testFilterVar(
 		string $description,
 		string $expression,
@@ -7773,9 +7614,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataClosureWithUsePassedByReference
-	 */
+	#[DataProvider('dataClosureWithUsePassedByReference')]
 	public function testClosureWithUsePassedByReference(
 		string $description,
 		string $expression,
@@ -7800,9 +7639,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataClosureWithUsePassedByReferenceInMethodCall
-	 */
+	#[DataProvider('dataClosureWithUsePassedByReferenceInMethodCall')]
 	public function testClosureWithUsePassedByReferenceInMethodCall(
 		string $description,
 		string $expression,
@@ -7851,9 +7688,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataStaticClosure
-	 */
+	#[DataProvider('dataStaticClosure')]
 	public function testStaticClosure(
 		string $description,
 		string $expression,
@@ -7866,9 +7701,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		);
 	}
 
-	/**
-	 * @dataProvider dataClosureWithUsePassedByReferenceReturn
-	 */
+	#[DataProvider('dataClosureWithUsePassedByReferenceReturn')]
 	public function testClosureWithUsePassedByReferenceReturn(
 		string $description,
 		string $expression,
@@ -7897,9 +7730,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataClosureWithInferredTypehint
-	 */
+	#[DataProvider('dataClosureWithInferredTypehint')]
 	public function testClosureWithInferredTypehint(
 		string $description,
 		string $expression,
@@ -8005,9 +7836,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataTraitsPhpDocs
-	 */
+	#[DataProvider('dataTraitsPhpDocs')]
 	public function testTraitsPhpDocs(
 		string $description,
 		string $expression,
@@ -8038,9 +7867,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataPassedByReference
-	 */
+	#[DataProvider('dataPassedByReference')]
 	public function testPassedByReference(
 		string $description,
 		string $expression,
@@ -8083,9 +7910,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataCallables
-	 */
+	#[DataProvider('dataCallables')]
 	public function testCallables(
 		string $description,
 		string $expression,
@@ -8140,9 +7965,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataArrayKeysInBranches
-	 */
+	#[DataProvider('dataArrayKeysInBranches')]
 	public function testArrayKeysInBranches(
 		string $description,
 		string $expression,
@@ -8186,9 +8009,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataSpecifiedFunctionCall
-	 */
+	#[DataProvider('dataSpecifiedFunctionCall')]
 	public function testSpecifiedFunctionCall(
 		string $description,
 		string $expression,
@@ -8229,9 +8050,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataElementsOnMixed
-	 */
+	#[DataProvider('dataElementsOnMixed')]
 	public function testElementsOnMixed(
 		string $description,
 		string $expression,
@@ -8258,9 +8077,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataCaseInsensitivePhpDocTypes
-	 */
+	#[DataProvider('dataCaseInsensitivePhpDocTypes')]
 	public function testCaseInsensitivePhpDocTypes(
 		string $description,
 		string $expression,
@@ -8339,9 +8156,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataConstantTypeAfterDuplicateCondition
-	 */
+	#[DataProvider('dataConstantTypeAfterDuplicateCondition')]
 	public function testConstantTypeAfterDuplicateCondition(
 		string $description,
 		string $expression,
@@ -8392,9 +8207,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataAnonymousClass
-	 */
+	#[DataProvider('dataAnonymousClass')]
 	public function testAnonymousClassName(
 		string $description,
 		string $expression,
@@ -8419,9 +8232,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataAnonymousClassInTrait
-	 */
+	#[DataProvider('dataAnonymousClassInTrait')]
 	public function testAnonymousClassNameInTrait(
 		string $description,
 		string $expression,
@@ -8455,9 +8266,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataAnonymousClassNameSameLine
-	 */
+	#[DataProvider('dataAnonymousClassNameSameLine')]
 	public function testAnonymousClassNameSameLine(
 		string $description,
 		string $expression,
@@ -8498,9 +8307,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataDynamicConstants
-	 */
+	#[DataProvider('dataDynamicConstants')]
 	public function testDynamicConstants(
 		string $description,
 		string $expression,
@@ -8540,10 +8347,8 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataDynamicConstantsWithNativeTypes
-	 */
 	#[RequiresPhp('>= 8.3')]
+	#[DataProvider('dataDynamicConstantsWithNativeTypes')]
 	public function testDynamicConstantsWithNativeTypes(
 		string $description,
 		string $expression,
@@ -8627,9 +8432,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataIsset
-	 */
+	#[DataProvider('dataIsset')]
 	public function testIsset(
 		string $description,
 		string $expression,
@@ -8673,9 +8476,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataPropertyArrayAssignment
-	 */
+	#[DataProvider('dataPropertyArrayAssignment')]
 	public function testPropertyArrayAssignment(
 		string $description,
 		string $expression,
@@ -8764,9 +8565,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataGetParentClass
-	 */
+	#[DataProvider('dataGetParentClass')]
 	public function testGetParentClass(
 		string $description,
 		string $expression,
@@ -8797,9 +8596,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataIsCountable
-	 */
+	#[DataProvider('dataIsCountable')]
 	public function testIsCountable(
 		string $description,
 		string $expression,
@@ -8936,9 +8733,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataPhp73Functions
-	 */
+	#[DataProvider('dataPhp73Functions')]
 	public function testPhp73Functions(
 		string $description,
 		string $expression,
@@ -9065,9 +8860,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataPhp74Functions
-	 */
+	#[DataProvider('dataPhp74Functions')]
 	public function testPhp74Functions(
 		string $description,
 		string $expression,
@@ -9094,9 +8887,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataUnionMethods
-	 */
+	#[DataProvider('dataUnionMethods')]
 	public function testUnionMethods(
 		string $description,
 		string $expression,
@@ -9123,9 +8914,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataUnionProperties
-	 */
+	#[DataProvider('dataUnionProperties')]
 	public function testUnionProperties(
 		string $description,
 		string $expression,
@@ -9148,9 +8937,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataAssignmentInCondition
-	 */
+	#[DataProvider('dataAssignmentInCondition')]
 	public function testAssignmentInCondition(
 		string $description,
 		string $expression,
@@ -9173,9 +8960,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataGeneralizeScope
-	 */
+	#[DataProvider('dataGeneralizeScope')]
 	public function testGeneralizeScope(
 		string $description,
 		string $expression,
@@ -9198,9 +8983,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataGeneralizeScopeRecursiveType
-	 */
+	#[DataProvider('dataGeneralizeScopeRecursiveType')]
 	public function testGeneralizeScopeRecursiveType(
 		string $description,
 		string $expression,
@@ -9231,9 +9014,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataArrayShapesInPhpDoc
-	 */
+	#[DataProvider('dataArrayShapesInPhpDoc')]
 	public function testArrayShapesInPhpDoc(
 		string $description,
 		string $expression,
@@ -9284,9 +9065,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataInferPrivatePropertyTypeFromConstructor
-	 */
+	#[DataProvider('dataInferPrivatePropertyTypeFromConstructor')]
 	public function testInferPrivatePropertyTypeFromConstructor(
 		string $description,
 		string $expression,
@@ -9317,9 +9096,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataPropertyNativeTypes
-	 */
+	#[DataProvider('dataPropertyNativeTypes')]
 	public function testPropertyNativeTypes(
 		string $description,
 		string $expression,
@@ -9350,9 +9127,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataArrowFunctions
-	 */
+	#[DataProvider('dataArrowFunctions')]
 	public function testArrowFunctions(
 		string $description,
 		string $expression,
@@ -9383,9 +9158,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataArrowFunctionsInside
-	 */
+	#[DataProvider('dataArrowFunctionsInside')]
 	public function testArrowFunctionsInside(
 		string $description,
 		string $expression,
@@ -9440,9 +9213,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataCoalesceAssign
-	 */
+	#[DataProvider('dataCoalesceAssign')]
 	public function testCoalesceAssign(
 		string $description,
 		string $expression,
@@ -9489,9 +9260,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataArraySpread
-	 */
+	#[DataProvider('dataArraySpread')]
 	public function testArraySpread(
 		string $description,
 		string $expression,
@@ -9514,9 +9283,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataPhp74FunctionsIn74
-	 */
+	#[DataProvider('dataPhp74FunctionsIn74')]
 	public function testPhp74FunctionsIn74(
 		string $description,
 		string $expression,
@@ -9550,9 +9317,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataTryCatchScope
-	 */
+	#[DataProvider('dataTryCatchScope')]
 	public function testTryCatchScope(
 		string $description,
 		string $expression,
@@ -9642,9 +9407,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataDeclareStrictTypes
-	 */
+	#[DataProvider('dataDeclareStrictTypes')]
 	public function testDeclareStrictTypes(string $file, bool $result): void
 	{
 		self::processFile($file, function (Node $node, Scope $scope) use ($result): void {

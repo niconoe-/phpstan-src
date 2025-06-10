@@ -9,6 +9,7 @@ use PHPStan\File\FuzzyRelativePathHelper;
 use PHPStan\File\NullRelativePathHelper;
 use PHPStan\File\SimpleRelativePathHelper;
 use PHPStan\Testing\ErrorFormatterTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use function getenv;
 use function putenv;
 use function sprintf;
@@ -230,10 +231,10 @@ class TableErrorFormatterTest extends ErrorFormatterTestCase
 	}
 
 	/**
-	 * @dataProvider dataFormatterOutputProvider
 	 * @param array{int, int}|int $numFileErrors
 	 * @param array<string> $extraEnvVars
 	 */
+	#[DataProvider('dataFormatterOutputProvider')]
 	public function testFormatErrors(
 		string $message,
 		int $exitCode,

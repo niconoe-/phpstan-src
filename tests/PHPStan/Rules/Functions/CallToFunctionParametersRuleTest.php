@@ -9,6 +9,7 @@ use PHPStan\Rules\Properties\PropertyReflectionFinder;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleLevelHelper;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresPhp;
 use function sprintf;
 use const PHP_VERSION_ID;
@@ -838,9 +839,7 @@ class CallToFunctionParametersRuleTest extends RuleTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataArrayMapMultiple
-	 */
+	#[DataProvider('dataArrayMapMultiple')]
 	public function testArrayMapMultiple(bool $checkExplicitMixed): void
 	{
 		$this->checkExplicitMixed = $checkExplicitMixed;
@@ -860,9 +859,7 @@ class CallToFunctionParametersRuleTest extends RuleTestCase
 		];
 	}
 
-	/**
-	 * @dataProvider dataArrayFilterCallback
-	 */
+	#[DataProvider('dataArrayFilterCallback')]
 	public function testArrayFilterCallback(bool $checkExplicitMixed): void
 	{
 		$this->checkExplicitMixed = $checkExplicitMixed;
