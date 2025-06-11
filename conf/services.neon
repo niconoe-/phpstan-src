@@ -1,6 +1,7 @@
 # these services are not registered using an attribute for one reason or another
 
 services:
+	# not registered using attributes because it's in vendor/
 	-
 		class: PhpParser\BuilderFactory
 
@@ -31,6 +32,17 @@ services:
 	-
 		class: PHPStan\PhpDocParser\Printer\Printer
 
+	-
+		factory: @PHPStan\Reflection\BetterReflection\SourceStubber\PhpStormStubsSourceStubberFactory::create()
+		autowired:
+			- PHPStan\BetterReflection\SourceLocator\SourceStubber\PhpStormStubsSourceStubber
+
+	-
+		factory: @PHPStan\Reflection\BetterReflection\SourceStubber\ReflectionSourceStubberFactory::create()
+		autowired:
+			- PHPStan\BetterReflection\SourceLocator\SourceStubber\ReflectionSourceStubber
+
+	# not registered using attributes because we don't want to apply service tags automatically
 	-
 		class: PHPStan\Dependency\ExportedNodeVisitor
 
@@ -68,6 +80,22 @@ services:
 	-
 		class: PHPStan\Reflection\RequireExtension\RequireExtendsPropertiesClassReflectionExtension
 
+	-
+		# checked as part of OverridingMethodRule
+		class: PHPStan\Rules\Methods\MethodSignatureRule
+		arguments:
+			reportMaybes: %reportMaybesInMethodSignatures%
+			reportStatic: %reportStaticMethodSignatures%
+
+	phpstanDiagnoseExtension:
+		class: PHPStan\Diagnose\PHPStanDiagnoseExtension
+		arguments:
+			composerAutoloaderProjectPaths: %composerAutoloaderProjectPaths%
+			allConfigFiles: %allConfigFiles%
+			configPhpVersion: %phpVersion%
+		autowired: false
+
+	# not registered using attributes because there is 2+ instances
 	-
 		class: PHPStan\Type\Php\ReflectionGetAttributesMethodReturnTypeExtension
 		arguments:
@@ -111,6 +139,13 @@ services:
 			dateTimeClass: DateTime
 
 	-
+		class: PHPStan\Type\Php\DateTimeModifyReturnTypeExtension
+		tags:
+			- phpstan.broker.dynamicMethodReturnTypeExtension
+		arguments:
+			dateTimeClass: DateTimeImmutable
+
+	-
 		class: PHPStan\Reflection\PHPStan\NativeReflectionEnumReturnDynamicReturnTypeExtension
 		tags:
 			- phpstan.broker.dynamicMethodReturnTypeExtension
@@ -140,82 +175,20 @@ services:
 		tags:
 			- phpstan.broker.dynamicMethodReturnTypeExtension
 
-
-	-
-		class: PHPStan\Type\Php\DateTimeModifyReturnTypeExtension
-		tags:
-			- phpstan.broker.dynamicMethodReturnTypeExtension
+	errorFormatter.json:
+		class: PHPStan\Command\ErrorFormatter\JsonErrorFormatter
 		arguments:
-			dateTimeClass: DateTimeImmutable
+			pretty: false
 
-	-
-		# checked as part of OverridingMethodRule
-		class: PHPStan\Rules\Methods\MethodSignatureRule
+	errorFormatter.prettyJson:
+		class: PHPStan\Command\ErrorFormatter\JsonErrorFormatter
 		arguments:
-			reportMaybes: %reportMaybesInMethodSignatures%
-			reportStatic: %reportStaticMethodSignatures%
+			pretty: true
 
-	simpleRelativePathHelper:
-		class: PHPStan\File\RelativePathHelper
-		factory: PHPStan\File\SimpleRelativePathHelper
+	stubFileTypeMapper:
+		class: PHPStan\Type\FileTypeMapper
 		arguments:
-			currentWorkingDirectory: %currentWorkingDirectory%
-		autowired: false
-
-	parentDirectoryRelativePathHelper:
-		class: PHPStan\File\ParentDirectoryRelativePathHelper
-		arguments:
-			parentDirectory: %currentWorkingDirectory%
-		autowired: false
-
-	# Reflection providers
-
-	betterReflectionReflector:
-		class: PHPStan\Reflection\BetterReflection\Reflector\MemoizingReflector
-		arguments:
-			reflector: @originalBetterReflectionReflector
-		autowired: false
-
-	nodeScopeResolverReflector:
-		factory: @betterReflectionReflector
-		autowired: false
-
-	betterReflectionProvider:
-		class: PHPStan\Reflection\BetterReflection\BetterReflectionProvider
-		arguments:
-			reflector: @betterReflectionReflector
-			universalObjectCratesClasses: %universalObjectCratesClasses%
-		autowired: false
-
-	-
-		factory: @PHPStan\Reflection\BetterReflection\SourceStubber\PhpStormStubsSourceStubberFactory::create()
-		autowired:
-			- PHPStan\BetterReflection\SourceLocator\SourceStubber\PhpStormStubsSourceStubber
-
-	-
-		factory: @PHPStan\Reflection\BetterReflection\SourceStubber\ReflectionSourceStubberFactory::create()
-		autowired:
-			- PHPStan\BetterReflection\SourceLocator\SourceStubber\ReflectionSourceStubber
-
-	freshStubParser:
-		class: PHPStan\Parser\StubParser
-		arguments:
-			parser: @php8PhpParser
-		autowired: false
-
-	stubParser:
-		class: PHPStan\Parser\CachedParser
-		arguments:
-			originalParser: @freshStubParser
-			cachedNodesByStringCountMax: %cache.nodesByStringCountMax%
-		autowired: false
-
-	phpstanDiagnoseExtension:
-		class: PHPStan\Diagnose\PHPStanDiagnoseExtension
-		arguments:
-			composerAutoloaderProjectPaths: %composerAutoloaderProjectPaths%
-			allConfigFiles: %allConfigFiles%
-			configPhpVersion: %phpVersion%
+			phpParser: @stubParser
 		autowired: false
 
 	fileExcluderAnalyse:
@@ -242,98 +215,7 @@ services:
 			fileExtensions: %fileExtensions%
 		autowired: false
 
-	stubFileTypeMapper:
-		class: PHPStan\Type\FileTypeMapper
-		arguments:
-			phpParser: @stubParser
-		autowired: false
-
-	php8Parser:
-		class: PHPStan\Parser\SimpleParser
-		arguments:
-			parser: @php8PhpParser
-		autowired: false
-
-	currentPhpVersionLexer:
-		class: PhpParser\Lexer
-		factory: @PHPStan\Parser\LexerFactory::create()
-		autowired: false
-
-	currentPhpVersionPhpParser:
-		factory: @currentPhpVersionPhpParserFactory::create()
-		autowired: false
-
-	currentPhpVersionPhpParserFactory:
-		class: PHPStan\Parser\PhpParserFactory
-		arguments:
-			lexer: @currentPhpVersionLexer
-		autowired: false
-
-	currentPhpVersionSimpleDirectParser:
-		class: PHPStan\Parser\SimpleParser
-		arguments:
-			parser: @currentPhpVersionPhpParser
-		autowired: no
-
-	currentPhpVersionSimpleParser:
-		class: PHPStan\Parser\CleaningParser
-		arguments:
-			wrappedParser: @currentPhpVersionSimpleDirectParser
-		autowired: no
-
-	currentPhpVersionRichParser:
-		class: PHPStan\Parser\RichParser
-		arguments:
-			parser: @currentPhpVersionPhpParser
-		autowired: no
-
-	php8Lexer:
-		class: PhpParser\Lexer\Emulative
-		factory: @PHPStan\Parser\LexerFactory::createEmulative()
-		autowired: false
-
-	php8PhpParser:
-		class: PhpParser\Parser\Php8
-		arguments:
-			lexer: @php8Lexer
-		autowired: false
-
-	pathRoutingParser:
-		class: PHPStan\Parser\PathRoutingParser
-		arguments:
-			currentPhpVersionRichParser: @currentPhpVersionRichParser
-			currentPhpVersionSimpleParser: @currentPhpVersionSimpleParser
-			php8Parser: @php8Parser
-			singleReflectionFile: %singleReflectionFile%
-		autowired: false
-
-	phpParserDecorator:
-		class: PHPStan\Parser\PhpParserDecorator
-		arguments:
-			wrappedParser: @defaultAnalysisParser
-		autowired: false
-
-	defaultAnalysisParser:
-		class: PHPStan\Parser\CachedParser
-		arguments:
-			originalParser: @pathRoutingParser
-			cachedNodesByStringCountMax: %cache.nodesByStringCountMax%
-		autowired: false
-
-	betterReflectionSourceLocator:
-		class: PHPStan\BetterReflection\SourceLocator\Type\SourceLocator
-		factory: @PHPStan\Reflection\BetterReflection\BetterReflectionSourceLocatorFactory::create
-		autowired: false
-
-	originalBetterReflectionReflector:
-		class: PHPStan\BetterReflection\Reflector\DefaultReflector
-		arguments:
-			sourceLocator: @betterReflectionSourceLocator
-
-	reflectionProvider:
-		factory: @PHPStan\Reflection\ReflectionProvider\ReflectionProviderFactory::create
-		autowired:
-			- PHPStan\Reflection\ReflectionProvider
+	# not registered using attributes because it's overriden in TestCase.neon or config.stubValidator.neon
 
 	cacheStorage:
 		class: PHPStan\Cache\FileCacheStorage
@@ -341,12 +223,49 @@ services:
 			directory: %tmpDir%/cache/PHPStan
 		autowired: no
 
-	errorFormatter.json:
-		class: PHPStan\Command\ErrorFormatter\JsonErrorFormatter
-		arguments:
-			pretty: false
+	betterReflectionSourceLocator:
+		factory: @PHPStan\Reflection\BetterReflection\BetterReflectionSourceLocatorFactory::create
+		autowired: false
 
-	errorFormatter.prettyJson:
-		class: PHPStan\Command\ErrorFormatter\JsonErrorFormatter
+	reflectionProvider:
+		factory: @PHPStan\Reflection\ReflectionProvider\ReflectionProviderFactory::create
+		autowired:
+			- PHPStan\Reflection\ReflectionProvider
+
+	nodeScopeResolverReflector:
+		factory: @betterReflectionReflector
+		autowired: false
+
+	# could be registered using attributes
+
+	simpleRelativePathHelper:
+		factory: PHPStan\File\SimpleRelativePathHelper
 		arguments:
-			pretty: true
+			currentWorkingDirectory: %currentWorkingDirectory%
+		autowired: false
+
+	parentDirectoryRelativePathHelper:
+		factory: PHPStan\File\ParentDirectoryRelativePathHelper
+		arguments:
+			parentDirectory: %currentWorkingDirectory%
+		autowired: false
+
+	# Reflection providers
+
+	betterReflectionReflector:
+		class: PHPStan\Reflection\BetterReflection\Reflector\MemoizingReflector
+		arguments:
+			reflector: @originalBetterReflectionReflector
+		autowired: false
+
+	betterReflectionProvider:
+		class: PHPStan\Reflection\BetterReflection\BetterReflectionProvider
+		arguments:
+			reflector: @betterReflectionReflector
+			universalObjectCratesClasses: %universalObjectCratesClasses%
+		autowired: false
+
+	originalBetterReflectionReflector:
+		class: PHPStan\BetterReflection\Reflector\DefaultReflector
+		arguments:
+			sourceLocator: @betterReflectionSourceLocator

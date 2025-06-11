@@ -1,6 +1,7 @@
 includes:
 	- parametersSchema.neon
 	- services.neon
+	- parsers.neon
 
 parameters:
 	bootstrapFiles:
