@@ -252,12 +252,6 @@ services:
 
 	# Reflection providers
 
-	betterReflectionReflector:
-		class: PHPStan\Reflection\BetterReflection\Reflector\MemoizingReflector
-		arguments:
-			reflector: @originalBetterReflectionReflector
-		autowired: PHPStan\BetterReflection\Reflector\Reflector
-
 	betterReflectionProvider:
 		class: PHPStan\Reflection\BetterReflection\BetterReflectionProvider
 		arguments:

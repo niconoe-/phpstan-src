@@ -10,9 +10,12 @@ use PHPStan\BetterReflection\Reflection\ReflectionConstant;
 use PHPStan\BetterReflection\Reflection\ReflectionFunction;
 use PHPStan\BetterReflection\Reflector\Exception\IdentifierNotFound;
 use PHPStan\BetterReflection\Reflector\Reflector;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\AutowiredService;
 use function array_key_exists;
 use function strtolower;
 
+#[AutowiredService(name: 'betterReflectionReflector', as: Reflector::class)]
 final class MemoizingReflector implements Reflector
 {
 
@@ -25,7 +28,10 @@ final class MemoizingReflector implements Reflector
 	/** @var array<string, ReflectionFunction|null> */
 	private array $functionReflections = [];
 
-	public function __construct(private Reflector $reflector)
+	public function __construct(
+		#[AutowiredParameter(ref: '@originalBetterReflectionReflector')]
+		private Reflector $reflector,
+	)
 	{
 	}
 
