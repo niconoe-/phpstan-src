@@ -256,7 +256,7 @@ services:
 		class: PHPStan\Reflection\BetterReflection\Reflector\MemoizingReflector
 		arguments:
 			reflector: @originalBetterReflectionReflector
-		autowired: false
+		autowired: PHPStan\BetterReflection\Reflector\Reflector
 
 	betterReflectionProvider:
 		class: PHPStan\Reflection\BetterReflection\BetterReflectionProvider
@@ -269,3 +269,4 @@ services:
 		class: PHPStan\BetterReflection\Reflector\DefaultReflector
 		arguments:
 			sourceLocator: @betterReflectionSourceLocator
+		autowired: false
