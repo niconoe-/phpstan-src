@@ -5217,14 +5217,6 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 
 	public static function dataFunctions(): array
 	{
-		$strSplitDefaultReturnType = 'non-empty-list<string>|false';
-		if (PHP_VERSION_ID >= 80000) {
-			$strSplitDefaultReturnType = 'non-empty-list<string>';
-		}
-		if (PHP_VERSION_ID >= 80200) {
-			$strSplitDefaultReturnType = 'list<string>';
-		}
-
 		return [
 			[
 				'string',
@@ -5413,42 +5405,6 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 			[
 				'(array{sec: int, usec: int, minuteswest: int, dsttime: int}|float)',
 				'$gettimeofdayBenevolent',
-			],
-			[
-				$strSplitDefaultReturnType,
-				'$strSplitConstantStringWithoutDefinedParameters',
-			],
-			[
-				'array{\'a\', \'b\', \'c\', \'d\', \'e\', \'f\'}',
-				'$strSplitConstantStringWithoutDefinedSplitLength',
-			],
-			[
-				PHP_VERSION_ID < 80200 ? 'non-empty-list<string>' : 'list<string>',
-				'$strSplitStringWithoutDefinedSplitLength',
-			],
-			[
-				'array{\'a\', \'b\', \'c\', \'d\', \'e\', \'f\'}',
-				'$strSplitConstantStringWithOneSplitLength',
-			],
-			[
-				'array{\'abcdef\'}',
-				'$strSplitConstantStringWithGreaterSplitLengthThanStringLength',
-			],
-			[
-				'false',
-				'$strSplitConstantStringWithFailureSplitLength',
-			],
-			[
-				$strSplitDefaultReturnType,
-				'$strSplitConstantStringWithInvalidSplitLengthType',
-			],
-			[
-				"array{'a', 'b', 'c', 'd', 'e', 'f'}|array{'g', 'h', 'i', 'j', 'k', 'l'}",
-				'$strSplitConstantStringWithVariableStringAndConstantSplitLength',
-			],
-			[
-				$strSplitDefaultReturnType,
-				'$strSplitConstantStringWithVariableStringAndVariableSplitLength',
 			],
 			// parse_url
 			[
@@ -8767,133 +8723,6 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 	{
 		$this->assertTypes(
 			__DIR__ . '/data/php73_functions.php',
-			$description,
-			$expression,
-		);
-	}
-
-	public static function dataPhp74Functions(): array
-	{
-		return [
-			[
-				PHP_VERSION_ID < 80000 ? 'list<string>|false' : 'list<string>',
-				'$mbStrSplitConstantStringWithoutDefinedParameters',
-			],
-			[
-				'array{\'a\', \'b\', \'c\', \'d\', \'e\', \'f\'}',
-				'$mbStrSplitConstantStringWithoutDefinedSplitLength',
-			],
-			[
-				'list<string>',
-				'$mbStrSplitStringWithoutDefinedSplitLength',
-			],
-			[
-				'array{\'a\', \'b\', \'c\', \'d\', \'e\', \'f\'}',
-				'$mbStrSplitConstantStringWithOneSplitLength',
-			],
-			[
-				'array{\'abcdef\'}',
-				'$mbStrSplitConstantStringWithGreaterSplitLengthThanStringLength',
-			],
-			[
-				'false',
-				'$mbStrSplitConstantStringWithFailureSplitLength',
-			],
-			[
-				PHP_VERSION_ID < 80000 ? 'list<string>|false' : 'list<string>',
-				'$mbStrSplitConstantStringWithInvalidSplitLengthType',
-			],
-			[
-				"array{'a', 'b', 'c', 'd', 'e', 'f'}|array{'g', 'h', 'i', 'j', 'k', 'l'}",
-				'$mbStrSplitConstantStringWithVariableStringAndConstantSplitLength',
-			],
-			[
-				PHP_VERSION_ID < 80000 ? 'list<string>|false' : 'list<string>',
-				'$mbStrSplitConstantStringWithVariableStringAndVariableSplitLength',
-			],
-			[
-				"array{'a', 'b', 'c', 'd', 'e', 'f'}",
-				'$mbStrSplitConstantStringWithOneSplitLengthAndValidEncoding',
-			],
-			[
-				'false',
-				'$mbStrSplitConstantStringWithOneSplitLengthAndInvalidEncoding',
-			],
-			[
-				PHP_VERSION_ID < 80000 ? 'list<string>|false' : 'list<string>',
-				'$mbStrSplitConstantStringWithOneSplitLengthAndVariableEncoding',
-			],
-			[
-				"array{'abcdef'}",
-				'$mbStrSplitConstantStringWithGreaterSplitLengthThanStringLengthAndValidEncoding',
-			],
-			[
-				'false',
-				'$mbStrSplitConstantStringWithGreaterSplitLengthThanStringLengthAndInvalidEncoding',
-			],
-			[
-				PHP_VERSION_ID < 80000 ? 'list<string>|false' : 'list<string>',
-				'$mbStrSplitConstantStringWithGreaterSplitLengthThanStringLengthAndVariableEncoding',
-			],
-			[
-				'false',
-				'$mbStrSplitConstantStringWithFailureSplitLengthAndValidEncoding',
-			],
-			[
-				'false',
-				'$mbStrSplitConstantStringWithFailureSplitLengthAndInvalidEncoding',
-			],
-			[
-				'false',
-				'$mbStrSplitConstantStringWithFailureSplitLengthAndVariableEncoding',
-			],
-			[
-				PHP_VERSION_ID < 80000 ? 'list<string>|false' : 'list<string>',
-				'$mbStrSplitConstantStringWithInvalidSplitLengthTypeAndValidEncoding',
-			],
-			[
-				'false',
-				'$mbStrSplitConstantStringWithInvalidSplitLengthTypeAndInvalidEncoding',
-			],
-			[
-				PHP_VERSION_ID < 80000 ? 'list<string>|false' : 'list<string>',
-				'$mbStrSplitConstantStringWithInvalidSplitLengthTypeAndVariableEncoding',
-			],
-			[
-				"array{'a', 'b', 'c', 'd', 'e', 'f'}|array{'g', 'h', 'i', 'j', 'k', 'l'}",
-				'$mbStrSplitConstantStringWithVariableStringAndConstantSplitLengthAndValidEncoding',
-			],
-			[
-				'false',
-				'$mbStrSplitConstantStringWithVariableStringAndConstantSplitLengthAndInvalidEncoding',
-			],
-			[
-				PHP_VERSION_ID < 80000 ? 'list<string>|false' : 'list<string>',
-				'$mbStrSplitConstantStringWithVariableStringAndConstantSplitLengthAndVariableEncoding',
-			],
-			[
-				PHP_VERSION_ID < 80000 ? 'list<string>|false' : 'list<string>',
-				'$mbStrSplitConstantStringWithVariableStringAndVariableSplitLengthAndValidEncoding',
-			],
-			[
-				'false',
-				'$mbStrSplitConstantStringWithVariableStringAndVariableSplitLengthAndInvalidEncoding',
-			],
-			[
-				PHP_VERSION_ID < 80000 ? 'list<string>|false' : 'list<string>',
-				'$mbStrSplitConstantStringWithVariableStringAndVariableSplitLengthAndVariableEncoding',
-			],
-		];
-	}
-
-	#[DataProvider('dataPhp74Functions')]
-	public function testPhp74Functions(
-		string $description,
-		string $expression,
-	): void
-	{
-		$this->assertTypes(
-			__DIR__ . '/data/php74_functions.php',
 			$description,
 			$expression,
 		);
