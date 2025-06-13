@@ -290,14 +290,14 @@ final class FileAnalyser
 						InternalError::STACK_TRACE_METADATA_KEY => InternalError::prepareTrace($e),
 						InternalError::STACK_TRACE_AS_STRING_METADATA_KEY => $e->getTraceAsString(),
 					]);
+			} finally {
+				$this->restoreCollectErrorsHandler();
 			}
 		} elseif (is_dir($file)) {
 			$fileErrors[] = (new Error(sprintf('File %s is a directory.', $file), $file, canBeIgnored: false))->withIdentifier('phpstan.path');
 		} else {
 			$fileErrors[] = (new Error(sprintf('File %s does not exist.', $file), $file, canBeIgnored: false))->withIdentifier('phpstan.path');
 		}
-
-		$this->restoreCollectErrorsHandler();
 
 		foreach ($linesToIgnore as $fileKey => $lines) {
 			if (count($lines) > 0) {
