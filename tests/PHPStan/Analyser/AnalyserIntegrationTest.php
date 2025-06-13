@@ -13,7 +13,6 @@ use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPUnit\Framework\Attributes\RequiresPhp;
 use function extension_loaded;
-use function restore_error_handler;
 use function sprintf;
 use const PHP_VERSION_ID;
 
@@ -184,7 +183,6 @@ class AnalyserIntegrationTest extends PHPStanTestCase
 
 	public function testCollectWarnings(): void
 	{
-		restore_error_handler();
 		$errors = $this->runAnalyse(__DIR__ . '/data/declaration-warning.php');
 		$this->assertCount(1, $errors);
 		$this->assertSame('Parameter #1 $i of method DeclarationWarning\Bar::doFoo() is not optional.', $errors[0]->getMessage());
