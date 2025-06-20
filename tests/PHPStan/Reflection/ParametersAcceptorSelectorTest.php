@@ -8,6 +8,7 @@ use Generator;
 use PhpParser\Node\Name;
 use PHPStan\Reflection\Native\NativeParameterReflection;
 use PHPStan\Reflection\Php\DummyParameter;
+use PHPStan\Reflection\Php\ExtendedDummyParameter;
 use PHPStan\Testing\PHPStanTestCase;
 use PHPStan\Type\Accessory\AccessoryNonEmptyStringType;
 use PHPStan\Type\ArrayType;
@@ -15,9 +16,11 @@ use PHPStan\Type\Constant\ConstantBooleanType;
 use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\FloatType;
 use PHPStan\Type\Generic\TemplateTypeFactory;
+use PHPStan\Type\Generic\TemplateTypeHelper;
 use PHPStan\Type\Generic\TemplateTypeMap;
 use PHPStan\Type\Generic\TemplateTypeScope;
 use PHPStan\Type\Generic\TemplateTypeVariance;
+use PHPStan\Type\Generic\TemplateTypeVarianceMap;
 use PHPStan\Type\IntegerType;
 use PHPStan\Type\IntersectionType;
 use PHPStan\Type\MixedType;
@@ -28,7 +31,9 @@ use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
 use PHPStan\Type\UnionType;
 use PHPStan\Type\VerbosityLevel;
+use PHPStan\Type\VoidType;
 use PHPUnit\Framework\Attributes\DataProvider;
+use function array_map;
 use function count;
 
 class ParametersAcceptorSelectorTest extends PHPStanTestCase
@@ -69,7 +74,27 @@ class ParametersAcceptorSelectorTest extends PHPStanTestCase
 			],
 			$datePeriodConstructorVariants,
 			false,
-			$datePeriodConstructorVariants[0],
+			new FunctionVariant(
+				TemplateTypeMap::createEmpty(),
+				TemplateTypeMap::createEmpty(),
+				array_map(static fn ($parameter) => new ExtendedDummyParameter(
+					$parameter->getName(),
+					TemplateTypeHelper::resolveToBounds($parameter->getType()),
+					$parameter->isOptional(),
+					$parameter->passedByReference(),
+					$parameter->isVariadic(),
+					$parameter->getDefaultValue(),
+					$parameter->getNativeType(),
+					$parameter->getPhpDocType(),
+					$parameter->getOutType(),
+					$parameter->isImmediatelyInvokedCallable(),
+					$parameter->getClosureThisType(),
+					$parameter->getAttributes(),
+				), $datePeriodConstructorVariants[0]->getParameters()),
+				false,
+				new VoidType(),
+				TemplateTypeVarianceMap::createEmpty(),
+			),
 		];
 		yield [
 			[
@@ -80,7 +105,27 @@ class ParametersAcceptorSelectorTest extends PHPStanTestCase
 			],
 			$datePeriodConstructorVariants,
 			false,
-			$datePeriodConstructorVariants[1],
+			new FunctionVariant(
+				TemplateTypeMap::createEmpty(),
+				TemplateTypeMap::createEmpty(),
+				array_map(static fn ($parameter) => new ExtendedDummyParameter(
+					$parameter->getName(),
+					TemplateTypeHelper::resolveToBounds($parameter->getType()),
+					$parameter->isOptional(),
+					$parameter->passedByReference(),
+					$parameter->isVariadic(),
+					$parameter->getDefaultValue(),
+					$parameter->getNativeType(),
+					$parameter->getPhpDocType(),
+					$parameter->getOutType(),
+					$parameter->isImmediatelyInvokedCallable(),
+					$parameter->getClosureThisType(),
+					$parameter->getAttributes(),
+				), $datePeriodConstructorVariants[1]->getParameters()),
+				false,
+				new VoidType(),
+				TemplateTypeVarianceMap::createEmpty(),
+			),
 		];
 		yield [
 			[

@@ -914,6 +914,7 @@ final class PhpClassReflectionExtension
 				$phpDocType = $stubPhpDocParameterTypes[$parameterSignature->getName()];
 			} elseif (isset($phpDocParameterTypes[$phpDocParameterName])) {
 				$phpDocType = $phpDocParameterTypes[$phpDocParameterName];
+				$type = TypehintHelper::decideType($parameterSignature->getType(), $phpDocType);
 			}
 
 			if (isset($stubPhpDocParameterOutTypes[$parameterSignature->getName()])) {

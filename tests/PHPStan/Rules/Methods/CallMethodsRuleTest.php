@@ -3556,4 +3556,20 @@ class CallMethodsRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/bug-12940.php'], []);
 	}
 
+	#[RequiresPhp('>= 8.1')]
+	public function testBug13171(): void
+	{
+		$this->checkThisOnly = false;
+		$this->checkNullables = true;
+		$this->checkUnionTypes = true;
+		$this->checkExplicitMixed = true;
+
+		$this->analyse([__DIR__ . '/data/bug-13171.php'], [
+			[
+				'Parameter #1 $value of method Fiber<void,void,void,void>::resume() expects void, int given.',
+				9,
+			],
+		]);
+	}
+
 }

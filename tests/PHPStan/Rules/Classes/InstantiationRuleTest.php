@@ -395,7 +395,7 @@ class InstantiationRuleTest extends RuleTestCase
 				21,
 			],
 			[
-				'Missing parameter $end (DateTimeInterface|int) in call to DatePeriod constructor.',
+				'Missing parameter $end (int|TEnd of DateTimeInterface) in call to DatePeriod constructor.',
 				18,
 			],
 			[
@@ -407,11 +407,11 @@ class InstantiationRuleTest extends RuleTestCase
 				24,
 			],
 			[
-				'Parameter #3 $end of class DatePeriod constructor expects DateTimeInterface|int, string given.',
+				'Parameter #3 $end of class DatePeriod constructor expects int|TEnd of DateTimeInterface, string given.',
 				41,
 			],
 			[
-				'Parameter $end of class DatePeriod constructor expects DateTimeInterface|int, string given.',
+				'Parameter $end of class DatePeriod constructor expects int|TEnd of DateTimeInterface, string given.',
 				49,
 			],
 		]);
