@@ -1452,6 +1452,8 @@ class ConstantArrayType implements Type
 						$keyDescription = sprintf('\'%s\'', $keyDescription);
 					} elseif (str_contains($keyDescription, '\'')) {
 						$keyDescription = sprintf('"%s"', $keyDescription);
+					} elseif (!self::isValidIdentifier($keyDescription)) {
+						$keyDescription = sprintf('\'%s\'', $keyDescription);
 					}
 				}
 
