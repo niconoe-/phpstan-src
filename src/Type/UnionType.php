@@ -22,6 +22,7 @@ use PHPStan\Reflection\Type\UnresolvedPropertyPrototypeReflection;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\Generic\GenericClassStringType;
+use PHPStan\Type\Generic\TemplateIterableType;
 use PHPStan\Type\Generic\TemplateMixedType;
 use PHPStan\Type\Generic\TemplateType;
 use PHPStan\Type\Generic\TemplateTypeMap;
@@ -235,7 +236,7 @@ class UnionType implements CompoundType
 	{
 		if (
 			($otherType instanceof self && !$otherType instanceof TemplateUnionType)
-			|| $otherType instanceof IterableType
+			|| ($otherType instanceof IterableType && !$otherType instanceof TemplateIterableType)
 			|| $otherType instanceof NeverType
 			|| $otherType instanceof ConditionalType
 			|| $otherType instanceof ConditionalTypeForParameter
