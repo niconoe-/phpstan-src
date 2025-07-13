@@ -4704,12 +4704,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-phpunit.git",
-                "reference": "22c6949f5c0d4d3d343fbd42d2bd75472089d135"
+                "reference": "9a9b161baee88a5f5c58d816943cff354ff233dc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-phpunit/zipball/22c6949f5c0d4d3d343fbd42d2bd75472089d135",
-                "reference": "22c6949f5c0d4d3d343fbd42d2bd75472089d135",
+                "url": "https://api.github.com/repos/phpstan/phpstan-phpunit/zipball/9a9b161baee88a5f5c58d816943cff354ff233dc",
+                "reference": "9a9b161baee88a5f5c58d816943cff354ff233dc",
                 "shasum": ""
             },
             "require": {
@@ -4750,7 +4750,7 @@
                 "issues": "https://github.com/phpstan/phpstan-phpunit/issues",
                 "source": "https://github.com/phpstan/phpstan-phpunit/tree/2.0.x"
             },
-            "time": "2025-06-06T08:48:30+00:00"
+            "time": "2025-07-13T11:31:46+00:00"
         },
         {
             "name": "phpstan/phpstan-strict-rules",
