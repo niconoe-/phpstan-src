@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d2140cf43c47b986404e6a12b6f396a0",
+    "content-hash": "ce39326567575644f63f099981a3cd73",
     "packages": [
         {
             "name": "jetbrains/phpstorm-stubs",
@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/JetBrains/phpstorm-stubs.git",
-                "reference": "ac36fd20eeaabc0284dff89d18f5d2862d137eb0"
+                "reference": "dee3c94edb5adde5834e42c3d660a2cc89d367ea"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/JetBrains/phpstorm-stubs/zipball/ac36fd20eeaabc0284dff89d18f5d2862d137eb0",
-                "reference": "ac36fd20eeaabc0284dff89d18f5d2862d137eb0",
+                "url": "https://api.github.com/repos/JetBrains/phpstorm-stubs/zipball/dee3c94edb5adde5834e42c3d660a2cc89d367ea",
+                "reference": "dee3c94edb5adde5834e42c3d660a2cc89d367ea",
                 "shasum": ""
             },
             "require-dev": {
@@ -52,7 +52,7 @@
             "support": {
                 "source": "https://github.com/JetBrains/phpstorm-stubs/tree/master"
             },
-            "time": "2025-06-03T13:57:24+00:00"
+            "time": "2025-07-08T09:17:06+00:00"
         },
         {
             "name": "nette/neon",
@@ -339,16 +339,16 @@
         },
         {
             "name": "ondrejmirtes/simple-downgrader",
-            "version": "2.2.0",
+            "version": "2.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ondrejmirtes/simple-downgrader.git",
-                "reference": "11ae2123b294b8b02861b9fd494c3860a9480d74"
+                "reference": "f91211786fcb75966ccba69406926db89cea8956"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ondrejmirtes/simple-downgrader/zipball/11ae2123b294b8b02861b9fd494c3860a9480d74",
-                "reference": "11ae2123b294b8b02861b9fd494c3860a9480d74",
+                "url": "https://api.github.com/repos/ondrejmirtes/simple-downgrader/zipball/f91211786fcb75966ccba69406926db89cea8956",
+                "reference": "f91211786fcb75966ccba69406926db89cea8956",
                 "shasum": ""
             },
             "require": {
@@ -384,22 +384,22 @@
             "description": "Simple Downgrader",
             "support": {
                 "issues": "https://github.com/ondrejmirtes/simple-downgrader/issues",
-                "source": "https://github.com/ondrejmirtes/simple-downgrader/tree/2.2.0"
+                "source": "https://github.com/ondrejmirtes/simple-downgrader/tree/2.2.1"
             },
-            "time": "2025-06-10T10:37:23+00:00"
+            "time": "2025-07-13T11:49:36+00:00"
         },
         {
             "name": "phpstan/phpdoc-parser",
-            "version": "2.1.0",
+            "version": "2.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpdoc-parser.git",
-                "reference": "9b30d6fd026b2c132b3985ce6b23bec09ab3aa68"
+                "reference": "b9e61a61e39e02dd90944e9115241c7f7e76bfd8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/9b30d6fd026b2c132b3985ce6b23bec09ab3aa68",
-                "reference": "9b30d6fd026b2c132b3985ce6b23bec09ab3aa68",
+                "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/b9e61a61e39e02dd90944e9115241c7f7e76bfd8",
+                "reference": "b9e61a61e39e02dd90944e9115241c7f7e76bfd8",
                 "shasum": ""
             },
             "require": {
@@ -431,9 +431,9 @@
             "description": "PHPDoc parser with support for nullable, intersection and generic types",
             "support": {
                 "issues": "https://github.com/phpstan/phpdoc-parser/issues",
-                "source": "https://github.com/phpstan/phpdoc-parser/tree/2.1.0"
+                "source": "https://github.com/phpstan/phpdoc-parser/tree/2.2.0"
             },
-            "time": "2025-02-19T13:28:12+00:00"
+            "time": "2025-07-13T07:04:09+00:00"
         },
         {
             "name": "psr/container",
