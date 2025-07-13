@@ -122,7 +122,7 @@ Bar2
 			$this->getOutput(false, $verbose),
 		), sprintf('%s: response code do not match', $message));
 
-		$this->assertEquals($expected, $this->getOutputContent(false, $verbose), sprintf('%s: output do not match', $message));
+		$this->assertSame($expected, $this->getOutputContent(false, $verbose), sprintf('%s: output do not match', $message));
 	}
 
 }

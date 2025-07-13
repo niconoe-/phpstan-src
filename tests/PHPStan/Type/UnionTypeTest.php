@@ -154,7 +154,7 @@ class UnionTypeTest extends PHPStanTestCase
 			$type->equals($type),
 			sprintf('%s -> equals(itself)', $description),
 		);
-		$this->assertEquals(
+		$this->assertSame(
 			'Yes',
 			$type->isSuperTypeOf($type)->describe(),
 			sprintf('%s -> isSuperTypeOf(itself)', $description),

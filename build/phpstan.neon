@@ -91,10 +91,17 @@ parameters:
 			identifier: shipmonk.deadMethod
 			path: ../src/Reflection/BetterReflection/SourceLocator/FileReadTrapStreamWrapper.php
 		-
-			message: '#Fetching class constant class of deprecated class DeprecatedAnnotations\\DeprecatedFoo.#'
+			message: '''
+				#^Access to constant on deprecated class DeprecatedAnnotations\\DeprecatedFoo\:
+				in 1\.0\.0\.$#
+			'''
 			path: ../tests/PHPStan/Reflection/Annotations/DeprecatedAnnotationsTest.php
 		-
-			message: '#Fetching class constant class of deprecated class DeprecatedAnnotations\\DeprecatedWithMultipleTags.#'
+			message: '''
+				#^Access to constant on deprecated class DeprecatedAnnotations\\DeprecatedWithMultipleTags\:
+				in Foo 1\.1\.0 and will be removed in 1\.5\.0, use
+				  \\Foo\\Bar\\NotDeprecated instead\.$#
+			'''
 			path: ../tests/PHPStan/Reflection/Annotations/DeprecatedAnnotationsTest.php
 		-
 			message: '#^Variable property access on T of PHPStan\\Rules\\RuleError\.$#'

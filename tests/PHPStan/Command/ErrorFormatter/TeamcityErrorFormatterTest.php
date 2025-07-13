@@ -115,7 +115,7 @@ class TeamcityErrorFormatterTest extends ErrorFormatterTestCase
 			$this->getOutput(),
 		), sprintf('%s: response code do not match', $message));
 
-		$this->assertEquals($expected, $this->getOutputContent(), sprintf('%s: output do not match', $message));
+		$this->assertSame($expected, $this->getOutputContent(), sprintf('%s: output do not match', $message));
 	}
 
 }
