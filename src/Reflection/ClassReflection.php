@@ -1423,6 +1423,19 @@ final class ClassReflection
 		return $flags;
 	}
 
+	public function getObjectType(): ObjectType
+	{
+		if (!$this->isGeneric()) {
+			return new ObjectType($this->getName());
+		}
+
+		return new GenericObjectType(
+			$this->getName(),
+			$this->typeMapToList($this->getActiveTemplateTypeMap()),
+			variances: $this->varianceMapToList($this->getCallSiteVarianceMap()),
+		);
+	}
+
 	public function getTemplateTypeMap(): TemplateTypeMap
 	{
 		if ($this->templateTypeMap !== null) {
