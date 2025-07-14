@@ -772,12 +772,6 @@ parameters:
 			path: src/Testing/PHPStanTestCase.php
 
 		-
-			message: '#^Catching internal class PHPUnit\\Framework\\ExpectationFailedException\.$#'
-			identifier: catch.internalClass
-			count: 1
-			path: src/Testing/PHPStanTestCase.php
-
-		-
 			message: '#^Doing instanceof PHPStan\\Type\\ConstantScalarType is error\-prone and deprecated\. Use Type\:\:isConstantScalarValue\(\) or Type\:\:getConstantScalarTypes\(\) or Type\:\:getConstantScalarValues\(\) instead\.$#'
 			identifier: phpstanApi.instanceofType
 			count: 3
@@ -2006,18 +2000,6 @@ parameters:
 			identifier: phpstanApi.constructor
 			count: 1
 			path: tests/PHPStan/Reflection/SignatureMap/Php8SignatureMapProviderTest.php
-
-		-
-			message: '#^Call to method getComparisonFailure\(\) of internal class PHPUnit\\Framework\\ExpectationFailedException from outside its root namespace PHPUnit\.$#'
-			identifier: method.internalClass
-			count: 2
-			path: tests/PHPStan/Testing/NonexistentAnalysedClassRuleTest.php
-
-		-
-			message: '#^Catching internal class PHPUnit\\Framework\\ExpectationFailedException\.$#'
-			identifier: catch.internalClass
-			count: 1
-			path: tests/PHPStan/Testing/NonexistentAnalysedClassRuleTest.php
 
 		-
 			message: '#^Access to constant on internal class PHPUnit\\Framework\\AssertionFailedError\.$#'
