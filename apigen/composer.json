@@ -3,7 +3,7 @@
 		"php": "^8.1"
 	},
 	"require-dev": {
-		"apigen/apigen": "dev-master#52f74870943620f96c669d730596fc1091117441"
+		"apigen/apigen": "dev-master#aa151a961053d20e46d2c7da65cbb03c130d12ff"
 	},
 	"autoload": {
 		"psr-4": {

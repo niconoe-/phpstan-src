@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cca72dc10f8d1df2104049e381d62fcb",
+    "content-hash": "f25de5a945d9862c3ba649cab28f3e61",
     "packages": [],
     "packages-dev": [
         {
@@ -13,12 +13,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ApiGen/ApiGen.git",
-                "reference": "52f74870943620f96c669d730596fc1091117441"
+                "reference": "aa151a961053d20e46d2c7da65cbb03c130d12ff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ApiGen/ApiGen/zipball/52f74870943620f96c669d730596fc1091117441",
-                "reference": "52f74870943620f96c669d730596fc1091117441",
+                "url": "https://api.github.com/repos/ApiGen/ApiGen/zipball/aa151a961053d20e46d2c7da65cbb03c130d12ff",
+                "reference": "aa151a961053d20e46d2c7da65cbb03c130d12ff",
                 "shasum": ""
             },
             "require": {
