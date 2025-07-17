@@ -4,6 +4,7 @@ namespace PHPStan\Type\Php;
 
 use PhpParser\Node\Expr\FuncCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\Php\PhpVersion;
 use PHPStan\Reflection\FunctionReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Type\Accessory\AccessoryArrayListType;
@@ -17,9 +18,14 @@ use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\UnionType;
 use function count;
+use function str_contains;
 
 final class MbConvertEncodingFunctionReturnTypeExtension implements DynamicFunctionReturnTypeExtension
 {
+
+	public function __construct(private PhpVersion $phpVersion)
+	{
+	}
 
 	public function isFunctionSupported(FunctionReflection $functionReflection): bool
 	{
@@ -46,7 +52,46 @@ final class MbConvertEncodingFunctionReturnTypeExtension implements DynamicFunct
 
 		$result = TypeCombinator::intersect($initialReturnType, $this->generalizeStringType($argType));
 		if ($result instanceof NeverType) {
-			return null;
+			$result = $initialReturnType;
+		}
+
+		if ($this->phpVersion->throwsValueErrorForInternalFunctions()) {
+			if (!isset($functionCall->getArgs()[2])) {
+				return TypeCombinator::remove($result, new ConstantBooleanType(false));
+			}
+			$fromEncodingArgType = $scope->getType($functionCall->getArgs()[2]->value);
+
+			$returnFalseIfCannotDetectEncoding = false;
+			if (!$fromEncodingArgType->isArray()->no()) {
+				$constantArrays = $fromEncodingArgType->getConstantArrays();
+				if (count($constantArrays) > 0) {
+					foreach ($constantArrays as $constantArray) {
+						if (count($constantArray->getValueTypes()) > 1) {
+							$returnFalseIfCannotDetectEncoding = true;
+							break;
+						}
+					}
+				} else {
+					$returnFalseIfCannotDetectEncoding = true;
+				}
+			}
+			if (!$returnFalseIfCannotDetectEncoding && !$fromEncodingArgType->isString()->no()) {
+				$constantStrings = $fromEncodingArgType->getConstantStrings();
+				if (count($constantStrings) > 0) {
+					foreach ($constantStrings as $constantString) {
+						if (str_contains($constantString->getValue(), ',')) {
+							$returnFalseIfCannotDetectEncoding = true;
+							break;
+						}
+					}
+				} else {
+					$returnFalseIfCannotDetectEncoding = true;
+				}
+			}
+
+			if (!$returnFalseIfCannotDetectEncoding) {
+				return TypeCombinator::remove($result, new ConstantBooleanType(false));
+			}
 		}
 
 		return TypeCombinator::union($result, new ConstantBooleanType(false));

@@ -1,6 +1,6 @@
-<?php
+<?php // lint <= 8.0
 
-namespace MbConvertEncoding;
+namespace MbConvertEncodingPHP7;
 
 /**
  * @param 'foo'|'bar' $constantString
