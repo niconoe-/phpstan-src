@@ -14,3 +14,21 @@ parameters:
 				identifier: staticMethod.deprecated
 				count: 1
 				path: ../src/Testing/LevelsTestCase.php
+
+			-
+				message: '#^Catching internal class PHPUnit\\Framework\\ExpectationFailedException\.$#'
+				identifier: catch.internalClass
+				count: 1
+				path: ../src/Testing/PHPStanTestCase.php
+
+			-
+				message: '#^Call to method getComparisonFailure\(\) of internal class PHPUnit\\Framework\\ExpectationFailedException from outside its root namespace PHPUnit\.$#'
+				identifier: method.internalClass
+				count: 2
+				path: ../tests/PHPStan/Testing/NonexistentAnalysedClassRuleTest.php
+
+			-
+				message: '#^Catching internal class PHPUnit\\Framework\\ExpectationFailedException\.$#'
+				identifier: catch.internalClass
+				count: 1
+				path: ../tests/PHPStan/Testing/NonexistentAnalysedClassRuleTest.php
