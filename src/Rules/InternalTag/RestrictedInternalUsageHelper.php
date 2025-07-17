@@ -15,12 +15,17 @@ final class RestrictedInternalUsageHelper
 	public function shouldBeReported(Scope $scope, string $name): bool
 	{
 		$currentNamespace = $scope->getNamespace();
-		$namespace = array_slice(explode('\\', $name), 0, -1)[0] ?? null;
 		if ($currentNamespace === null) {
-			return true;
+			$classReflection = $scope->getClassReflection();
+			if ($classReflection === null) {
+				return true;
+			}
+
+			return $classReflection->getName() !== $name;
 		}
 
 		$currentNamespace = explode('\\', $currentNamespace)[0];
+		$namespace = array_slice(explode('\\', $name), 0, -1)[0] ?? null;
 
 		return !str_starts_with($namespace . '\\', $currentNamespace . '\\');
 	}
