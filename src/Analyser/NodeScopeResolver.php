@@ -163,6 +163,7 @@ use PHPStan\Rules\Properties\ReadWritePropertiesExtensionProvider;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\Accessory\AccessoryArrayListType;
+use PHPStan\Type\Accessory\HasOffsetValueType;
 use PHPStan\Type\Accessory\NonEmptyArrayType;
 use PHPStan\Type\ArrayType;
 use PHPStan\Type\ClosureType;
@@ -170,6 +171,7 @@ use PHPStan\Type\Constant\ConstantArrayType;
 use PHPStan\Type\Constant\ConstantArrayTypeBuilder;
 use PHPStan\Type\Constant\ConstantBooleanType;
 use PHPStan\Type\Constant\ConstantIntegerType;
+use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\ErrorType;
 use PHPStan\Type\FileTypeMapper;
 use PHPStan\Type\GeneralizePrecision;
@@ -5936,9 +5938,35 @@ final class NodeScopeResolver
 				}
 				$offsetValueType = TypeCombinator::intersect($offsetValueType, TypeCombinator::union(...$types));
 			}
-			$valueToWrite = $offsetValueType->setOffsetValueType($offsetType, $valueToWrite, $i === 0);
 
 			$arrayDimFetch = $dimFetchStack[$i] ?? null;
+			if (
+				$offsetType !== null
+				&& $arrayDimFetch !== null
+				&& $scope->hasExpressionType($arrayDimFetch)->yes()
+			) {
+				$hasOffsetType = null;
+				if ($offsetType instanceof ConstantStringType || $offsetType instanceof ConstantIntegerType) {
+					$hasOffsetType = new HasOffsetValueType($offsetType, $valueToWrite);
+				}
+				$valueToWrite = $offsetValueType->setExistingOffsetValueType($offsetType, $valueToWrite);
+
+				if ($hasOffsetType !== null) {
+					$valueToWrite = TypeCombinator::intersect(
+						$valueToWrite,
+						$hasOffsetType,
+					);
+				} elseif ($valueToWrite->isArray()->yes()) {
+					$valueToWrite = TypeCombinator::intersect(
+						$valueToWrite,
+						new NonEmptyArrayType(),
+					);
+				}
+
+			} else {
+				$valueToWrite = $offsetValueType->setOffsetValueType($offsetType, $valueToWrite, $i === 0);
+			}
+
 			if ($arrayDimFetch === null || !$offsetValueType->isList()->yes()) {
 				continue;
 			}

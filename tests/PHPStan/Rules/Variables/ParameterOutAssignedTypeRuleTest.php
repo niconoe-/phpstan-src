@@ -5,6 +5,7 @@ namespace PHPStan\Rules\Variables;
 use PHPStan\Rules\Rule as TRule;
 use PHPStan\Rules\RuleLevelHelper;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 
 /**
  * @extends RuleTestCase<ParameterOutAssignedTypeRule>
@@ -43,7 +44,7 @@ class ParameterOutAssignedTypeRuleTest extends RuleTestCase
 				47,
 			],
 			[
-				'Parameter &$p @param-out type of method ParameterOutAssignedType\Foo::doBaz3() expects list<list<int>>, array<int<0, max>, array<int<0, max>, int>> given.',
+				'Parameter &$p @param-out type of method ParameterOutAssignedType\Foo::doBaz3() expects list<list<int>>, list<array<int<0, max>, int>> given.',
 				56,
 			],
 			[
@@ -72,6 +73,12 @@ class ParameterOutAssignedTypeRuleTest extends RuleTestCase
 	public function testBug13093b(): void
 	{
 		$this->analyse([__DIR__ . '/data/bug-13093b.php'], []);
+	}
+
+	#[RequiresPhp('>= 8.0')]
+	public function testBug12754(): void
+	{
+		$this->analyse([__DIR__ . '/data/bug-12754.php'], []);
 	}
 
 }
