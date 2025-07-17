@@ -38,6 +38,13 @@ final class TypeInferenceTestCaseTest extends TypeInferenceTestCase
 			),
 		];
 		yield [
+			__DIR__ . '/data/assert-super-type-missing-namespace.php',
+			sprintf(
+				'Missing use statement for assertSuperType() in %s on line 6.',
+				$fileHelper->normalizePath('tests/PHPStan/Testing/data/assert-super-type-missing-namespace.php'),
+			),
+		];
+		yield [
 			__DIR__ . '/data/assert-certainty-wrong-namespace.php',
 			sprintf(
 				'Function PHPStan\Testing\assertVariableCertainty imported with wrong namespace SomeWrong\Namespace\assertVariableCertainty called in %s on line 9.',
@@ -56,6 +63,13 @@ final class TypeInferenceTestCaseTest extends TypeInferenceTestCase
 			sprintf(
 				'Function PHPStan\Testing\assertType imported with wrong namespace SomeWrong\Namespace\assertType called in %s on line 8.',
 				$fileHelper->normalizePath('tests/PHPStan/Testing/data/assert-type-wrong-namespace.php'),
+			),
+		];
+		yield [
+			__DIR__ . '/data/assert-super-type-wrong-namespace.php',
+			sprintf(
+				'Function PHPStan\Testing\assertSuperType imported with wrong namespace SomeWrong\Namespace\assertSuperType called in %s on line 8.',
+				$fileHelper->normalizePath('tests/PHPStan/Testing/data/assert-super-type-wrong-namespace.php'),
 			),
 		];
 		yield [
@@ -79,6 +93,13 @@ final class TypeInferenceTestCaseTest extends TypeInferenceTestCase
 				$fileHelper->normalizePath('tests/PHPStan/Testing/data/assert-type-case-insensitive.php'),
 			),
 		];
+		yield [
+			__DIR__ . '/data/assert-super-type-case-insensitive.php',
+			sprintf(
+				'Missing use statement for assertSuperTYPe() in %s on line 6.',
+				$fileHelper->normalizePath('tests/PHPStan/Testing/data/assert-super-type-case-insensitive.php'),
+			),
+		];
 	}
 
 	#[DataProvider('dataFileAssertionFailedErrors')]
@@ -98,6 +119,28 @@ final class TypeInferenceTestCaseTest extends TypeInferenceTestCase
 
 		$this->assertSame('variable $context', $variableAssert[4]);
 		$this->assertSame("offset 'email'", $offsetAssert[4]);
+	}
+
+	public function testSuperType(): void
+	{
+		foreach (self::gatherAssertTypes(__DIR__ . '/data/assert-super-type.php') as $data) {
+			$this->assertFileAsserts(...$data);
+		}
+	}
+
+	public static function dataSuperTypeFailed(): array
+	{
+		return self::gatherAssertTypes(__DIR__ . '/data/assert-super-type-failed.php');
+	}
+
+	/**
+	 * @param mixed ...$args
+	 */
+	#[DataProvider('dataSuperTypeFailed')]
+	public function testSuperTypeFailed(...$args): void
+	{
+		$this->expectException(AssertionFailedError::class);
+		$this->assertFileAsserts(...$args);
 	}
 
 	public function testNonexistentClassInAnalysedFile(): void
