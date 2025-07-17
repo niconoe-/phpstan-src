@@ -56,7 +56,12 @@ class TemplateTypeFactoryTest extends PHPStanTestCase
 					null,
 					TemplateTypeVariance::createInvariant(),
 				),
-				new MixedType(),
+				TemplateTypeFactory::create(
+					TemplateTypeScope::createWithFunction('a'),
+					'U',
+					null,
+					TemplateTypeVariance::createInvariant(),
+				),
 			],
 			[
 				new UnionType([
