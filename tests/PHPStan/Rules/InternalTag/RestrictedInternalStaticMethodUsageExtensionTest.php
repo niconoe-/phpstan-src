@@ -76,4 +76,9 @@ class RestrictedInternalStaticMethodUsageExtensionTest extends RuleTestCase
 		]);
 	}
 
+	public function testBug13210(): void
+	{
+		$this->analyse([__DIR__ . '/data/bug-13210.php'], []);
+	}
+
 }
