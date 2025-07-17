@@ -247,6 +247,6 @@ services:
 		class: PHPStan\Rules\Properties\UninitializedPropertyRule
 
 	# autowired services are now registered with the help of attributes
-	# like #[PHPStan\DependencyInjection\AutowiredService] or #[PHPStan\DependencyInjection\GeneratedFactory]
+	# like #[PHPStan\DependencyInjection\AutowiredService] or #[PHPStan\DependencyInjection\GenerateFactory]
 
 	# non-autowired services are now registered in services.neon
