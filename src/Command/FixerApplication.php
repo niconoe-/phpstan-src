@@ -339,7 +339,9 @@ final class FixerApplication
 		$dnsConfig->nameservers = $this->dnsServers;
 
 		$loop = new StreamSelectLoop();
-		Loop::set($loop); // @phpstan-ignore staticMethod.internal (required because of the await() call below)
+
+		// @phpstan-ignore staticMethod.internal (required because of the await() call below)
+		Loop::set($loop);
 
 		$client = new Browser(
 			new Connector(
