@@ -352,6 +352,11 @@ class HasOffsetType implements CompoundType, AccessoryType
 		return new BooleanType();
 	}
 
+	public function getKeysArrayFiltered(Type $filterValueType, TrinaryLogic $strict): Type
+	{
+		return $this->getKeysArray();
+	}
+
 	public function getKeysArray(): Type
 	{
 		return new NonEmptyArrayType();

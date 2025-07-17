@@ -35,6 +35,7 @@ use PHPStan\Type\GeneralizePrecision;
 use PHPStan\Type\Generic\TemplateTypeMap;
 use PHPStan\Type\Generic\TemplateTypeVariance;
 use PHPStan\Type\IntegerRangeType;
+use PHPStan\Type\IntegerType;
 use PHPStan\Type\IntersectionType;
 use PHPStan\Type\IsSuperTypeOfResult;
 use PHPStan\Type\MixedType;
@@ -1370,6 +1371,19 @@ class ConstantArrayType implements Type
 		$builder->degradeToGeneralArray();
 
 		return $builder->getArray();
+	}
+
+	public function getKeysArrayFiltered(Type $filterValueType, TrinaryLogic $strict): Type
+	{
+		$keysArray = $this->getKeysOrValuesArray($this->keyTypes);
+
+		return TypeCombinator::intersect(
+			new ArrayType(
+				new IntegerType(),
+				$keysArray->getIterableValueType(),
+			),
+			new AccessoryArrayListType(),
+		);
 	}
 
 	public function getKeysArray(): self

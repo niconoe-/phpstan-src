@@ -395,6 +395,11 @@ class StaticType implements TypeWithClassName, SubtractableType
 		return $this->getStaticObjectType()->unsetOffset($offsetType);
 	}
 
+	public function getKeysArrayFiltered(Type $filterValueType, TrinaryLogic $strict): Type
+	{
+		return $this->getStaticObjectType()->getKeysArrayFiltered($filterValueType, $strict);
+	}
+
 	public function getKeysArray(): Type
 	{
 		return $this->getStaticObjectType()->getKeysArray();

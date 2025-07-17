@@ -273,6 +273,11 @@ class NeverType implements CompoundType
 		return new NeverType();
 	}
 
+	public function getKeysArrayFiltered(Type $filterValueType, TrinaryLogic $strict): Type
+	{
+		return $this->getKeysArray();
+	}
+
 	public function getKeysArray(): Type
 	{
 		return new NeverType();

@@ -172,6 +172,11 @@ class AccessoryArrayListType implements CompoundType, AccessoryType
 		return new ErrorType();
 	}
 
+	public function getKeysArrayFiltered(Type $filterValueType, TrinaryLogic $strict): Type
+	{
+		return $this->getKeysArray();
+	}
+
 	public function getKeysArray(): Type
 	{
 		return $this;
