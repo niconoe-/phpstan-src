@@ -184,7 +184,8 @@ class AccessoryNonFalsyStringType implements CompoundType, AccessoryType
 
 	public function toInteger(): Type
 	{
-		return TypeCombinator::remove(new IntegerType(), new ConstantIntegerType(0));
+		// Do not remove `0` since `(int) '00'` is still `0`.
+		return new IntegerType();
 	}
 
 	public function toFloat(): Type
