@@ -465,6 +465,8 @@ final class BetterReflectionProvider implements ReflectionProvider
 				return true;
 			} catch (IdentifierNotFound) {
 				// pass
+			} catch (InvalidIdentifierName) {
+				// pass
 			} catch (UnableToCompileNode) {
 				// pass
 			}
