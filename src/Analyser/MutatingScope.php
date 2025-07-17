@@ -2335,12 +2335,31 @@ final class MutatingScope implements Scope
 					return new ErrorType();
 				}
 
-				return ParametersAcceptorSelector::selectFromArgs(
+				$parametersAcceptor = ParametersAcceptorSelector::selectFromArgs(
 					$this,
 					$node->getArgs(),
 					$calledOnType->getCallableParametersAcceptors($this),
 					null,
-				)->getReturnType();
+				);
+
+				$functionName = null;
+				if ($node->name instanceof String_) {
+					/** @var non-empty-string $name */
+					$name = $node->name->value;
+					$functionName = new Name($name);
+				} elseif ($node->name instanceof FuncCall && $node->name->name instanceof Name) {
+					$functionName = $node->name->name;
+				}
+
+				if ($functionName !== null && $this->reflectionProvider->hasFunction($functionName, $this)) {
+					$functionReflection = $this->reflectionProvider->getFunction($functionName, $this);
+					$resolvedType = $this->getDynamicFunctionReturnType($parametersAcceptor, $node, $functionReflection);
+					if ($resolvedType !== null) {
+						return $resolvedType;
+					}
+				}
+
+				return $parametersAcceptor->getReturnType();
 			}
 
 			if (!$this->reflectionProvider->hasFunction($node->name, $this)) {
@@ -2369,19 +2388,9 @@ final class MutatingScope implements Scope
 			);
 			$normalizedNode = ArgumentsNormalizer::reorderFuncArguments($parametersAcceptor, $node);
 			if ($normalizedNode !== null) {
-				foreach ($this->dynamicReturnTypeExtensionRegistry->getDynamicFunctionReturnTypeExtensions() as $dynamicFunctionReturnTypeExtension) {
-					if (!$dynamicFunctionReturnTypeExtension->isFunctionSupported($functionReflection)) {
-						continue;
-					}
-
-					$resolvedType = $dynamicFunctionReturnTypeExtension->getTypeFromFunctionCall(
-						$functionReflection,
-						$normalizedNode,
-						$this,
-					);
-					if ($resolvedType !== null) {
-						return $resolvedType;
-					}
+				$resolvedType = $this->getDynamicFunctionReturnType($parametersAcceptor, $normalizedNode, $functionReflection);
+				if ($resolvedType !== null) {
+					return $resolvedType;
 				}
 			}
 
@@ -2389,6 +2398,29 @@ final class MutatingScope implements Scope
 		}
 
 		return new MixedType();
+	}
+
+	private function getDynamicFunctionReturnType(ParametersAcceptor $parametersAcceptor, FuncCall $node, FunctionReflection $functionReflection): ?Type
+	{
+		$normalizedNode = ArgumentsNormalizer::reorderFuncArguments($parametersAcceptor, $node);
+		if ($normalizedNode !== null) {
+			foreach ($this->dynamicReturnTypeExtensionRegistry->getDynamicFunctionReturnTypeExtensions() as $dynamicFunctionReturnTypeExtension) {
+				if (!$dynamicFunctionReturnTypeExtension->isFunctionSupported($functionReflection)) {
+					continue;
+				}
+
+				$resolvedType = $dynamicFunctionReturnTypeExtension->getTypeFromFunctionCall(
+					$functionReflection,
+					$node,
+					$this,
+				);
+				if ($resolvedType !== null) {
+					return $resolvedType;
+				}
+			}
+		}
+
+		return null;
 	}
 
 	private function getNullsafeShortCircuitingType(Expr $expr, Type $type): Type
