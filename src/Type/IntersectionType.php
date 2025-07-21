@@ -895,9 +895,9 @@ class IntersectionType implements CompoundType
 		return $this->intersectTypes(static fn (Type $type): Type => $type->reverseArray($preserveKeys));
 	}
 
-	public function searchArray(Type $needleType): Type
+	public function searchArray(Type $needleType, ?TrinaryLogic $strict = null): Type
 	{
-		return $this->intersectTypes(static fn (Type $type): Type => $type->searchArray($needleType));
+		return $this->intersectTypes(static fn (Type $type): Type => $type->searchArray($needleType, $strict));
 	}
 
 	public function shiftArray(): Type
