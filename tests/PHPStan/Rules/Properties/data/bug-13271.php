@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace Bug4117;
+namespace Bug13271;
 
 function (): void {
 	$object = new class{
