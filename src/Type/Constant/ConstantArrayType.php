@@ -1029,6 +1029,9 @@ class ConstantArrayType implements Type
 	public function spliceArray(Type $offsetType, Type $lengthType, Type $replacementType): Type
 	{
 		$keyTypesCount = count($this->keyTypes);
+		if ($keyTypesCount === 0) {
+			return $this;
+		}
 
 		$offset = $offsetType instanceof ConstantIntegerType ? $offsetType->getValue() : null;
 
