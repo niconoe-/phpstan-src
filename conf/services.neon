@@ -242,3 +242,9 @@ services:
 	nodeScopeResolverReflector:
 		factory: @betterReflectionReflector
 		autowired: false
+
+	# not registered using attributes because people often override it
+
+	exceptionTypeResolver:
+		class: PHPStan\Rules\Exceptions\ExceptionTypeResolver
+		factory: @PHPStan\Rules\Exceptions\DefaultExceptionTypeResolver
