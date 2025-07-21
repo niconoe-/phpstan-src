@@ -62,10 +62,16 @@ final class AccessPropertiesCheck
 					$scope,
 					$node->name,
 					'',
-					static fn (Type $type) => $type->toString()->isString()->yes(),
+					static fn (Type $type) => !$type->toString() instanceof ErrorType && $type->toString()->isString()->yes(),
 				);
 				$nameType = $nameTypeResult->getType();
-				if ($nameType instanceof ErrorType || $nameType->toString() instanceof ErrorType || !$nameType->toString()->isString()->yes()) {
+				if (
+					!$nameType instanceof ErrorType
+					&& (
+						$nameType->toString() instanceof ErrorType
+						|| !$nameType->toString()->isString()->yes()
+					)
+				) {
 					$originalNameType = $scope->getType($node->name);
 					$className = $scope->getType($node->var)->describe(VerbosityLevel::typeOnly());
 					$errors[] = RuleErrorBuilder::message(sprintf('Property name for %s must be a string, but %s was given.', $className, $originalNameType->describe(VerbosityLevel::precise())))

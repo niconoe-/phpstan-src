@@ -997,10 +997,6 @@ class AccessPropertiesRuleTest extends RuleTestCase
 				16,
 			],
 			[
-				'Property name for $this(DynamicStringableAccess\Foo) must be a string, but object was given.',
-				17,
-			],
-			[
 				'Property name for $this(DynamicStringableAccess\Foo) must be a string, but array was given.',
 				18,
 			],
@@ -1012,10 +1008,6 @@ class AccessPropertiesRuleTest extends RuleTestCase
 			[
 				'Property name for DynamicStringableAccess\Foo must be a string, but $this(DynamicStringableAccess\Foo) was given.',
 				31,
-			],
-			[
-				'Property name for $this(DynamicStringableAccess\Foo) must be a string, but object was given.',
-				32,
 			],
 		]);
 	}
@@ -1043,10 +1035,6 @@ class AccessPropertiesRuleTest extends RuleTestCase
 			[
 				'Property name for $this(DynamicStringableNullsafeAccess\Foo) must be a string, but $this(DynamicStringableNullsafeAccess\Foo) was given.',
 				16,
-			],
-			[
-				'Property name for $this(DynamicStringableNullsafeAccess\Foo) must be a string, but object was given.',
-				17,
 			],
 		]);
 	}
@@ -1098,6 +1086,22 @@ class AccessPropertiesRuleTest extends RuleTestCase
 		$this->checkUnionTypes = true;
 		$this->checkDynamicProperties = true;
 		$this->analyse([__DIR__ . '/data/property-exists.php'], []);
+	}
+
+	public function testDiscussion13274(): void
+	{
+		$this->checkThisOnly = false;
+		$this->checkUnionTypes = true;
+		$this->checkDynamicProperties = true;
+		$this->analyse([__DIR__ . '/data/discussion-13274.php'], []);
+	}
+
+	public function testBug4117(): void
+	{
+		$this->checkThisOnly = false;
+		$this->checkUnionTypes = true;
+		$this->checkDynamicProperties = true;
+		$this->analyse([__DIR__ . '/data/bug-4117.php'], []);
 	}
 
 }
