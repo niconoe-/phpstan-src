@@ -2182,4 +2182,21 @@ class CallToFunctionParametersRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/bug-13065.php'], $errors);
 	}
 
+	#[RequiresPhp('>= 8.0')]
+	public function testBug12317(): void
+	{
+		$this->checkExplicitMixed = true;
+		$this->checkImplicitMixed = true;
+		$this->analyse([__DIR__ . '/data/bug-12317.php'], [
+			[
+				'Parameter #1 $callback of function array_map expects (callable(Bug12317\Uuid): mixed)|null, Closure(string): string given.',
+				28,
+			],
+			[
+				'Parameter $callback of function array_map expects (callable(Bug12317\Uuid): mixed)|null, Closure(string): string given.',
+				29,
+			],
+		]);
+	}
+
 }
