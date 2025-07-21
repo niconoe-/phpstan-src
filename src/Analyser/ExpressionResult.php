@@ -24,6 +24,7 @@ final class ExpressionResult
 	public function __construct(
 		private MutatingScope $scope,
 		private bool $hasYield,
+		private bool $isAlwaysTerminating,
 		private array $throwPoints,
 		private array $impurePoints,
 		?callable $truthyScopeCallback = null,
@@ -88,6 +89,11 @@ final class ExpressionResult
 		$callback = $this->falseyScopeCallback;
 		$this->falseyScope = $callback();
 		return $this->falseyScope;
+	}
+
+	public function isAlwaysTerminating(): bool
+	{
+		return $this->isAlwaysTerminating;
 	}
 
 }
