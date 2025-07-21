@@ -110,12 +110,14 @@ parametersSchema:
 			structure([
 				?messages: listOf(string())
 				?identifier: string()
+				?identifiers: listOf(string())
 				?path: string()
 				?reportUnmatched: bool()
 			]),
 			structure([
 				?message: string()
 				?identifier: string()
+				?identifiers: listOf(string())
 				?path: string()
 				?reportUnmatched: bool()
 			]),
@@ -124,18 +126,21 @@ parametersSchema:
 				count: int()
 				path: string()
 				?identifier: string()
+				?identifiers: listOf(string())
 				?reportUnmatched: bool()
 			]),
 			structure([
 				?message: string()
 				paths: listOf(string())
 				?identifier: string()
+				?identifiers: listOf(string())
 				?reportUnmatched: bool()
 			]),
 			structure([
 				?messages: listOf(string())
 				paths: listOf(string())
 				?identifier: string()
+				?identifiers: listOf(string())
 				?reportUnmatched: bool()
 			])
 		)
