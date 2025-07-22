@@ -482,24 +482,21 @@ final class TypeSpecifier
 				$parametersAcceptor = null;
 
 				$functionReflection = $this->reflectionProvider->getFunction($expr->name, $scope);
+				$normalizedExpr = $expr;
 				if (count($expr->getArgs()) > 0) {
 					$parametersAcceptor = ParametersAcceptorSelector::selectFromArgs($scope, $expr->getArgs(), $functionReflection->getVariants(), $functionReflection->getNamedArgumentsVariants());
-					$expr = ArgumentsNormalizer::reorderFuncArguments($parametersAcceptor, $expr) ?? $expr;
+					$normalizedExpr = ArgumentsNormalizer::reorderFuncArguments($parametersAcceptor, $expr) ?? $expr;
 				}
 
 				foreach ($this->getFunctionTypeSpecifyingExtensions() as $extension) {
-					if (!$extension->isFunctionSupported($functionReflection, $expr, $context)) {
+					if (!$extension->isFunctionSupported($functionReflection, $normalizedExpr, $context)) {
 						continue;
 					}
 
-					return $extension->specifyTypes($functionReflection, $expr, $scope, $context);
+					return $extension->specifyTypes($functionReflection, $normalizedExpr, $scope, $context);
 				}
 
 				if (count($expr->getArgs()) > 0) {
-					if ($parametersAcceptor === null) {
-						throw new ShouldNotHappenException();
-					}
-
 					$specifiedTypes = $this->specifyTypesFromConditionalReturnType($context, $expr, $parametersAcceptor, $scope);
 					if ($specifiedTypes !== null) {
 						return $specifiedTypes;
@@ -531,9 +528,10 @@ final class TypeSpecifier
 				// lazy create parametersAcceptor, as creation can be expensive
 				$parametersAcceptor = null;
 
+				$normalizedExpr = $expr;
 				if (count($expr->getArgs()) > 0) {
 					$parametersAcceptor = ParametersAcceptorSelector::selectFromArgs($scope, $expr->getArgs(), $methodReflection->getVariants(), $methodReflection->getNamedArgumentsVariants());
-					$expr = ArgumentsNormalizer::reorderMethodArguments($parametersAcceptor, $expr) ?? $expr;
+					$normalizedExpr = ArgumentsNormalizer::reorderMethodArguments($parametersAcceptor, $expr) ?? $expr;
 				}
 
 				$referencedClasses = $methodCalledOnType->getObjectClassNames();
@@ -543,19 +541,15 @@ final class TypeSpecifier
 				) {
 					$methodClassReflection = $this->reflectionProvider->getClass($referencedClasses[0]);
 					foreach ($this->getMethodTypeSpecifyingExtensionsForClass($methodClassReflection->getName()) as $extension) {
-						if (!$extension->isMethodSupported($methodReflection, $expr, $context)) {
+						if (!$extension->isMethodSupported($methodReflection, $normalizedExpr, $context)) {
 							continue;
 						}
 
-						return $extension->specifyTypes($methodReflection, $expr, $scope, $context);
+						return $extension->specifyTypes($methodReflection, $normalizedExpr, $scope, $context);
 					}
 				}
 
 				if (count($expr->getArgs()) > 0) {
-					if ($parametersAcceptor === null) {
-						throw new ShouldNotHappenException();
-					}
-
 					$specifiedTypes = $this->specifyTypesFromConditionalReturnType($context, $expr, $parametersAcceptor, $scope);
 					if ($specifiedTypes !== null) {
 						return $specifiedTypes;
@@ -592,9 +586,10 @@ final class TypeSpecifier
 				// lazy create parametersAcceptor, as creation can be expensive
 				$parametersAcceptor = null;
 
+				$normalizedExpr = $expr;
 				if (count($expr->getArgs()) > 0) {
 					$parametersAcceptor = ParametersAcceptorSelector::selectFromArgs($scope, $expr->getArgs(), $staticMethodReflection->getVariants(), $staticMethodReflection->getNamedArgumentsVariants());
-					$expr = ArgumentsNormalizer::reorderStaticCallArguments($parametersAcceptor, $expr) ?? $expr;
+					$normalizedExpr = ArgumentsNormalizer::reorderStaticCallArguments($parametersAcceptor, $expr) ?? $expr;
 				}
 
 				$referencedClasses = $calleeType->getObjectClassNames();
@@ -604,19 +599,15 @@ final class TypeSpecifier
 				) {
 					$staticMethodClassReflection = $this->reflectionProvider->getClass($referencedClasses[0]);
 					foreach ($this->getStaticMethodTypeSpecifyingExtensionsForClass($staticMethodClassReflection->getName()) as $extension) {
-						if (!$extension->isStaticMethodSupported($staticMethodReflection, $expr, $context)) {
+						if (!$extension->isStaticMethodSupported($staticMethodReflection, $normalizedExpr, $context)) {
 							continue;
 						}
 
-						return $extension->specifyTypes($staticMethodReflection, $expr, $scope, $context);
+						return $extension->specifyTypes($staticMethodReflection, $normalizedExpr, $scope, $context);
 					}
 				}
 
 				if (count($expr->getArgs()) > 0) {
-					if ($parametersAcceptor === null) {
-						throw new ShouldNotHappenException();
-					}
-
 					$specifiedTypes = $this->specifyTypesFromConditionalReturnType($context, $expr, $parametersAcceptor, $scope);
 					if ($specifiedTypes !== null) {
 						return $specifiedTypes;
