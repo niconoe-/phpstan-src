@@ -3608,6 +3608,25 @@ class CallMethodsRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/bug-9141.php'], []);
 	}
 
+	public function testBug3589(): void
+	{
+		$this->checkThisOnly = false;
+		$this->checkNullables = true;
+		$this->checkUnionTypes = true;
+		$this->checkExplicitMixed = true;
+
+		$this->analyse([__DIR__ . '/data/bug-3589.php'], [
+			[
+				'Parameter #1 $fooId of method Bug3589\FooRepository::load() expects Bug3589\Id<Bug3589\Foo>, Bug3589\Id<Bug3589\Bar> given.',
+				35,
+			],
+			[
+				'Parameter #1 $fooId of method Bug3589\FooRepository::load() expects Bug3589\Id<Bug3589\Foo>, Bug3589\Id<mixed> given.',
+				41,
+			],
+		]);
+	}
+
 	public function testBug3396(): void
 	{
 		$this->checkThisOnly = false;
