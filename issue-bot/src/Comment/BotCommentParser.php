@@ -21,7 +21,7 @@ class BotCommentParser
 		$walker = $document->walker();
 		$hashes = [];
 		$diffs = [];
-		while ($event = $walker->next()) {
+		while ($event = $walker->next()) { // @phpstan-ignore while.condNotBoolean
 			if (!$event->isEntering()) {
 				continue;
 			}
