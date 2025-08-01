@@ -5139,16 +5139,22 @@ final class NodeScopeResolver
 				$scopeToPass = $closureBindScope;
 			}
 
+			$parameterCallableType = null;
+			if ($parameterType !== null) {
+				$parameterCallableType = TypeUtils::findCallableType($parameterType);
+			}
+
 			if ($parameter instanceof ExtendedParameterReflection) {
 				$parameterCallImmediately = $parameter->isImmediatelyInvokedCallable();
 				if ($parameterCallImmediately->maybe()) {
-					$callCallbackImmediately = $calleeReflection instanceof FunctionReflection;
+					$callCallbackImmediately = $parameterCallableType !== null && $calleeReflection instanceof FunctionReflection;
 				} else {
 					$callCallbackImmediately = $parameterCallImmediately->yes();
 				}
 			} else {
-				$callCallbackImmediately = $calleeReflection instanceof FunctionReflection;
+				$callCallbackImmediately = $parameterCallableType !== null && $calleeReflection instanceof FunctionReflection;
 			}
+
 			if ($arg->value instanceof Expr\Closure) {
 				$restoreThisScope = null;
 				if (

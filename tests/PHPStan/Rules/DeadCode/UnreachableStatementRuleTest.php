@@ -348,4 +348,29 @@ class UnreachableStatementRuleTest extends RuleTestCase
 		]);
 	}
 
+	#[RequiresPhp('>= 8.1')]
+	public function testBug13288(): void
+	{
+		$this->treatPhpDocTypesAsCertain = false;
+		$this->analyse([__DIR__ . '/data/bug-13288.php'], []);
+	}
+
+	public function testBug13311(): void
+	{
+		$this->treatPhpDocTypesAsCertain = false;
+		$this->analyse([__DIR__ . '/data/bug-13311.php'], []);
+	}
+
+	public function testBug13307(): void
+	{
+		$this->treatPhpDocTypesAsCertain = false;
+		$this->analyse([__DIR__ . '/data/bug-13307.php'], []);
+	}
+
+	public function testBug13331(): void
+	{
+		$this->treatPhpDocTypesAsCertain = false;
+		$this->analyse([__DIR__ . '/data/bug-13331.php'], []);
+	}
+
 }

@@ -327,3 +327,38 @@ function get_defined_constants(bool $categorize = false): array {}
  */
 function getopt(string $short_options, array $long_options = [], &$rest_index = null) {}
 
+/**
+ * @param callable|int $handler
+ * @param-later-invoked-callable $handler
+ */
+function pcntl_signal(int $signal, $handler, bool $restart_syscalls = true): bool {}
+
+/**
+ * @param-later-invoked-callable $callback
+ */
+function set_error_handler(?callable $callback, int $error_levels = E_ALL): ?callable {}
+
+/**
+ * @param-later-invoked-callable $callback
+ */
+function set_exception_handler(?callable $callback): ?callable {}
+
+/**
+ * @param-later-invoked-callable $callback
+ */
+function spl_autoload_register(?callable $callback = null, bool $throw = true, bool $prepend = false): bool {}
+
+/**
+ * @param-later-invoked-callable $callback
+ */
+function register_shutdown_function(callable $callback, mixed ...$args): void {}
+
+/**
+ * @param-later-invoked-callable $callback
+ */
+function header_register_callback(callable $callback): bool {}
+
+/**
+ * @param-later-invoked-callable $callback
+ */
+function register_tick_function(callable $callback, mixed ...$args): bool {}

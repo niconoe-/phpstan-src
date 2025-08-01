@@ -104,6 +104,30 @@ class PureFunctionRuleTest extends RuleTestCase
 				'Impure output between PHP opening and closing tags in pure function PureFunction\justContainsInlineHtml().',
 				160,
 			],
+			[
+				'Impure call to function array_push() in pure function PureFunction\bug13288().',
+				171,
+			],
+			[
+				'Impure call to function array_push() in pure function PureFunction\bug13288().',
+				175,
+			],
+			[
+				'Impure call to function array_push() in pure function PureFunction\bug13288().',
+				182,
+			],
+			[
+				'Impure exit in pure function PureFunction\bug13288b().',
+				200,
+			],
+			[
+				'Impure exit in pure function PureFunction\bug13288c().',
+				217,
+			],
+			[
+				'Impure exit in pure function PureFunction\bug13288d().',
+				230,
+			],
 		]);
 	}
 
@@ -178,6 +202,11 @@ class PureFunctionRuleTest extends RuleTestCase
 	public function testBug13201(): void
 	{
 		$this->analyse([__DIR__ . '/data/bug-13201.php'], []);
+	}
+
+	public function testBug12119(): void
+	{
+		$this->analyse([__DIR__ . '/data/bug-12119.php'], []);
 	}
 
 }

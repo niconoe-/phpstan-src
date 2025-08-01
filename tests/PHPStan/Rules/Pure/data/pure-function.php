@@ -164,3 +164,88 @@ function justContainsInlineHtml()
 	</table>
 	<?php
 }
+
+/** @phpstan-pure */
+function bug13288(array $a)
+{
+	array_push($a, function () { // error because by ref arg
+		exit(); // ok, as array_push() will not invoke the function
+	});
+
+	array_push($a, // error because by ref arg
+		fn() => exit() // ok, as array_push() will not invoke the function
+	);
+
+	$exitingClosure = function () {
+		exit();
+	};
+	array_push($a, // error because by ref arg
+		$exitingClosure // ok, as array_push() will not invoke the function
+	);
+
+	takesString("exit"); // ok, as the maybe callable type string is not typed with immediately-invoked-callable
+}
+
+/** @phpstan-pure */
+function takesString(string $s) {
+}
+
+/** @phpstan-pure */
+function bug13288b()
+{
+	$exitingClosure = function () {
+		exit();
+	};
+
+	takesMixed($exitingClosure); // error because immediately invoked
+}
+
+/**
+ * @phpstan-pure
+ * @param-immediately-invoked-callable $m
+ */
+function takesMixed(mixed $m) {
+}
+
+/** @phpstan-pure */
+function bug13288c()
+{
+	$exitingClosure = function () {
+		exit();
+	};
+
+	takesMaybeCallable($exitingClosure);
+}
+
+/** @phpstan-pure */
+function takesMaybeCallable(?callable $c) { // arguments passed to functions are considered "immediately called" by default
+}
+
+/** @phpstan-pure */
+function bug13288d()
+{
+	$exitingClosure = function () {
+		exit();
+	};
+	takesMaybeCallable2($exitingClosure);
+}
+
+/** @phpstan-pure */
+function takesMaybeCallable2(?\Closure $c) { // Closures are considered "immediately called"
+}
+
+/** @phpstan-pure */
+function bug13288e(MyClass $m)
+{
+	$exitingClosure = function () {
+		exit();
+	};
+	$m->takesMaybeCallable($exitingClosure);
+}
+
+class MyClass {
+	/** @phpstan-pure */
+	function takesMaybeCallable(?callable $c) { // arguments passed to methods are considered "later called" by default
+	}
+}
+
