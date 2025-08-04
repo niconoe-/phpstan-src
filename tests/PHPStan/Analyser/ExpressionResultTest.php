@@ -114,6 +114,22 @@ class ExpressionResultTest extends PHPStanTestCase
 				true,
 			],
 			[
+				'(function() { exit(); })();',
+				true,
+			],
+			[
+				'function () {};',
+				false,
+			],
+			[
+				'call_user_func(function() { exit(); });',
+				true,
+			],
+			[
+				'usort($arr, static function($a, $b):int { return $a <=> $b; });',
+				false,
+			],
+			[
 				'var_dump(1+exit());',
 				true,
 			],
