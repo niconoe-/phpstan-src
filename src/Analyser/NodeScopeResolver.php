@@ -181,7 +181,6 @@ use PHPStan\Type\Generic\TemplateTypeVariance;
 use PHPStan\Type\Generic\TemplateTypeVarianceMap;
 use PHPStan\Type\IntegerType;
 use PHPStan\Type\IntersectionType;
-use PHPStan\Type\IterableType;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\NeverType;
 use PHPStan\Type\NullType;
@@ -1251,19 +1250,6 @@ final class NodeScopeResolver
 			$exprType = $scope->getType($stmt->expr);
 			$isIterableAtLeastOnce = $exprType->isIterableAtLeastOnce();
 			if ($exprType->isIterable()->no() || $isIterableAtLeastOnce->maybe()) {
-				$foreachType = $this->getForeachIterateeType();
-				if (
-					!$foreachType->isSuperTypeOf($exprType)->yes()
-					&& $finalScope->getType($stmt->expr)->equals($foreachType)
-				) {
-					// restore iteratee type, in case the type was narrowed while entering the foreach
-					$finalScope = $finalScope->assignExpression(
-						$stmt->expr,
-						$exprType,
-						$scope->getNativeType($stmt->expr),
-					);
-				}
-
 				$finalScope = $finalScope->mergeWith($scope->filterByTruthyValue(new BooleanOr(
 					new BinaryOp\Identical(
 						$stmt->expr,
@@ -6078,16 +6064,18 @@ final class NodeScopeResolver
 				}
 				$valueToWrite = $offsetValueType->setExistingOffsetValueType($offsetType, $valueToWrite);
 
-				if ($hasOffsetType !== null) {
-					$valueToWrite = TypeCombinator::intersect(
-						$valueToWrite,
-						$hasOffsetType,
-					);
-				} elseif ($valueToWrite->isArray()->yes()) {
-					$valueToWrite = TypeCombinator::intersect(
-						$valueToWrite,
-						new NonEmptyArrayType(),
-					);
+				if ($valueToWrite->isArray()->yes()) {
+					if ($hasOffsetType !== null) {
+						$valueToWrite = TypeCombinator::intersect(
+							$valueToWrite,
+							$hasOffsetType,
+						);
+					} else {
+						$valueToWrite = TypeCombinator::intersect(
+							$valueToWrite,
+							new NonEmptyArrayType(),
+						);
+					}
 				}
 
 			} else {
@@ -6327,31 +6315,11 @@ final class NodeScopeResolver
 		return $scope;
 	}
 
-	private function getForeachIterateeType(): Type
-	{
-		return new IterableType(new MixedType(), new MixedType());
-	}
-
 	private function enterForeach(MutatingScope $scope, MutatingScope $originalScope, Foreach_ $stmt): MutatingScope
 	{
 		if ($stmt->expr instanceof Variable && is_string($stmt->expr->name)) {
 			$scope = $this->processVarAnnotation($scope, [$stmt->expr->name], $stmt);
 		}
-
-		// narrow the iteratee type to those supported by foreach
-		$foreachType = $this->getForeachIterateeType();
-		$scope = $scope->specifyExpressionType(
-			$stmt->expr,
-			TypeCombinator::intersect(
-				$scope->getType($stmt->expr),
-				$foreachType,
-			),
-			TypeCombinator::intersect(
-				$scope->getNativeType($stmt->expr),
-				$foreachType,
-			),
-			TrinaryLogic::createYes(),
-		);
 
 		$iterateeType = $originalScope->getType($stmt->expr);
 		if (

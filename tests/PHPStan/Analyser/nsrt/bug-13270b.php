@@ -17,10 +17,11 @@ class Test
 			if (!array_key_exists('priceWithVat', $data['price'])) {
 				$data['price']['priceWithVat'] = null;
 			}
-			assertType("(non-empty-array&hasOffsetValue('priceWithVat', mixed))|(ArrayAccess&hasOffsetValue('priceWithVat', null))", $data['price']);
+			assertType("mixed", $data['price']);
 			if (!array_key_exists('priceWithoutVat', $data['price'])) {
 				$data['price']['priceWithoutVat'] = null;
 			}
+			assertType('mixed', $data['price']);
 		}
 		return $data;
 	}

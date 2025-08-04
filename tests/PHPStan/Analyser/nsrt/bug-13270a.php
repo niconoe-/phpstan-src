@@ -16,7 +16,7 @@ final class HelloWorld
 		foreach($data as $k => $v) {
 			assertType('non-empty-array<mixed>', $data);
 			$data[$k]['a'] = true;
-			assertType("non-empty-array<(non-empty-array&hasOffsetValue('a', true))|(ArrayAccess&hasOffsetValue('a', true))>", $data);
+			assertType("non-empty-array<mixed>", $data);
 			foreach($data[$k] as $val) {
 			}
 		}
@@ -50,5 +50,12 @@ final class HelloWorld
 
 		$i2['a'] = true;
 		assertType('*ERROR*', $i2);
+	}
+
+	public function mixedIntoForeach(mixed $m): void
+	{
+		foreach ($m as $k => $v) {
+			assertType('mixed~array{}', $m);
+		}
 	}
 }
