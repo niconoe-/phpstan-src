@@ -52,6 +52,7 @@ class ClassAttributesRuleTest extends RuleTestCase
 		);
 	}
 
+	#[RequiresPhp('>= 8.0')]
 	public function testRule(): void
 	{
 		$this->analyse([__DIR__ . '/data/class-attributes.php'], [
@@ -133,6 +134,7 @@ class ClassAttributesRuleTest extends RuleTestCase
 		]);
 	}
 
+	#[RequiresPhp('>= 8.0')]
 	public function testBug7171(): void
 	{
 		$this->analyse([__DIR__ . '/data/bug-7171.php'], [
@@ -143,6 +145,7 @@ class ClassAttributesRuleTest extends RuleTestCase
 		]);
 	}
 
+	#[RequiresPhp('>= 8.0')]
 	public function testAllowDynamicPropertiesAttribute(): void
 	{
 		$this->analyse([__DIR__ . '/data/allow-dynamic-properties-attribute.php'], []);
