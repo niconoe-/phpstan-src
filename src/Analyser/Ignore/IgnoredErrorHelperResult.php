@@ -218,6 +218,10 @@ final class IgnoredErrorHelperResult
 						continue;
 					}
 
+					if ($onlyFiles) {
+						continue;
+					}
+
 					$errors[] = (new Error(
 						sprintf(
 							'Ignored error pattern %s was not matched in reported errors.',
