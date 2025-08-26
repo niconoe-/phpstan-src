@@ -1,0 +1,27 @@
+--- src/DI/Resolver.php	2023-10-02 21:58:38
++++ src/DI/Resolver.php	2025-08-26 09:38:08
+@@ -61,13 +61,13 @@
+
+ 	public function resolveDefinition(Definition $def): void
+ 	{
+-		if ($this->recursive->contains($def)) {
++		if (isset($this->recursive[$def])) {
+ 			$names = array_map(function ($item) { return $item->getName(); }, iterator_to_array($this->recursive));
+ 			throw new ServiceCreationException(sprintf('Circular reference detected for services: %s.', implode(', ', $names)));
+ 		}
+
+ 		try {
+-			$this->recursive->attach($def);
++			$this->recursive[$def] = true;
+
+ 			$def->resolveType($this);
+
+@@ -78,7 +78,7 @@
+ 			throw $this->completeException($e, $def);
+
+ 		} finally {
+-			$this->recursive->detach($def);
++			unset($this->recursive[$def]);
+ 		}
+ 	}
+
