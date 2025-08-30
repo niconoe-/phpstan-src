@@ -885,7 +885,8 @@ final class InitializerExprTypeResolver
 			return $this->getNeverType($leftType, $rightType);
 		}
 
-		$extensionSpecified = $this->callOperatorTypeSpecifyingExtensions(new BinaryOp\Mod($left, $right), $leftType, $rightType);
+		$extensionSpecified = $this->operatorTypeSpecifyingExtensionRegistryProvider->getRegistry()
+			->callOperatorTypeSpecifyingExtensions(new BinaryOp\Mod($left, $right), $leftType, $rightType);
 		if ($extensionSpecified !== null) {
 			return $extensionSpecified;
 		}
@@ -1270,7 +1271,8 @@ final class InitializerExprTypeResolver
 		$leftType = $getTypeCallback($left);
 		$rightType = $getTypeCallback($right);
 
-		$extensionSpecified = $this->callOperatorTypeSpecifyingExtensions(new BinaryOp\Pow($left, $right), $leftType, $rightType);
+		$extensionSpecified = $this->operatorTypeSpecifyingExtensionRegistryProvider->getRegistry()
+			->callOperatorTypeSpecifyingExtensions(new BinaryOp\Pow($left, $right), $leftType, $rightType);
 		if ($extensionSpecified !== null) {
 			return $extensionSpecified;
 		}
@@ -1554,25 +1556,6 @@ final class InitializerExprTypeResolver
 		return new TypeResult($resultType->toBoolean(), []);
 	}
 
-	private function callOperatorTypeSpecifyingExtensions(Expr\BinaryOp $expr, Type $leftType, Type $rightType): ?Type
-	{
-		$operatorSigil = $expr->getOperatorSigil();
-		$operatorTypeSpecifyingExtensions = $this->operatorTypeSpecifyingExtensionRegistryProvider->getRegistry()->getOperatorTypeSpecifyingExtensions($operatorSigil, $leftType, $rightType);
-
-		/** @var Type[] $extensionTypes */
-		$extensionTypes = [];
-
-		foreach ($operatorTypeSpecifyingExtensions as $extension) {
-			$extensionTypes[] = $extension->specifyType($operatorSigil, $leftType, $rightType);
-		}
-
-		if (count($extensionTypes) > 0) {
-			return TypeCombinator::union(...$extensionTypes);
-		}
-
-		return null;
-	}
-
 	/**
 	 * @param BinaryOp\Plus|BinaryOp\Minus|BinaryOp\Mul|BinaryOp\Div|BinaryOp\ShiftLeft|BinaryOp\ShiftRight $expr
 	 */
@@ -1617,7 +1600,8 @@ final class InitializerExprTypeResolver
 			}
 		}
 
-		$specifiedTypes = $this->callOperatorTypeSpecifyingExtensions($expr, $leftType, $rightType);
+		$specifiedTypes = $this->operatorTypeSpecifyingExtensionRegistryProvider->getRegistry()
+			->callOperatorTypeSpecifyingExtensions($expr, $leftType, $rightType);
 		if ($specifiedTypes !== null) {
 			return $specifiedTypes;
 		}
