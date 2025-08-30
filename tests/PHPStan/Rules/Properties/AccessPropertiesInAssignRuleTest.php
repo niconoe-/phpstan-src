@@ -177,4 +177,9 @@ class AccessPropertiesInAssignRuleTest extends RuleTestCase
 		]);
 	}
 
+	public function testBug13123(): void
+	{
+		$this->analyse([__DIR__ . '/data/bug-13123.php'], []);
+	}
+
 }

@@ -5655,7 +5655,7 @@ final class MutatingScope implements Scope
 
 			if (
 				$classReflection->getName() === $propertyDeclaringClass->getName()
-				|| $classReflection->isSubclassOfClass($propertyDeclaringClass)
+				|| $classReflection->isSubclassOfClass($propertyDeclaringClass->removeFinalKeywordOverride())
 			) {
 				return true;
 			}
@@ -5712,7 +5712,7 @@ final class MutatingScope implements Scope
 
 			if (
 				$classReflection->getName() === $classMemberDeclaringClass->getName()
-				|| $classReflection->isSubclassOfClass($classMemberDeclaringClass)
+				|| $classReflection->isSubclassOfClass($classMemberDeclaringClass->removeFinalKeywordOverride())
 			) {
 				return true;
 			}

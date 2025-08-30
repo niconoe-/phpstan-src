@@ -1702,6 +1702,48 @@ final class ClassReflection
 		);
 	}
 
+	public function removeFinalKeywordOverride(): self
+	{
+		if ($this->getNativeReflection()->isFinal()) {
+			return $this;
+		}
+		if ($this->finalByKeywordOverride === false) {
+			return $this;
+		}
+		if (!$this->isClass()) {
+			return $this;
+		}
+		if ($this->isAbstract()) {
+			return $this;
+		}
+
+		return new self(
+			$this->reflectionProvider,
+			$this->initializerExprTypeResolver,
+			$this->fileTypeMapper,
+			$this->stubPhpDocProvider,
+			$this->phpDocInheritanceResolver,
+			$this->phpVersion,
+			$this->signatureMapProvider,
+			$this->deprecationProvider,
+			$this->attributeReflectionFactory,
+			$this->propertiesClassReflectionExtensions,
+			$this->methodsClassReflectionExtensions,
+			$this->allowedSubTypesClassReflectionExtensions,
+			$this->requireExtendsPropertiesClassReflectionExtension,
+			$this->requireExtendsMethodsClassReflectionExtension,
+			$this->displayName,
+			$this->reflection,
+			$this->anonymousFilename,
+			$this->resolvedTemplateTypeMap,
+			$this->stubPhpDocBlock,
+			$this->universalObjectCratesClasses,
+			null,
+			$this->resolvedCallSiteVarianceMap,
+			false,
+		);
+	}
+
 	public function getResolvedPhpDoc(): ?ResolvedPhpDocBlock
 	{
 		if ($this->stubPhpDocBlock !== null) {
