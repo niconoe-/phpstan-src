@@ -6,10 +6,12 @@ use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\AcceptsResult;
+use PHPStan\Type\ErrorType;
 use PHPStan\Type\IntersectionType;
 use PHPStan\Type\IsSuperTypeOfResult;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\NeverType;
+use PHPStan\Type\RecursionGuard;
 use PHPStan\Type\SubtractableType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
@@ -69,7 +71,13 @@ trait TemplateTypeTrait
 			} else {
 				$boundDescription = sprintf(' of %s', $this->bound->describe($level));
 			}
-			$defaultDescription = $this->default !== null ? sprintf(' = %s', $this->default->describe($level)) : '';
+			$defaultDescription = '';
+			if ($this->default !== null) {
+				$recursionGuard = RecursionGuard::runOnObjectIdentity($this->default, fn () => $this->default->describe($level));
+				if (!$recursionGuard instanceof ErrorType) {
+					$defaultDescription .= sprintf(' = %s', $recursionGuard);
+				}
+			}
 			return sprintf(
 				'%s%s%s',
 				$this->name,
