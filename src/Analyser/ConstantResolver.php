@@ -4,8 +4,10 @@ namespace PHPStan\Analyser;
 
 use PhpParser\Node\Name;
 use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\Container;
 use PHPStan\Php\ComposerPhpVersionFactory;
 use PHPStan\Php\PhpVersion;
+use PHPStan\PhpDoc\TypeStringResolver;
 use PHPStan\Reflection\NamespaceAnswerer;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Reflection\ReflectionProvider\ReflectionProviderProvider;
@@ -50,6 +52,7 @@ final class ConstantResolver
 		private array $dynamicConstantNames,
 		private int|array|null $phpVersion,
 		private ComposerPhpVersionFactory $composerPhpVersionFactory,
+		private ?Container $container,
 	)
 	{
 	}
@@ -404,8 +407,18 @@ final class ConstantResolver
 
 	public function resolveConstantType(string $constantName, Type $constantType): Type
 	{
-		if ($constantType->isConstantValue()->yes() && in_array($constantName, $this->dynamicConstantNames, true)) {
-			return $constantType->generalize(GeneralizePrecision::lessSpecific());
+		if ($constantType->isConstantValue()->yes()) {
+			if (array_key_exists($constantName, $this->dynamicConstantNames)) {
+				$phpdocTypes = $this->dynamicConstantNames[$constantName];
+				if ($this->container !== null) {
+					$typeStringResolver = $this->container->getByType(TypeStringResolver::class);
+					return $typeStringResolver->resolve($phpdocTypes, new NameScope(null, [], null));
+				}
+				return $constantType;
+			}
+			if (in_array($constantName, $this->dynamicConstantNames, true)) {
+				return $constantType->generalize(GeneralizePrecision::lessSpecific());
+			}
 		}
 
 		return $constantType;
@@ -414,6 +427,22 @@ final class ConstantResolver
 	public function resolveClassConstantType(string $className, string $constantName, Type $constantType, ?Type $nativeType): Type
 	{
 		$lookupConstantName = sprintf('%s::%s', $className, $constantName);
+		if (array_key_exists($lookupConstantName, $this->dynamicConstantNames)) {
+			if ($constantType->isConstantValue()->yes()) {
+				$phpdocTypes = $this->dynamicConstantNames[$lookupConstantName];
+				if ($this->container !== null) {
+					$typeStringResolver = $this->container->getByType(TypeStringResolver::class);
+					return $typeStringResolver->resolve($phpdocTypes, new NameScope(null, [], $className));
+				}
+			}
+
+			if ($nativeType !== null) {
+				return $nativeType;
+			}
+			
+			return $constantType;
+		}
+
 		if (in_array($lookupConstantName, $this->dynamicConstantNames, true)) {
 			if ($nativeType !== null) {
 				return $nativeType;

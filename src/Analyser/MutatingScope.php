@@ -6209,6 +6209,11 @@ final class MutatingScope implements Scope
 		return $typeWithConstant->getConstant($constantName);
 	}
 
+	public function getConstantExplicitTypeFromConfig(string $constantName, Type $constantType): Type
+	{
+		return $this->constantResolver->resolveConstantType($constantName, $constantType);
+	}
+
 	/**
 	 * @return array<string, ExpressionTypeHolder>
 	 */
