@@ -159,29 +159,21 @@ class ObjectShapeType implements Type
 				if (in_array($propertyName, $this->optionalProperties, true)) {
 					continue;
 				}
-				return $hasProperty;
+				$result = $result->and($hasProperty);
+				continue;
 			}
-			if ($hasProperty->maybe() && in_array($propertyName, $this->optionalProperties, true)) {
+			if ($hasProperty->maybe()) {
+				if (!in_array($propertyName, $this->optionalProperties, true)) {
+					$result = $result->and($hasProperty);
+					continue;
+
+				}
+
 				$hasProperty = AcceptsResult::createYes();
 			}
 
 			$result = $result->and($hasProperty);
-
-			try {
-				$otherProperty = $type->getProperty($propertyName, $scope);
-			} catch (MissingPropertyFromReflectionException) {
-				return new AcceptsResult(
-					$result->result,
-					[
-						sprintf(
-							'%s %s not have property $%s.',
-							$type->describe(VerbosityLevel::typeOnly()),
-							$result->no() ? 'does' : 'might',
-							$propertyName,
-						),
-					],
-				);
-			}
+			$otherProperty = $type->getProperty($propertyName, $scope);
 			if (!$otherProperty->isPublic()) {
 				return new AcceptsResult(TrinaryLogic::createNo(), [
 					sprintf('Property %s::$%s is not public.', $otherProperty->getDeclaringClass()->getDisplayName(), $propertyName),
@@ -260,20 +252,20 @@ class ObjectShapeType implements Type
 				if (in_array($propertyName, $this->optionalProperties, true)) {
 					continue;
 				}
-				return $hasProperty;
+				$result = $result->and($hasProperty);
+				continue;
 			}
-			if ($hasProperty->maybe() && in_array($propertyName, $this->optionalProperties, true)) {
+			if ($hasProperty->maybe()) {
+				if (!in_array($propertyName, $this->optionalProperties, true)) {
+					$result = $result->and($hasProperty);
+					continue;
+				}
+
 				$hasProperty = IsSuperTypeOfResult::createYes();
 			}
 
 			$result = $result->and($hasProperty);
-
-			try {
-				$otherProperty = $type->getProperty($propertyName, $scope);
-			} catch (MissingPropertyFromReflectionException) {
-				return $result;
-			}
-
+			$otherProperty = $type->getProperty($propertyName, $scope);
 			if (!$otherProperty->isPublic()) {
 				return IsSuperTypeOfResult::createNo();
 			}

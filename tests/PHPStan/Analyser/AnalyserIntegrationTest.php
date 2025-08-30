@@ -201,6 +201,14 @@ class AnalyserIntegrationTest extends PHPStanTestCase
 		$this->assertNoErrors($errors);
 	}
 
+	public function testBug13424(): void
+	{
+		$errors = $this->runAnalyse(__DIR__ . '/data/bug-13424.php');
+		$this->assertCount(1, $errors);
+		$this->assertSame('Instantiated class Bug13424\Hello not found.', $errors[0]->getMessage());
+		$this->assertSame(14, $errors[0]->getLine());
+	}
+
 	public function testTwoSameClassesInSingleFile(): void
 	{
 		$errors = $this->runAnalyse(__DIR__ . '/data/two-same-classes.php');
