@@ -439,7 +439,6 @@ final class ConstantResolver
 			if ($nativeType !== null) {
 				return $nativeType;
 			}
-			
 			return $constantType;
 		}
 
