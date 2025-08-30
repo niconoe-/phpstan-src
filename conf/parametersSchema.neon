@@ -159,7 +159,7 @@ parametersSchema:
 	resultCachePath: string()
 	resultCacheSkipIfOlderThanDays: int()
 	resultCacheChecksProjectExtensionFilesDependencies: bool()
-	dynamicConstantNames: listOf(string())
+	dynamicConstantNames: arrayOf(string())
 	customRulesetUsed: schema(bool(), nullable())
 	rootDir: string()
 	tmpDir: string()
