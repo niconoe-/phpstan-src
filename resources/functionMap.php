@@ -1416,7 +1416,7 @@ return [
 'dcgettext' => ['string', 'domain_name'=>'string', 'msgid'=>'string', 'category'=>'int'],
 'dcngettext' => ['string', 'domain'=>'string', 'msgid1'=>'string', 'msgid2'=>'string', 'n'=>'int', 'category'=>'int'],
 'deaggregate' => ['', 'object'=>'object', 'class_name='=>'string'],
-'debug_backtrace' => ['list<array{function:string,line?:int,file?:string,class?:class-string,type?:\'::\'|\'->\',args?:mixed[],object?:object}>', 'options='=>'int|bool', 'limit='=>'int'],
+'debug_backtrace' => ['list<array{function:string,line?:int,file?:string,class?:class-string,type?:\'::\'|\'->\',args?:list<mixed>,object?:object}>', 'options='=>'int|bool', 'limit='=>'int'],
 'debug_print_backtrace' => ['void', 'options='=>'int|bool', 'limit='=>'int'],
 'debug_zval_dump' => ['void', '...var'=>'mixed'],
 'debugger_connect' => [''],
