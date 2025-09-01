@@ -214,8 +214,6 @@ interface Type
 	 *
 	 * Example: int is accepted by int|float with strict_types = 1
 	 * Stringable is accepted by string|Stringable even without strict_types.
-	 *
-	 * Note: Logic with $strictTypes=false is mostly not implemented in Type subclasses.
 	 */
 	public function toCoercedArgumentType(bool $strictTypes): self;
 
