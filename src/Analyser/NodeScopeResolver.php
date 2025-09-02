@@ -5683,10 +5683,9 @@ final class NodeScopeResolver
 			$varNativeType = $scope->getNativeType($var);
 
 			// 4. compose types
-			if ($varType instanceof ErrorType) {
+			$isImplicitArrayCreation = $this->isImplicitArrayCreation($dimFetchStack, $scope);
+			if ($isImplicitArrayCreation->yes()) {
 				$varType = new ConstantArrayType([], []);
-			}
-			if ($varNativeType instanceof ErrorType) {
 				$varNativeType = new ConstantArrayType([], []);
 			}
 			$offsetValueType = $varType;
@@ -6071,6 +6070,27 @@ final class NodeScopeResolver
 		}
 
 		return new ExpressionResult($scope, $hasYield, $isAlwaysTerminating, $throwPoints, $impurePoints);
+	}
+
+	/**
+	 * @param list<ArrayDimFetch> $dimFetchStack
+	 */
+	private function isImplicitArrayCreation(array $dimFetchStack, Scope $scope): TrinaryLogic
+	{
+		if (count($dimFetchStack) === 0) {
+			return TrinaryLogic::createNo();
+		}
+
+		$varNode = $dimFetchStack[0]->var;
+		if (!$varNode instanceof Variable) {
+			return TrinaryLogic::createNo();
+		}
+
+		if (!is_string($varNode->name)) {
+			return TrinaryLogic::createNo();
+		}
+
+		return $scope->hasVariableType($varNode->name)->negate();
 	}
 
 	/**
