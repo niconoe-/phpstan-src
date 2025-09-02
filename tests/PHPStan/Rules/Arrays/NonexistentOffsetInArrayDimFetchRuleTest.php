@@ -193,6 +193,10 @@ class NonexistentOffsetInArrayDimFetchRuleTest extends RuleTestCase
 				'Offset 12.34 might not exist on array|string.',
 				28,
 			],
+			[
+				'Offset int|object might not exist on array|string.',
+				32,
+			],
 		]);
 	}
 
@@ -919,6 +923,20 @@ class NonexistentOffsetInArrayDimFetchRuleTest extends RuleTestCase
 		$this->reportPossiblyNonexistentGeneralArrayOffset = true;
 
 		$this->analyse([__DIR__ . '/data/bug-12593.php'], []);
+	}
+
+	public function testBugObject(): void
+	{
+		$this->analyse([__DIR__ . '/data/bug-object.php'], [
+			[
+				'Offset int|object does not exist on array{baz: 21}|array{foo: 17, bar: 19}.',
+				12,
+			],
+			[
+				'Offset object does not exist on array<string, int>.',
+				21,
+			],
+		]);
 	}
 
 	public function testBug3747(): void
