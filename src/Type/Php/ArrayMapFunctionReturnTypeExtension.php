@@ -9,6 +9,8 @@ use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Node\Expr\TypeExpr;
 use PHPStan\Reflection\FunctionReflection;
 use PHPStan\Type\Accessory\AccessoryArrayListType;
+use PHPStan\Type\Accessory\AccessoryType;
+use PHPStan\Type\Accessory\HasOffsetValueType;
 use PHPStan\Type\Accessory\NonEmptyArrayType;
 use PHPStan\Type\ArrayType;
 use PHPStan\Type\Constant\ConstantArrayTypeBuilder;
@@ -149,13 +151,13 @@ final class ArrayMapFunctionReturnTypeExtension implements DynamicFunctionReturn
 					$mappedArrayType = TypeCombinator::intersect(new ArrayType(
 						$arrayType->getIterableKeyType(),
 						$valueType,
-					), ...TypeUtils::getAccessoryTypes($arrayType));
+					), ...$this->getAccessoryTypes($arrayType, $valueType));
 				}
 			} elseif ($arrayType->isArray()->yes()) {
 				$mappedArrayType = TypeCombinator::intersect(new ArrayType(
 					$arrayType->getIterableKeyType(),
 					$valueType,
-				), ...TypeUtils::getAccessoryTypes($arrayType));
+				), ...$this->getAccessoryTypes($arrayType, $valueType));
 			} else {
 				$mappedArrayType = new ArrayType(
 					new MixedType(),
@@ -166,7 +168,7 @@ final class ArrayMapFunctionReturnTypeExtension implements DynamicFunctionReturn
 			$mappedArrayType = TypeCombinator::intersect(new ArrayType(
 				new IntegerType(),
 				$valueType,
-			), new AccessoryArrayListType(), ...TypeUtils::getAccessoryTypes($arrayType));
+			), new AccessoryArrayListType(), ...$this->getAccessoryTypes($arrayType, $valueType));
 		}
 
 		if ($arrayType->isIterableAtLeastOnce()->yes()) {
@@ -174,6 +176,24 @@ final class ArrayMapFunctionReturnTypeExtension implements DynamicFunctionReturn
 		}
 
 		return $mappedArrayType;
+	}
+
+	/**
+	 * @return AccessoryType[]
+	 */
+	private function getAccessoryTypes(Type $arrayType, Type $valueType): array
+	{
+		$accessoryTypes = [];
+		foreach (TypeUtils::getAccessoryTypes($arrayType) as $accessoryType) {
+			if (!$accessoryType instanceof HasOffsetValueType) {
+				$accessoryTypes[] = $accessoryType;
+				continue;
+			}
+
+			$accessoryTypes[] = new HasOffsetValueType($accessoryType->getOffsetType(), $valueType);
+		}
+
+		return $accessoryTypes;
 	}
 
 }
