@@ -813,4 +813,10 @@ class TypesAssignedToPropertiesRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/bug-8282.php'], []);
 	}
 
+	public function testBug7824(): void
+	{
+		$this->checkExplicitMixed = true;
+		$this->analyse([__DIR__ . '/data/bug-7824.php'], []);
+	}
+
 }

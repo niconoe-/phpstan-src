@@ -101,4 +101,9 @@ class CallToStaticMethodStatementWithoutSideEffectsRuleTest extends RuleTestCase
 		]);
 	}
 
+	public function testBug10819(): void
+	{
+		$this->analyse([__DIR__ . '/data/bug-10819.php'], []);
+	}
+
 }
