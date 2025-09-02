@@ -28,6 +28,9 @@ use const PHP_VERSION_ID;
 class IntersectionTypeTest extends PHPStanTestCase
 {
 
+	/**
+	 * @return Iterator<int, array{Type, Type, TrinaryLogic}>
+	 */
 	public static function dataAccepts(): Iterator
 	{
 		$intersectionType = new IntersectionType([
@@ -70,7 +73,7 @@ class IntersectionTypeTest extends PHPStanTestCase
 	}
 
 	#[DataProvider('dataAccepts')]
-	public function testAccepts(IntersectionType $type, Type $otherType, TrinaryLogic $expectedResult): void
+	public function testAccepts(Type $type, Type $otherType, TrinaryLogic $expectedResult): void
 	{
 		$actualResult = $type->accepts($otherType, true)->result;
 		$this->assertSame(
@@ -121,6 +124,9 @@ class IntersectionTypeTest extends PHPStanTestCase
 		);
 	}
 
+	/**
+	 * @return Iterator<int, array{IntersectionType, Type, TrinaryLogic}>
+	 */
 	public static function dataIsSuperTypeOf(): Iterator
 	{
 		$intersectionTypeA = new IntersectionType([
@@ -242,6 +248,9 @@ class IntersectionTypeTest extends PHPStanTestCase
 		);
 	}
 
+	/**
+	 * @return Iterator<int, array{IntersectionType, Type, TrinaryLogic}>
+	 */
 	public static function dataIsSubTypeOf(): Iterator
 	{
 		$intersectionTypeA = new IntersectionType([
