@@ -75,6 +75,14 @@ class PhpFunctionFromParserNodeReflection implements FunctionReflection, Extende
 		$this->functionLike = $functionLike;
 	}
 
+	/**
+	 * @phpstan-assert-if-true PhpMethodFromParserNodeReflection $this
+	 */
+	public function isMethodOrPropertyHook(): bool
+	{
+		return $this instanceof PhpMethodFromParserNodeReflection;
+	}
+
 	protected function getFunctionLike(): FunctionLike
 	{
 		return $this->functionLike;
