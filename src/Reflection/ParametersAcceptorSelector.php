@@ -15,6 +15,7 @@ use PHPStan\Parser\ArrayWalkArgVisitor;
 use PHPStan\Parser\ClosureBindArgVisitor;
 use PHPStan\Parser\ClosureBindToVarVisitor;
 use PHPStan\Parser\CurlSetOptArgVisitor;
+use PHPStan\Parser\ImplodeArgVisitor;
 use PHPStan\Reflection\Callables\CallableParametersAcceptor;
 use PHPStan\Reflection\Native\NativeParameterReflection;
 use PHPStan\Reflection\Php\DummyParameter;
@@ -196,6 +197,32 @@ final class ParametersAcceptorSelector
 						$acceptor->getTemplateTypeMap(),
 						$acceptor->getResolvedTemplateTypeMap(),
 						array_values($parameters),
+						$acceptor->isVariadic(),
+						$acceptor->getReturnType(),
+						$acceptor instanceof ExtendedParametersAcceptor ? $acceptor->getCallSiteVarianceMap() : TemplateTypeVarianceMap::createEmpty(),
+					),
+				];
+			}
+
+			if (count($args) <= 2 && (bool) $args[0]->getAttribute(ImplodeArgVisitor::ATTRIBUTE_NAME)) {
+				$acceptor = $namedArgumentsVariants[0] ?? $parametersAcceptors[0];
+				$parameters = $acceptor->getParameters();
+				if (isset($args[1]) || ($args[0]->name !== null && $args[0]->name->name === 'array')) {
+					$parameters = [
+						new NativeParameterReflection($parameters[0]->getName(), false, new StringType(), PassedByReference::createNo(), false, null),
+						new NativeParameterReflection($parameters[1]->getName(), false, new ArrayType(new MixedType(), new MixedType()), PassedByReference::createNo(), false, null),
+					];
+				} else {
+					$parameters = [
+						new NativeParameterReflection($parameters[0]->getName(), false, new ArrayType(new MixedType(), new MixedType()), PassedByReference::createNo(), false, null),
+					];
+				}
+
+				$parametersAcceptors = [
+					new FunctionVariant(
+						$acceptor->getTemplateTypeMap(),
+						$acceptor->getResolvedTemplateTypeMap(),
+						$parameters,
 						$acceptor->isVariadic(),
 						$acceptor->getReturnType(),
 						$acceptor instanceof ExtendedParametersAcceptor ? $acceptor->getCallSiteVarianceMap() : TemplateTypeVarianceMap::createEmpty(),

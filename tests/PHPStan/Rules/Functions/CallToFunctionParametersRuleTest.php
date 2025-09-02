@@ -322,7 +322,11 @@ class CallToFunctionParametersRuleTest extends RuleTestCase
 		if (PHP_VERSION_ID >= 80000) {
 			$errors = [
 				[
-					'Parameter #2 $array of function implode expects array|null, string given.',
+					'Parameter #1 $separator of function implode expects string, array given.',
+					8,
+				],
+				[
+					'Parameter #2 $array of function implode expects array, string given.',
 					8,
 				],
 			];
@@ -336,7 +340,11 @@ class CallToFunctionParametersRuleTest extends RuleTestCase
 		if (PHP_VERSION_ID >= 80000) {
 			$errors = [
 				[
-					'Parameter #2 $array of function implode expects array|null, string given.',
+					'Parameter #1 $separator of function implode expects string, array given.',
+					8,
+				],
+				[
+					'Parameter #2 $array of function implode expects array, string given.',
 					8,
 				],
 			];
@@ -354,6 +362,21 @@ class CallToFunctionParametersRuleTest extends RuleTestCase
 		}
 
 		$this->analyse([__DIR__ . '/data/implode-74.php'], $errors);
+	}
+
+	#[RequiresPhp('>= 8.0')]
+	public function testImplodeNamedParameters(): void
+	{
+		$this->analyse([__DIR__ . '/data/implode-named-parameters.php'], [
+			[
+				'Missing parameter $separator (string) in call to function implode.',
+				6,
+			],
+			[
+				'Missing parameter $separator (string) in call to function join.',
+				7,
+			],
+		]);
 	}
 
 	public function testVariableIsNotNullAfterSeriesOfConditions(): void
@@ -2222,6 +2245,54 @@ class CallToFunctionParametersRuleTest extends RuleTestCase
 		$this->checkExplicitMixed = true;
 		$this->checkImplicitMixed = true;
 		$this->analyse([__DIR__ . '/data/bug-3506.php'], []);
+	}
+
+	public function testBug5760(): void
+	{
+		if (PHP_VERSION_ID < 80000) {
+			$param1Name = '$glue';
+			$param2Name = '$pieces';
+		} else {
+			$param1Name = '$separator';
+			$param2Name = '$array';
+		}
+
+		$this->checkExplicitMixed = true;
+		$this->checkImplicitMixed = true;
+		$this->analyse([__DIR__ . '/data/bug-5760.php'], [
+			[
+				sprintf('Parameter #2 %s of function join expects array, list<int>|null given.', $param2Name),
+				10,
+			],
+			[
+				sprintf('Parameter #1 %s of function join expects array, list<int>|null given.', $param1Name),
+				11,
+			],
+			[
+				sprintf('Parameter #2 %s of function implode expects array, list<int>|null given.', $param2Name),
+				13,
+			],
+			[
+				sprintf('Parameter #1 %s of function implode expects array, list<int>|null given.', $param1Name),
+				14,
+			],
+			[
+				sprintf('Parameter #2 %s of function join expects array, array<string>|string given.', $param2Name),
+				22,
+			],
+			[
+				sprintf('Parameter #1 %s of function join expects array, array<string>|string given.', $param1Name),
+				23,
+			],
+			[
+				sprintf('Parameter #2 %s of function implode expects array, array<string>|string given.', $param2Name),
+				25,
+			],
+			[
+				sprintf('Parameter #1 %s of function implode expects array, array<string>|string given.', $param1Name),
+				26,
+			],
+		]);
 	}
 
 	#[RequiresPhp('>= 8.0')]
