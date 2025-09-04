@@ -101,7 +101,7 @@ final class TypehintHelper
 				if ($phpDocType instanceof UnionType) {
 					$innerTypes = [];
 					foreach ($phpDocType->getTypes() as $innerType) {
-						if ($innerType instanceof ArrayType || $innerType instanceof ConstantArrayType) {
+						if ($innerType instanceof ArrayType && $innerType->getKeyType()->describe(VerbosityLevel::typeOnly()) === 'mixed') {
 							$innerTypes[] = new IterableType(
 								$innerType->getIterableKeyType(),
 								$innerType->getItemType(),
@@ -111,7 +111,7 @@ final class TypehintHelper
 						}
 					}
 					$phpDocType = new UnionType($innerTypes);
-				} elseif ($phpDocType instanceof ArrayType || $phpDocType instanceof ConstantArrayType) {
+				} elseif ($phpDocType instanceof ArrayType && $phpDocType->getKeyType()->describe(VerbosityLevel::typeOnly()) === 'mixed') {
 					$phpDocType = new IterableType(
 						$phpDocType->getKeyType(),
 						$phpDocType->getItemType(),
