@@ -859,6 +859,11 @@ class AccessPropertiesRuleTest extends RuleTestCase
 				112,
 				$tipText,
 			];
+			$errors[] = [
+				'Access to an undefined property Php82DynamicProperties\ReadonlyWithMagic::$foo.',
+				133,
+				$tipText,
+			];
 		}
 		$this->checkThisOnly = false;
 		$this->checkUnionTypes = true;
