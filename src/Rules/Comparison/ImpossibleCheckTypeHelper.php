@@ -68,11 +68,12 @@ final class ImpossibleCheckTypeHelper
 			if ($node->isFirstClassCallable()) {
 				return null;
 			}
-			$argsCount = count($node->getArgs());
+			$args = $node->getArgs();
+			$argsCount = count($args);
 			if ($node->name instanceof Node\Name) {
 				$functionName = strtolower((string) $node->name);
 				if ($functionName === 'assert' && $argsCount >= 1) {
-					$arg = $node->getArgs()[0]->value;
+					$arg = $args[0]->value;
 					$assertValue = ($this->treatPhpDocTypesAsCertain ? $scope->getType($arg) : $scope->getNativeType($arg))->toBoolean();
 					$assertValueIsTrue = $assertValue->isTrue()->yes();
 					if (! $assertValueIsTrue && ! $assertValue->isFalse()->yes()) {
@@ -96,7 +97,7 @@ final class ImpossibleCheckTypeHelper
 				} elseif ($functionName === 'array_search') {
 					return null;
 				} elseif ($functionName === 'in_array' && $argsCount >= 2) {
-					$haystackArg = $node->getArgs()[1]->value;
+					$haystackArg = $args[1]->value;
 					$haystackType = ($this->treatPhpDocTypesAsCertain ? $scope->getType($haystackArg) : $scope->getNativeType($haystackArg));
 					if ($haystackType instanceof MixedType) {
 						return null;
@@ -106,12 +107,12 @@ final class ImpossibleCheckTypeHelper
 						return null;
 					}
 
-					$needleArg = $node->getArgs()[0]->value;
+					$needleArg = $args[0]->value;
 					$needleType = ($this->treatPhpDocTypesAsCertain ? $scope->getType($needleArg) : $scope->getNativeType($needleArg));
 
 					$isStrictComparison = false;
 					if ($argsCount >= 3) {
-						$strictNodeType = $scope->getType($node->getArgs()[2]->value);
+						$strictNodeType = $scope->getType($args[2]->value);
 						$isStrictComparison = $strictNodeType->isTrue()->yes();
 					}
 
@@ -192,7 +193,7 @@ final class ImpossibleCheckTypeHelper
 						}
 					}
 				} elseif ($functionName === 'method_exists' && $argsCount >= 2) {
-					$objectArg = $node->getArgs()[0]->value;
+					$objectArg = $args[0]->value;
 					$objectType = ($this->treatPhpDocTypesAsCertain ? $scope->getType($objectArg) : $scope->getNativeType($objectArg));
 
 					if ($objectType instanceof ConstantStringType
@@ -201,7 +202,7 @@ final class ImpossibleCheckTypeHelper
 						return false;
 					}
 
-					$methodArg = $node->getArgs()[1]->value;
+					$methodArg = $args[1]->value;
 					$methodType = ($this->treatPhpDocTypesAsCertain ? $scope->getType($methodArg) : $scope->getNativeType($methodArg));
 
 					if ($methodType instanceof ConstantStringType) {
@@ -278,6 +279,27 @@ final class ImpossibleCheckTypeHelper
 
 		$results = [];
 
+		$assignedInCallVars = [];
+		if ($node instanceof Expr\CallLike) {
+			foreach ($node->getArgs() as $arg) {
+				$expr = $arg->value;
+				while ($expr instanceof Expr\Assign) {
+					$expr = $expr->expr;
+				}
+				$assignedExpr = $expr;
+
+				$expr = $arg->value;
+				while ($expr instanceof Expr\Assign) {
+					$assignedInCallVars[] = new Expr\Assign(
+						$expr->var,
+						$assignedExpr,
+						$expr->getAttributes(),
+					);
+
+					$expr = $expr->expr;
+				}
+			}
+		}
 		foreach ($sureTypes as $sureType) {
 			if (self::isSpecified($typeSpecifierScope, $node, $sureType[0])) {
 				$results[] = TrinaryLogic::createMaybe();
@@ -292,6 +314,14 @@ final class ImpossibleCheckTypeHelper
 
 			/** @var Type $resultType */
 			$resultType = $sureType[1];
+
+			foreach ($assignedInCallVars as $assignedInCallVar) {
+				if ($sureType[0] !== $assignedInCallVar->var) {
+					continue;
+				}
+
+				$argumentType = $scope->getType($assignedInCallVar->expr);
+			}
 
 			$results[] = $resultType->isSuperTypeOf($argumentType)->result;
 		}
