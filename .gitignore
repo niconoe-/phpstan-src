@@ -2,6 +2,7 @@
 /compiler/tmp
 /compiler/vendor
 /conf/config.local.yml
+/build-cs
 /vendor
 /.idea/*
 !.idea/icon.png

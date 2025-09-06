@@ -728,7 +728,7 @@ class IntersectionType implements CompoundType
 	public function looseCompare(Type $type, PhpVersion $phpVersion): BooleanType
 	{
 		return $this->intersectResults(
-			static fn (Type $innerType): TrinaryLogic => $innerType->looseCompare($type, $phpVersion)->toTrinaryLogic()
+			static fn (Type $innerType): TrinaryLogic => $innerType->looseCompare($type, $phpVersion)->toTrinaryLogic(),
 		)->toBooleanType();
 	}
 

@@ -69,7 +69,7 @@ final class SprintfFunctionDynamicReturnTypeExtension implements DynamicFunction
 			$functionReflection,
 			$scope,
 			$args,
-			static fn (Type $type): bool => $type->toString()->isLowercaseString()->yes()
+			static fn (Type $type): bool => $type->toString()->isLowercaseString()->yes(),
 		);
 
 		$singlePlaceholderEarlyReturn = [];
@@ -169,7 +169,7 @@ final class SprintfFunctionDynamicReturnTypeExtension implements DynamicFunction
 				$functionReflection,
 				$scope,
 				$args,
-				static fn (Type $type): bool => $type->toString()->isNonEmptyString()->yes()
+				static fn (Type $type): bool => $type->toString()->isNonEmptyString()->yes(),
 			);
 		}
 

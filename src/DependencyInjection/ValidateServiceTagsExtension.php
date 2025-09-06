@@ -64,6 +64,7 @@ use PHPStan\Type\StaticMethodTypeSpecifyingExtension;
 use ReflectionClass;
 use function array_flip;
 use function array_key_exists;
+use function array_keys;
 use function count;
 
 final class ValidateServiceTagsExtension extends CompilerExtension
@@ -137,7 +138,7 @@ final class ValidateServiceTagsExtension extends CompilerExtension
 				continue;
 			}
 			$reflection = new ReflectionClass($className);
-			foreach ($definition->getTags() as $tag => $attr) {
+			foreach (array_keys($definition->getTags()) as $tag) {
 				if (!array_key_exists($tag, $flippedMapping)) {
 					continue;
 				}

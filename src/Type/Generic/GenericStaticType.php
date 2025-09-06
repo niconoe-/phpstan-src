@@ -16,6 +16,7 @@ use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\TypeWithClassName;
 use function array_key_exists;
+use function array_keys;
 use function array_map;
 use function count;
 
@@ -90,7 +91,7 @@ class GenericStaticType extends StaticType
 		$i = 0;
 		$indexedTypes = [];
 		$indexedVariances = [];
-		foreach ($templateTags as $typeName => $tag) {
+		foreach (array_keys($templateTags) as $typeName) {
 			if (!array_key_exists($i, $this->types)) {
 				break;
 			}

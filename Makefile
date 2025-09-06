@@ -115,10 +115,18 @@ lint:
 install-paratest:
 	composer install --working-dir tests
 
-cs:
-	composer install --working-dir build-cs && XDEBUG_MODE=off php build-cs/vendor/bin/phpcs
+.PHONY: cs-install
+cs-install:
+	git clone https://github.com/phpstan/build-cs.git || true
+	git -C build-cs fetch origin && git -C build-cs reset --hard origin/2.x
+	composer install --working-dir build-cs
 
-cs-fix:
+.PHONY: cs
+cs: cs-install
+	XDEBUG_MODE=off php build-cs/vendor/bin/phpcs
+
+.PHONY: cs-fix
+cs-fix: cs-install
 	XDEBUG_MODE=off php build-cs/vendor/bin/phpcbf
 
 phpstan:

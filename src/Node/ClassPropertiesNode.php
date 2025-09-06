@@ -364,7 +364,7 @@ final class ClassPropertiesNode extends NodeAbstract implements VirtualNode
 			}
 
 			if ($inMethod->getName() !== '__construct') {
-				foreach ($initializedInConstructorProperties as $propertyName => $propertyNode) {
+				foreach (array_keys($initializedInConstructorProperties) as $propertyName) {
 					$initializedProperties[$inMethod->getName()][$propertyName] = TrinaryLogic::createYes();
 				}
 			}

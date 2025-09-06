@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ruleset name="PHPStan">
-	<config name="php_version" value="70400"/>
+	<config name="php_version" value="80200"/>
 	<arg name="basepath" value="."/>
 	<arg name="colors"/>
 	<arg name="extensions" value="php"/>
@@ -19,28 +19,7 @@
 	<file>issue-bot/src</file>
 	<file>issue-bot/console.php</file>
 
-	<rule ref="build-cs/vendor/consistence-community/coding-standard/Consistence/ruleset.xml">
-		<exclude name="SlevomatCodingStandard.Commenting.InlineDocCommentDeclaration.InvalidFormat"/>
-		<exclude name="SlevomatCodingStandard.Commenting.InlineDocCommentDeclaration.MissingVariable"/>
-		<exclude name="SlevomatCodingStandard.Namespaces.FullyQualifiedClassNameInAnnotation"/>
-		<exclude name="SlevomatCodingStandard.Namespaces.FullyQualifiedExceptions"/>
-		<exclude name="Consistence.Exceptions.ExceptionDeclaration"/>
-		<exclude name="Squiz.Commenting.FunctionComment"/>
-		<exclude name="Squiz.PHP.Heredoc.NotAllowed"/>
-		<exclude name="Squiz.WhiteSpace.FunctionSpacing.Before"/>
-		<exclude name="SlevomatCodingStandard.Variables.UnusedVariable.UnusedVariable"/>
-	</rule>
-	<rule ref="SlevomatCodingStandard.Namespaces.AlphabeticallySortedUses">
-		<properties>
-			<property name="caseSensitive" value="false"/>
-			<property name="psr12Compatible" value="true"/>
-		</properties>
-	</rule>
-	<rule ref="SlevomatCodingStandard.TypeHints.DeclareStrictTypes">
-		<properties>
-			<property name="declareOnFirstLine" value="true"/>
-		</properties>
-	</rule>
+	<rule ref="./build-cs/phpcs.xml"/>
 	<rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHint">
 		<exclude name="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingTraversableTypeHintSpecification"/>
 		<properties>
@@ -80,18 +59,6 @@
 	<rule ref="SlevomatCodingStandard.Exceptions.ReferenceThrowableOnly.ReferencedGeneralException">
 		<exclude-pattern>tests</exclude-pattern>
 	</rule>
-	<rule ref="SlevomatCodingStandard.ControlStructures.AssignmentInCondition"/>
-	<rule ref="SlevomatCodingStandard.ControlStructures.RequireNullCoalesceOperator"/>
-	<rule ref="SlevomatCodingStandard.ControlStructures.RequireNullCoalesceEqualOperator">
-		<properties>
-			<property name="enable" value="true"/>
-		</properties>
-	</rule>
-	<rule ref="SlevomatCodingStandard.ControlStructures.EarlyExit">
-		<exclude name="SlevomatCodingStandard.ControlStructures.EarlyExit.UselessElseIf"/>
-	</rule>
-	<rule ref="SlevomatCodingStandard.Classes.SuperfluousAbstractClassNaming"/>
-	<rule ref="SlevomatCodingStandard.Classes.SuperfluousInterfaceNaming"/>
 	<rule ref="SlevomatCodingStandard.Files.TypeNameMatchesFileName">
 		<properties>
 			<property name="rootNamespaces" type="array">
@@ -106,55 +73,8 @@
 			</property>
 		</properties>
 	</rule>
-	<rule ref="SlevomatCodingStandard.Classes.ClassMemberSpacing">
-		<properties>
-			<property name="linesCountBetweenMembers" value="1"/>
-		</properties>
-	</rule>
-	<rule ref="SlevomatCodingStandard.Classes.MethodSpacing">
-		<properties>
-			<property name="minLinesCount" value="1"/>
-			<property name="maxLinesCount" value="1"/>
-		</properties>
-	</rule>
-	<rule ref="SlevomatCodingStandard.Classes.ModernClassNameReference"/>
-	<rule ref="SlevomatCodingStandard.Functions.StaticClosure"/>
-	<rule ref="SlevomatCodingStandard.Operators.DisallowEqualOperators"/>
-	<rule ref="SlevomatCodingStandard.Operators.RequireCombinedAssignmentOperator"/>
-	<rule ref="SlevomatCodingStandard.TypeHints.NullTypeHintOnLastPosition"/>
-	<rule ref="SlevomatCodingStandard.Classes.TraitUseDeclaration"/>
-	<rule ref="SlevomatCodingStandard.Classes.TraitUseSpacing"/>
-	<rule ref="SlevomatCodingStandard.Variables.UnusedVariable"/>
-	<rule ref="SlevomatCodingStandard.Variables.UselessVariable"/>
-	<!--<rule ref="SlevomatCodingStandard.Functions.UnusedParameter"/>-->
-	<rule ref="SlevomatCodingStandard.Functions.UnusedInheritedVariablePassedToClosure"/>
-	<rule ref="SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly">
-		<properties>
-			<property name="searchAnnotations" value="true"/>
-			<property name="namespacesRequiredToUse" value=""/>
-			<property name="allowPartialUses" value="true"/>
-			<property name="allowFallbackGlobalFunctions" value="false"/>
-			<property name="allowFallbackGlobalConstants" value="false"/>
-			<property name="allowFullyQualifiedExceptions" value="false"/>
-			<property name="allowFullyQualifiedNameForCollidingClasses" value="true"/>
-			<property name="allowFullyQualifiedNameForCollidingFunctions" value="true"/>
-			<property name="allowFullyQualifiedNameForCollidingConstants" value="true"/>
-		</properties>
-	</rule>
-	<rule ref="SlevomatCodingStandard.Namespaces.UselessAlias"/>
-	<rule ref="SlevomatCodingStandard.Namespaces.UseSpacing"/>
-	<rule ref="SlevomatCodingStandard.PHP.UselessSemicolon"/>
-	<rule ref="SlevomatCodingStandard.PHP.UselessParentheses"/>
 	<rule ref="PSR1.Methods.CamelCapsMethodName.NotCamelCaps">
 		<exclude-pattern>src/Reflection/BetterReflection/SourceLocator/AutoloadSourceLocator.php</exclude-pattern>
-	</rule>
-	<rule ref="Consistence.NamingConventions.ValidVariableName.NotCamelCaps">
-		<exclude-pattern>src/Reflection/BetterReflection/SourceLocator/AutoloadSourceLocator.php</exclude-pattern>
-	</rule>
-	<rule ref="SlevomatCodingStandard.Functions.DisallowTrailingCommaInCall">
-		<properties>
-			<property name="onlySingleLine" value="true"/>
-		</properties>
 	</rule>
 	<rule ref="SlevomatCodingStandard.Functions.DisallowTrailingCommaInClosureUse">
 		<properties>
@@ -166,17 +86,7 @@
 			<property name="onlySingleLine" value="true"/>
 		</properties>
 	</rule>
-	<rule ref="SlevomatCodingStandard.Functions.RequireTrailingCommaInCall">
-		<properties>
-			<property name="enable" value="true"/>
-		</properties>
-	</rule>
 	<rule ref="SlevomatCodingStandard.Functions.RequireTrailingCommaInClosureUse">
-		<properties>
-			<property name="enable" value="true"/>
-		</properties>
-	</rule>
-	<rule ref="SlevomatCodingStandard.Functions.RequireArrowFunction">
 		<properties>
 			<property name="enable" value="true"/>
 		</properties>
@@ -192,10 +102,11 @@
 			<property name="enable" value="true"/>
 		</properties>
 	</rule>
-	<rule ref="SlevomatCodingStandard.TypeHints.UnionTypeHintFormat">
+	<rule ref="SlevomatCodingStandard.TypeHints.DNFTypeHintFormat">
 		<properties>
 			<property name="enable" value="true"/>
-			<property name="withSpaces" value="no"/>
+			<property name="withSpacesAroundOperators" value="no"/>
+			<property name="withSpacesInsideParentheses" value="no"/>
 			<property name="nullPosition" value="last"/>
 		</properties>
 	</rule>

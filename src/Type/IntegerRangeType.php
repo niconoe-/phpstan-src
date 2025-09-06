@@ -360,13 +360,13 @@ class IntegerRangeType extends IntegerType implements CompoundType
 		if ($this->min === null) {
 			$minIsSmaller = TrinaryLogic::createNo();
 		} else {
-			$minIsSmaller = $otherType->isSmallerThan((new ConstantIntegerType($this->min)), $phpVersion);
+			$minIsSmaller = $otherType->isSmallerThan(new ConstantIntegerType($this->min), $phpVersion);
 		}
 
 		if ($this->max === null) {
 			$maxIsSmaller = TrinaryLogic::createYes();
 		} else {
-			$maxIsSmaller = $otherType->isSmallerThan((new ConstantIntegerType($this->max)), $phpVersion);
+			$maxIsSmaller = $otherType->isSmallerThan(new ConstantIntegerType($this->max), $phpVersion);
 		}
 
 		// 0 can have different results in contrast to the interval edges, see https://3v4l.org/iGoti
@@ -387,13 +387,13 @@ class IntegerRangeType extends IntegerType implements CompoundType
 		if ($this->min === null) {
 			$minIsSmaller = TrinaryLogic::createNo();
 		} else {
-			$minIsSmaller = $otherType->isSmallerThanOrEqual((new ConstantIntegerType($this->min)), $phpVersion);
+			$minIsSmaller = $otherType->isSmallerThanOrEqual(new ConstantIntegerType($this->min), $phpVersion);
 		}
 
 		if ($this->max === null) {
 			$maxIsSmaller = TrinaryLogic::createYes();
 		} else {
-			$maxIsSmaller = $otherType->isSmallerThanOrEqual((new ConstantIntegerType($this->max)), $phpVersion);
+			$maxIsSmaller = $otherType->isSmallerThanOrEqual(new ConstantIntegerType($this->max), $phpVersion);
 		}
 
 		// 0 can have different results in contrast to the interval edges, see https://3v4l.org/iGoti

@@ -69,7 +69,7 @@ final class DefaultStubFilesProvider implements StubFilesProvider
 			$vendorDir = strtr($vendorDir, '\\', '/');
 			$filteredStubFiles = array_filter(
 				$filteredStubFiles,
-				static fn (string $file): bool => !str_contains(strtr($file, '\\', '/'), $vendorDir)
+				static fn (string $file): bool => !str_contains(strtr($file, '\\', '/'), $vendorDir),
 			);
 		}
 

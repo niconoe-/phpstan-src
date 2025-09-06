@@ -239,7 +239,7 @@ final class TypeCombinator
 		usort(
 			$integerRangeTypes,
 			static fn (IntegerRangeType $a, IntegerRangeType $b): int => ($a->getMin() ?? PHP_INT_MIN) <=> ($b->getMin() ?? PHP_INT_MIN)
-				?: ($a->getMax() ?? PHP_INT_MAX) <=> ($b->getMax() ?? PHP_INT_MAX)
+				?: ($a->getMax() ?? PHP_INT_MAX) <=> ($b->getMax() ?? PHP_INT_MAX),
 		);
 		$types = array_merge($types, $integerRangeTypes);
 		$types = array_values($types);

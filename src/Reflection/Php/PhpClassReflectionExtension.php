@@ -840,7 +840,7 @@ final class PhpClassReflectionExtension
 		$isInternal = $resolvedPhpDoc->isInternal();
 		$isFinal = $resolvedPhpDoc->isFinal();
 		$isPure = null;
-		foreach ($actualDeclaringClass->getAncestors() as $className => $ancestor) {
+		foreach (array_keys($actualDeclaringClass->getAncestors()) as $className) {
 			if ($this->signatureMapProvider->hasMethodMetadata($className, $methodReflection->getName())) {
 				$hasSideEffects = $this->signatureMapProvider->getMethodMetadata($className, $methodReflection->getName())['hasSideEffects'];
 				$isPure = !$hasSideEffects;
