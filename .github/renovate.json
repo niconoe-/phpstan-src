@@ -27,13 +27,6 @@
     },
     {
       "matchFileNames": [
-        "build-cs/**"
-      ],
-      "enabled": true,
-      "groupName": "build-cs"
-    },
-    {
-      "matchFileNames": [
         "apigen/**"
       ],
       "enabled": true,

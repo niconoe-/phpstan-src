@@ -433,7 +433,6 @@ class MatchExpressionRuleTest extends RuleTestCase
 		]);
 	}
 
-
 	#[RequiresPhp('>= 8.1')]
 	public function testBug13048(): void
 	{
