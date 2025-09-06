@@ -15,9 +15,11 @@ class TooWideMethodReturnTypehintRuleTest extends RuleTestCase
 
 	private bool $checkProtectedAndPublicMethods = true;
 
+	private bool $reportTooWideBool = false;
+
 	protected function getRule(): Rule
 	{
-		return new TooWideMethodReturnTypehintRule($this->checkProtectedAndPublicMethods, new TooWideTypeCheck());
+		return new TooWideMethodReturnTypehintRule($this->checkProtectedAndPublicMethods, new TooWideTypeCheck($this->reportTooWideBool));
 	}
 
 	public function testPrivate(): void
@@ -216,6 +218,59 @@ class TooWideMethodReturnTypehintRuleTest extends RuleTestCase
 	{
 		$this->checkProtectedAndPublicMethods = true;
 		$this->analyse([__DIR__ . '/data/bug-10312d.php'], []);
+	}
+
+	#[RequiresPhp('>= 8.2')]
+	public function testBug13384c(): void
+	{
+		$this->reportTooWideBool = true;
+		$this->analyse([__DIR__ . '/data/bug-13384c.php'], [
+			[
+				'Method Bug13384c\Bug13384c::doBar() never returns true so the return type can be changed to false.',
+				33,
+			],
+			[
+				'Method Bug13384c\Bug13384c::doBar2() never returns false so the return type can be changed to true.',
+				37,
+			],
+			[
+				'Method Bug13384c\Bug13384c::doBarPhpdoc() never returns false so the return type can be changed to true.',
+				55,
+			],
+			[
+				'Method Bug13384c\Bug13384Static::doBar() never returns true so the return type can be changed to false.',
+				62,
+			],
+			[
+				'Method Bug13384c\Bug13384Static::doBar2() never returns false so the return type can be changed to true.',
+				66,
+			],
+			[
+				'Method Bug13384c\Bug13384Static::doBarPhpdoc() never returns false so the return type can be changed to true.',
+				84,
+			],
+		]);
+	}
+
+	#[RequiresPhp('< 8.2')]
+	public function testBug13384cPrePhp82(): void
+	{
+		$this->reportTooWideBool = true;
+		$this->analyse([__DIR__ . '/data/bug-13384c.php'], [
+			[
+				'Method Bug13384c\Bug13384c::doBarPhpdoc() never returns false so the return type can be changed to true.',
+				55,
+			],
+			[
+				'Method Bug13384c\Bug13384Static::doBarPhpdoc() never returns false so the return type can be changed to true.',
+				84,
+			],
+		]);
+	}
+
+	public function testBug13384cOff(): void
+	{
+		$this->analyse([__DIR__ . '/data/bug-13384c.php'], []);
 	}
 
 }

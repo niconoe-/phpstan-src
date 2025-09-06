@@ -2,14 +2,18 @@
 
 namespace PHPStan\Rules\TooWideTypehints;
 
+use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredParameter;
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Node\ClassPropertyNode;
 use PHPStan\Node\FunctionReturnStatementsNode;
 use PHPStan\Node\MethodReturnStatementsNode;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\RuleErrorBuilder;
+use PHPStan\Type\Constant\ConstantBooleanType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
+use PHPStan\Type\TypehintHelper;
 use PHPStan\Type\TypeUtils;
 use PHPStan\Type\UnionType;
 use PHPStan\Type\VerbosityLevel;
@@ -21,12 +25,19 @@ use function sprintf;
 final class TooWideTypeCheck
 {
 
+	public function __construct(
+		#[AutowiredParameter(ref: '%featureToggles.reportTooWideBool%')]
+		private bool $reportTooWideBool,
+	)
+	{
+	}
+
 	/**
 	 * @return list<IdentifierRuleError>
 	 */
 	public function checkProperty(
 		ClassPropertyNode $property,
-		UnionType $propertyType,
+		Type $propertyType,
 		string $propertyDescription,
 		Type $assignedType,
 	): array
@@ -34,12 +45,30 @@ final class TooWideTypeCheck
 		$errors = [];
 
 		$verbosityLevel = VerbosityLevel::getRecommendedLevelByType($propertyType, $assignedType);
-		foreach ($propertyType->getTypes() as $type) {
+		$propertyTypes = $propertyType instanceof UnionType ? $propertyType->getTypes() : $propertyType->getFiniteTypes();
+		foreach ($propertyTypes as $type) {
 			if (!$type->isSuperTypeOf($assignedType)->no()) {
 				continue;
 			}
 
 			if ($property->getNativeType() === null && $type->isNull()->yes()) {
+				continue;
+			}
+
+			if ($propertyType->isBoolean()->yes()) {
+				$suggestedType = $type->isTrue()->yes() ? new ConstantBooleanType(false) : new ConstantBooleanType(true);
+
+				$errors[] = RuleErrorBuilder::message(sprintf(
+					'%s (%s) is never assigned %s so the property type can be changed to %s.',
+					$propertyDescription,
+					$propertyType->describe($verbosityLevel),
+					$type->describe($verbosityLevel),
+					$suggestedType->describe($verbosityLevel),
+				))
+					->identifier('property.tooWideBool')
+					->line($property->getStartLine())
+					->build();
+
 				continue;
 			}
 
@@ -62,15 +91,18 @@ final class TooWideTypeCheck
 	 */
 	public function checkFunction(
 		MethodReturnStatementsNode|FunctionReturnStatementsNode $node,
-		Type $functionReturnType,
+		Type $nativeFunctionReturnType,
+		Type $phpdocFunctionReturnType,
 		string $functionDescription,
 		bool $checkDescendantClass,
+		Scope $scope,
 	): array
 	{
-		$functionReturnType = TypeUtils::resolveLateResolvableTypes($functionReturnType);
-		if (!$functionReturnType instanceof UnionType) {
+		$functionReturnType = $this->findTypeToCheck($nativeFunctionReturnType, $phpdocFunctionReturnType, $scope);
+		if ($functionReturnType === null) {
 			return [];
 		}
+
 		$statementResult = $node->getStatementResult();
 		if ($statementResult->hasYield()) {
 			return [];
@@ -114,7 +146,8 @@ final class TooWideTypeCheck
 		}
 
 		$messages = [];
-		foreach ($functionReturnType->getTypes() as $type) {
+		$functionReturnTypes = $functionReturnType instanceof UnionType ? $functionReturnType->getTypes() : $functionReturnType->getFiniteTypes();
+		foreach ($functionReturnTypes as $type) {
 			if (!$type->isSuperTypeOf($returnType)->no()) {
 				continue;
 			}
@@ -127,6 +160,19 @@ final class TooWideTypeCheck
 
 					continue 2;
 				}
+			}
+
+			if ($functionReturnType->isBoolean()->yes()) {
+				$suggestedType = $type->isTrue()->yes() ? new ConstantBooleanType(false) : new ConstantBooleanType(true);
+
+				$messages[] = RuleErrorBuilder::message(sprintf(
+					'%s never returns %s so the return type can be changed to %s.',
+					$functionDescription,
+					$type->describe(VerbosityLevel::getRecommendedLevelByType($type)),
+					$suggestedType->describe(VerbosityLevel::getRecommendedLevelByType($suggestedType)),
+				))->identifier('return.tooWideBool')->build();
+
+				continue;
 			}
 
 			$messages[] = RuleErrorBuilder::message(sprintf(
@@ -163,6 +209,48 @@ final class TooWideTypeCheck
 		}
 
 		return $messages;
+	}
+
+	/**
+	 * Returns null when type should not be checked, e.g. because it would be too annoying.
+	 */
+	public function findTypeToCheck(
+		Type $nativeType,
+		Type $phpdocType,
+		Scope $scope,
+	): ?Type
+	{
+		$combinedType = TypeUtils::resolveLateResolvableTypes(TypehintHelper::decideType($nativeType, $phpdocType));
+		if ($combinedType instanceof UnionType) {
+			return $combinedType;
+		}
+
+		if (!$this->reportTooWideBool) {
+			return null;
+		}
+
+		if (
+			$phpdocType->isBoolean()->yes()
+		) {
+			if (
+				!$phpdocType->isTrue()->yes()
+				&& !$phpdocType->isFalse()->yes()
+			) {
+				return $combinedType;
+			}
+		} elseif (
+			$scope->getPhpVersion()->supportsTrueAndFalseStandaloneType()->yes()
+			&& $nativeType->isBoolean()->yes()
+		) {
+			if (
+				!$nativeType->isTrue()->yes()
+				&& !$nativeType->isFalse()->yes()
+			) {
+				return $combinedType;
+			}
+		}
+
+		return null;
 	}
 
 }

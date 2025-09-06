@@ -11,7 +11,6 @@ use PHPStan\Rules\Properties\PropertyReflectionFinder;
 use PHPStan\Rules\Properties\ReadWritePropertiesExtensionProvider;
 use PHPStan\Rules\Rule;
 use PHPStan\Type\TypeCombinator;
-use PHPStan\Type\UnionType;
 use function count;
 use function sprintf;
 
@@ -57,9 +56,13 @@ final class TooWidePropertyTypeRule implements Rule
 
 			$propertyReflection = $classReflection->getNativeProperty($propertyName);
 			$propertyType = $propertyReflection->getWritableType();
-			if (!$propertyType instanceof UnionType) {
+			$phpdocType = $propertyReflection->getPhpDocType();
+
+			$propertyType = $this->check->findTypeToCheck($propertyType, $phpdocType, $scope);
+			if ($propertyType === null) {
 				continue;
 			}
+
 			foreach ($this->extensionProvider->getExtensions() as $extension) {
 				if ($extension->isAlwaysRead($propertyReflection, $propertyName)) {
 					continue 2;

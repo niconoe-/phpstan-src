@@ -13,11 +13,9 @@ use PHPUnit\Framework\Attributes\RequiresPhp;
 class TooWidePropertyHookThrowTypeRuleTest extends RuleTestCase
 {
 
-	private bool $implicitThrows = true;
-
 	protected function getRule(): Rule
 	{
-		return new TooWidePropertyHookThrowTypeRule(self::getContainer()->getByType(FileTypeMapper::class), new TooWideThrowTypeCheck($this->implicitThrows));
+		return new TooWidePropertyHookThrowTypeRule(self::getContainer()->getByType(FileTypeMapper::class), new TooWideThrowTypeCheck(true));
 	}
 
 	#[RequiresPhp('>= 8.4')]

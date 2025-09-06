@@ -4,6 +4,7 @@ namespace PHPStan\Rules\TooWideTypehints;
 
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 
 /**
  * @extends RuleTestCase<TooWideFunctionReturnTypehintRule>
@@ -11,9 +12,11 @@ use PHPStan\Testing\RuleTestCase;
 class TooWideFunctionReturnTypehintRuleTest extends RuleTestCase
 {
 
+	private bool $reportTooWideBool = false;
+
 	protected function getRule(): Rule
 	{
-		return new TooWideFunctionReturnTypehintRule(new TooWideTypeCheck());
+		return new TooWideFunctionReturnTypehintRule(new TooWideTypeCheck($this->reportTooWideBool));
 	}
 
 	public function testRule(): void
@@ -64,6 +67,51 @@ class TooWideFunctionReturnTypehintRuleTest extends RuleTestCase
 	public function testBug10312a(): void
 	{
 		$this->analyse([__DIR__ . '/data/bug-10312a.php'], []);
+	}
+
+	#[RequiresPhp('>= 8.2')]
+	public function testBug13384cPhp82(): void
+	{
+		$this->reportTooWideBool = true;
+		$this->analyse([__DIR__ . '/data/bug-13384c.php'], [
+			[
+				'Function Bug13384c\doFoo() never returns true so the return type can be changed to false.',
+				5,
+			],
+			[
+				'Function Bug13384c\doFoo2() never returns false so the return type can be changed to true.',
+				9,
+			],
+			[
+				'Function Bug13384c\doFooPhpdoc() never returns false so the return type can be changed to true.',
+				93,
+			],
+			[
+				'Function Bug13384c\doFooPhpdoc2() never returns true so the return type can be changed to false.',
+				100,
+			],
+		]);
+	}
+
+	#[RequiresPhp('< 8.2')]
+	public function testBug13384cPrePhp82(): void
+	{
+		$this->reportTooWideBool = true;
+		$this->analyse([__DIR__ . '/data/bug-13384c.php'], [
+			[
+				'Function Bug13384c\doFooPhpdoc() never returns false so the return type can be changed to true.',
+				93,
+			],
+			[
+				'Function Bug13384c\doFooPhpdoc2() never returns true so the return type can be changed to false.',
+				100,
+			],
+		]);
+	}
+
+	public function testBug13384cOff(): void
+	{
+		$this->analyse([__DIR__ . '/data/bug-13384c.php'], []);
 	}
 
 }

@@ -11,11 +11,9 @@ use PHPStan\Testing\RuleTestCase;
 class TooWideFunctionThrowTypeRuleTest extends RuleTestCase
 {
 
-	private bool $implicitThrows = true;
-
 	protected function getRule(): Rule
 	{
-		return new TooWideFunctionThrowTypeRule(new TooWideThrowTypeCheck($this->implicitThrows));
+		return new TooWideFunctionThrowTypeRule(new TooWideThrowTypeCheck(true));
 	}
 
 	public function testRule(): void
