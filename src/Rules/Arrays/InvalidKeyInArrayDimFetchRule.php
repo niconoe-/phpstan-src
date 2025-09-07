@@ -10,7 +10,6 @@ use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Rules\RuleLevelHelper;
 use PHPStan\Type\ErrorType;
-use PHPStan\Type\MixedType;
 use PHPStan\Type\Type;
 use PHPStan\Type\VerbosityLevel;
 use function sprintf;
@@ -41,19 +40,29 @@ final class InvalidKeyInArrayDimFetchRule implements Rule
 			return [];
 		}
 
-		$dimensionType = $scope->getType($node->dim);
-		if ($dimensionType instanceof MixedType) {
-			return [];
-		}
-
 		$varType = $this->ruleLevelHelper->findTypeToCheck(
 			$scope,
 			$node->var,
 			'',
-			static fn (Type $varType): bool => $varType->isArray()->no() || AllowedArrayKeysTypes::getType()->isSuperTypeOf($dimensionType)->yes(),
+			static fn (Type $varType): bool => $varType->isArray()->no(),
 		)->getType();
 
-		if ($varType instanceof ErrorType || $varType->isArray()->no()) {
+		if ($varType instanceof ErrorType) {
+			return [];
+		}
+
+		$isArray = $varType->isArray();
+		if ($isArray->no() || ($isArray->maybe() && !$this->reportMaybes)) {
+			return [];
+		}
+
+		$dimensionType = $this->ruleLevelHelper->findTypeToCheck(
+			$scope,
+			$node->dim,
+			'',
+			static fn (Type $dimType): bool => AllowedArrayKeysTypes::getType()->isSuperTypeOf($dimType)->yes(),
+		)->getType();
+		if ($dimensionType instanceof ErrorType) {
 			return [];
 		}
 
@@ -64,7 +73,11 @@ final class InvalidKeyInArrayDimFetchRule implements Rule
 
 		return [
 			RuleErrorBuilder::message(
-				sprintf('%s array key type %s.', $isSuperType->no() ? 'Invalid' : 'Possibly invalid', $dimensionType->describe(VerbosityLevel::typeOnly())),
+				sprintf(
+					'%s array key type %s.',
+					$isArray->yes() && $isSuperType->no() ? 'Invalid' : 'Possibly invalid',
+					$dimensionType->describe(VerbosityLevel::typeOnly()),
+				),
 			)->identifier('offsetAccess.invalidOffset')->build(),
 		];
 	}
