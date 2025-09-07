@@ -980,4 +980,14 @@ class NonexistentOffsetInArrayDimFetchRuleTest extends RuleTestCase
 		]);
 	}
 
+	public function testBug4532(): void
+	{
+		$this->analyse([__DIR__ . '/data/bug-4532.php'], [
+			[
+				'Offset int|null might not exist on array<int, string>.',
+				25,
+			],
+		]);
+	}
+
 }
