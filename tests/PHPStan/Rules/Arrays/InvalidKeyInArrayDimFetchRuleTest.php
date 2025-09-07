@@ -15,7 +15,7 @@ class InvalidKeyInArrayDimFetchRuleTest extends RuleTestCase
 
 	protected function getRule(): Rule
 	{
-		$ruleLevelHelper = new RuleLevelHelper(self::createReflectionProvider(), true, false, true, false, false, false, true);
+		$ruleLevelHelper = new RuleLevelHelper(self::createReflectionProvider(), true, false, true, true, true, false, true);
 		return new InvalidKeyInArrayDimFetchRule($ruleLevelHelper, true);
 	}
 
@@ -37,6 +37,10 @@ class InvalidKeyInArrayDimFetchRuleTest extends RuleTestCase
 			[
 				'Invalid array key type DateTimeImmutable.',
 				31,
+			],
+			[
+				'Possibly invalid array key type mixed.',
+				41,
 			],
 			[
 				'Invalid array key type DateTimeImmutable.',
@@ -88,6 +92,16 @@ class InvalidKeyInArrayDimFetchRuleTest extends RuleTestCase
 			[
 				'Invalid array key type Bug6315\FooEnum::A.',
 				22,
+			],
+		]);
+	}
+
+	public function testBug13135(): void
+	{
+		$this->analyse([__DIR__ . '/data/bug-13135.php'], [
+			[
+				'Possibly invalid array key type Tk of mixed.',
+				15,
 			],
 		]);
 	}
