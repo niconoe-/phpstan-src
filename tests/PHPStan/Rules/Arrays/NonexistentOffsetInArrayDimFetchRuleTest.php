@@ -990,4 +990,14 @@ class NonexistentOffsetInArrayDimFetchRuleTest extends RuleTestCase
 		]);
 	}
 
+	public function testBug10492(): void
+	{
+		$this->analyse([__DIR__ . '/data/bug-10492.php'], [
+			[
+				'Offset 2|4 might not exist on array{array{0}, array{1}, array{2}}.',
+				19,
+			],
+		]);
+	}
+
 }
