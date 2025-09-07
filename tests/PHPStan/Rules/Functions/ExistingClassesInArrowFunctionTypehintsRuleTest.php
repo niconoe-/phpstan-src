@@ -311,4 +311,17 @@ class ExistingClassesInArrowFunctionTypehintsRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/arrow-function-never.php'], $errors);
 	}
 
+	public function testBug5206(): void
+	{
+		$errors = [];
+		if (PHP_VERSION_ID < 80000) {
+			$errors[] = [
+				'Parameter $mixed of anonymous function has invalid type Bug5206\mixed.',
+				9,
+			];
+		}
+
+		$this->analyse([__DIR__ . '/data/bug-5206.php'], $errors);
+	}
+
 }
