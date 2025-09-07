@@ -1140,7 +1140,7 @@ class TypeCombinatorTest extends PHPStanTestCase
 					new ObjectType('InvalidArgumentException'),
 				],
 				MixedType::class,
-				'mixed~Exception~InvalidArgumentException=implicit',
+				'mixed~(Exception~InvalidArgumentException)=implicit',
 			],
 			[
 				[
@@ -4142,6 +4142,14 @@ class TypeCombinatorTest extends PHPStanTestCase
 				],
 				ObjectWithoutClassType::class,
 				'object',
+			],
+			[
+				[
+					new MixedType(subtractedType: new ObjectWithoutClassType(new ObjectType('stdClass'))),
+					new ObjectWithoutClassType(),
+				],
+				ObjectType::class,
+				'stdClass',
 			],
 		];
 
