@@ -2664,11 +2664,29 @@ final class NodeScopeResolver
 				$arrayArgNativeType = $scope->getNativeType($arrayArg);
 
 				$isArrayPop = $functionReflection->getName() === 'array_pop';
+				$newType = $isArrayPop ? $arrayArgType->popArray() : $arrayArgType->shiftArray();
 				$scope = $scope->invalidateExpression($arrayArg)->assignExpression(
 					$arrayArg,
-					$isArrayPop ? $arrayArgType->popArray() : $arrayArgType->shiftArray(),
+					$newType,
 					$isArrayPop ? $arrayArgNativeType->popArray() : $arrayArgNativeType->shiftArray(),
 				);
+
+				$scope = $this->processAssignVar(
+					$scope,
+					$stmt,
+					$arrayArg,
+					new TypeExpr($newType),
+					static function (Node $node, Scope $scope) use ($nodeCallback): void {
+						if (!$node instanceof PropertyAssignNode && !$node instanceof VariableAssignNode) {
+							return;
+						}
+
+						$nodeCallback($node, $scope);
+					},
+					$context,
+					static fn (MutatingScope $scope): ExpressionResult => new ExpressionResult($scope, false, false, [], []),
+					true,
+				)->getScope();
 			}
 
 			if (
@@ -2681,6 +2699,23 @@ final class NodeScopeResolver
 
 				$arrayArg = $expr->getArgs()[0]->value;
 				$scope = $scope->invalidateExpression($arrayArg)->assignExpression($arrayArg, $arrayType, $arrayNativeType);
+
+				$scope = $this->processAssignVar(
+					$scope,
+					$stmt,
+					$arrayArg,
+					new TypeExpr($arrayType),
+					static function (Node $node, Scope $scope) use ($nodeCallback): void {
+						if (!$node instanceof PropertyAssignNode && !$node instanceof VariableAssignNode) {
+							return;
+						}
+
+						$nodeCallback($node, $scope);
+					},
+					$context,
+					static fn (MutatingScope $scope): ExpressionResult => new ExpressionResult($scope, false, false, [], []),
+					true,
+				)->getScope();
 			}
 
 			if (
@@ -2695,11 +2730,29 @@ final class NodeScopeResolver
 				&& $functionReflection->getName() === 'shuffle'
 			) {
 				$arrayArg = $expr->getArgs()[0]->value;
+				$newType = $scope->getType($arrayArg)->shuffleArray();
 				$scope = $scope->assignExpression(
 					$arrayArg,
-					$scope->getType($arrayArg)->shuffleArray(),
+					$newType,
 					$scope->getNativeType($arrayArg)->shuffleArray(),
 				);
+
+				$scope = $this->processAssignVar(
+					$scope,
+					$stmt,
+					$arrayArg,
+					new TypeExpr($newType),
+					static function (Node $node, Scope $scope) use ($nodeCallback): void {
+						if (!$node instanceof PropertyAssignNode && !$node instanceof VariableAssignNode) {
+							return;
+						}
+
+						$nodeCallback($node, $scope);
+					},
+					$context,
+					static fn (MutatingScope $scope): ExpressionResult => new ExpressionResult($scope, false, false, [], []),
+					true,
+				)->getScope();
 			}
 
 			if (
@@ -2715,11 +2768,29 @@ final class NodeScopeResolver
 				$lengthType = isset($expr->getArgs()[2]) ? $scope->getType($expr->getArgs()[2]->value) : new NullType();
 				$replacementType = isset($expr->getArgs()[3]) ? $scope->getType($expr->getArgs()[3]->value) : new ConstantArrayType([], []);
 
+				$newType = $arrayArgType->spliceArray($offsetType, $lengthType, $replacementType);
 				$scope = $scope->invalidateExpression($arrayArg)->assignExpression(
 					$arrayArg,
-					$arrayArgType->spliceArray($offsetType, $lengthType, $replacementType),
+					$newType,
 					$arrayArgNativeType->spliceArray($offsetType, $lengthType, $replacementType),
 				);
+
+				$scope = $this->processAssignVar(
+					$scope,
+					$stmt,
+					$arrayArg,
+					new TypeExpr($newType),
+					static function (Node $node, Scope $scope) use ($nodeCallback): void {
+						if (!$node instanceof PropertyAssignNode && !$node instanceof VariableAssignNode) {
+							return;
+						}
+
+						$nodeCallback($node, $scope);
+					},
+					$context,
+					static fn (MutatingScope $scope): ExpressionResult => new ExpressionResult($scope, false, false, [], []),
+					true,
+				)->getScope();
 			}
 
 			if (
@@ -2728,11 +2799,29 @@ final class NodeScopeResolver
 				&& count($expr->getArgs()) >= 1
 			) {
 				$arrayArg = $expr->getArgs()[0]->value;
+				$newType = $this->getArraySortPreserveListFunctionType($scope->getType($arrayArg));
 				$scope = $scope->assignExpression(
 					$arrayArg,
-					$this->getArraySortPreserveListFunctionType($scope->getType($arrayArg)),
+					$newType,
 					$this->getArraySortPreserveListFunctionType($scope->getNativeType($arrayArg)),
 				);
+
+				$scope = $this->processAssignVar(
+					$scope,
+					$stmt,
+					$arrayArg,
+					new TypeExpr($newType),
+					static function (Node $node, Scope $scope) use ($nodeCallback): void {
+						if (!$node instanceof PropertyAssignNode && !$node instanceof VariableAssignNode) {
+							return;
+						}
+
+						$nodeCallback($node, $scope);
+					},
+					$context,
+					static fn (MutatingScope $scope): ExpressionResult => new ExpressionResult($scope, false, false, [], []),
+					true,
+				)->getScope();
 			}
 
 			if (
@@ -2741,11 +2830,29 @@ final class NodeScopeResolver
 				&& count($expr->getArgs()) >= 1
 			) {
 				$arrayArg = $expr->getArgs()[0]->value;
+				$newType = $this->getArraySortDoNotPreserveListFunctionType($scope->getType($arrayArg));
 				$scope = $scope->assignExpression(
 					$arrayArg,
-					$this->getArraySortDoNotPreserveListFunctionType($scope->getType($arrayArg)),
+					$newType,
 					$this->getArraySortDoNotPreserveListFunctionType($scope->getNativeType($arrayArg)),
 				);
+
+				$scope = $this->processAssignVar(
+					$scope,
+					$stmt,
+					$arrayArg,
+					new TypeExpr($newType),
+					static function (Node $node, Scope $scope) use ($nodeCallback): void {
+						if (!$node instanceof PropertyAssignNode && !$node instanceof VariableAssignNode) {
+							return;
+						}
+
+						$nodeCallback($node, $scope);
+					},
+					$context,
+					static fn (MutatingScope $scope): ExpressionResult => new ExpressionResult($scope, false, false, [], []),
+					true,
+				)->getScope();
 			}
 
 			if (

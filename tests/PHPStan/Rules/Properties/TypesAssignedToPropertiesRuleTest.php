@@ -819,4 +819,103 @@ class TypesAssignedToPropertiesRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/bug-7824.php'], []);
 	}
 
+	public function testBug13438(): void
+	{
+		$this->checkExplicitMixed = true;
+		$this->analyse([__DIR__ . '/data/bug-13438.php'], [
+			[
+				'Property Bug13438\Test::$queue (non-empty-list<int>) does not accept list<int>.',
+				20,
+				'list<int> might be empty.',
+			],
+			[
+				'Property Bug13438\Test::$queue (non-empty-list<int>) does not accept list<int>.',
+				26,
+				'list<int> might be empty.',
+			],
+		]);
+	}
+
+	public function testBug13438b(): void
+	{
+		$this->checkExplicitMixed = true;
+		$this->analyse([__DIR__ . '/data/bug-13438b.php'], [
+			[
+				'Property Bug13438b\Test::$queue (non-empty-list<int>) does not accept list<int>.',
+				20,
+				'list<int> might be empty.',
+			],
+			[
+				'Property Bug13438b\Test::$queue (non-empty-list<int>) does not accept list<int>.',
+				26,
+				'list<int> might be empty.',
+			],
+
+		]);
+	}
+
+	public function testBug13438c(): void
+	{
+		$this->checkExplicitMixed = true;
+		$this->analyse([__DIR__ . '/data/bug-13438c.php'], []);
+	}
+
+	public function testBug13438d(): void
+	{
+		$this->checkExplicitMixed = true;
+		$this->analyse([__DIR__ . '/data/bug-13438d.php'], [
+			[
+				'Property Bug13438d\Test::$queue (array{}) does not accept array{1}.',
+				18,
+			],
+		]);
+	}
+
+	public function testBug13438e(): void
+	{
+		$this->checkExplicitMixed = true;
+		$this->analyse([__DIR__ . '/data/bug-13438e.php'], [
+			[
+				'Property Bug13438e\Test::$queue (array{}) does not accept array{1}.',
+				18,
+			],
+		]);
+	}
+
+	public function testBug13438f(): void
+	{
+		$this->checkExplicitMixed = true;
+		$this->analyse([__DIR__ . '/data/bug-13438f.php'], [
+			[
+				'Property Bug13438f\Test::$queue (array<int, non-empty-list<int>>) does not accept non-empty-array<int, list<int>>.',
+				20,
+				'list<int> might be empty.',
+			],
+			[
+				'Property Bug13438f\Test::$queue (array<int, non-empty-list<int>>) does not accept non-empty-array<int, list<int>>.',
+				25,
+				'list<int> might be empty.',
+			],
+		]);
+	}
+
+	public function testBug2888(): void
+	{
+		$this->checkExplicitMixed = true;
+		$this->analyse([__DIR__ . '/data/bug-2888.php'], [
+			[
+				'Property Bug2888\MyClass::$prop (array<int>) does not accept array<int|string>.',
+				17,
+			],
+			[
+				'Property Bug2888\MyClass::$prop (array<int>) does not accept array<int|string>.',
+				18,
+			],
+			[
+				'Property Bug2888\MyClass::$prop (array<int>) does not accept array<int|string>.',
+				26,
+			],
+		]);
+	}
+
 }
