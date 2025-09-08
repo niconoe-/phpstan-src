@@ -14,6 +14,8 @@ use PHPStan\DependencyInjection\AutowiredParameter;
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Internal\SprintfHelper;
 use PHPStan\Php\PhpVersion;
+use PHPStan\Reflection\ExtendedPropertyReflection;
+use PHPStan\Reflection\MissingPropertyFromReflectionException;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\RuleErrorBuilder;
@@ -22,6 +24,8 @@ use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\ErrorType;
 use PHPStan\Type\StaticType;
 use PHPStan\Type\Type;
+use PHPStan\Type\TypeCombinator;
+use PHPStan\Type\UnionType;
 use PHPStan\Type\VerbosityLevel;
 use function array_map;
 use function array_merge;
@@ -124,8 +128,17 @@ final class AccessPropertiesCheck
 		}
 
 		$has = $type->hasProperty($name);
-		if (!$has->no() && $this->canAccessUndefinedProperties($scope, $node)) {
-			return [];
+		if ($has->maybe()) {
+			if ($scope->isUndefinedExpressionAllowed($node)) {
+				if (!$this->checkDynamicProperties) {
+					return [];
+				}
+
+				$maybePropertyReflection = $this->pickProperty($scope, $type, $name);
+				if ($maybePropertyReflection !== null && $maybePropertyReflection->isDummy()->no()) {
+					return [];
+				}
+			}
 		}
 
 		if (!$has->yes()) {
@@ -247,9 +260,42 @@ final class AccessPropertiesCheck
 		];
 	}
 
-	private function canAccessUndefinedProperties(Scope $scope, Expr $node): bool
+	private function pickProperty(Scope $scope, Type $type, string $name): ?ExtendedPropertyReflection
 	{
-		return $scope->isUndefinedExpressionAllowed($node) && !$this->checkDynamicProperties;
+		$types = [];
+		if ($type instanceof UnionType) {
+			foreach ($type->getTypes() as $innerType) {
+				if ($innerType->hasProperty($name)->no()) {
+					continue;
+				}
+
+				$types[] = $innerType;
+			}
+		}
+
+		if (count($types) === 0) {
+			try {
+				return $type->getProperty($name, $scope);
+			} catch (MissingPropertyFromReflectionException) {
+				return null;
+			}
+		}
+
+		if (count($types) === 1) {
+			try {
+				return $types[0]->getProperty($name, $scope);
+			} catch (MissingPropertyFromReflectionException) {
+				return null;
+			}
+		}
+
+		$unionType = TypeCombinator::union(...$types);
+
+		try {
+			return $unionType->getProperty($name, $scope);
+		} catch (MissingPropertyFromReflectionException) {
+			return null;
+		}
 	}
 
 }

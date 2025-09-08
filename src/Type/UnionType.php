@@ -15,6 +15,8 @@ use PHPStan\Reflection\ClassMemberAccessAnswerer;
 use PHPStan\Reflection\ExtendedMethodReflection;
 use PHPStan\Reflection\ExtendedPropertyReflection;
 use PHPStan\Reflection\InitializerExprTypeResolver;
+use PHPStan\Reflection\MissingMethodFromReflectionException;
+use PHPStan\Reflection\MissingPropertyFromReflectionException;
 use PHPStan\Reflection\Type\UnionTypeUnresolvedMethodPrototypeReflection;
 use PHPStan\Reflection\Type\UnionTypeUnresolvedPropertyPrototypeReflection;
 use PHPStan\Reflection\Type\UnresolvedMethodPrototypeReflection;
@@ -481,7 +483,7 @@ class UnionType implements CompoundType
 
 		$propertiesCount = count($propertyPrototypes);
 		if ($propertiesCount === 0) {
-			throw new ShouldNotHappenException();
+			throw new MissingPropertyFromReflectionException($this->describe(VerbosityLevel::typeOnly()), $propertyName);
 		}
 
 		if ($propertiesCount === 1) {
@@ -519,7 +521,7 @@ class UnionType implements CompoundType
 
 		$methodsCount = count($methodPrototypes);
 		if ($methodsCount === 0) {
-			throw new ShouldNotHappenException();
+			throw new MissingMethodFromReflectionException($this->describe(VerbosityLevel::typeOnly()), $methodName);
 		}
 
 		if ($methodsCount === 1) {

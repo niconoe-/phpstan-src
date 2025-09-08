@@ -154,4 +154,9 @@ final class ObjectShapePropertyReflection implements ExtendedPropertyReflection
 		return [];
 	}
 
+	public function isDummy(): TrinaryLogic
+	{
+		return TrinaryLogic::createNo();
+	}
+
 }

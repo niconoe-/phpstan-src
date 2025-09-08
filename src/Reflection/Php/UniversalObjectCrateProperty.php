@@ -157,4 +157,9 @@ final class UniversalObjectCrateProperty implements ExtendedPropertyReflection
 		return [];
 	}
 
+	public function isDummy(): TrinaryLogic
+	{
+		return TrinaryLogic::createNo();
+	}
+
 }

@@ -156,4 +156,9 @@ final class ChangedTypePropertyReflection implements WrapperPropertyReflection
 		return $this->reflection->getAttributes();
 	}
 
+	public function isDummy(): TrinaryLogic
+	{
+		return $this->reflection->isDummy();
+	}
+
 }

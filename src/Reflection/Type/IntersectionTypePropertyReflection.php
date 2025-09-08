@@ -205,4 +205,11 @@ final class IntersectionTypePropertyReflection implements ExtendedPropertyReflec
 		return $this->properties[0]->getAttributes();
 	}
 
+	public function isDummy(): TrinaryLogic
+	{
+		// uses method typical for unions
+		// because for this to return yes(), all methods should be dummy
+		return TrinaryLogic::lazyExtremeIdentity($this->properties, static fn (ExtendedPropertyReflection $propertyReflection): TrinaryLogic => $propertyReflection->isAbstract());
+	}
+
 }

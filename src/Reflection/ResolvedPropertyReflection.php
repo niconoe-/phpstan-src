@@ -208,4 +208,9 @@ final class ResolvedPropertyReflection implements WrapperPropertyReflection
 		return $this->reflection->getAttributes();
 	}
 
+	public function isDummy(): TrinaryLogic
+	{
+		return $this->reflection->isDummy();
+	}
+
 }

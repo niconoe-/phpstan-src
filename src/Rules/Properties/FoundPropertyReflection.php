@@ -183,4 +183,9 @@ final class FoundPropertyReflection implements ExtendedPropertyReflection
 		return $this->originalPropertyReflection->getAttributes();
 	}
 
+	public function isDummy(): TrinaryLogic
+	{
+		return $this->originalPropertyReflection->isDummy();
+	}
+
 }

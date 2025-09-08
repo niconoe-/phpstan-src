@@ -156,4 +156,9 @@ final class DummyPropertyReflection implements ExtendedPropertyReflection
 		return [];
 	}
 
+	public function isDummy(): TrinaryLogic
+	{
+		return TrinaryLogic::createYes();
+	}
+
 }

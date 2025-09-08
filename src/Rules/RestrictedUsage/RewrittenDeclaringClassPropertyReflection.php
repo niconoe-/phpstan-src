@@ -153,4 +153,9 @@ final class RewrittenDeclaringClassPropertyReflection implements ExtendedPropert
 		return $this->propertyReflection->isInternal();
 	}
 
+	public function isDummy(): TrinaryLogic
+	{
+		return $this->propertyReflection->isDummy();
+	}
+
 }

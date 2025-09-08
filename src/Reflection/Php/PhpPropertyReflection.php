@@ -295,4 +295,9 @@ final class PhpPropertyReflection implements ExtendedPropertyReflection
 		return $this->attributes;
 	}
 
+	public function isDummy(): TrinaryLogic
+	{
+		return TrinaryLogic::createNo();
+	}
+
 }

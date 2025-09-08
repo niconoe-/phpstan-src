@@ -63,4 +63,12 @@ interface ExtendedPropertyReflection extends PropertyReflection
 	 */
 	public function getAttributes(): array;
 
+	/**
+	 * If property has been declared in code then this returns `no()`
+	 *
+	 * Returns `yes()` if the property represents possibly-defined property
+	 * in non-final classes, on mixed, on object etc.
+	 */
+	public function isDummy(): TrinaryLogic;
+
 }

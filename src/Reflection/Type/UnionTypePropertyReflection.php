@@ -205,4 +205,9 @@ final class UnionTypePropertyReflection implements ExtendedPropertyReflection
 		return $this->properties[0]->getAttributes();
 	}
 
+	public function isDummy(): TrinaryLogic
+	{
+		return TrinaryLogic::lazyExtremeIdentity($this->properties, static fn (ExtendedPropertyReflection $propertyReflection): TrinaryLogic => $propertyReflection->isAbstract());
+	}
+
 }

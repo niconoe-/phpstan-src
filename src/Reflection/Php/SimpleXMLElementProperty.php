@@ -167,4 +167,9 @@ final class SimpleXMLElementProperty implements ExtendedPropertyReflection
 		return [];
 	}
 
+	public function isDummy(): TrinaryLogic
+	{
+		return TrinaryLogic::createNo();
+	}
+
 }

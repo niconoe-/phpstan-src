@@ -13,6 +13,9 @@ use PHPStan\Reflection\ClassMemberAccessAnswerer;
 use PHPStan\Reflection\ExtendedMethodReflection;
 use PHPStan\Reflection\ExtendedPropertyReflection;
 use PHPStan\Reflection\InitializerExprTypeResolver;
+use PHPStan\Reflection\MissingConstantFromReflectionException;
+use PHPStan\Reflection\MissingMethodFromReflectionException;
+use PHPStan\Reflection\MissingPropertyFromReflectionException;
 use PHPStan\Reflection\TrivialParametersAcceptor;
 use PHPStan\Reflection\Type\IntersectionTypeUnresolvedMethodPrototypeReflection;
 use PHPStan\Reflection\Type\IntersectionTypeUnresolvedPropertyPrototypeReflection;
@@ -525,7 +528,7 @@ class IntersectionType implements CompoundType
 
 		$propertiesCount = count($propertyPrototypes);
 		if ($propertiesCount === 0) {
-			throw new ShouldNotHappenException();
+			throw new MissingPropertyFromReflectionException($this->describe(VerbosityLevel::typeOnly()), $propertyName);
 		}
 
 		if ($propertiesCount === 1) {
@@ -563,7 +566,7 @@ class IntersectionType implements CompoundType
 
 		$methodsCount = count($methodPrototypes);
 		if ($methodsCount === 0) {
-			throw new ShouldNotHappenException();
+			throw new MissingMethodFromReflectionException($this->describe(VerbosityLevel::typeOnly()), $methodName);
 		}
 
 		if ($methodsCount === 1) {
@@ -591,7 +594,7 @@ class IntersectionType implements CompoundType
 			}
 		}
 
-		throw new ShouldNotHappenException();
+		throw new MissingConstantFromReflectionException($this->describe(VerbosityLevel::typeOnly()), $constantName);
 	}
 
 	public function isIterable(): TrinaryLogic

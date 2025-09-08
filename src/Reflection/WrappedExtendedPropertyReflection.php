@@ -149,4 +149,9 @@ final class WrappedExtendedPropertyReflection implements ExtendedPropertyReflect
 		return [];
 	}
 
+	public function isDummy(): TrinaryLogic
+	{
+		return TrinaryLogic::createNo();
+	}
+
 }

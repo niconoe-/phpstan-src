@@ -1122,4 +1122,26 @@ class AccessPropertiesRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/bug-13271.php'], []);
 	}
 
+	#[RequiresPhp('>= 8.0')]
+	public function testBug11424(): void
+	{
+		$this->checkThisOnly = false;
+		$this->checkUnionTypes = true;
+		$this->checkDynamicProperties = true;
+
+		$tipText = 'Learn more: <fg=cyan>https://phpstan.org/blog/solving-phpstan-access-to-undefined-property</>';
+		$this->analyse([__DIR__ . '/data/bug-11424.php'], [
+			[
+				'Access to an undefined property object{hello?: string}::$hello.',
+				10,
+				$tipText,
+			],
+			[
+				'Access to an undefined property Bug11424\Bar|Bug11424\Foo::$i.',
+				31,
+				$tipText,
+			],
+		]);
+	}
+
 }
