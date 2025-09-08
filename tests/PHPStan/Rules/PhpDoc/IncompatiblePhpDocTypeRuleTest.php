@@ -461,4 +461,9 @@ class IncompatiblePhpDocTypeRuleTest extends RuleTestCase
 		]);
 	}
 
+	public function testBug13452(): void
+	{
+		$this->analyse([__DIR__ . '/data/bug-13452.php'], []);
+	}
+
 }
