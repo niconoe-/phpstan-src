@@ -129,9 +129,6 @@
 				"patches/DependencyChecker.patch",
 				"patches/Resolver.patch"
 			],
-			"react/http": [
-				"patches/Sender.patch"
-			],
 			"symfony/console": [
 				"patches/OutputFormatter.patch"
 			]
