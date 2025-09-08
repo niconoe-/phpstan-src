@@ -28,7 +28,7 @@ final class TypeSpecifierContext
 	private static function create(?int $value): self
 	{
 		self::$registry[$value] ??= new self($value);
-		return self::$registry[$value];
+		return self::$registry[$value ?? ''];
 	}
 
 	public static function createTrue(): self
