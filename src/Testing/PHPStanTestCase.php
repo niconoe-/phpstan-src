@@ -162,7 +162,7 @@ abstract class PHPStanTestCase extends TestCase
 				new PropertyReflectionFinder(),
 				self::getParser(),
 				$container->getByType(NodeScopeResolver::class),
-				new RicherScopeGetTypeHelper($initializerExprTypeResolver),
+				new RicherScopeGetTypeHelper($initializerExprTypeResolver, new PropertyReflectionFinder()),
 				$container->getByType(PhpVersion::class),
 				$container->getByType(AttributeReflectionFactory::class),
 				$container->getParameter('phpVersion'),

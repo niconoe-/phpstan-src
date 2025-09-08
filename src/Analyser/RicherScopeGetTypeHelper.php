@@ -7,6 +7,7 @@ use PhpParser\Node\Expr\BinaryOp\Identical;
 use PhpParser\Node\Expr\Variable;
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\InitializerExprTypeResolver;
+use PHPStan\Rules\Properties\PropertyReflectionFinder;
 use PHPStan\Type\BooleanType;
 use PHPStan\Type\Constant\ConstantBooleanType;
 use PHPStan\Type\TypeResult;
@@ -16,7 +17,10 @@ use function is_string;
 final class RicherScopeGetTypeHelper
 {
 
-	public function __construct(private InitializerExprTypeResolver $initializerExprTypeResolver)
+	public function __construct(
+		private InitializerExprTypeResolver $initializerExprTypeResolver,
+		private PropertyReflectionFinder $propertyReflectionFinder,
+	)
 	{
 	}
 
@@ -48,9 +52,13 @@ final class RicherScopeGetTypeHelper
 				|| $expr->left instanceof Node\Expr\StaticPropertyFetch
 			)
 			&& $rightType->isNull()->yes()
-			&& !$scope->hasPropertyNativeType($expr->left)
 		) {
-			return new TypeResult(new BooleanType(), []);
+			$foundPropertyReflections = $this->propertyReflectionFinder->findPropertyReflectionsFromNode($expr->left, $scope);
+			foreach ($foundPropertyReflections as $foundPropertyReflection) {
+				if ($foundPropertyReflection->isNative() && !$foundPropertyReflection->hasNativeType()) {
+					return new TypeResult(new BooleanType(), []);
+				}
+			}
 		}
 
 		if (
@@ -59,9 +67,13 @@ final class RicherScopeGetTypeHelper
 				|| $expr->right instanceof Node\Expr\StaticPropertyFetch
 			)
 			&& $leftType->isNull()->yes()
-			&& !$scope->hasPropertyNativeType($expr->right)
 		) {
-			return new TypeResult(new BooleanType(), []);
+			$foundPropertyReflections = $this->propertyReflectionFinder->findPropertyReflectionsFromNode($expr->right, $scope);
+			foreach ($foundPropertyReflections as $foundPropertyReflection) {
+				if ($foundPropertyReflection->isNative() && !$foundPropertyReflection->hasNativeType()) {
+					return new TypeResult(new BooleanType(), []);
+				}
+			}
 		}
 
 		return $this->initializerExprTypeResolver->resolveIdenticalType($leftType, $rightType);

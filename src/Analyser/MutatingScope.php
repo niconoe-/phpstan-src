@@ -2781,23 +2781,6 @@ final class MutatingScope implements Scope
 		);
 	}
 
-	/**
-	 * @param Node\Expr\PropertyFetch|Node\Expr\StaticPropertyFetch $propertyFetch
-	 */
-	public function hasPropertyNativeType($propertyFetch): bool
-	{
-		$propertyReflection = $this->propertyReflectionFinder->findPropertyReflectionFromNode($propertyFetch, $this);
-		if ($propertyReflection === null) {
-			return false;
-		}
-
-		if (!$propertyReflection->isNative()) {
-			return false;
-		}
-
-		return $propertyReflection->hasNativeType();
-	}
-
 	private function getTypeFromArrayDimFetch(
 		Expr\ArrayDimFetch $arrayDimFetch,
 		Type $offsetType,
