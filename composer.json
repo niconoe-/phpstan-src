@@ -102,6 +102,7 @@
 			],
 			"hoa/compiler": [
 				"patches/HoaException.patch",
+				"patches/HoaParser.patch",
 				"patches/Invocation.patch",
 				"patches/Rule.patch",
 				"patches/Lexer.patch",
