@@ -1165,4 +1165,29 @@ class AccessPropertiesRuleTest extends RuleTestCase
 		]);
 	}
 
+	public function testBug8668(): void
+	{
+		$this->checkThisOnly = false;
+		$this->checkUnionTypes = true;
+		$this->checkDynamicProperties = false;
+		$this->analyse([__DIR__ . '/data/bug-8668.php'], [
+			[
+				'Non-static access to static property Bug8668\Sample::$sample.',
+				9,
+			],
+			[
+				'Non-static access to static property Bug8668\Sample::$sample.',
+				10,
+			],
+			[
+				'Non-static access to static property Bug8668\Sample2::$sample.',
+				20,
+			],
+			[
+				'Non-static access to static property Bug8668\Sample2::$sample.',
+				21,
+			],
+		]);
+	}
+
 }
