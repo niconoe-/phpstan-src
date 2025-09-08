@@ -240,6 +240,13 @@ final class AccessPropertiesCheck
 			|| !$write
 			|| (!$propertyReflection->isPrivateSet() && !$propertyReflection->isProtectedSet())
 		) {
+			if (
+				$scope->isUndefinedExpressionAllowed($node)
+				&& !$propertyReflection->getDeclaringClass()->isFinal()
+			) {
+				return [];
+			}
+
 			return [
 				RuleErrorBuilder::message(sprintf(
 					'Access to %s property %s::$%s.',

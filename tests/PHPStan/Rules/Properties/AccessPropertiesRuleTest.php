@@ -1144,4 +1144,25 @@ class AccessPropertiesRuleTest extends RuleTestCase
 		]);
 	}
 
+	public function testBug12645(): void
+	{
+		$this->checkThisOnly = false;
+		$this->checkUnionTypes = true;
+		$this->checkDynamicProperties = false;
+		$this->analyse([__DIR__ . '/data/bug-12645.php'], [
+			[
+				'Access to private property Bug12645\Foo::$id.',
+				18,
+			],
+			[
+				'Access to private property Bug12645\Foo::$id.',
+				19,
+			],
+			[
+				'Access to private property Bug12645\Foo::$id.',
+				24,
+			],
+		]);
+	}
+
 }
