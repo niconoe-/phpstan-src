@@ -464,7 +464,7 @@ final class FunctionDefinitionCheck
 		}
 
 		if ($this->phpVersion->supportsPureIntersectionTypes() && $functionNode->getReturnType() !== null) {
-			$nativeReturnType = ParserNodeTypeToPHPStanType::resolve($functionNode->getReturnType(), null);
+			$nativeReturnType = ParserNodeTypeToPHPStanType::resolve($functionNode->getReturnType(), $scope->isInClass() ? $scope->getClassReflection() : null);
 			if ($this->unresolvableTypeHelper->containsUnresolvableType($nativeReturnType)) {
 				$errors[] = RuleErrorBuilder::message($unresolvableReturnTypeMessage)
 					->nonIgnorable()
