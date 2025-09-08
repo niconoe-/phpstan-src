@@ -19,6 +19,7 @@ use PHPStan\Reflection\InitializerExprContext;
 use PHPStan\Reflection\InitializerExprTypeResolver;
 use PHPStan\Reflection\ParameterReflection;
 use PHPStan\Reflection\PassedByReference;
+use PHPStan\Reflection\ReflectionProvider\ReflectionProviderProvider;
 use PHPStan\ShouldNotHappenException;
 use ReflectionFunction;
 use function array_map;
@@ -36,6 +37,7 @@ final class ClosureTypeFactory
 		private InitializerExprTypeResolver $initializerExprTypeResolver,
 		private ReflectionSourceStubber $reflectionSourceStubber,
 		private Reflector $reflector,
+		private ReflectionProviderProvider $reflectionProviderProvider,
 		#[AutowiredParameter(ref: '@currentPhpVersionPhpParser')]
 		private Parser $parser,
 	)
@@ -47,7 +49,8 @@ final class ClosureTypeFactory
 	 */
 	public function fromClosureObject(Closure $closure): ClosureType
 	{
-		$stubData = $this->reflectionSourceStubber->generateFunctionStubFromReflection(new ReflectionFunction($closure));
+		$closureReflectionFunction = new ReflectionFunction($closure);
+		$stubData = $this->reflectionSourceStubber->generateFunctionStubFromReflection($closureReflectionFunction);
 		if ($stubData === null) {
 			throw new ShouldNotHappenException('Closure reflection not found.');
 		}
@@ -117,7 +120,16 @@ final class ClosureTypeFactory
 
 		}, $betterReflectionFunction->getParameters());
 
-		return new ClosureType($parameters, TypehintHelper::decideTypeFromReflection(ReflectionType::fromTypeOrNull($betterReflectionFunction->getReturnType())), $betterReflectionFunction->isVariadic());
+		$selfClass = null;
+		if ($closureReflectionFunction->getClosureCalledClass() !== null) {
+			$potentialSelfClassName = $closureReflectionFunction->getClosureCalledClass()->getName();
+			$reflectionProvider = $this->reflectionProviderProvider->getReflectionProvider();
+			if ($reflectionProvider->hasClass($potentialSelfClassName)) {
+				$selfClass = $reflectionProvider->getClass($potentialSelfClassName);
+			}
+		}
+
+		return new ClosureType($parameters, TypehintHelper::decideTypeFromReflection(ReflectionType::fromTypeOrNull($betterReflectionFunction->getReturnType()), null, $selfClass), $betterReflectionFunction->isVariadic());
 	}
 
 }
