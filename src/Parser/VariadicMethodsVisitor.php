@@ -30,7 +30,8 @@ final class VariadicMethodsVisitor extends NodeVisitorAbstract
 	/** @var array<string> */
 	private array $classStack = [];
 
-	private ?string $inMethod = null;
+	/** @var array<string> */
+	private array $inMethodStack = [];
 
 	/** @var array<string, array<string, bool>> */
 	public static array $cache = [];
@@ -45,7 +46,7 @@ final class VariadicMethodsVisitor extends NodeVisitorAbstract
 		$this->variadicMethods = [];
 		$this->inNamespace = null;
 		$this->classStack = [];
-		$this->inMethod = null;
+		$this->inMethodStack = [];
 
 		return null;
 	}
@@ -70,11 +71,13 @@ final class VariadicMethodsVisitor extends NodeVisitorAbstract
 		}
 
 		if ($node instanceof ClassMethod) {
-			$this->inMethod = $node->name->name;
+			$this->inMethodStack[] = $node->name->name;
 		}
 
+		$lastMethod = $this->inMethodStack[count($this->inMethodStack) - 1] ?? null;
+
 		if (
-			$this->inMethod !== null
+			$lastMethod !== null
 			&& $node instanceof Node\Expr\FuncCall
 			&& $node->name instanceof Name
 			&& in_array((string) $node->name, ParametersAcceptor::VARIADIC_FUNCTIONS, true)
@@ -83,9 +86,9 @@ final class VariadicMethodsVisitor extends NodeVisitorAbstract
 			if ($lastClass !== null) {
 				if (
 					!array_key_exists($lastClass, $this->variadicMethods)
-					|| !array_key_exists($this->inMethod, $this->variadicMethods[$lastClass])
+					|| !array_key_exists($lastMethod, $this->variadicMethods[$lastClass])
 				) {
-					$this->variadicMethods[$lastClass][$this->inMethod] = true;
+					$this->variadicMethods[$lastClass][$lastMethod] = true;
 				}
 			}
 
@@ -99,10 +102,11 @@ final class VariadicMethodsVisitor extends NodeVisitorAbstract
 	{
 		if ($node instanceof ClassMethod) {
 			$lastClass = $this->classStack[count($this->classStack) - 1] ?? null;
-			if ($lastClass !== null) {
-				$this->variadicMethods[$lastClass][$this->inMethod] ??= false;
+			$lastMethod = $this->inMethodStack[count($this->inMethodStack) - 1] ?? null;
+			if ($lastClass !== null && $lastMethod !== null) {
+				$this->variadicMethods[$lastClass][$lastMethod] ??= false;
 			}
-			$this->inMethod = null;
+			array_pop($this->inMethodStack);
 		}
 
 		if ($node instanceof Node\Stmt\ClassLike) {
