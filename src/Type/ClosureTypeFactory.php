@@ -24,6 +24,7 @@ use PHPStan\ShouldNotHappenException;
 use ReflectionFunction;
 use function array_map;
 use function count;
+use function method_exists;
 use function str_replace;
 
 /**
@@ -121,8 +122,14 @@ final class ClosureTypeFactory
 		}, $betterReflectionFunction->getParameters());
 
 		$selfClass = null;
-		if ($closureReflectionFunction->getClosureCalledClass() !== null) {
+		if (method_exists($closureReflectionFunction, 'getClosureCalledClass') && $closureReflectionFunction->getClosureCalledClass() !== null) {
 			$potentialSelfClassName = $closureReflectionFunction->getClosureCalledClass()->getName();
+			$reflectionProvider = $this->reflectionProviderProvider->getReflectionProvider();
+			if ($reflectionProvider->hasClass($potentialSelfClassName)) {
+				$selfClass = $reflectionProvider->getClass($potentialSelfClassName);
+			}
+		} elseif ($closureReflectionFunction->getClosureScopeClass() !== null) {
+			$potentialSelfClassName = $closureReflectionFunction->getClosureScopeClass()->getName();
 			$reflectionProvider = $this->reflectionProviderProvider->getReflectionProvider();
 			if ($reflectionProvider->hasClass($potentialSelfClassName)) {
 				$selfClass = $reflectionProvider->getClass($potentialSelfClassName);

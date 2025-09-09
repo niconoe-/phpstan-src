@@ -1,26 +1,37 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Strict comparison using \\=\\=\\= between list<callable\\(string\\): void> and false will always evaluate to false\\.$#"
+			message: '#^Strict comparison using \=\=\= between list\<callable\(string\)\: void\> and false will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
 			count: 1
 			path: ../src/Reflection/BetterReflection/SourceLocator/AutoloadSourceLocator.php
 
 		-
-			message: "#^Strict comparison using \\=\\=\\= between list\\<non\\-falsy\\-string\\> and false will always evaluate to false\\.$#"
+			message: '#^Call to function method_exists\(\) with ReflectionFunction and ''getClosureCalledCla…'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: ../src/Type/ClosureTypeFactory.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between list\<non\-falsy\-string\> and false will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
 			count: 1
 			path: ../src/Type/Php/MbFunctionsReturnTypeExtension.php
 
 		-
-			message: "#^Strict comparison using \\=\\=\\= between int<0, max> and false will always evaluate to false\\.$#"
+			message: '#^Strict comparison using \=\=\= between int\<0, max\> and false will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
 			count: 1
 			path: ../src/Type/Php/MbStrlenFunctionReturnTypeExtension.php
 
 		-
-			message: "#^Strict comparison using \\=\\=\\= between list\\<non\\-falsy\\-string\\> and false will always evaluate to false\\.$#"
+			message: '#^Strict comparison using \=\=\= between list\<non\-falsy\-string\> and false will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
 			count: 1
 			path: ../src/Type/Php/MbStrlenFunctionReturnTypeExtension.php
 
 		-
-			message: "#^Strict comparison using \\=\\=\\= between list\\<non\\-falsy\\-string\\> and false will always evaluate to false\\.$#"
+			message: '#^Strict comparison using \=\=\= between list\<non\-falsy\-string\> and false will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
 			count: 1
 			path: ../src/Type/Php/StrSplitFunctionReturnTypeExtension.php
