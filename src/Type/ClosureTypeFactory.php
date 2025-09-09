@@ -129,7 +129,7 @@ final class ClosureTypeFactory
 			}
 		}
 
-		return new ClosureType($parameters, TypehintHelper::decideTypeFromReflection(ReflectionType::fromTypeOrNull($betterReflectionFunction->getReturnType()), null, $selfClass), $betterReflectionFunction->isVariadic());
+		return new ClosureType($parameters, TypehintHelper::decideTypeFromReflection(ReflectionType::fromTypeOrNull($betterReflectionFunction->getReturnType()), selfClass: $selfClass), $betterReflectionFunction->isVariadic());
 	}
 
 }
