@@ -7,6 +7,8 @@ use PHPStan\Rules\RuleLevelHelper;
 use PHPStan\Testing\RuleTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresPhp;
+use function sprintf;
+use const PHP_VERSION_ID;
 
 /**
  * @extends RuleTestCase<ImpossibleInstanceOfRule>
@@ -561,7 +563,7 @@ class ImpossibleInstanceOfRuleTest extends RuleTestCase
 		$this->treatPhpDocTypesAsCertain = false;
 		$this->analyse([__DIR__ . '/data/bug-13469.php'], [
 			[
-				'Instanceof between Bug13469\Foo and Stringable will always evaluate to true.',
+				sprintf('Instanceof between Bug13469\Foo and Stringable will always evaluate to %s.', PHP_VERSION_ID >= 80000 ? 'true' : 'false'),
 				23,
 			],
 		]);
