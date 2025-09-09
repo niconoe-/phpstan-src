@@ -6,6 +6,9 @@ use Closure;
 use PHPStan\Testing\PHPStanTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 
+/**
+ * @phpstan-consistent-constructor
+ */
 class ClosureTypeFactoryTest extends PHPStanTestCase
 {
 
@@ -17,6 +20,14 @@ class ClosureTypeFactoryTest extends PHPStanTestCase
 			[static function () { // @phpcs:ignore
 			}, 'mixed'],
 			[static fn (): int => 5, 'int'],
+			[
+				static fn (): self => new self('name'),
+				self::class,
+			],
+			[
+				static fn (): static => new static('name'),
+				'static(' . self::class . ')',
+			],
 		];
 	}
 
