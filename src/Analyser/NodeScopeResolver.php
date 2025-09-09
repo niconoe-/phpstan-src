@@ -1282,6 +1282,22 @@ final class NodeScopeResolver
 		} elseif ($stmt instanceof While_) {
 			$condResult = $this->processExprNode($stmt, $stmt->cond, $scope, static function (): void {
 			}, ExpressionContext::createDeep());
+			$beforeCondBooleanType = ($this->treatPhpDocTypesAsCertain ? $scope->getType($stmt->cond) : $scope->getNativeType($stmt->cond))->toBoolean();
+			$condScope = $condResult->getFalseyScope();
+			if (!$context->isTopLevel() && $beforeCondBooleanType->isFalse()->yes()) {
+				if (!$this->polluteScopeWithLoopInitialAssignments) {
+					$scope = $condScope->mergeWith($scope);
+				}
+
+				return new StatementResult(
+					$scope,
+					$condResult->hasYield(),
+					false,
+					[],
+					$condResult->getThrowPoints(),
+					$condResult->getImpurePoints(),
+				);
+			}
 			$bodyScope = $condResult->getTruthyScope();
 
 			if ($context->isTopLevel()) {
@@ -1328,7 +1344,6 @@ final class NodeScopeResolver
 				$finalScope = $finalScope->mergeWith($breakExitPoint->getScope());
 			}
 
-			$beforeCondBooleanType = ($this->treatPhpDocTypesAsCertain ? $scope->getType($stmt->cond) : $scope->getNativeType($stmt->cond))->toBoolean();
 			$isIterableAtLeastOnce = $beforeCondBooleanType->isTrue()->yes();
 			$nodeCallback(new BreaklessWhileLoopNode($stmt, $finalScopeResult->getExitPoints()), $bodyScopeMaybeRan);
 
@@ -1339,7 +1354,6 @@ final class NodeScopeResolver
 			} else {
 				$isAlwaysTerminating = false;
 			}
-			$condScope = $condResult->getFalseyScope();
 			if (!$isIterableAtLeastOnce) {
 				if (!$this->polluteScopeWithLoopInitialAssignments) {
 					$condScope = $condScope->mergeWith($scope);
