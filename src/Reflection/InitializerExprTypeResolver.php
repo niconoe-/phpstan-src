@@ -2008,6 +2008,9 @@ final class InitializerExprTypeResolver
 
 			$constantClassReflection = $this->getReflectionProvider()->getClass($referencedClass);
 			if (!$constantClassReflection->hasConstant($constantName)) {
+				if ($constantClassReflection->getName() === 'Attribute' && $constantName === 'TARGET_CONSTANT') {
+					return new ConstantIntegerType(1 << 16);
+				}
 				continue;
 			}
 

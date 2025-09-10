@@ -62,4 +62,9 @@ class MethodAttributesRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/bug-5898.php'], []);
 	}
 
+	public function testDeprecatedAttribute(): void
+	{
+		$this->analyse([__DIR__ . '/data/deprecated-attribute.php'], []);
+	}
+
 }
