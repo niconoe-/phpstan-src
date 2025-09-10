@@ -569,6 +569,10 @@ class InstantiationRuleTest extends RuleTestCase
 				'Parameter #1 $i of class InstantiationNewStaticConsistentConstructor\Foo constructor expects int, string given.',
 				18,
 			],
+			[
+				'Parameter #1 $value of class InstantiationNewStaticConsistentConstructor\ChildClass3 constructor expects string, int given.',
+				38,
+			],
 		]);
 	}
 
