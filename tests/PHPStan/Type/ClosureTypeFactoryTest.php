@@ -5,6 +5,7 @@ namespace PHPStan\Type;
 use Closure;
 use PHPStan\Testing\PHPStanTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
+use const PHP_VERSION_ID;
 
 /**
  * @phpstan-consistent-constructor
@@ -12,22 +13,25 @@ use PHPUnit\Framework\Attributes\DataProvider;
 class ClosureTypeFactoryTest extends PHPStanTestCase
 {
 
-	public static function dataFromClosureObjectReturnType(): array
+	public static function dataFromClosureObjectReturnType(): iterable
 	{
-		return [
-			[static function (): void {
-			}, 'void'],
-			[static function () { // @phpcs:ignore
-			}, 'mixed'],
-			[static fn (): int => 5, 'int'],
-			[
-				static fn (): self => new self('name'),
-				self::class,
-			],
-			[
-				static fn (): static => new static('name'),
-				'static(' . self::class . ')',
-			],
+		yield [static function (): void {
+		}, 'void'];
+		yield [static function () { // @phpcs:ignore
+		}, 'mixed'];
+		yield [static fn (): int => 5, 'int'];
+		yield [
+			static fn (): self => new self('name'),
+			self::class,
+		];
+
+		if (PHP_VERSION_ID < 80000) {
+			return;
+		}
+
+		yield [
+			static fn (): static => new static('name'),
+			'static(' . self::class . ')',
 		];
 	}
 
