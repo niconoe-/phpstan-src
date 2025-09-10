@@ -11,6 +11,7 @@ $polyfills = [
 	'symfony/polyfill-mbstring',
 	'symfony/polyfill-php80',
 	'symfony/polyfill-php81',
+	'symfony/polyfill-php83',
 ];
 
 $pinnedToSupportPhp72 = [
