@@ -74,11 +74,11 @@ final class NewStaticRule implements Rule
 			}
 		}
 
-		if ($constructor instanceof PhpMethodReflection) {
-			if ($constructor->isFinal()->yes()) {
-				return [];
-			}
+		if ($constructor->isFinal()->yes()) {
+			return [];
+		}
 
+		if ($constructor instanceof PhpMethodReflection) {
 			$prototype = $constructor->getPrototype();
 			if ($prototype->isAbstract()) {
 				return [];
