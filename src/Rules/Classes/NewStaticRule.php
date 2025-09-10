@@ -56,6 +56,10 @@ final class NewStaticRule implements Rule
 				->build(),
 		];
 		if (!$classReflection->hasConstructor()) {
+			if ($classReflection->hasConsistentConstructor()) {
+				return [];
+			}
+
 			return $messages;
 		}
 
