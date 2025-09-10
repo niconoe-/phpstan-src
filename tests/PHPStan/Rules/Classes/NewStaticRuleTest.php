@@ -17,6 +17,7 @@ class NewStaticRuleTest extends RuleTestCase
 	{
 		return new NewStaticRule(
 			new PhpVersion(PHP_VERSION_ID),
+			new ConsistentConstructorHelper(),
 		);
 	}
 

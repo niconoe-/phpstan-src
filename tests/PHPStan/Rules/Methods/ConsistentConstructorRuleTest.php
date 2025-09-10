@@ -2,6 +2,7 @@
 
 namespace PHPStan\Rules\Methods;
 
+use PHPStan\Rules\Classes\ConsistentConstructorHelper;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
 use function sprintf;
@@ -13,6 +14,7 @@ class ConsistentConstructorRuleTest extends RuleTestCase
 	protected function getRule(): Rule
 	{
 		return new ConsistentConstructorRule(
+			new ConsistentConstructorHelper(),
 			self::getContainer()->getByType(MethodParameterComparisonHelper::class),
 			self::getContainer()->getByType(MethodVisibilityComparisonHelper::class),
 		);

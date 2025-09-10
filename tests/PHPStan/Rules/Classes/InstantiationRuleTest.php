@@ -33,6 +33,7 @@ class InstantiationRuleTest extends RuleTestCase
 				$reflectionProvider,
 				self::getContainer(),
 			),
+			new ConsistentConstructorHelper(),
 			true,
 		);
 	}

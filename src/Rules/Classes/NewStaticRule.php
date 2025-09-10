@@ -6,9 +6,6 @@ use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\DependencyInjection\RegisteredRule;
 use PHPStan\Php\PhpVersion;
-use PHPStan\Reflection\ClassReflection;
-use PHPStan\Reflection\Dummy\DummyConstructorReflection;
-use PHPStan\Reflection\ExtendedMethodReflection;
 use PHPStan\Reflection\Php\PhpMethodReflection;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
@@ -24,6 +21,7 @@ final class NewStaticRule implements Rule
 
 	public function __construct(
 		private PhpVersion $phpVersion,
+		private ConsistentConstructorHelper $consistentConstructorHelper,
 	)
 	{
 	}
@@ -58,7 +56,8 @@ final class NewStaticRule implements Rule
 				->tip('See: https://phpstan.org/blog/solving-phpstan-error-unsafe-usage-of-new-static')
 				->build(),
 		];
-		if ($classReflection->hasConsistentConstructor()) {
+		$consistentConstructor = $this->consistentConstructorHelper->findConsistentConstructor($classReflection);
+		if ($consistentConstructor !== null) {
 			return [];
 		}
 		if (!$classReflection->hasConstructor()) {
@@ -78,14 +77,6 @@ final class NewStaticRule implements Rule
 
 		if ($constructor->isFinal()->yes()) {
 			return [];
-		}
-
-		$parent = $classReflection->getParentClass();
-		if ($parent !== null) {
-			$parentConstructor = $this->findConsistentParentConstructor($parent);
-			if ($parentConstructor !== null) {
-				return [];
-			}
 		}
 
 		if ($constructor instanceof PhpMethodReflection) {
@@ -109,24 +100,6 @@ final class NewStaticRule implements Rule
 		}
 
 		return $messages;
-	}
-
-	private function findConsistentParentConstructor(ClassReflection $classReflection): ?ExtendedMethodReflection
-	{
-		if ($classReflection->hasConsistentConstructor()) {
-			if ($classReflection->hasConstructor()) {
-				return $classReflection->getConstructor();
-			}
-
-			return new DummyConstructorReflection($classReflection);
-		}
-
-		$parent = $classReflection->getParentClass();
-		if ($parent === null) {
-			return null;
-		}
-
-		return $this->findConsistentParentConstructor($parent);
 	}
 
 }

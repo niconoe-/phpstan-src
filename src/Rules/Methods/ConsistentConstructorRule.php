@@ -6,9 +6,7 @@ use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\DependencyInjection\RegisteredRule;
 use PHPStan\Node\InClassMethodNode;
-use PHPStan\Reflection\ClassReflection;
-use PHPStan\Reflection\Dummy\DummyConstructorReflection;
-use PHPStan\Reflection\ExtendedMethodReflection;
+use PHPStan\Rules\Classes\ConsistentConstructorHelper;
 use PHPStan\Rules\Rule;
 use function array_merge;
 use function strtolower;
@@ -19,6 +17,7 @@ final class ConsistentConstructorRule implements Rule
 {
 
 	public function __construct(
+		private ConsistentConstructorHelper $consistentConstructorHelper,
 		private MethodParameterComparisonHelper $methodParameterComparisonHelper,
 		private MethodVisibilityComparisonHelper $methodVisibilityComparisonHelper,
 	)
@@ -42,7 +41,7 @@ final class ConsistentConstructorRule implements Rule
 			return [];
 		}
 
-		$parentConstructor = $this->findConsistentParentConstructor($parent);
+		$parentConstructor = $this->consistentConstructorHelper->findConsistentConstructor($parent);
 		if ($parentConstructor === null) {
 			return [];
 		}
@@ -51,24 +50,6 @@ final class ConsistentConstructorRule implements Rule
 			$this->methodParameterComparisonHelper->compare($parentConstructor, $parentConstructor->getDeclaringClass(), $method, true),
 			$this->methodVisibilityComparisonHelper->compare($parentConstructor, $parentConstructor->getDeclaringClass(), $method),
 		);
-	}
-
-	private function findConsistentParentConstructor(ClassReflection $classReflection): ?ExtendedMethodReflection
-	{
-		if ($classReflection->hasConsistentConstructor()) {
-			if ($classReflection->hasConstructor()) {
-				return $classReflection->getConstructor();
-			}
-
-			return new DummyConstructorReflection($classReflection);
-		}
-
-		$parent = $classReflection->getParentClass();
-		if ($parent === null) {
-			return null;
-		}
-
-		return $this->findConsistentParentConstructor($parent);
 	}
 
 }

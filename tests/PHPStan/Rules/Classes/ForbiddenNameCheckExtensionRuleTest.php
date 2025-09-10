@@ -33,6 +33,7 @@ class ForbiddenNameCheckExtensionRuleTest extends RuleTestCase
 				$reflectionProvider,
 				self::getContainer(),
 			),
+			new ConsistentConstructorHelper(),
 			true,
 		);
 	}

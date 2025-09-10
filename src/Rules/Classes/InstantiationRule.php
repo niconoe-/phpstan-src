@@ -10,8 +10,6 @@ use PHPStan\DependencyInjection\Container;
 use PHPStan\DependencyInjection\RegisteredRule;
 use PHPStan\Internal\SprintfHelper;
 use PHPStan\Reflection\ClassReflection;
-use PHPStan\Reflection\Dummy\DummyConstructorReflection;
-use PHPStan\Reflection\ExtendedMethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Reflection\Php\PhpMethodReflection;
 use PHPStan\Reflection\ReflectionProvider;
@@ -45,6 +43,7 @@ final class InstantiationRule implements Rule
 		private ReflectionProvider $reflectionProvider,
 		private FunctionCallParametersCheck $check,
 		private ClassNameCheck $classCheck,
+		private ConsistentConstructorHelper $consistentConstructorHelper,
 		#[AutowiredParameter(ref: '%tips.discoveringSymbols%')]
 		private bool $discoveringSymbolsTip,
 	)
@@ -96,7 +95,7 @@ final class InstantiationRule implements Rule
 					&& $constructor instanceof PhpMethodReflection
 					&& !$constructor->isFinal()->yes()
 					&& !$constructor->getPrototype()->isAbstract()
-					&& $this->findConsistentParentConstructor($classReflection) === null
+					&& $this->consistentConstructorHelper->findConsistentConstructor($classReflection) === null
 				) {
 					return [];
 				}
@@ -310,24 +309,6 @@ final class InstantiationRule implements Rule
 				$type->getObjectClassNames(),
 			),
 		);
-	}
-
-	private function findConsistentParentConstructor(ClassReflection $classReflection): ?ExtendedMethodReflection
-	{
-		if ($classReflection->hasConsistentConstructor()) {
-			if ($classReflection->hasConstructor()) {
-				return $classReflection->getConstructor();
-			}
-
-			return new DummyConstructorReflection($classReflection);
-		}
-
-		$parent = $classReflection->getParentClass();
-		if ($parent === null) {
-			return null;
-		}
-
-		return $this->findConsistentParentConstructor($parent);
 	}
 
 }
