@@ -80,3 +80,28 @@ class FakeConnection extends TestConnection
 	}
 }
 
+class ParentOne
+{
+	public function __construct()
+	{
+
+	}
+}
+
+/**
+ * @phpstan-consistent-constructor
+ */
+class ChildOne extends ParentOne
+{
+
+}
+
+class ChildTwo extends ChildOne
+{
+
+	public function __construct(int $i)
+	{
+
+	}
+
+}

@@ -37,6 +37,10 @@ class ConsistentConstructorRuleTest extends RuleTestCase
 				'Method ConsistentConstructor\FakeConnection::__construct() overrides method ConsistentConstructor\Connection::__construct() but misses parameter #1 $i.',
 				78,
 			],
+			[
+				'Parameter #1 $i of method ConsistentConstructor\ChildTwo::__construct() is not optional.',
+				102,
+			],
 		]);
 	}
 
