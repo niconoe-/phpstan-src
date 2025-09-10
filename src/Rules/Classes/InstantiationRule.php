@@ -94,6 +94,7 @@ final class InstantiationRule implements Rule
 					&& $constructor instanceof PhpMethodReflection
 					&& !$constructor->isFinal()->yes()
 					&& !$constructor->getPrototype()->isAbstract()
+					&& !$constructor->getDeclaringClass()->hasConsistentConstructor()
 				) {
 					return [];
 				}

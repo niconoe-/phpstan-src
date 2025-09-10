@@ -562,4 +562,14 @@ class InstantiationRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/named-arguments-phpversion.php'], []);
 	}
 
+	public function testNewStaticWithConsistentConstructor(): void
+	{
+		$this->analyse([__DIR__ . '/data/instantiation-new-static-consistent-constructor.php'], [
+			[
+				'Parameter #1 $i of class InstantiationNewStaticConsistentConstructor\Foo constructor expects int, string given.',
+				18,
+			],
+		]);
+	}
+
 }
