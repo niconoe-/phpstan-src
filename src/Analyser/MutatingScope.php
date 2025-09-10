@@ -157,6 +157,7 @@ use function implode;
 use function in_array;
 use function is_array;
 use function is_bool;
+use function is_numeric;
 use function is_string;
 use function ltrim;
 use function md5;
@@ -1768,7 +1769,7 @@ final class MutatingScope implements Scope
 					if ($node instanceof Expr\PreInc) {
 						if ($varValue === '') {
 							$varValue = '1';
-						} elseif (is_string($varValue)) {
+						} elseif (is_string($varValue) && !is_numeric($varValue)) {
 							try {
 								$varValue = str_increment($varValue);
 							} catch (ValueError) {
@@ -1780,13 +1781,13 @@ final class MutatingScope implements Scope
 					} else {
 						if ($varValue === '') {
 							$varValue = -1;
-						} elseif (is_string($varValue)) {
+						} elseif (is_string($varValue) && !is_numeric($varValue)) {
 							try {
 								$varValue = str_decrement($varValue);
 							} catch (ValueError) {
 								return new NeverType();
 							}
-						} elseif (!is_bool($varValue)) {
+						} elseif (is_numeric($varValue)) {
 							--$varValue;
 						}
 					}

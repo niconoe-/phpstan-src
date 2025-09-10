@@ -19,5 +19,5 @@ function doFoo2() {
 function doFooBar() {
 	$s = 'abc';
 	--$s;
-	assertType("'abc'", $s);
+	assertType("'abb'", $s);
 }

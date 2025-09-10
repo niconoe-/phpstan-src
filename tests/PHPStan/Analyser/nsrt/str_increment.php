@@ -12,11 +12,11 @@ use function PHPStan\Testing\assertType;
 function foo(string $s)
 {
 	assertType('non-falsy-string', str_increment($s));
-	assertType('*ERROR*', str_increment(''));
-	assertType('*ERROR*', str_increment('='));
-	assertType('*ERROR*', str_increment('0.0'));
-	assertType('*ERROR*', str_increment('1.0'));
-	assertType('*ERROR*', str_increment('字'));
+	assertType('*NEVER*', str_increment(''));
+	assertType('*NEVER*', str_increment('='));
+	assertType('*NEVER*', str_increment('0.0'));
+	assertType('*NEVER*', str_increment('1.0'));
+	assertType('*NEVER*', str_increment('字'));
 	assertType("'1'", str_increment('0'));
 	assertType("'2'", str_increment('1'));
 	assertType("'b'", str_increment('a'));

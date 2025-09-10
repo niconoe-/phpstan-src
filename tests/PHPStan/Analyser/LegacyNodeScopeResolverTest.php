@@ -2992,7 +2992,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 				'++$fooString',
 			],
 			[
-				'\'foo\'',
+				'\'fon\'',
 				'--$fooString',
 			],
 			[
@@ -3000,7 +3000,7 @@ class LegacyNodeScopeResolverTest extends TypeInferenceTestCase
 				'$incrementedFooString',
 			],
 			[
-				'\'foo\'',
+				'\'fon\'',
 				'$decrementedFooString',
 			],
 			[

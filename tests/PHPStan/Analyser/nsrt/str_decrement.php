@@ -12,14 +12,14 @@ use function PHPStan\Testing\assertType;
 function foo(string $s): void
 {
 	assertType('non-empty-string', str_decrement($s));
-	assertType('*ERROR*', str_decrement(''));
-	assertType('*ERROR*', str_decrement('0'));
-	assertType('*ERROR*', str_decrement('0.0'));
-	assertType('*ERROR*', str_decrement('1.0'));
-	assertType('*ERROR*', str_decrement('a'));
-	assertType('*ERROR*', str_decrement('A'));
-	assertType('*ERROR*', str_decrement('='));
-	assertType('*ERROR*', str_decrement('字'));
+	assertType('*NEVER*', str_decrement(''));
+	assertType('*NEVER*', str_decrement('0'));
+	assertType('*NEVER*', str_decrement('0.0'));
+	assertType('*NEVER*', str_decrement('1.0'));
+	assertType('*NEVER*', str_decrement('a'));
+	assertType('*NEVER*', str_decrement('A'));
+	assertType('*NEVER*', str_decrement('='));
+	assertType('*NEVER*', str_decrement('字'));
 	assertType("'0'", str_decrement('1'));
 	assertType("'8'", str_decrement('9'));
 	assertType("'9'", str_decrement('10'));
