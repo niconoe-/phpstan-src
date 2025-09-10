@@ -67,4 +67,9 @@ class NewStaticRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/bug-11316.php'], []);
 	}
 
+	public function testBug10722(): void
+	{
+		$this->analyse([__DIR__ . '/data/bug-10722.php'], []);
+	}
+
 }
