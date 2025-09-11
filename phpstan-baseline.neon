@@ -1,1984 +1,1984 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantStringType is error\-prone and deprecated\. Use Type\:\:getConstantStrings\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantStringType is error-prone and deprecated. Use Type::getConstantStrings() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: build/PHPStan/Build/ContainerDynamicReturnTypeExtension.php
 
 		-
-			message: '#^Method PHPStan\\Analyser\\AnalyserResultFinalizer\:\:finalize\(\) throws checked exception Throwable but it''s missing from the PHPDoc @throws tag\.$#'
+			rawMessage: 'Method PHPStan\Analyser\AnalyserResultFinalizer::finalize() throws checked exception Throwable but it''s missing from the PHPDoc @throws tag.'
 			identifier: missingType.checkedException
 			count: 1
 			path: src/Analyser/AnalyserResultFinalizer.php
 
 		-
-			message: '#^Cannot assign offset ''realCount'' to array\<mixed\>\|string\.$#'
+			rawMessage: Cannot assign offset 'realCount' to array<mixed>|string.
 			identifier: offsetAssign.dimType
 			count: 1
 			path: src/Analyser/Ignore/IgnoredErrorHelperResult.php
 
 		-
-			message: '#^Casting to string something that''s already string\.$#'
+			rawMessage: Casting to string something that's already string.
 			identifier: cast.useless
 			count: 3
 			path: src/Analyser/MutatingScope.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantBooleanType is error\-prone and deprecated\. Use Type\:\:isTrue\(\) or Type\:\:isFalse\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantBooleanType is error-prone and deprecated. Use Type::isTrue() or Type::isFalse() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 4
 			path: src/Analyser/MutatingScope.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantStringType is error\-prone and deprecated\. Use Type\:\:getConstantStrings\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantStringType is error-prone and deprecated. Use Type::getConstantStrings() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 3
 			path: src/Analyser/MutatingScope.php
 
 		-
-			message: '#^Only numeric types are allowed in pre\-increment, float\|int\|string\|null given\.$#'
+			rawMessage: 'Only numeric types are allowed in pre-increment, float|int|string|null given.'
 			identifier: preInc.nonNumeric
 			count: 1
 			path: src/Analyser/MutatingScope.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantStringType is error\-prone and deprecated\. Use Type\:\:getConstantStrings\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantStringType is error-prone and deprecated. Use Type::getConstantStrings() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Analyser/NodeScopeResolver.php
 
 		-
-			message: '#^Parameter \#2 \$node of method PHPStan\\BetterReflection\\SourceLocator\\Ast\\Strategy\\NodeToReflection\:\:__invoke\(\) expects PhpParser\\Node\\Expr\\ArrowFunction\|PhpParser\\Node\\Expr\\Closure\|PhpParser\\Node\\Expr\\FuncCall\|PhpParser\\Node\\Stmt\\Class_\|PhpParser\\Node\\Stmt\\Const_\|PhpParser\\Node\\Stmt\\Enum_\|PhpParser\\Node\\Stmt\\Function_\|PhpParser\\Node\\Stmt\\Interface_\|PhpParser\\Node\\Stmt\\Trait_, PhpParser\\Node\\Stmt\\ClassLike given\.$#'
+			rawMessage: 'Parameter #2 $node of method PHPStan\BetterReflection\SourceLocator\Ast\Strategy\NodeToReflection::__invoke() expects PhpParser\Node\Expr\ArrowFunction|PhpParser\Node\Expr\Closure|PhpParser\Node\Expr\FuncCall|PhpParser\Node\Stmt\Class_|PhpParser\Node\Stmt\Const_|PhpParser\Node\Stmt\Enum_|PhpParser\Node\Stmt\Function_|PhpParser\Node\Stmt\Interface_|PhpParser\Node\Stmt\Trait_, PhpParser\Node\Stmt\ClassLike given.'
 			identifier: argument.type
 			count: 1
 			path: src/Analyser/NodeScopeResolver.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantBooleanType is error\-prone and deprecated\. Use Type\:\:isTrue\(\) or Type\:\:isFalse\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantBooleanType is error-prone and deprecated. Use Type::isTrue() or Type::isFalse() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Analyser/RicherScopeGetTypeHelper.php
 
 		-
-			message: '#^Call to method __construct\(\) of internal class PhpParser\\Internal\\TokenStream from outside its root namespace PhpParser\.$#'
+			rawMessage: 'Call to method __construct() of internal class PhpParser\Internal\TokenStream from outside its root namespace PhpParser.'
 			identifier: method.internalClass
 			count: 1
 			path: src/Analyser/RuleErrorTransformer.php
 
 		-
-			message: '#^Instantiation of internal class PhpParser\\Internal\\TokenStream\.$#'
+			rawMessage: Instantiation of internal class PhpParser\Internal\TokenStream.
 			identifier: new.internalClass
 			count: 1
 			path: src/Analyser/RuleErrorTransformer.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ConstantScalarType is error\-prone and deprecated\. Use Type\:\:isConstantScalarValue\(\) or Type\:\:getConstantScalarTypes\(\) or Type\:\:getConstantScalarValues\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ConstantScalarType is error-prone and deprecated. Use Type::isConstantScalarValue() or Type::getConstantScalarTypes() or Type::getConstantScalarValues() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Analyser/TypeSpecifier.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantBooleanType is error\-prone and deprecated\. Use Type\:\:isTrue\(\) or Type\:\:isFalse\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantBooleanType is error-prone and deprecated. Use Type::isTrue() or Type::isFalse() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 5
 			path: src/Analyser/TypeSpecifier.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantStringType is error\-prone and deprecated\. Use Type\:\:getConstantStrings\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantStringType is error-prone and deprecated. Use Type::getConstantStrings() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 4
 			path: src/Analyser/TypeSpecifier.php
 
 		-
-			message: '#^Template type TNodeType is declared as covariant, but occurs in contravariant position in parameter node of method PHPStan\\Collectors\\Collector\:\:processNode\(\)\.$#'
+			rawMessage: 'Template type TNodeType is declared as covariant, but occurs in contravariant position in parameter node of method PHPStan\Collectors\Collector::processNode().'
 			identifier: generics.variance
 			count: 1
 			path: src/Collectors/Collector.php
 
 		-
-			message: '#^Method PHPStan\\Collectors\\Registry\:\:__construct\(\) has parameter \$collectors with generic interface PHPStan\\Collectors\\Collector but does not specify its types\: TNodeType, TValue$#'
+			rawMessage: 'Method PHPStan\Collectors\Registry::__construct() has parameter $collectors with generic interface PHPStan\Collectors\Collector but does not specify its types: TNodeType, TValue'
 			identifier: missingType.generics
 			count: 1
 			path: src/Collectors/Registry.php
 
 		-
-			message: '#^Property PHPStan\\Collectors\\Registry\:\:\$cache with generic interface PHPStan\\Collectors\\Collector does not specify its types\: TNodeType, TValue$#'
+			rawMessage: 'Property PHPStan\Collectors\Registry::$cache with generic interface PHPStan\Collectors\Collector does not specify its types: TNodeType, TValue'
 			identifier: missingType.generics
 			count: 1
 			path: src/Collectors/Registry.php
 
 		-
-			message: '#^Property PHPStan\\Collectors\\Registry\:\:\$collectors with generic interface PHPStan\\Collectors\\Collector does not specify its types\: TNodeType, TValue$#'
+			rawMessage: 'Property PHPStan\Collectors\Registry::$collectors with generic interface PHPStan\Collectors\Collector does not specify its types: TNodeType, TValue'
 			identifier: missingType.generics
 			count: 1
 			path: src/Collectors/Registry.php
 
 		-
-			message: '#^Anonymous function has an unused use \$container\.$#'
+			rawMessage: Anonymous function has an unused use $container.
 			identifier: closure.unusedUse
 			count: 1
 			path: src/Command/CommandHelper.php
 
 		-
-			message: '#^Call to static method expand\(\) of internal class Nette\\DI\\Helpers from outside its root namespace Nette\.$#'
+			rawMessage: 'Call to static method expand() of internal class Nette\DI\Helpers from outside its root namespace Nette.'
 			identifier: staticMethod.internalClass
 			count: 2
 			path: src/Command/CommandHelper.php
 
 		-
-			message: '#^Parameter \#1 \$path of function dirname expects string, string\|false given\.$#'
+			rawMessage: 'Parameter #1 $path of function dirname expects string, string|false given.'
 			identifier: argument.type
 			count: 1
 			path: src/Command/CommandHelper.php
 
 		-
-			message: '#^Static property PHPStan\\Command\\CommandHelper\:\:\$reservedMemory is never read, only written\.$#'
+			rawMessage: 'Static property PHPStan\Command\CommandHelper::$reservedMemory is never read, only written.'
 			identifier: property.onlyWritten
 			count: 1
 			path: src/Command/CommandHelper.php
 
 		-
-			message: '#^Call to static method escape\(\) of internal class Nette\\DI\\Helpers from outside its root namespace Nette\.$#'
+			rawMessage: 'Call to static method escape() of internal class Nette\DI\Helpers from outside its root namespace Nette.'
 			identifier: staticMethod.internalClass
 			count: 4
 			path: src/Command/ErrorFormatter/BaselineNeonErrorFormatter.php
 
 		-
-			message: '#^Call to static method escape\(\) of internal class Nette\\DI\\Helpers from outside its root namespace Nette\.$#'
+			rawMessage: 'Call to static method escape() of internal class Nette\DI\Helpers from outside its root namespace Nette.'
 			identifier: staticMethod.internalClass
 			count: 5
 			path: src/Command/ErrorFormatter/BaselinePhpErrorFormatter.php
 
 		-
-			message: '#^Parameter \#1 \$headers \(array\<string\>\) of method PHPStan\\Command\\ErrorsConsoleStyle\:\:table\(\) should be contravariant with parameter \$headers \(array\) of method Symfony\\Component\\Console\\Style\\StyleInterface\:\:table\(\)$#'
+			rawMessage: 'Parameter #1 $headers (array<string>) of method PHPStan\Command\ErrorsConsoleStyle::table() should be contravariant with parameter $headers (array) of method Symfony\Component\Console\Style\StyleInterface::table()'
 			identifier: method.childParameterType
 			count: 1
 			path: src/Command/ErrorsConsoleStyle.php
 
 		-
-			message: '#^Parameter \#1 \$headers \(array\<string\>\) of method PHPStan\\Command\\ErrorsConsoleStyle\:\:table\(\) should be contravariant with parameter \$headers \(array\) of method Symfony\\Component\\Console\\Style\\SymfonyStyle\:\:table\(\)$#'
+			rawMessage: 'Parameter #1 $headers (array<string>) of method PHPStan\Command\ErrorsConsoleStyle::table() should be contravariant with parameter $headers (array) of method Symfony\Component\Console\Style\SymfonyStyle::table()'
 			identifier: method.childParameterType
 			count: 1
 			path: src/Command/ErrorsConsoleStyle.php
 
 		-
-			message: '#^Parameter \#2 \$rows \(array\<array\<string\>\>\) of method PHPStan\\Command\\ErrorsConsoleStyle\:\:table\(\) should be contravariant with parameter \$rows \(array\) of method Symfony\\Component\\Console\\Style\\StyleInterface\:\:table\(\)$#'
+			rawMessage: 'Parameter #2 $rows (array<array<string>>) of method PHPStan\Command\ErrorsConsoleStyle::table() should be contravariant with parameter $rows (array) of method Symfony\Component\Console\Style\StyleInterface::table()'
 			identifier: method.childParameterType
 			count: 1
 			path: src/Command/ErrorsConsoleStyle.php
 
 		-
-			message: '#^Parameter \#2 \$rows \(array\<array\<string\>\>\) of method PHPStan\\Command\\ErrorsConsoleStyle\:\:table\(\) should be contravariant with parameter \$rows \(array\) of method Symfony\\Component\\Console\\Style\\SymfonyStyle\:\:table\(\)$#'
+			rawMessage: 'Parameter #2 $rows (array<array<string>>) of method PHPStan\Command\ErrorsConsoleStyle::table() should be contravariant with parameter $rows (array) of method Symfony\Component\Console\Style\SymfonyStyle::table()'
 			identifier: method.childParameterType
 			count: 1
 			path: src/Command/ErrorsConsoleStyle.php
 
 		-
-			message: '#^Call to static method escape\(\) of internal class Nette\\DI\\Helpers from outside its root namespace Nette\.$#'
+			rawMessage: 'Call to static method escape() of internal class Nette\DI\Helpers from outside its root namespace Nette.'
 			identifier: staticMethod.internalClass
 			count: 1
 			path: src/DependencyInjection/AutowiredAttributeServicesExtension.php
 
 		-
-			message: '#^Call to static method expand\(\) of internal class Nette\\DI\\Helpers from outside its root namespace Nette\.$#'
+			rawMessage: 'Call to static method expand() of internal class Nette\DI\Helpers from outside its root namespace Nette.'
 			identifier: staticMethod.internalClass
 			count: 2
 			path: src/DependencyInjection/AutowiredAttributeServicesExtension.php
 
 		-
-			message: '#^Call to static method expand\(\) of internal class Nette\\DI\\Helpers from outside its root namespace Nette\.$#'
+			rawMessage: 'Call to static method expand() of internal class Nette\DI\Helpers from outside its root namespace Nette.'
 			identifier: staticMethod.internalClass
 			count: 1
 			path: src/DependencyInjection/ContainerFactory.php
 
 		-
-			message: '#^Call to static method merge\(\) of internal class Nette\\Schema\\Helpers from outside its root namespace Nette\.$#'
+			rawMessage: 'Call to static method merge() of internal class Nette\Schema\Helpers from outside its root namespace Nette.'
 			identifier: staticMethod.internalClass
 			count: 2
 			path: src/DependencyInjection/ContainerFactory.php
 
 		-
-			message: '#^Variable method call on Nette\\Schema\\Elements\\AnyOf\|Nette\\Schema\\Elements\\Structure\|Nette\\Schema\\Elements\\Type\.$#'
+			rawMessage: Variable method call on Nette\Schema\Elements\AnyOf|Nette\Schema\Elements\Structure|Nette\Schema\Elements\Type.
 			identifier: method.dynamicName
 			count: 1
 			path: src/DependencyInjection/ContainerFactory.php
 
 		-
-			message: '#^Variable static method call on Nette\\Schema\\Expect\.$#'
+			rawMessage: Variable static method call on Nette\Schema\Expect.
 			identifier: staticMethod.dynamicName
 			count: 1
 			path: src/DependencyInjection/ContainerFactory.php
 
 		-
-			message: '#^Fetching class constant PREVENT_MERGING of deprecated class Nette\\DI\\Config\\Helpers\.$#'
+			rawMessage: Fetching class constant PREVENT_MERGING of deprecated class Nette\DI\Config\Helpers.
 			identifier: classConstant.deprecatedClass
 			count: 1
 			path: src/DependencyInjection/NeonAdapter.php
 
 		-
-			message: '#^Creating new ReflectionClass is a runtime reflection concept that might not work in PHPStan because it uses fully static reflection engine\. Use objects retrieved from ReflectionProvider instead\.$#'
+			rawMessage: Creating new ReflectionClass is a runtime reflection concept that might not work in PHPStan because it uses fully static reflection engine. Use objects retrieved from ReflectionProvider instead.
 			identifier: phpstanApi.runtimeReflection
 			count: 1
 			path: src/Diagnose/PHPStanDiagnoseExtension.php
 
 		-
-			message: '#^Parameter \#1 \$path of function dirname expects string, string\|false given\.$#'
+			rawMessage: 'Parameter #1 $path of function dirname expects string, string|false given.'
 			identifier: argument.type
 			count: 1
 			path: src/Diagnose/PHPStanDiagnoseExtension.php
 
 		-
-			message: '#^Call to method getContent\(\) of internal class PhpMerge\\internal\\Line from outside its root namespace PhpMerge\.$#'
+			rawMessage: 'Call to method getContent() of internal class PhpMerge\internal\Line from outside its root namespace PhpMerge.'
 			identifier: method.internalClass
 			count: 2
 			path: src/Fixable/Patcher.php
 
 		-
-			message: '#^Call to static method createArray\(\) of internal class PhpMerge\\internal\\Hunk from outside its root namespace PhpMerge\.$#'
+			rawMessage: 'Call to static method createArray() of internal class PhpMerge\internal\Hunk from outside its root namespace PhpMerge.'
 			identifier: staticMethod.internalClass
 			count: 2
 			path: src/Fixable/Patcher.php
 
 		-
-			message: '#^Call to static method createArray\(\) of internal class PhpMerge\\internal\\Line from outside its root namespace PhpMerge\.$#'
+			rawMessage: 'Call to static method createArray() of internal class PhpMerge\internal\Line from outside its root namespace PhpMerge.'
 			identifier: staticMethod.internalClass
 			count: 5
 			path: src/Fixable/Patcher.php
 
 		-
-			message: '#^Call to method getTokenCode\(\) of internal class PhpParser\\Internal\\TokenStream from outside its root namespace PhpParser\.$#'
+			rawMessage: 'Call to method getTokenCode() of internal class PhpParser\Internal\TokenStream from outside its root namespace PhpParser.'
 			identifier: method.internalClass
 			count: 1
 			path: src/Fixable/PhpPrinterIndentationDetectorVisitor.php
 
 		-
-			message: '#^Parameter \$origTokens of method PHPStan\\Fixable\\PhpPrinterIndentationDetectorVisitor\:\:__construct\(\) has typehint with internal class PhpParser\\Internal\\TokenStream\.$#'
+			rawMessage: 'Parameter $origTokens of method PHPStan\Fixable\PhpPrinterIndentationDetectorVisitor::__construct() has typehint with internal class PhpParser\Internal\TokenStream.'
 			identifier: parameter.internalClass
 			count: 1
 			path: src/Fixable/PhpPrinterIndentationDetectorVisitor.php
 
 		-
-			message: '#^Property \$origTokens references internal class PhpParser\\Internal\\TokenStream in its type\.$#'
+			rawMessage: Property $origTokens references internal class PhpParser\Internal\TokenStream in its type.
 			identifier: property.internalClass
 			count: 1
 			path: src/Fixable/PhpPrinterIndentationDetectorVisitor.php
 
 		-
-			message: '#^Access to property \$id of internal class Symfony\\Polyfill\\Php80\\PhpToken from outside its root namespace Symfony\.$#'
+			rawMessage: Access to property $id of internal class Symfony\Polyfill\Php80\PhpToken from outside its root namespace Symfony.
 			identifier: property.internalClass
 			count: 1
 			path: src/Parser/RichParser.php
 
 		-
-			message: '#^Access to property \$line of internal class Symfony\\Polyfill\\Php80\\PhpToken from outside its root namespace Symfony\.$#'
+			rawMessage: Access to property $line of internal class Symfony\Polyfill\Php80\PhpToken from outside its root namespace Symfony.
 			identifier: property.internalClass
 			count: 4
 			path: src/Parser/RichParser.php
 
 		-
-			message: '#^Access to property \$text of internal class Symfony\\Polyfill\\Php80\\PhpToken from outside its root namespace Symfony\.$#'
+			rawMessage: Access to property $text of internal class Symfony\Polyfill\Php80\PhpToken from outside its root namespace Symfony.
 			identifier: property.internalClass
 			count: 3
 			path: src/Parser/RichParser.php
 
 		-
-			message: '#^Call to function method_exists\(\) with PHPStan\\PhpDocParser\\Ast\\PhpDoc\\PhpDocNode and ''getParamOutTypeTagV…'' will always evaluate to true\.$#'
+			rawMessage: 'Call to function method_exists() with PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocNode and ''getParamOutTypeTagV…'' will always evaluate to true.'
 			identifier: function.alreadyNarrowedType
 			count: 1
 			path: src/PhpDoc/PhpDocNodeResolver.php
 
 		-
-			message: '#^Call to function method_exists\(\) with PHPStan\\PhpDocParser\\Ast\\PhpDoc\\PhpDocNode and ''getSelfOutTypeTagVa…'' will always evaluate to true\.$#'
+			rawMessage: 'Call to function method_exists() with PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocNode and ''getSelfOutTypeTagVa…'' will always evaluate to true.'
 			identifier: function.alreadyNarrowedType
 			count: 1
 			path: src/PhpDoc/PhpDocNodeResolver.php
 
 		-
-			message: '#^Method PHPStan\\PhpDoc\\ResolvedPhpDocBlock\:\:getNameScope\(\) should return PHPStan\\Analyser\\NameScope but returns PHPStan\\Analyser\\NameScope\|null\.$#'
+			rawMessage: 'Method PHPStan\PhpDoc\ResolvedPhpDocBlock::getNameScope() should return PHPStan\Analyser\NameScope but returns PHPStan\Analyser\NameScope|null.'
 			identifier: return.type
 			count: 1
 			path: src/PhpDoc/ResolvedPhpDocBlock.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ArrayType is error\-prone and deprecated\. Use Type\:\:isArray\(\) or Type\:\:getArrays\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ArrayType is error-prone and deprecated. Use Type::isArray() or Type::getArrays() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/PhpDoc/TypeNodeResolver.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\CallableType is error\-prone and deprecated\. Use Type\:\:isCallable\(\) and Type\:\:getCallableParametersAcceptors\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\CallableType is error-prone and deprecated. Use Type::isCallable() and Type::getCallableParametersAcceptors() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/PhpDoc/TypeNodeResolver.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantArrayType is error\-prone and deprecated\. Use Type\:\:getConstantArrays\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantArrayType is error-prone and deprecated. Use Type::getConstantArrays() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/PhpDoc/TypeNodeResolver.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantStringType is error\-prone and deprecated\. Use Type\:\:getConstantStrings\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantStringType is error-prone and deprecated. Use Type::getConstantStrings() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/PhpDoc/TypeNodeResolver.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Generic\\GenericObjectType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\Generic\GenericObjectType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/PhpDoc/TypeNodeResolver.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IterableType is error\-prone and deprecated\. Use Type\:\:isIterable\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\IterableType is error-prone and deprecated. Use Type::isIterable() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/PhpDoc/TypeNodeResolver.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ObjectType is error\-prone and deprecated\. Use Type\:\:isObject\(\) or Type\:\:getObjectClassNames\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ObjectType is error-prone and deprecated. Use Type::isObject() or Type::getObjectClassNames() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/PhpDoc/TypeNodeResolver.php
 
 		-
-			message: '#^Dead catch \- PHPStan\\BetterReflection\\Identifier\\Exception\\InvalidIdentifierName is never thrown in the try block\.$#'
+			rawMessage: Dead catch - PHPStan\BetterReflection\Identifier\Exception\InvalidIdentifierName is never thrown in the try block.
 			identifier: catch.neverThrown
 			count: 4
 			path: src/Reflection/BetterReflection/BetterReflectionProvider.php
 
 		-
-			message: '#^Dead catch \- PHPStan\\BetterReflection\\NodeCompiler\\Exception\\UnableToCompileNode is never thrown in the try block\.$#'
+			rawMessage: Dead catch - PHPStan\BetterReflection\NodeCompiler\Exception\UnableToCompileNode is never thrown in the try block.
 			identifier: catch.neverThrown
 			count: 1
 			path: src/Reflection/BetterReflection/BetterReflectionProvider.php
 
 		-
-			message: '#^Creating new ReflectionClass is a runtime reflection concept that might not work in PHPStan because it uses fully static reflection engine\. Use objects retrieved from ReflectionProvider instead\.$#'
+			rawMessage: Creating new ReflectionClass is a runtime reflection concept that might not work in PHPStan because it uses fully static reflection engine. Use objects retrieved from ReflectionProvider instead.
 			identifier: phpstanApi.runtimeReflection
 			count: 1
 			path: src/Reflection/BetterReflection/SourceLocator/AutoloadSourceLocator.php
 
 		-
-			message: '#^Creating new ReflectionFunction is a runtime reflection concept that might not work in PHPStan because it uses fully static reflection engine\. Use objects retrieved from ReflectionProvider instead\.$#'
+			rawMessage: Creating new ReflectionFunction is a runtime reflection concept that might not work in PHPStan because it uses fully static reflection engine. Use objects retrieved from ReflectionProvider instead.
 			identifier: phpstanApi.runtimeReflection
 			count: 1
 			path: src/Reflection/BetterReflection/SourceLocator/AutoloadSourceLocator.php
 
 		-
-			message: '#^Parameter \#2 \$node of method PHPStan\\BetterReflection\\SourceLocator\\Ast\\Strategy\\NodeToReflection\:\:__invoke\(\) expects PhpParser\\Node\\Expr\\ArrowFunction\|PhpParser\\Node\\Expr\\Closure\|PhpParser\\Node\\Expr\\FuncCall\|PhpParser\\Node\\Stmt\\Class_\|PhpParser\\Node\\Stmt\\Const_\|PhpParser\\Node\\Stmt\\Enum_\|PhpParser\\Node\\Stmt\\Function_\|PhpParser\\Node\\Stmt\\Interface_\|PhpParser\\Node\\Stmt\\Trait_, PhpParser\\Node\\Stmt\\ClassLike given\.$#'
+			rawMessage: 'Parameter #2 $node of method PHPStan\BetterReflection\SourceLocator\Ast\Strategy\NodeToReflection::__invoke() expects PhpParser\Node\Expr\ArrowFunction|PhpParser\Node\Expr\Closure|PhpParser\Node\Expr\FuncCall|PhpParser\Node\Stmt\Class_|PhpParser\Node\Stmt\Const_|PhpParser\Node\Stmt\Enum_|PhpParser\Node\Stmt\Function_|PhpParser\Node\Stmt\Interface_|PhpParser\Node\Stmt\Trait_, PhpParser\Node\Stmt\ClassLike given.'
 			identifier: argument.type
 			count: 1
 			path: src/Reflection/BetterReflection/SourceLocator/AutoloadSourceLocator.php
 
 		-
-			message: '#^Method PHPStan\\Reflection\\BetterReflection\\SourceLocator\\FileReadTrapStreamWrapper\:\:invokeWithRealFileStreamWrapper\(\) has parameter \$cb with no signature specified for callable\.$#'
+			rawMessage: 'Method PHPStan\Reflection\BetterReflection\SourceLocator\FileReadTrapStreamWrapper::invokeWithRealFileStreamWrapper() has parameter $cb with no signature specified for callable.'
 			identifier: missingType.callable
 			count: 1
 			path: src/Reflection/BetterReflection/SourceLocator/FileReadTrapStreamWrapper.php
 
 		-
-			message: '#^Parameter \#2 \$node of method PHPStan\\BetterReflection\\SourceLocator\\Ast\\Strategy\\NodeToReflection\:\:__invoke\(\) expects PhpParser\\Node\\Expr\\ArrowFunction\|PhpParser\\Node\\Expr\\Closure\|PhpParser\\Node\\Expr\\FuncCall\|PhpParser\\Node\\Stmt\\Class_\|PhpParser\\Node\\Stmt\\Const_\|PhpParser\\Node\\Stmt\\Enum_\|PhpParser\\Node\\Stmt\\Function_\|PhpParser\\Node\\Stmt\\Interface_\|PhpParser\\Node\\Stmt\\Trait_, PhpParser\\Node\\Expr\\FuncCall\|PhpParser\\Node\\Stmt\\ClassLike\|PhpParser\\Node\\Stmt\\Const_\|PhpParser\\Node\\Stmt\\Function_ given\.$#'
+			rawMessage: 'Parameter #2 $node of method PHPStan\BetterReflection\SourceLocator\Ast\Strategy\NodeToReflection::__invoke() expects PhpParser\Node\Expr\ArrowFunction|PhpParser\Node\Expr\Closure|PhpParser\Node\Expr\FuncCall|PhpParser\Node\Stmt\Class_|PhpParser\Node\Stmt\Const_|PhpParser\Node\Stmt\Enum_|PhpParser\Node\Stmt\Function_|PhpParser\Node\Stmt\Interface_|PhpParser\Node\Stmt\Trait_, PhpParser\Node\Expr\FuncCall|PhpParser\Node\Stmt\ClassLike|PhpParser\Node\Stmt\Const_|PhpParser\Node\Stmt\Function_ given.'
 			identifier: argument.type
 			count: 1
 			path: src/Reflection/BetterReflection/SourceLocator/OptimizedDirectorySourceLocator.php
 
 		-
-			message: '#^Parameter \#2 \$node of method PHPStan\\BetterReflection\\SourceLocator\\Ast\\Strategy\\NodeToReflection\:\:__invoke\(\) expects PhpParser\\Node\\Expr\\ArrowFunction\|PhpParser\\Node\\Expr\\Closure\|PhpParser\\Node\\Expr\\FuncCall\|PhpParser\\Node\\Stmt\\Class_\|PhpParser\\Node\\Stmt\\Const_\|PhpParser\\Node\\Stmt\\Enum_\|PhpParser\\Node\\Stmt\\Function_\|PhpParser\\Node\\Stmt\\Interface_\|PhpParser\\Node\\Stmt\\Trait_, PhpParser\\Node\\Stmt\\ClassLike given\.$#'
+			rawMessage: 'Parameter #2 $node of method PHPStan\BetterReflection\SourceLocator\Ast\Strategy\NodeToReflection::__invoke() expects PhpParser\Node\Expr\ArrowFunction|PhpParser\Node\Expr\Closure|PhpParser\Node\Expr\FuncCall|PhpParser\Node\Stmt\Class_|PhpParser\Node\Stmt\Const_|PhpParser\Node\Stmt\Enum_|PhpParser\Node\Stmt\Function_|PhpParser\Node\Stmt\Interface_|PhpParser\Node\Stmt\Trait_, PhpParser\Node\Stmt\ClassLike given.'
 			identifier: argument.type
 			count: 2
 			path: src/Reflection/BetterReflection/SourceLocator/OptimizedSingleFileSourceLocator.php
 
 		-
-			message: '#^Creating new ReflectionClass is a runtime reflection concept that might not work in PHPStan because it uses fully static reflection engine\. Use objects retrieved from ReflectionProvider instead\.$#'
+			rawMessage: Creating new ReflectionClass is a runtime reflection concept that might not work in PHPStan because it uses fully static reflection engine. Use objects retrieved from ReflectionProvider instead.
 			identifier: phpstanApi.runtimeReflection
 			count: 1
 			path: src/Reflection/BetterReflection/SourceLocator/ReflectionClassSourceLocator.php
 
 		-
-			message: '#^Creating new ReflectionClass is a runtime reflection concept that might not work in PHPStan because it uses fully static reflection engine\. Use objects retrieved from ReflectionProvider instead\.$#'
+			rawMessage: Creating new ReflectionClass is a runtime reflection concept that might not work in PHPStan because it uses fully static reflection engine. Use objects retrieved from ReflectionProvider instead.
 			identifier: phpstanApi.runtimeReflection
 			count: 1
 			path: src/Reflection/BetterReflection/SourceLocator/RewriteClassAliasSourceLocator.php
 
 		-
-			message: '#^Creating new ReflectionClass is a runtime reflection concept that might not work in PHPStan because it uses fully static reflection engine\. Use objects retrieved from ReflectionProvider instead\.$#'
+			rawMessage: Creating new ReflectionClass is a runtime reflection concept that might not work in PHPStan because it uses fully static reflection engine. Use objects retrieved from ReflectionProvider instead.
 			identifier: phpstanApi.runtimeReflection
 			count: 1
 			path: src/Reflection/BetterReflection/SourceLocator/SkipClassAliasSourceLocator.php
 
 		-
-			message: '''
-				#^Call to deprecated method isSubclassOf\(\) of class PHPStan\\Reflection\\ClassReflection\:
-				Use isSubclassOfClass instead\.$#
+			rawMessage: '''
+				Call to deprecated method isSubclassOf() of class PHPStan\Reflection\ClassReflection:
+				Use isSubclassOfClass instead.
 			'''
 			identifier: method.deprecated
 			count: 1
 			path: src/Reflection/ClassReflection.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Generic\\GenericObjectType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\Generic\GenericObjectType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 3
 			path: src/Reflection/ClassReflection.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ObjectType is error\-prone and deprecated\. Use Type\:\:isObject\(\) or Type\:\:getObjectClassNames\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ObjectType is error-prone and deprecated. Use Type::isObject() or Type::getObjectClassNames() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Reflection/ClassReflection.php
 
 		-
-			message: '#^Method PHPStan\\Reflection\\ClassReflection\:\:getCacheKey\(\) should return string but returns string\|null\.$#'
+			rawMessage: 'Method PHPStan\Reflection\ClassReflection::getCacheKey() should return string but returns string|null.'
 			identifier: return.type
 			count: 1
 			path: src/Reflection/ClassReflection.php
 
 		-
-			message: '#^Binary operation "&" between bool\|float\|int\|string\|null and bool\|float\|int\|string\|null results in an error\.$#'
+			rawMessage: Binary operation "&" between bool|float|int|string|null and bool|float|int|string|null results in an error.
 			identifier: binaryOp.invalid
 			count: 1
 			path: src/Reflection/InitializerExprTypeResolver.php
 
 		-
-			message: '#^Binary operation "\*" between bool\|float\|int\|string\|null and bool\|float\|int\|string\|null results in an error\.$#'
+			rawMessage: Binary operation "*" between bool|float|int|string|null and bool|float|int|string|null results in an error.
 			identifier: binaryOp.invalid
 			count: 1
 			path: src/Reflection/InitializerExprTypeResolver.php
 
 		-
-			message: '#^Binary operation "\+" between bool\|float\|int\|string\|null and bool\|float\|int\|string\|null results in an error\.$#'
+			rawMessage: Binary operation "+" between bool|float|int|string|null and bool|float|int|string|null results in an error.
 			identifier: binaryOp.invalid
 			count: 1
 			path: src/Reflection/InitializerExprTypeResolver.php
 
 		-
-			message: '#^Binary operation "\-" between bool\|float\|int\|string\|null and bool\|float\|int\|string\|null results in an error\.$#'
+			rawMessage: Binary operation "-" between bool|float|int|string|null and bool|float|int|string|null results in an error.
 			identifier: binaryOp.invalid
 			count: 1
 			path: src/Reflection/InitializerExprTypeResolver.php
 
 		-
-			message: '#^Binary operation "\^" between bool\|float\|int\|string\|null and bool\|float\|int\|string\|null results in an error\.$#'
+			rawMessage: Binary operation "^" between bool|float|int|string|null and bool|float|int|string|null results in an error.
 			identifier: binaryOp.invalid
 			count: 1
 			path: src/Reflection/InitializerExprTypeResolver.php
 
 		-
-			message: '#^Binary operation "\|" between bool\|float\|int\|string\|null and bool\|float\|int\|string\|null results in an error\.$#'
+			rawMessage: Binary operation "|" between bool|float|int|string|null and bool|float|int|string|null results in an error.
 			identifier: binaryOp.invalid
 			count: 1
 			path: src/Reflection/InitializerExprTypeResolver.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ConstantScalarType is error\-prone and deprecated\. Use Type\:\:isConstantScalarValue\(\) or Type\:\:getConstantScalarTypes\(\) or Type\:\:getConstantScalarValues\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ConstantScalarType is error-prone and deprecated. Use Type::isConstantScalarValue() or Type::getConstantScalarTypes() or Type::getConstantScalarValues() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 22
 			path: src/Reflection/InitializerExprTypeResolver.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantArrayType is error\-prone and deprecated\. Use Type\:\:getConstantArrays\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantArrayType is error-prone and deprecated. Use Type::getConstantArrays() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 4
 			path: src/Reflection/InitializerExprTypeResolver.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantBooleanType is error\-prone and deprecated\. Use Type\:\:isTrue\(\) or Type\:\:isFalse\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantBooleanType is error-prone and deprecated. Use Type::isTrue() or Type::isFalse() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 3
 			path: src/Reflection/InitializerExprTypeResolver.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantStringType is error\-prone and deprecated\. Use Type\:\:getConstantStrings\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantStringType is error-prone and deprecated. Use Type::getConstantStrings() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 10
 			path: src/Reflection/InitializerExprTypeResolver.php
 
 		-
-			message: '#^PHPDoc tag @var with type float\|int is not subtype of native type int\.$#'
+			rawMessage: PHPDoc tag @var with type float|int is not subtype of native type int.
 			identifier: varTag.nativeType
 			count: 1
 			path: src/Reflection/InitializerExprTypeResolver.php
 
 		-
-			message: '#^PHPDoc tag @var with type float\|int is not subtype of type int\.$#'
+			rawMessage: PHPDoc tag @var with type float|int is not subtype of type int.
 			identifier: varTag.type
 			count: 4
 			path: src/Reflection/InitializerExprTypeResolver.php
 
 		-
-			message: '#^PHPDoc tag @var with type float\|int\|null is not subtype of type int\|null\.$#'
+			rawMessage: PHPDoc tag @var with type float|int|null is not subtype of type int|null.
 			identifier: varTag.type
 			count: 6
 			path: src/Reflection/InitializerExprTypeResolver.php
 
 		-
-			message: '#^Creating new PHPStan\\Php8StubsMap is not covered by backward compatibility promise\. The class might change in a minor PHPStan version\.$#'
+			rawMessage: Creating new PHPStan\Php8StubsMap is not covered by backward compatibility promise. The class might change in a minor PHPStan version.
 			identifier: phpstanApi.constructor
 			count: 1
 			path: src/Reflection/SignatureMap/Php8SignatureMapProvider.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantBooleanType is error\-prone and deprecated\. Use Type\:\:isTrue\(\) or Type\:\:isFalse\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantBooleanType is error-prone and deprecated. Use Type::isTrue() or Type::isFalse() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Rules/Classes/ImpossibleInstanceOfRule.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ObjectType is error\-prone and deprecated\. Use Type\:\:isObject\(\) or Type\:\:getObjectClassNames\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ObjectType is error-prone and deprecated. Use Type::isObject() or Type::getObjectClassNames() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Rules/Classes/RequireImplementsRule.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantBooleanType is error\-prone and deprecated\. Use Type\:\:isTrue\(\) or Type\:\:isFalse\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantBooleanType is error-prone and deprecated. Use Type::isTrue() or Type::isFalse() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 6
 			path: src/Rules/Comparison/BooleanAndConstantConditionRule.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantBooleanType is error\-prone and deprecated\. Use Type\:\:isTrue\(\) or Type\:\:isFalse\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantBooleanType is error-prone and deprecated. Use Type::isTrue() or Type::isFalse() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Rules/Comparison/BooleanNotConstantConditionRule.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantBooleanType is error\-prone and deprecated\. Use Type\:\:isTrue\(\) or Type\:\:isFalse\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantBooleanType is error-prone and deprecated. Use Type::isTrue() or Type::isFalse() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 6
 			path: src/Rules/Comparison/BooleanOrConstantConditionRule.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantBooleanType is error\-prone and deprecated\. Use Type\:\:isTrue\(\) or Type\:\:isFalse\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantBooleanType is error-prone and deprecated. Use Type::isTrue() or Type::isFalse() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Rules/Comparison/DoWhileLoopConstantConditionRule.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantBooleanType is error\-prone and deprecated\. Use Type\:\:isTrue\(\) or Type\:\:isFalse\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantBooleanType is error-prone and deprecated. Use Type::isTrue() or Type::isFalse() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Rules/Comparison/ElseIfConstantConditionRule.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantBooleanType is error\-prone and deprecated\. Use Type\:\:isTrue\(\) or Type\:\:isFalse\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantBooleanType is error-prone and deprecated. Use Type::isTrue() or Type::isFalse() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Rules/Comparison/IfConstantConditionRule.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantArrayType is error\-prone and deprecated\. Use Type\:\:getConstantArrays\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantArrayType is error-prone and deprecated. Use Type::getConstantArrays() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Rules/Comparison/ImpossibleCheckTypeHelper.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantBooleanType is error\-prone and deprecated\. Use Type\:\:isTrue\(\) or Type\:\:isFalse\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantBooleanType is error-prone and deprecated. Use Type::isTrue() or Type::isFalse() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Rules/Comparison/ImpossibleCheckTypeHelper.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantStringType is error\-prone and deprecated\. Use Type\:\:getConstantStrings\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantStringType is error-prone and deprecated. Use Type::getConstantStrings() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 3
 			path: src/Rules/Comparison/ImpossibleCheckTypeHelper.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\TypeWithClassName is error\-prone and deprecated\. Use Type\:\:getObjectClassNames\(\) or Type\:\:getObjectClassReflections\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\TypeWithClassName is error-prone and deprecated. Use Type::getObjectClassNames() or Type::getObjectClassReflections() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Rules/Comparison/ImpossibleCheckTypeHelper.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantBooleanType is error\-prone and deprecated\. Use Type\:\:isTrue\(\) or Type\:\:isFalse\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantBooleanType is error-prone and deprecated. Use Type::isTrue() or Type::isFalse() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 4
 			path: src/Rules/Comparison/LogicalXorConstantConditionRule.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantBooleanType is error\-prone and deprecated\. Use Type\:\:isTrue\(\) or Type\:\:isFalse\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantBooleanType is error-prone and deprecated. Use Type::isTrue() or Type::isFalse() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 4
 			path: src/Rules/Comparison/MatchExpressionRule.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantBooleanType is error\-prone and deprecated\. Use Type\:\:isTrue\(\) or Type\:\:isFalse\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantBooleanType is error-prone and deprecated. Use Type::isTrue() or Type::isFalse() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Rules/Comparison/NumberComparisonOperatorsConstantConditionRule.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantBooleanType is error\-prone and deprecated\. Use Type\:\:isTrue\(\) or Type\:\:isFalse\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantBooleanType is error-prone and deprecated. Use Type::isTrue() or Type::isFalse() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Rules/Comparison/StrictComparisonOfDifferentTypesRule.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantBooleanType is error\-prone and deprecated\. Use Type\:\:isTrue\(\) or Type\:\:isFalse\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantBooleanType is error-prone and deprecated. Use Type::isTrue() or Type::isFalse() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Rules/Comparison/TernaryOperatorConstantConditionRule.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantBooleanType is error\-prone and deprecated\. Use Type\:\:isTrue\(\) or Type\:\:isFalse\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantBooleanType is error-prone and deprecated. Use Type::isTrue() or Type::isFalse() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Rules/Comparison/WhileLoopAlwaysFalseConditionRule.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantBooleanType is error\-prone and deprecated\. Use Type\:\:isTrue\(\) or Type\:\:isFalse\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantBooleanType is error-prone and deprecated. Use Type::isTrue() or Type::isFalse() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Rules/Comparison/WhileLoopAlwaysTrueConditionRule.php
 
 		-
-			message: '#^Function class_implements\(\) is a runtime reflection concept that might not work in PHPStan because it uses fully static reflection engine\. Use objects retrieved from ReflectionProvider instead\.$#'
+			rawMessage: 'Function class_implements() is a runtime reflection concept that might not work in PHPStan because it uses fully static reflection engine. Use objects retrieved from ReflectionProvider instead.'
 			identifier: phpstanApi.runtimeReflection
 			count: 1
 			path: src/Rules/DirectRegistry.php
 
 		-
-			message: '#^Function class_parents\(\) is a runtime reflection concept that might not work in PHPStan because it uses fully static reflection engine\. Use objects retrieved from ReflectionProvider instead\.$#'
+			rawMessage: 'Function class_parents() is a runtime reflection concept that might not work in PHPStan because it uses fully static reflection engine. Use objects retrieved from ReflectionProvider instead.'
 			identifier: phpstanApi.runtimeReflection
 			count: 1
 			path: src/Rules/DirectRegistry.php
 
 		-
-			message: '#^Method PHPStan\\Rules\\DirectRegistry\:\:__construct\(\) has parameter \$rules with generic interface PHPStan\\Rules\\Rule but does not specify its types\: TNodeType$#'
+			rawMessage: 'Method PHPStan\Rules\DirectRegistry::__construct() has parameter $rules with generic interface PHPStan\Rules\Rule but does not specify its types: TNodeType'
 			identifier: missingType.generics
 			count: 1
 			path: src/Rules/DirectRegistry.php
 
 		-
-			message: '#^Property PHPStan\\Rules\\DirectRegistry\:\:\$cache with generic interface PHPStan\\Rules\\Rule does not specify its types\: TNodeType$#'
+			rawMessage: 'Property PHPStan\Rules\DirectRegistry::$cache with generic interface PHPStan\Rules\Rule does not specify its types: TNodeType'
 			identifier: missingType.generics
 			count: 1
 			path: src/Rules/DirectRegistry.php
 
 		-
-			message: '#^Property PHPStan\\Rules\\DirectRegistry\:\:\$rules with generic interface PHPStan\\Rules\\Rule does not specify its types\: TNodeType$#'
+			rawMessage: 'Property PHPStan\Rules\DirectRegistry::$rules with generic interface PHPStan\Rules\Rule does not specify its types: TNodeType'
 			identifier: missingType.generics
 			count: 1
 			path: src/Rules/DirectRegistry.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Generic\\GenericObjectType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\Generic\GenericObjectType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Rules/Generics/GenericAncestorsCheck.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Rules/Generics/TemplateTypeCheck.php
 
 		-
-			message: '#^Function class_implements\(\) is a runtime reflection concept that might not work in PHPStan because it uses fully static reflection engine\. Use objects retrieved from ReflectionProvider instead\.$#'
+			rawMessage: 'Function class_implements() is a runtime reflection concept that might not work in PHPStan because it uses fully static reflection engine. Use objects retrieved from ReflectionProvider instead.'
 			identifier: phpstanApi.runtimeReflection
 			count: 1
 			path: src/Rules/LazyRegistry.php
 
 		-
-			message: '#^Function class_parents\(\) is a runtime reflection concept that might not work in PHPStan because it uses fully static reflection engine\. Use objects retrieved from ReflectionProvider instead\.$#'
+			rawMessage: 'Function class_parents() is a runtime reflection concept that might not work in PHPStan because it uses fully static reflection engine. Use objects retrieved from ReflectionProvider instead.'
 			identifier: phpstanApi.runtimeReflection
 			count: 1
 			path: src/Rules/LazyRegistry.php
 
 		-
-			message: '#^Method PHPStan\\Rules\\LazyRegistry\:\:getRulesFromContainer\(\) return type with generic interface PHPStan\\Rules\\Rule does not specify its types\: TNodeType$#'
+			rawMessage: 'Method PHPStan\Rules\LazyRegistry::getRulesFromContainer() return type with generic interface PHPStan\Rules\Rule does not specify its types: TNodeType'
 			identifier: missingType.generics
 			count: 1
 			path: src/Rules/LazyRegistry.php
 
 		-
-			message: '#^Property PHPStan\\Rules\\LazyRegistry\:\:\$cache with generic interface PHPStan\\Rules\\Rule does not specify its types\: TNodeType$#'
+			rawMessage: 'Property PHPStan\Rules\LazyRegistry::$cache with generic interface PHPStan\Rules\Rule does not specify its types: TNodeType'
 			identifier: missingType.generics
 			count: 1
 			path: src/Rules/LazyRegistry.php
 
 		-
-			message: '#^Property PHPStan\\Rules\\LazyRegistry\:\:\$rules with generic interface PHPStan\\Rules\\Rule does not specify its types\: TNodeType$#'
+			rawMessage: 'Property PHPStan\Rules\LazyRegistry::$rules with generic interface PHPStan\Rules\Rule does not specify its types: TNodeType'
 			identifier: missingType.generics
 			count: 1
 			path: src/Rules/LazyRegistry.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ArrayType is error\-prone and deprecated\. Use Type\:\:isArray\(\) or Type\:\:getArrays\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ArrayType is error-prone and deprecated. Use Type::isArray() or Type::getArrays() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Rules/Methods/MethodParameterComparisonHelper.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantArrayType is error\-prone and deprecated\. Use Type\:\:getConstantArrays\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantArrayType is error-prone and deprecated. Use Type::getConstantArrays() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Rules/Methods/MethodParameterComparisonHelper.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IterableType is error\-prone and deprecated\. Use Type\:\:isIterable\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\IterableType is error-prone and deprecated. Use Type::isIterable() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Rules/Methods/MethodParameterComparisonHelper.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Generic\\GenericClassStringType is error\-prone and deprecated\. Use Type\:\:isClassStringType\(\) and Type\:\:getClassStringObjectType\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Generic\GenericClassStringType is error-prone and deprecated. Use Type::isClassStringType() and Type::getClassStringObjectType() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Rules/Methods/StaticMethodCallCheck.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Generic\\GenericObjectType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\Generic\GenericObjectType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Rules/PhpDoc/VarTagTypeRuleHelper.php
 
 		-
-			message: '#^Access to an undefined property T of PHPStan\\Rules\\RuleError\:\:\$tip\.$#'
+			rawMessage: Access to an undefined property T of PHPStan\Rules\RuleError::$tip.
 			identifier: property.notFound
 			count: 2
 			path: src/Rules/RuleErrorBuilder.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Rules/RuleLevelHelper.php
 
 		-
-			message: '#^Call to function method_exists\(\) with ''PHPUnit\\\\Framework\\\\TestCase'' and ''assertFileDoesNotEx…'' will always evaluate to true\.$#'
+			rawMessage: 'Call to function method_exists() with ''PHPUnit\\Framework\\TestCase'' and ''assertFileDoesNotEx…'' will always evaluate to true.'
 			identifier: function.alreadyNarrowedType
 			count: 1
 			path: src/Testing/LevelsTestCase.php
 
 		-
-			message: '#^Catching internal class PHPUnit\\Framework\\AssertionFailedError\.$#'
+			rawMessage: Catching internal class PHPUnit\Framework\AssertionFailedError.
 			identifier: catch.internalClass
 			count: 2
 			path: src/Testing/LevelsTestCase.php
 
 		-
-			message: '#^Return type of method PHPStan\\Testing\\LevelsTestCase\:\:compareFiles\(\) has typehint with internal class PHPUnit\\Framework\\AssertionFailedError\.$#'
+			rawMessage: 'Return type of method PHPStan\Testing\LevelsTestCase::compareFiles() has typehint with internal class PHPUnit\Framework\AssertionFailedError.'
 			identifier: return.internalClass
 			count: 1
 			path: src/Testing/LevelsTestCase.php
 
 		-
-			message: '#^Anonymous function has an unused use \$container\.$#'
+			rawMessage: Anonymous function has an unused use $container.
 			identifier: closure.unusedUse
 			count: 1
 			path: src/Testing/PHPStanTestCase.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ConstantScalarType is error\-prone and deprecated\. Use Type\:\:isConstantScalarValue\(\) or Type\:\:getConstantScalarTypes\(\) or Type\:\:getConstantScalarValues\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ConstantScalarType is error-prone and deprecated. Use Type::isConstantScalarValue() or Type::getConstantScalarTypes() or Type::getConstantScalarValues() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Testing/TypeInferenceTestCase.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Accessory/AccessoryArrayListType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Accessory/AccessoryLiteralStringType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Accessory/AccessoryLowercaseStringType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantStringType is error\-prone and deprecated\. Use Type\:\:getConstantStrings\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantStringType is error-prone and deprecated. Use Type::getConstantStrings() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Accessory/AccessoryNonEmptyStringType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Accessory/AccessoryNonEmptyStringType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Accessory/AccessoryNonFalsyStringType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantStringType is error\-prone and deprecated\. Use Type\:\:getConstantStrings\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantStringType is error-prone and deprecated. Use Type::getConstantStrings() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Accessory/AccessoryNumericStringType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Accessory/AccessoryNumericStringType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Accessory/AccessoryUppercaseStringType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Accessory/HasMethodType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Accessory/HasOffsetType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ConstantScalarType is error\-prone and deprecated\. Use Type\:\:isConstantScalarValue\(\) or Type\:\:getConstantScalarTypes\(\) or Type\:\:getConstantScalarValues\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ConstantScalarType is error-prone and deprecated. Use Type::isConstantScalarValue() or Type::getConstantScalarTypes() or Type::getConstantScalarValues() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/Accessory/HasOffsetValueType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantStringType is error\-prone and deprecated\. Use Type\:\:getConstantStrings\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantStringType is error-prone and deprecated. Use Type::getConstantStrings() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/Accessory/HasOffsetValueType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Accessory/HasOffsetValueType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Accessory/HasPropertyType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Accessory/NonEmptyArrayType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Accessory/OversizedArrayType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ArrayType is error\-prone and deprecated\. Use Type\:\:isArray\(\) or Type\:\:getArrays\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ArrayType is error-prone and deprecated. Use Type::isArray() or Type::getArrays() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 3
 			path: src/Type/ArrayType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantArrayType is error\-prone and deprecated\. Use Type\:\:getConstantArrays\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantArrayType is error-prone and deprecated. Use Type::getConstantArrays() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/ArrayType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantStringType is error\-prone and deprecated\. Use Type\:\:getConstantStrings\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantStringType is error-prone and deprecated. Use Type::getConstantStrings() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/ArrayType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/ArrayType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\BooleanType is error\-prone and deprecated\. Use Type\:\:isBoolean\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\BooleanType is error-prone and deprecated. Use Type::isBoolean() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/BooleanType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantBooleanType is error\-prone and deprecated\. Use Type\:\:isTrue\(\) or Type\:\:isFalse\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantBooleanType is error-prone and deprecated. Use Type::isTrue() or Type::isFalse() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/BooleanType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\CallableType is error\-prone and deprecated\. Use Type\:\:isCallable\(\) and Type\:\:getCallableParametersAcceptors\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\CallableType is error-prone and deprecated. Use Type::isCallable() and Type::getCallableParametersAcceptors() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 4
 			path: src/Type/CallableType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/CallableType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/ClosureType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ArrayType is error\-prone and deprecated\. Use Type\:\:isArray\(\) or Type\:\:getArrays\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ArrayType is error-prone and deprecated. Use Type::isArray() or Type::getArrays() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Constant/ConstantArrayType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ConstantScalarType is error\-prone and deprecated\. Use Type\:\:isConstantScalarValue\(\) or Type\:\:getConstantScalarTypes\(\) or Type\:\:getConstantScalarValues\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ConstantScalarType is error-prone and deprecated. Use Type::isConstantScalarValue() or Type::getConstantScalarTypes() or Type::getConstantScalarValues() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/Constant/ConstantArrayType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantArrayType is error\-prone and deprecated\. Use Type\:\:getConstantArrays\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantArrayType is error-prone and deprecated. Use Type::getConstantArrays() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 6
 			path: src/Type/Constant/ConstantArrayType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantStringType is error\-prone and deprecated\. Use Type\:\:getConstantStrings\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantStringType is error-prone and deprecated. Use Type::getConstantStrings() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/Constant/ConstantArrayType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/Constant/ConstantArrayType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantStringType is error\-prone and deprecated\. Use Type\:\:getConstantStrings\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantStringType is error-prone and deprecated. Use Type::getConstantStrings() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/Constant/ConstantArrayTypeBuilder.php
 
 		-
-			message: '#^PHPDoc tag @var assumes the expression with type PHPStan\\Type\\Type is always PHPStan\\Type\\Constant\\ConstantIntegerType\|PHPStan\\Type\\Constant\\ConstantStringType but it''s error\-prone and dangerous\.$#'
+			rawMessage: PHPDoc tag @var assumes the expression with type PHPStan\Type\Type is always PHPStan\Type\Constant\ConstantIntegerType|PHPStan\Type\Constant\ConstantStringType but it's error-prone and dangerous.
 			identifier: phpstanApi.varTagAssumption
 			count: 2
 			path: src/Type/Constant/ConstantArrayTypeBuilder.php
 
 		-
-			message: '#^PHPDoc tag @var with type float\|int is not subtype of native type int\.$#'
+			rawMessage: PHPDoc tag @var with type float|int is not subtype of native type int.
 			identifier: varTag.nativeType
 			count: 2
 			path: src/Type/Constant/ConstantArrayTypeBuilder.php
 
 		-
-			message: '#^PHPDoc tag @var with type float\|int is not subtype of type int\.$#'
+			rawMessage: PHPDoc tag @var with type float|int is not subtype of type int.
 			identifier: varTag.type
 			count: 1
 			path: src/Type/Constant/ConstantArrayTypeBuilder.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\BooleanType is error\-prone and deprecated\. Use Type\:\:isBoolean\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\BooleanType is error-prone and deprecated. Use Type::isBoolean() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Constant/ConstantBooleanType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ConstantScalarType is error\-prone and deprecated\. Use Type\:\:isConstantScalarValue\(\) or Type\:\:getConstantScalarTypes\(\) or Type\:\:getConstantScalarValues\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ConstantScalarType is error-prone and deprecated. Use Type::isConstantScalarValue() or Type::getConstantScalarTypes() or Type::getConstantScalarValues() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 4
 			path: src/Type/Constant/ConstantBooleanType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantBooleanType is error\-prone and deprecated\. Use Type\:\:isTrue\(\) or Type\:\:isFalse\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantBooleanType is error-prone and deprecated. Use Type::isTrue() or Type::isFalse() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 3
 			path: src/Type/Constant/ConstantBooleanType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ConstantScalarType is error\-prone and deprecated\. Use Type\:\:isConstantScalarValue\(\) or Type\:\:getConstantScalarTypes\(\) or Type\:\:getConstantScalarValues\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ConstantScalarType is error-prone and deprecated. Use Type::isConstantScalarValue() or Type::getConstantScalarTypes() or Type::getConstantScalarValues() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 4
 			path: src/Type/Constant/ConstantFloatType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\FloatType is error\-prone and deprecated\. Use Type\:\:isFloat\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\FloatType is error-prone and deprecated. Use Type::isFloat() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Constant/ConstantFloatType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ConstantScalarType is error\-prone and deprecated\. Use Type\:\:isConstantScalarValue\(\) or Type\:\:getConstantScalarTypes\(\) or Type\:\:getConstantScalarValues\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ConstantScalarType is error-prone and deprecated. Use Type::isConstantScalarValue() or Type::getConstantScalarTypes() or Type::getConstantScalarValues() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 4
 			path: src/Type/Constant/ConstantIntegerType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntegerType is error\-prone and deprecated\. Use Type\:\:isInteger\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\IntegerType is error-prone and deprecated. Use Type::isInteger() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Constant/ConstantIntegerType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ClassStringType is error\-prone and deprecated\. Use Type\:\:isClassStringType\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ClassStringType is error-prone and deprecated. Use Type::isClassStringType() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Constant/ConstantStringType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ConstantScalarType is error\-prone and deprecated\. Use Type\:\:isConstantScalarValue\(\) or Type\:\:getConstantScalarTypes\(\) or Type\:\:getConstantScalarValues\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ConstantScalarType is error-prone and deprecated. Use Type::isConstantScalarValue() or Type::getConstantScalarTypes() or Type::getConstantScalarValues() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 4
 			path: src/Type/Constant/ConstantStringType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantStringType is error\-prone and deprecated\. Use Type\:\:getConstantStrings\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantStringType is error-prone and deprecated. Use Type::getConstantStrings() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 4
 			path: src/Type/Constant/ConstantStringType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Generic\\GenericClassStringType is error\-prone and deprecated\. Use Type\:\:isClassStringType\(\) and Type\:\:getClassStringObjectType\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Generic\GenericClassStringType is error-prone and deprecated. Use Type::isClassStringType() and Type::getClassStringObjectType() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Constant/ConstantStringType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\StringType is error\-prone and deprecated\. Use Type\:\:isString\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\StringType is error-prone and deprecated. Use Type::isString() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Constant/ConstantStringType.php
 
 		-
-			message: '#^PHPDoc tag @var with type int\|string is not subtype of type string\.$#'
+			rawMessage: PHPDoc tag @var with type int|string is not subtype of type string.
 			identifier: varTag.type
 			count: 1
 			path: src/Type/Constant/ConstantStringType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantArrayType is error\-prone and deprecated\. Use Type\:\:getConstantArrays\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantArrayType is error-prone and deprecated. Use Type::getConstantArrays() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Constant/OversizedArrayBuilder.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Enum\\EnumCaseObjectType is error\-prone and deprecated\. Use Type\:\:getEnumCases\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Enum\EnumCaseObjectType is error-prone and deprecated. Use Type::getEnumCases() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/Enum/EnumCaseObjectType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ConstantScalarType is error\-prone and deprecated\. Use Type\:\:isConstantScalarValue\(\) or Type\:\:getConstantScalarTypes\(\) or Type\:\:getConstantScalarValues\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ConstantScalarType is error-prone and deprecated. Use Type::isConstantScalarValue() or Type::getConstantScalarTypes() or Type::getConstantScalarValues() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/ExponentiateHelper.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Generic\\GenericObjectType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\Generic\GenericObjectType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/FileTypeMapper.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\FloatType is error\-prone and deprecated\. Use Type\:\:isFloat\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\FloatType is error-prone and deprecated. Use Type::isFloat() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/FloatType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ClassStringType is error\-prone and deprecated\. Use Type\:\:isClassStringType\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ClassStringType is error-prone and deprecated. Use Type::isClassStringType() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Generic/GenericClassStringType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantStringType is error\-prone and deprecated\. Use Type\:\:getConstantStrings\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantStringType is error-prone and deprecated. Use Type::getConstantStrings() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 4
 			path: src/Type/Generic/GenericClassStringType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Generic\\GenericClassStringType is error\-prone and deprecated\. Use Type\:\:isClassStringType\(\) and Type\:\:getClassStringObjectType\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Generic\GenericClassStringType is error-prone and deprecated. Use Type::isClassStringType() and Type::getClassStringObjectType() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 4
 			path: src/Type/Generic/GenericClassStringType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Generic/GenericClassStringType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\StringType is error\-prone and deprecated\. Use Type\:\:isString\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\StringType is error-prone and deprecated. Use Type::isString() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/Generic/GenericClassStringType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Generic\\GenericObjectType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\Generic\GenericObjectType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 3
 			path: src/Type/Generic/GenericObjectType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Generic/GenericObjectType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ObjectType is error\-prone and deprecated\. Use Type\:\:isObject\(\) or Type\:\:getObjectClassNames\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ObjectType is error-prone and deprecated. Use Type::isObject() or Type::getObjectClassNames() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Generic/GenericObjectType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\TypeWithClassName is error\-prone and deprecated\. Use Type\:\:getObjectClassNames\(\) or Type\:\:getObjectClassReflections\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\TypeWithClassName is error-prone and deprecated. Use Type::getObjectClassNames() or Type::getObjectClassReflections() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/Generic/GenericObjectType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ObjectType is error\-prone and deprecated\. Use Type\:\:isObject\(\) or Type\:\:getObjectClassNames\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ObjectType is error-prone and deprecated. Use Type::isObject() or Type::getObjectClassNames() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Generic/GenericStaticType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\TypeWithClassName is error\-prone and deprecated\. Use Type\:\:getObjectClassNames\(\) or Type\:\:getObjectClassReflections\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\TypeWithClassName is error-prone and deprecated. Use Type::getObjectClassNames() or Type::getObjectClassReflections() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Generic/GenericStaticType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 3
 			path: src/Type/Generic/TemplateArrayType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 3
 			path: src/Type/Generic/TemplateBenevolentUnionType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 3
 			path: src/Type/Generic/TemplateBooleanType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 3
 			path: src/Type/Generic/TemplateConstantArrayType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 3
 			path: src/Type/Generic/TemplateConstantIntegerType.php
 
 		-
-			message: '#^Method PHPStan\\Type\\Generic\\TemplateConstantIntegerType\:\:toPhpDocNode\(\) should return PHPStan\\PhpDocParser\\Ast\\Type\\ConstTypeNode but returns PHPStan\\PhpDocParser\\Ast\\Type\\IdentifierTypeNode\.$#'
+			rawMessage: 'Method PHPStan\Type\Generic\TemplateConstantIntegerType::toPhpDocNode() should return PHPStan\PhpDocParser\Ast\Type\ConstTypeNode but returns PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode.'
 			identifier: return.type
 			count: 1
 			path: src/Type/Generic/TemplateConstantIntegerType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 3
 			path: src/Type/Generic/TemplateConstantStringType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 3
 			path: src/Type/Generic/TemplateFloatType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 3
 			path: src/Type/Generic/TemplateGenericObjectType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 3
 			path: src/Type/Generic/TemplateIntegerType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 3
 			path: src/Type/Generic/TemplateIntersectionType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 3
 			path: src/Type/Generic/TemplateIterableType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 3
 			path: src/Type/Generic/TemplateKeyOfType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/Generic/TemplateMixedType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 3
 			path: src/Type/Generic/TemplateNullType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 3
 			path: src/Type/Generic/TemplateObjectShapeType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 3
 			path: src/Type/Generic/TemplateObjectType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 3
 			path: src/Type/Generic/TemplateObjectWithoutClassType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/Generic/TemplateStrictMixedType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 3
 			path: src/Type/Generic/TemplateStringType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ArrayType is error\-prone and deprecated\. Use Type\:\:isArray\(\) or Type\:\:getArrays\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ArrayType is error-prone and deprecated. Use Type::isArray() or Type::getArrays() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Generic/TemplateTypeFactory.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\BooleanType is error\-prone and deprecated\. Use Type\:\:isBoolean\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\BooleanType is error-prone and deprecated. Use Type::isBoolean() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Generic/TemplateTypeFactory.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantArrayType is error\-prone and deprecated\. Use Type\:\:getConstantArrays\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantArrayType is error-prone and deprecated. Use Type::getConstantArrays() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Generic/TemplateTypeFactory.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantStringType is error\-prone and deprecated\. Use Type\:\:getConstantStrings\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantStringType is error-prone and deprecated. Use Type::getConstantStrings() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Generic/TemplateTypeFactory.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\FloatType is error\-prone and deprecated\. Use Type\:\:isFloat\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\FloatType is error-prone and deprecated. Use Type::isFloat() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Generic/TemplateTypeFactory.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Generic\\GenericObjectType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\Generic\GenericObjectType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Generic/TemplateTypeFactory.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntegerType is error\-prone and deprecated\. Use Type\:\:isInteger\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\IntegerType is error-prone and deprecated. Use Type::isInteger() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Generic/TemplateTypeFactory.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Generic/TemplateTypeFactory.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IterableType is error\-prone and deprecated\. Use Type\:\:isIterable\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\IterableType is error-prone and deprecated. Use Type::isIterable() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Generic/TemplateTypeFactory.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\NullType is error\-prone and deprecated\. Use Type\:\:isNull\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\NullType is error-prone and deprecated. Use Type::isNull() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Generic/TemplateTypeFactory.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ObjectShapeType is error\-prone and deprecated\. Use Type\:\:isObject\(\) and Type\:\:hasProperty\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ObjectShapeType is error-prone and deprecated. Use Type::isObject() and Type::hasProperty() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Generic/TemplateTypeFactory.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ObjectType is error\-prone and deprecated\. Use Type\:\:isObject\(\) or Type\:\:getObjectClassNames\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ObjectType is error-prone and deprecated. Use Type::isObject() or Type::getObjectClassNames() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Generic/TemplateTypeFactory.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ObjectWithoutClassType is error\-prone and deprecated\. Use Type\:\:isObject\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ObjectWithoutClassType is error-prone and deprecated. Use Type::isObject() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Generic/TemplateTypeFactory.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\StringType is error\-prone and deprecated\. Use Type\:\:isString\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\StringType is error-prone and deprecated. Use Type::isString() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Generic/TemplateTypeFactory.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 3
 			path: src/Type/Generic/TemplateUnionType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ConstantScalarType is error\-prone and deprecated\. Use Type\:\:isConstantScalarValue\(\) or Type\:\:getConstantScalarTypes\(\) or Type\:\:getConstantScalarValues\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ConstantScalarType is error-prone and deprecated. Use Type::isConstantScalarValue() or Type::getConstantScalarTypes() or Type::getConstantScalarValues() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/IntegerRangeType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntegerType is error\-prone and deprecated\. Use Type\:\:isInteger\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\IntegerType is error-prone and deprecated. Use Type::isInteger() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 3
 			path: src/Type/IntegerRangeType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/IntegerRangeType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntegerType is error\-prone and deprecated\. Use Type\:\:isInteger\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\IntegerType is error-prone and deprecated. Use Type::isInteger() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/IntegerType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ArrayType is error\-prone and deprecated\. Use Type\:\:isArray\(\) or Type\:\:getArrays\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ArrayType is error-prone and deprecated. Use Type::isArray() or Type::getArrays() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 4
 			path: src/Type/IntersectionType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\BooleanType is error\-prone and deprecated\. Use Type\:\:isBoolean\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\BooleanType is error-prone and deprecated. Use Type::isBoolean() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/IntersectionType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\CallableType is error\-prone and deprecated\. Use Type\:\:isCallable\(\) and Type\:\:getCallableParametersAcceptors\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\CallableType is error-prone and deprecated. Use Type::isCallable() and Type::getCallableParametersAcceptors() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/IntersectionType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantArrayType is error\-prone and deprecated\. Use Type\:\:getConstantArrays\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantArrayType is error-prone and deprecated. Use Type::getConstantArrays() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 3
 			path: src/Type/IntersectionType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantStringType is error\-prone and deprecated\. Use Type\:\:getConstantStrings\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantStringType is error-prone and deprecated. Use Type::getConstantStrings() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/IntersectionType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 4
 			path: src/Type/IntersectionType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/IterableType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IterableType is error\-prone and deprecated\. Use Type\:\:isIterable\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\IterableType is error-prone and deprecated. Use Type::isIterable() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/IterableType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ConstantScalarType is error\-prone and deprecated\. Use Type\:\:isConstantScalarValue\(\) or Type\:\:getConstantScalarTypes\(\) or Type\:\:getConstantScalarValues\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ConstantScalarType is error-prone and deprecated. Use Type::isConstantScalarValue() or Type::getConstantScalarTypes() or Type::getConstantScalarValues() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 3
 			path: src/Type/NullType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\NullType is error\-prone and deprecated\. Use Type\:\:isNull\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\NullType is error-prone and deprecated. Use Type::isNull() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 3
 			path: src/Type/NullType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/ObjectShapeType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ObjectShapeType is error\-prone and deprecated\. Use Type\:\:isObject\(\) and Type\:\:hasProperty\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ObjectShapeType is error-prone and deprecated. Use Type::isObject() and Type::hasProperty() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/ObjectShapeType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ObjectWithoutClassType is error\-prone and deprecated\. Use Type\:\:isObject\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ObjectWithoutClassType is error-prone and deprecated. Use Type::isObject() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/ObjectShapeType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Enum\\EnumCaseObjectType is error\-prone and deprecated\. Use Type\:\:getEnumCases\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Enum\EnumCaseObjectType is error-prone and deprecated. Use Type::getEnumCases() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/ObjectType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Generic\\GenericObjectType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\Generic\GenericObjectType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/ObjectType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ObjectType is error\-prone and deprecated\. Use Type\:\:isObject\(\) or Type\:\:getObjectClassNames\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ObjectType is error-prone and deprecated. Use Type::isObject() or Type::getObjectClassNames() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 3
 			path: src/Type/ObjectType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ObjectWithoutClassType is error\-prone and deprecated\. Use Type\:\:isObject\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ObjectWithoutClassType is error-prone and deprecated. Use Type::isObject() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 3
 			path: src/Type/ObjectType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ObjectShapeType is error\-prone and deprecated\. Use Type\:\:isObject\(\) and Type\:\:hasProperty\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ObjectShapeType is error-prone and deprecated. Use Type::isObject() and Type::hasProperty() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/ObjectWithoutClassType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ObjectWithoutClassType is error\-prone and deprecated\. Use Type\:\:isObject\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ObjectWithoutClassType is error-prone and deprecated. Use Type::isObject() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 4
 			path: src/Type/ObjectWithoutClassType.php
 
 		-
-			message: '#^Creating new ReflectionClass is a runtime reflection concept that might not work in PHPStan because it uses fully static reflection engine\. Use objects retrieved from ReflectionProvider instead\.$#'
+			rawMessage: Creating new ReflectionClass is a runtime reflection concept that might not work in PHPStan because it uses fully static reflection engine. Use objects retrieved from ReflectionProvider instead.
 			identifier: phpstanApi.runtimeReflection
 			count: 1
 			path: src/Type/PHPStan/ClassNameUsageLocationCreateIdentifierDynamicReturnTypeExtension.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantArrayType is error\-prone and deprecated\. Use Type\:\:getConstantArrays\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantArrayType is error-prone and deprecated. Use Type::getConstantArrays() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/Php/ArrayCombineFunctionReturnTypeExtension.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantStringType is error\-prone and deprecated\. Use Type\:\:getConstantStrings\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantStringType is error-prone and deprecated. Use Type::getConstantStrings() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Php/ArrayCombineFunctionReturnTypeExtension.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantStringType is error\-prone and deprecated\. Use Type\:\:getConstantStrings\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantStringType is error-prone and deprecated. Use Type::getConstantStrings() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Php/ArrayKeyExistsFunctionTypeSpecifyingExtension.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ConstantScalarType is error\-prone and deprecated\. Use Type\:\:isConstantScalarValue\(\) or Type\:\:getConstantScalarTypes\(\) or Type\:\:getConstantScalarValues\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ConstantScalarType is error-prone and deprecated. Use Type::isConstantScalarValue() or Type::getConstantScalarTypes() or Type::getConstantScalarValues() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 16
 			path: src/Type/Php/BcMathStringOrNullReturnTypeExtension.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantStringType is error\-prone and deprecated\. Use Type\:\:getConstantStrings\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantStringType is error-prone and deprecated. Use Type::getConstantStrings() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Php/ClassExistsFunctionTypeSpecifyingExtension.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantArrayType is error\-prone and deprecated\. Use Type\:\:getConstantArrays\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantArrayType is error-prone and deprecated. Use Type::getConstantArrays() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Php/CompactFunctionReturnTypeExtension.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantStringType is error\-prone and deprecated\. Use Type\:\:getConstantStrings\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantStringType is error-prone and deprecated. Use Type::getConstantStrings() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Php/CompactFunctionReturnTypeExtension.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantStringType is error\-prone and deprecated\. Use Type\:\:getConstantStrings\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantStringType is error-prone and deprecated. Use Type::getConstantStrings() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Php/DefineConstantTypeSpecifyingExtension.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantStringType is error\-prone and deprecated\. Use Type\:\:getConstantStrings\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantStringType is error-prone and deprecated. Use Type::getConstantStrings() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Php/DefinedConstantTypeSpecifyingExtension.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\TypeWithClassName is error\-prone and deprecated\. Use Type\:\:getObjectClassNames\(\) or Type\:\:getObjectClassReflections\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\TypeWithClassName is error-prone and deprecated. Use Type::getObjectClassNames() or Type::getObjectClassReflections() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Php/DsMapDynamicReturnTypeExtension.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ConstantScalarType is error\-prone and deprecated\. Use Type\:\:isConstantScalarValue\(\) or Type\:\:getConstantScalarTypes\(\) or Type\:\:getConstantScalarValues\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ConstantScalarType is error-prone and deprecated. Use Type::isConstantScalarValue() or Type::getConstantScalarTypes() or Type::getConstantScalarValues() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/Php/FilterFunctionReturnTypeHelper.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantStringType is error\-prone and deprecated\. Use Type\:\:getConstantStrings\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantStringType is error-prone and deprecated. Use Type::getConstantStrings() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Php/FilterFunctionReturnTypeHelper.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantStringType is error\-prone and deprecated\. Use Type\:\:getConstantStrings\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantStringType is error-prone and deprecated. Use Type::getConstantStrings() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Php/FunctionExistsFunctionTypeSpecifyingExtension.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantStringType is error\-prone and deprecated\. Use Type\:\:getConstantStrings\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantStringType is error-prone and deprecated. Use Type::getConstantStrings() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Php/IsAFunctionTypeSpecifyingExtension.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Generic\\GenericClassStringType is error\-prone and deprecated\. Use Type\:\:isClassStringType\(\) and Type\:\:getClassStringObjectType\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Generic\GenericClassStringType is error-prone and deprecated. Use Type::isClassStringType() and Type::getClassStringObjectType() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/Php/IsSubclassOfFunctionTypeSpecifyingExtension.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ConstantScalarType is error\-prone and deprecated\. Use Type\:\:isConstantScalarValue\(\) or Type\:\:getConstantScalarTypes\(\) or Type\:\:getConstantScalarValues\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ConstantScalarType is error-prone and deprecated. Use Type::isConstantScalarValue() or Type::getConstantScalarTypes() or Type::getConstantScalarValues() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Php/JsonThrowOnErrorDynamicReturnTypeExtension.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantStringType is error\-prone and deprecated\. Use Type\:\:getConstantStrings\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantStringType is error-prone and deprecated. Use Type::getConstantStrings() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Php/JsonThrowOnErrorDynamicReturnTypeExtension.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantStringType is error\-prone and deprecated\. Use Type\:\:getConstantStrings\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantStringType is error-prone and deprecated. Use Type::getConstantStrings() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Php/MbSubstituteCharacterDynamicReturnTypeExtension.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantStringType is error\-prone and deprecated\. Use Type\:\:getConstantStrings\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantStringType is error-prone and deprecated. Use Type::getConstantStrings() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Php/MethodExistsTypeSpecifyingExtension.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ConstantScalarType is error\-prone and deprecated\. Use Type\:\:isConstantScalarValue\(\) or Type\:\:getConstantScalarTypes\(\) or Type\:\:getConstantScalarValues\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ConstantScalarType is error-prone and deprecated. Use Type::isConstantScalarValue() or Type::getConstantScalarTypes() or Type::getConstantScalarValues() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/Php/MinMaxFunctionReturnTypeExtension.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantArrayType is error\-prone and deprecated\. Use Type\:\:getConstantArrays\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantArrayType is error-prone and deprecated. Use Type::getConstantArrays() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/Php/MinMaxFunctionReturnTypeExtension.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ConstantScalarType is error\-prone and deprecated\. Use Type\:\:isConstantScalarValue\(\) or Type\:\:getConstantScalarTypes\(\) or Type\:\:getConstantScalarValues\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ConstantScalarType is error-prone and deprecated. Use Type::isConstantScalarValue() or Type::getConstantScalarTypes() or Type::getConstantScalarValues() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Php/NumberFormatFunctionDynamicReturnTypeExtension.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantStringType is error\-prone and deprecated\. Use Type\:\:getConstantStrings\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantStringType is error-prone and deprecated. Use Type::getConstantStrings() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Php/NumberFormatFunctionDynamicReturnTypeExtension.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantStringType is error\-prone and deprecated\. Use Type\:\:getConstantStrings\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantStringType is error-prone and deprecated. Use Type::getConstantStrings() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/Php/PropertyExistsTypeSpecifyingExtension.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantStringType is error\-prone and deprecated\. Use Type\:\:getConstantStrings\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantStringType is error-prone and deprecated. Use Type::getConstantStrings() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/Php/RangeFunctionReturnTypeExtension.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantStringType is error\-prone and deprecated\. Use Type\:\:getConstantStrings\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantStringType is error-prone and deprecated. Use Type::getConstantStrings() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Php/ReflectionMethodConstructorThrowTypeExtension.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Generic\\GenericClassStringType is error\-prone and deprecated\. Use Type\:\:isClassStringType\(\) and Type\:\:getClassStringObjectType\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Generic\GenericClassStringType is error-prone and deprecated. Use Type::isClassStringType() and Type::getClassStringObjectType() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Php/ReflectionMethodConstructorThrowTypeExtension.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantStringType is error\-prone and deprecated\. Use Type\:\:getConstantStrings\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantStringType is error-prone and deprecated. Use Type::getConstantStrings() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Php/SscanfFunctionDynamicReturnTypeExtension.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantStringType is error\-prone and deprecated\. Use Type\:\:getConstantStrings\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantStringType is error-prone and deprecated. Use Type::getConstantStrings() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/Php/StrRepeatFunctionReturnTypeExtension.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ObjectType is error\-prone and deprecated\. Use Type\:\:isObject\(\) or Type\:\:getObjectClassNames\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ObjectType is error-prone and deprecated. Use Type::isObject() or Type::getObjectClassNames() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/StaticType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ObjectWithoutClassType is error\-prone and deprecated\. Use Type\:\:isObject\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ObjectWithoutClassType is error-prone and deprecated. Use Type::isObject() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/StaticType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantStringType is error\-prone and deprecated\. Use Type\:\:getConstantStrings\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantStringType is error-prone and deprecated. Use Type::getConstantStrings() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/StringType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\StringType is error\-prone and deprecated\. Use Type\:\:isString\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\StringType is error-prone and deprecated. Use Type::isString() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/StringType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ArrayType is error\-prone and deprecated\. Use Type\:\:isArray\(\) or Type\:\:getArrays\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ArrayType is error-prone and deprecated. Use Type::isArray() or Type::getArrays() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 5
 			path: src/Type/TypeCombinator.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\CallableType is error\-prone and deprecated\. Use Type\:\:isCallable\(\) and Type\:\:getCallableParametersAcceptors\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\CallableType is error-prone and deprecated. Use Type::isCallable() and Type::getCallableParametersAcceptors() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/TypeCombinator.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantArrayType is error\-prone and deprecated\. Use Type\:\:getConstantArrays\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantArrayType is error-prone and deprecated. Use Type::getConstantArrays() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 16
 			path: src/Type/TypeCombinator.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantStringType is error\-prone and deprecated\. Use Type\:\:getConstantStrings\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantStringType is error-prone and deprecated. Use Type::getConstantStrings() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 5
 			path: src/Type/TypeCombinator.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Generic\\GenericClassStringType is error\-prone and deprecated\. Use Type\:\:isClassStringType\(\) and Type\:\:getClassStringObjectType\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Generic\GenericClassStringType is error-prone and deprecated. Use Type::isClassStringType() and Type::getClassStringObjectType() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/TypeCombinator.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 3
 			path: src/Type/TypeCombinator.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IterableType is error\-prone and deprecated\. Use Type\:\:isIterable\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\IterableType is error-prone and deprecated. Use Type::isIterable() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 8
 			path: src/Type/TypeCombinator.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\NullType is error\-prone and deprecated\. Use Type\:\:isNull\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\NullType is error-prone and deprecated. Use Type::isNull() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/TypeCombinator.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ObjectShapeType is error\-prone and deprecated\. Use Type\:\:isObject\(\) and Type\:\:hasProperty\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ObjectShapeType is error-prone and deprecated. Use Type::isObject() and Type::hasProperty() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/TypeCombinator.php
 
 		-
-			message: '#^Instanceof between PHPStan\\Type\\Constant\\ConstantIntegerType and PHPStan\\Type\\Constant\\ConstantIntegerType will always evaluate to true\.$#'
+			rawMessage: Instanceof between PHPStan\Type\Constant\ConstantIntegerType and PHPStan\Type\Constant\ConstantIntegerType will always evaluate to true.
 			identifier: instanceof.alwaysTrue
 			count: 1
 			path: src/Type/TypeCombinator.php
 
 		-
-			message: '#^Result of \|\| is always true\.$#'
+			rawMessage: Result of || is always true.
 			identifier: booleanOr.alwaysTrue
 			count: 1
 			path: src/Type/TypeCombinator.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantArrayType is error\-prone and deprecated\. Use Type\:\:getConstantArrays\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantArrayType is error-prone and deprecated. Use Type::getConstantArrays() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/TypeUtils.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 3
 			path: src/Type/TypeUtils.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ArrayType is error\-prone and deprecated\. Use Type\:\:isArray\(\) or Type\:\:getArrays\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ArrayType is error-prone and deprecated. Use Type::isArray() or Type::getArrays() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 3
 			path: src/Type/TypehintHelper.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantArrayType is error\-prone and deprecated\. Use Type\:\:getConstantArrays\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantArrayType is error-prone and deprecated. Use Type::getConstantArrays() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/TypehintHelper.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IterableType is error\-prone and deprecated\. Use Type\:\:isIterable\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\IterableType is error-prone and deprecated. Use Type::isIterable() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/TypehintHelper.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\CallableType is error\-prone and deprecated\. Use Type\:\:isCallable\(\) and Type\:\:getCallableParametersAcceptors\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\CallableType is error-prone and deprecated. Use Type::isCallable() and Type::getCallableParametersAcceptors() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/UnionType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Generic\\GenericClassStringType is error\-prone and deprecated\. Use Type\:\:isClassStringType\(\) and Type\:\:getClassStringObjectType\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Generic\GenericClassStringType is error-prone and deprecated. Use Type::isClassStringType() and Type::getClassStringObjectType() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/UnionType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntersectionType is error\-prone and deprecated\.$#'
+			rawMessage: Doing instanceof PHPStan\Type\IntersectionType is error-prone and deprecated.
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/UnionType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IterableType is error\-prone and deprecated\. Use Type\:\:isIterable\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\IterableType is error-prone and deprecated. Use Type::isIterable() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 1
 			path: src/Type/UnionType.php
 
 		-
-			message: '#^PHPDoc tag @var assumes the expression with type PHPStan\\Type\\Type is always PHPStan\\Type\\BooleanType but it''s error\-prone and dangerous\.$#'
+			rawMessage: PHPDoc tag @var assumes the expression with type PHPStan\Type\Type is always PHPStan\Type\BooleanType but it's error-prone and dangerous.
 			identifier: phpstanApi.varTagAssumption
 			count: 1
 			path: src/Type/UnionType.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\CallableType is error\-prone and deprecated\. Use Type\:\:isCallable\(\) and Type\:\:getCallableParametersAcceptors\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\CallableType is error-prone and deprecated. Use Type::isCallable() and Type::getCallableParametersAcceptors() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/UnionTypeHelper.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\ConstantScalarType is error\-prone and deprecated\. Use Type\:\:isConstantScalarValue\(\) or Type\:\:getConstantScalarTypes\(\) or Type\:\:getConstantScalarValues\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\ConstantScalarType is error-prone and deprecated. Use Type::isConstantScalarValue() or Type::getConstantScalarTypes() or Type::getConstantScalarValues() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 4
 			path: src/Type/UnionTypeHelper.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantBooleanType is error\-prone and deprecated\. Use Type\:\:isTrue\(\) or Type\:\:isFalse\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantBooleanType is error-prone and deprecated. Use Type::isTrue() or Type::isFalse() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/UnionTypeHelper.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\Constant\\ConstantStringType is error\-prone and deprecated\. Use Type\:\:getConstantStrings\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\Constant\ConstantStringType is error-prone and deprecated. Use Type::getConstantStrings() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/UnionTypeHelper.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\IntegerType is error\-prone and deprecated\. Use Type\:\:isInteger\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\IntegerType is error-prone and deprecated. Use Type::isInteger() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/UnionTypeHelper.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\NullType is error\-prone and deprecated\. Use Type\:\:isNull\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\NullType is error-prone and deprecated. Use Type::isNull() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/UnionTypeHelper.php
 
 		-
-			message: '#^Doing instanceof PHPStan\\Type\\VoidType is error\-prone and deprecated\. Use Type\:\:isVoid\(\) instead\.$#'
+			rawMessage: 'Doing instanceof PHPStan\Type\VoidType is error-prone and deprecated. Use Type::isVoid() instead.'
 			identifier: phpstanApi.instanceofType
 			count: 2
 			path: src/Type/VoidType.php
 
 		-
-			message: '#^Unreachable statement \- code above always terminates\.$#'
+			rawMessage: Unreachable statement - code above always terminates.
 			identifier: deadCode.unreachable
 			count: 1
 			path: tests/PHPStan/Analyser/AnalyserTest.php
 
 		-
-			message: '#^Class PHPStan\\Analyser\\AnonymousClassNameRuleTest extends generic class PHPStan\\Testing\\RuleTestCase but does not specify its types\: TRule$#'
+			rawMessage: 'Class PHPStan\Analyser\AnonymousClassNameRuleTest extends generic class PHPStan\Testing\RuleTestCase but does not specify its types: TRule'
 			identifier: missingType.generics
 			count: 1
 			path: tests/PHPStan/Analyser/AnonymousClassNameRuleTest.php
 
 		-
-			message: '#^Method PHPStan\\Analyser\\AnonymousClassNameRuleTest\:\:getRule\(\) return type with generic interface PHPStan\\Rules\\Rule does not specify its types\: TNodeType$#'
+			rawMessage: 'Method PHPStan\Analyser\AnonymousClassNameRuleTest::getRule() return type with generic interface PHPStan\Rules\Rule does not specify its types: TNodeType'
 			identifier: missingType.generics
 			count: 1
 			path: tests/PHPStan/Analyser/AnonymousClassNameRuleTest.php
 
 		-
-			message: '#^Class PHPStan\\Analyser\\EvaluationOrderTest extends generic class PHPStan\\Testing\\RuleTestCase but does not specify its types\: TRule$#'
+			rawMessage: 'Class PHPStan\Analyser\EvaluationOrderTest extends generic class PHPStan\Testing\RuleTestCase but does not specify its types: TRule'
 			identifier: missingType.generics
 			count: 1
 			path: tests/PHPStan/Analyser/EvaluationOrderTest.php
 
 		-
-			message: '#^Method PHPStan\\Analyser\\EvaluationOrderTest\:\:getRule\(\) return type with generic interface PHPStan\\Rules\\Rule does not specify its types\: TNodeType$#'
+			rawMessage: 'Method PHPStan\Analyser\EvaluationOrderTest::getRule() return type with generic interface PHPStan\Rules\Rule does not specify its types: TNodeType'
 			identifier: missingType.generics
 			count: 1
 			path: tests/PHPStan/Analyser/EvaluationOrderTest.php
 
 		-
-			message: '#^Constant SOME_CONSTANT_IN_AUTOLOAD_FILE not found\.$#'
+			rawMessage: Constant SOME_CONSTANT_IN_AUTOLOAD_FILE not found.
 			identifier: constant.notFound
 			count: 1
 			path: tests/PHPStan/Command/AnalyseCommandTest.php
 
 		-
-			message: '#^Class PHPStan\\Node\\FileNodeTest extends generic class PHPStan\\Testing\\RuleTestCase but does not specify its types\: TRule$#'
+			rawMessage: 'Class PHPStan\Node\FileNodeTest extends generic class PHPStan\Testing\RuleTestCase but does not specify its types: TRule'
 			identifier: missingType.generics
 			count: 1
 			path: tests/PHPStan/Node/FileNodeTest.php
 
 		-
-			message: '#^Method PHPStan\\Node\\FileNodeTest\:\:getRule\(\) return type with generic interface PHPStan\\Rules\\Rule does not specify its types\: TNodeType$#'
+			rawMessage: 'Method PHPStan\Node\FileNodeTest::getRule() return type with generic interface PHPStan\Rules\Rule does not specify its types: TNodeType'
 			identifier: missingType.generics
 			count: 1
 			path: tests/PHPStan/Node/FileNodeTest.php
 
 		-
-			message: '#^Access to constant on internal class InternalAnnotations\\InternalFoo\.$#'
+			rawMessage: Access to constant on internal class InternalAnnotations\InternalFoo.
 			identifier: classConstant.internalClass
 			count: 1
 			path: tests/PHPStan/Reflection/Annotations/InternalAnnotationsTest.php
 
 		-
-			message: '#^Access to constant on internal interface InternalAnnotations\\InternalFooInterface\.$#'
+			rawMessage: Access to constant on internal interface InternalAnnotations\InternalFooInterface.
 			identifier: classConstant.internalInterface
 			count: 1
 			path: tests/PHPStan/Reflection/Annotations/InternalAnnotationsTest.php
 
 		-
-			message: '#^Access to constant on internal trait InternalAnnotations\\InternalFooTrait\.$#'
+			rawMessage: Access to constant on internal trait InternalAnnotations\InternalFooTrait.
 			identifier: classConstant.internalTrait
 			count: 1
 			path: tests/PHPStan/Reflection/Annotations/InternalAnnotationsTest.php
 
 		-
-			message: '#^PHPDoc tag @var with type string is not subtype of type class\-string\.$#'
+			rawMessage: PHPDoc tag @var with type string is not subtype of type class-string.
 			identifier: varTag.type
 			count: 1
 			path: tests/PHPStan/Reflection/BetterReflection/SourceLocator/OptimizedDirectorySourceLocatorTest.php
 
 		-
-			message: '#^Creating new PHPStan\\Php8StubsMap is not covered by backward compatibility promise\. The class might change in a minor PHPStan version\.$#'
+			rawMessage: Creating new PHPStan\Php8StubsMap is not covered by backward compatibility promise. The class might change in a minor PHPStan version.
 			identifier: phpstanApi.constructor
 			count: 1
 			path: tests/PHPStan/Reflection/ReflectionProviderGoldenTest.php
 
 		-
-			message: '#^Creating new PHPStan\\Php8StubsMap is not covered by backward compatibility promise\. The class might change in a minor PHPStan version\.$#'
+			rawMessage: Creating new PHPStan\Php8StubsMap is not covered by backward compatibility promise. The class might change in a minor PHPStan version.
 			identifier: phpstanApi.constructor
 			count: 1
 			path: tests/PHPStan/Reflection/SignatureMap/Php8SignatureMapProviderTest.php
 
 		-
-			message: '#^Access to constant on internal class PHPUnit\\Framework\\AssertionFailedError\.$#'
+			rawMessage: Access to constant on internal class PHPUnit\Framework\AssertionFailedError.
 			identifier: classConstant.internalClass
 			count: 2
 			path: tests/PHPStan/Testing/TypeInferenceTestCaseTest.php
 
 		-
-			message: '#^Catching internal class PHPUnit\\Framework\\AssertionFailedError\.$#'
+			rawMessage: Catching internal class PHPUnit\Framework\AssertionFailedError.
 			identifier: catch.internalClass
 			count: 1
 			path: tests/PHPStan/Testing/TypeInferenceTestCaseTest.php
 
 		-
-			message: '#^PHPDoc tag @var assumes the expression with type PHPStan\\Type\\Generic\\TemplateType is always PHPStan\\Type\\Generic\\TemplateMixedType but it''s error\-prone and dangerous\.$#'
+			rawMessage: PHPDoc tag @var assumes the expression with type PHPStan\Type\Generic\TemplateType is always PHPStan\Type\Generic\TemplateMixedType but it's error-prone and dangerous.
 			identifier: phpstanApi.varTagAssumption
 			count: 1
 			path: tests/PHPStan/Type/IterableTypeTest.php
