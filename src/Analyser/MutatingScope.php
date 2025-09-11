@@ -3735,15 +3735,19 @@ final class MutatingScope implements Scope
 			$nativeTypes[$paramExprString] = ExpressionTypeHolder::createYes($use->var, $variableNativeType);
 		}
 
-		foreach ($this->invalidateStaticExpressions($this->expressionTypes) as $exprString => $typeHolder) {
+		$nonStaticExpressions = $this->invalidateStaticExpressions($this->expressionTypes);
+		foreach ($nonStaticExpressions as $exprString => $typeHolder) {
 			$expr = $typeHolder->getExpr();
+
 			if ($expr instanceof Variable) {
 				continue;
 			}
+
 			$variables = (new NodeFinder())->findInstanceOf([$expr], Variable::class);
 			if ($variables === [] && !$this->expressionTypeIsUnchangeable($typeHolder)) {
 				continue;
 			}
+
 			foreach ($variables as $variable) {
 				if (!is_string($variable->name)) {
 					continue 2;
@@ -3760,6 +3764,22 @@ final class MutatingScope implements Scope
 			$node = new Variable('this');
 			$expressionTypes['$this'] = ExpressionTypeHolder::createYes($node, $this->getType($node));
 			$nativeTypes['$this'] = ExpressionTypeHolder::createYes($node, $this->getNativeType($node));
+
+			if ($this->phpVersion->supportsReadOnlyProperties()) {
+				foreach ($nonStaticExpressions as $exprString => $typeHolder) {
+					$expr = $typeHolder->getExpr();
+
+					if (!$expr instanceof PropertyFetch) {
+						continue;
+					}
+
+					if (!$this->isReadonlyPropertyFetch($expr, true)) {
+						continue;
+					}
+
+					$expressionTypes[$exprString] = $typeHolder;
+				}
+			}
 		}
 
 		return $this->scopeFactory->create(
