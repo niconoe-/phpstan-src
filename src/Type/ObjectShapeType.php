@@ -173,7 +173,20 @@ class ObjectShapeType implements Type
 			}
 
 			$result = $result->and($hasProperty);
-			$otherProperty = $type->getProperty($propertyName, $scope);
+			try {
+				$otherProperty = $type->getProperty($propertyName, $scope);
+			} catch (MissingPropertyFromReflectionException) {
+				return AcceptsResult::createNo(
+					[
+						sprintf(
+							'%s does not have property $%s.',
+							$type->describe(VerbosityLevel::typeOnly()),
+							$propertyName,
+						),
+					],
+				);
+			}
+
 			if (!$otherProperty->isPublic()) {
 				return new AcceptsResult(TrinaryLogic::createNo(), [
 					sprintf('Property %s::$%s is not public.', $otherProperty->getDeclaringClass()->getDisplayName(), $propertyName),
@@ -265,7 +278,19 @@ class ObjectShapeType implements Type
 			}
 
 			$result = $result->and($hasProperty);
-			$otherProperty = $type->getProperty($propertyName, $scope);
+			try {
+				$otherProperty = $type->getProperty($propertyName, $scope);
+			} catch (MissingPropertyFromReflectionException) {
+				return IsSuperTypeOfResult::createNo(
+					[
+						sprintf(
+							'%s does not have property $%s.',
+							$type->describe(VerbosityLevel::typeOnly()),
+							$propertyName,
+						),
+					],
+				);
+			}
 			if (!$otherProperty->isPublic()) {
 				return IsSuperTypeOfResult::createNo();
 			}

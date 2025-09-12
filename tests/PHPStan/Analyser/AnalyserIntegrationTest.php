@@ -1252,6 +1252,12 @@ class AnalyserIntegrationTest extends PHPStanTestCase
 		$this->assertNoErrors($errors);
 	}
 
+	public function testBug13492(): void
+	{
+		$errors = $this->runAnalyse(__DIR__ . '/data/bug-13492.php');
+		$this->assertNoErrors($errors);
+	}
+
 	public function testProcessCalledMethodInfiniteLoop(): void
 	{
 		$errors = $this->runAnalyse(__DIR__ . '/data/process-called-method-infinite-loop.php');
