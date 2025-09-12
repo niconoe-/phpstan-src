@@ -11,6 +11,7 @@ use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\NeverType;
 use PHPStan\Type\Type;
+use function count;
 use function in_array;
 use function sprintf;
 
@@ -65,6 +66,10 @@ final class CallToFunctionStatementWithoutSideEffectsRule implements Rule
 		}
 
 		$function = $this->reflectionProvider->getFunction($funcCall->name, $scope);
+		if (count($function->getAsserts()->getAsserts()) > 0) {
+			return [];
+		}
+
 		$functionName = $function->getName();
 		$functionHasSideEffects = !$function->hasSideEffects()->no();
 

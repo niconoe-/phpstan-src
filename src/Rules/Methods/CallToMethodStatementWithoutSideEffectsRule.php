@@ -13,6 +13,7 @@ use PHPStan\Rules\RuleLevelHelper;
 use PHPStan\Type\ErrorType;
 use PHPStan\Type\NeverType;
 use PHPStan\Type\Type;
+use function count;
 use function sprintf;
 
 /**
@@ -69,6 +70,9 @@ final class CallToMethodStatementWithoutSideEffectsRule implements Rule
 		}
 
 		$method = $calledOnType->getMethod($methodName, $scope);
+		if (count($method->getAsserts()->getAsserts()) > 0) {
+			return [];
+		}
 
 		return [
 			RuleErrorBuilder::message(sprintf(

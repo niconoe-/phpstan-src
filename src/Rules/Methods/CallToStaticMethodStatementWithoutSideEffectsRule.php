@@ -15,6 +15,7 @@ use PHPStan\Type\ErrorType;
 use PHPStan\Type\NeverType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
+use function count;
 use function sprintf;
 use function strtolower;
 
@@ -84,6 +85,10 @@ final class CallToStaticMethodStatementWithoutSideEffectsRule implements Rule
 				|| strtolower($method->getName()) === strtolower($method->getDeclaringClass()->getName())
 			)
 		) {
+			return [];
+		}
+
+		if (count($method->getAsserts()->getAsserts()) > 0) {
 			return [];
 		}
 
