@@ -1,5 +1,11 @@
 <?php declare(strict_types=1);
 
+namespace DatePeriodReturnTypes;
+
+use DateInterval;
+use DatePeriod;
+use DateTime;
+use DateTimeImmutable;
 use function PHPStan\Testing\assertType;
 
 $start = new DateTime('2012-07-01');
@@ -38,3 +44,13 @@ $datePeriod = $datePeriodList[random_int(0, 2)];
 assertType(\DatePeriod::class, $datePeriod);
 assertType(\DateTimeInterface::class . '|null', $datePeriod->getEndDate());
 assertType('int|null', $datePeriod->getRecurrences());
+
+class Foo
+{
+	private DatePeriod $period;
+
+	public function doFoo(DateTimeImmutable $fromDate, DateTimeImmutable $toDate): void
+	{
+		$this->period = new DatePeriod($fromDate, new DateInterval('P1D'), $toDate->modify('+1 day'));
+	}
+}

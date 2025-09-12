@@ -5899,28 +5899,31 @@ final class MutatingScope implements Scope
 
 		$assignedToProperty = $node->getAttribute(NewAssignedToPropertyVisitor::ATTRIBUTE_NAME);
 		if ($assignedToProperty !== null) {
-			$constructorVariant = $constructorMethod->getOnlyVariant();
-			$classTemplateTypes = $classReflection->getTemplateTypeMap()->getTypes();
-			$originalClassTemplateTypes = $classTemplateTypes;
-			foreach ($constructorVariant->getParameters() as $parameter) {
-				TypeTraverser::map($parameter->getType(), static function (Type $type, callable $traverse) use (&$classTemplateTypes): Type {
-					if ($type instanceof TemplateType && array_key_exists($type->getName(), $classTemplateTypes)) {
-						$classTemplateType = $classTemplateTypes[$type->getName()];
-						if ($classTemplateType instanceof TemplateType && $classTemplateType->getScope()->equals($type->getScope())) {
-							unset($classTemplateTypes[$type->getName()]);
+			$constructorVariants = $constructorMethod->getVariants();
+			if (count($constructorVariants) === 1) {
+				$constructorVariant = $constructorVariants[0];
+				$classTemplateTypes = $classReflection->getTemplateTypeMap()->getTypes();
+				$originalClassTemplateTypes = $classTemplateTypes;
+				foreach ($constructorVariant->getParameters() as $parameter) {
+					TypeTraverser::map($parameter->getType(), static function (Type $type, callable $traverse) use (&$classTemplateTypes): Type {
+						if ($type instanceof TemplateType && array_key_exists($type->getName(), $classTemplateTypes)) {
+							$classTemplateType = $classTemplateTypes[$type->getName()];
+							if ($classTemplateType instanceof TemplateType && $classTemplateType->getScope()->equals($type->getScope())) {
+								unset($classTemplateTypes[$type->getName()]);
+							}
+							return $type;
 						}
-						return $type;
+
+						return $traverse($type);
+					});
+				}
+
+				if (count($classTemplateTypes) === count($originalClassTemplateTypes)) {
+					$propertyType = TypeCombinator::removeNull($this->getType($assignedToProperty));
+					$nonFinalObjectType = $isStatic ? new StaticType($nonFinalClassReflection) : new ObjectType($resolvedClassName, classReflection: $nonFinalClassReflection);
+					if ($nonFinalObjectType->isSuperTypeOf($propertyType)->yes()) {
+						return $propertyType;
 					}
-
-					return $traverse($type);
-				});
-			}
-
-			if (count($classTemplateTypes) === count($originalClassTemplateTypes)) {
-				$propertyType = TypeCombinator::removeNull($this->getType($assignedToProperty));
-				$nonFinalObjectType = $isStatic ? new StaticType($nonFinalClassReflection) : new ObjectType($resolvedClassName, classReflection: $nonFinalClassReflection);
-				if ($nonFinalObjectType->isSuperTypeOf($propertyType)->yes()) {
-					return $propertyType;
 				}
 			}
 		}
