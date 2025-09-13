@@ -1722,10 +1722,6 @@ final class MutatingScope implements Scope
 						$properties = [];
 						$optionalProperties = [];
 						foreach ($constantArray->getKeyTypes() as $i => $keyType) {
-							if (!$keyType instanceof ConstantStringType) {
-								// an object with integer properties is >weird<
-								continue;
-							}
 							$valueType = $constantArray->getValueTypes()[$i];
 							$optional = $constantArray->isOptionalKey($i);
 							if ($optional) {
