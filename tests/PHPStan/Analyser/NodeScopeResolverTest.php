@@ -15,6 +15,7 @@ use function sprintf;
 use function str_starts_with;
 use function strlen;
 use function substr;
+use const DIRECTORY_SEPARATOR;
 use const PHP_INT_SIZE;
 use const PHP_VERSION_ID;
 
