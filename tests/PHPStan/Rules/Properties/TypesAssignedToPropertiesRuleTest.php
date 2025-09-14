@@ -914,4 +914,14 @@ class TypesAssignedToPropertiesRuleTest extends RuleTestCase
 		]);
 	}
 
+	public function testBug11241b(): void
+	{
+		$this->analyse([__DIR__ . '/data/bug-11241b.php'], [
+			[
+				'Property Bug11241b\HelloWorld::$property1 (bool) does not accept string.',
+				14,
+			],
+		]);
+	}
+
 }
