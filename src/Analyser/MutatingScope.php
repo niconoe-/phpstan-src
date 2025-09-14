@@ -4370,7 +4370,7 @@ final class MutatingScope implements Scope
 			return $this;
 		}
 
-		$propertyReflection = $this->getPropertyReflection($fetchedOnType, $propertyName);
+		$propertyReflection = $this->getInstancePropertyReflection($fetchedOnType, $propertyName);
 		if ($propertyReflection === null) {
 			return $this;
 		}
@@ -6204,7 +6204,10 @@ final class MutatingScope implements Scope
 		return $this->transformVoidToNull($parametersAcceptor->getReturnType(), $methodCall);
 	}
 
-	/** @api */
+	/**
+	 * @api
+	 * @deprecated Use getInstancePropertyReflection or getStaticPropertyReflection instead
+	 */
 	public function getPropertyReflection(Type $typeWithProperty, string $propertyName): ?ExtendedPropertyReflection
 	{
 		if ($typeWithProperty instanceof UnionType) {
@@ -6217,12 +6220,43 @@ final class MutatingScope implements Scope
 		return $typeWithProperty->getProperty($propertyName, $this);
 	}
 
+	/** @api */
+	public function getInstancePropertyReflection(Type $typeWithProperty, string $propertyName): ?ExtendedPropertyReflection
+	{
+		if ($typeWithProperty instanceof UnionType) {
+			$typeWithProperty = $typeWithProperty->filterTypes(static fn (Type $innerType) => $innerType->hasInstanceProperty($propertyName)->yes());
+		}
+		if (!$typeWithProperty->hasInstanceProperty($propertyName)->yes()) {
+			return null;
+		}
+
+		return $typeWithProperty->getInstanceProperty($propertyName, $this);
+	}
+
+	/** @api */
+	public function getStaticPropertyReflection(Type $typeWithProperty, string $propertyName): ?ExtendedPropertyReflection
+	{
+		if ($typeWithProperty instanceof UnionType) {
+			$typeWithProperty = $typeWithProperty->filterTypes(static fn (Type $innerType) => $innerType->hasStaticProperty($propertyName)->yes());
+		}
+		if (!$typeWithProperty->hasStaticProperty($propertyName)->yes()) {
+			return null;
+		}
+
+		return $typeWithProperty->getStaticProperty($propertyName, $this);
+	}
+
 	/**
 	 * @param PropertyFetch|Node\Expr\StaticPropertyFetch $propertyFetch
 	 */
 	private function propertyFetchType(Type $fetchedOnType, string $propertyName, Expr $propertyFetch): ?Type
 	{
-		$propertyReflection = $this->getPropertyReflection($fetchedOnType, $propertyName);
+		if ($propertyFetch instanceof PropertyFetch) {
+			$propertyReflection = $this->getInstancePropertyReflection($fetchedOnType, $propertyName);
+		} else {
+			$propertyReflection = $this->getStaticPropertyReflection($fetchedOnType, $propertyName);
+		}
+
 		if ($propertyReflection === null) {
 			return null;
 		}

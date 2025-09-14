@@ -138,8 +138,8 @@ final class AccessStaticPropertiesRule implements Rule
 
 				$locationData = [];
 				$locationClassReflection = $this->reflectionProvider->getClass($class);
-				if ($locationClassReflection->hasProperty($name)) {
-					$locationData['property'] = $locationClassReflection->getProperty($name, $scope);
+				if ($locationClassReflection->hasStaticProperty($name)) {
+					$locationData['property'] = $locationClassReflection->getStaticProperty($name);
 				}
 
 				$messages = $this->classCheck->checkClassNames(
@@ -155,7 +155,7 @@ final class AccessStaticPropertiesRule implements Rule
 				$scope,
 				NullsafeOperatorHelper::getNullsafeShortcircuitedExprRespectingScope($scope, $node->class),
 				sprintf('Access to static property $%s on an unknown class %%s.', SprintfHelper::escapeFormatString($name)),
-				static fn (Type $type): bool => $type->canAccessProperties()->yes() && $type->hasProperty($name)->yes(),
+				static fn (Type $type): bool => $type->canAccessProperties()->yes() && $type->hasStaticProperty($name)->yes(),
 			);
 			$classType = $classTypeResult->getType();
 			if ($classType instanceof ErrorType) {
@@ -187,7 +187,7 @@ final class AccessStaticPropertiesRule implements Rule
 			]);
 		}
 
-		$has = $classType->hasProperty($name);
+		$has = $classType->hasStaticProperty($name);
 		if (!$has->no() && $scope->isUndefinedExpressionAllowed($node)) {
 			return [];
 		}
@@ -203,8 +203,8 @@ final class AccessStaticPropertiesRule implements Rule
 				$parentClassReflection = $propertyClassReflection->getParentClass();
 
 				while ($parentClassReflection !== null) {
-					if ($parentClassReflection->hasProperty($name)) {
-						if ($scope->canReadProperty($parentClassReflection->getProperty($name, $scope))) {
+					if ($parentClassReflection->hasStaticProperty($name)) {
+						if ($scope->canReadProperty($parentClassReflection->getStaticProperty($name))) {
 							return [];
 						}
 						return [
@@ -220,6 +220,23 @@ final class AccessStaticPropertiesRule implements Rule
 				}
 			}
 
+			if ($classType->hasInstanceProperty($name)->yes()) {
+				$hasPropertyTypes = TypeUtils::getHasPropertyTypes($classType);
+				foreach ($hasPropertyTypes as $hasPropertyType) {
+					if ($hasPropertyType->getPropertyName() === $name) {
+						return [];
+					}
+				}
+
+				return array_merge($messages, [
+					RuleErrorBuilder::message(sprintf(
+						'Static access to instance property %s::$%s.',
+						$classType->getInstanceProperty($name, $scope)->getDeclaringClass()->getDisplayName(),
+						$name,
+					))->identifier('property.staticAccess')->build(),
+				]);
+			}
+
 			return array_merge($messages, [
 				RuleErrorBuilder::message(sprintf(
 					'Access to an undefined static property %s::$%s.',
@@ -229,24 +246,7 @@ final class AccessStaticPropertiesRule implements Rule
 			]);
 		}
 
-		$property = $classType->getProperty($name, $scope);
-		if (!$property->isStatic()) {
-			$hasPropertyTypes = TypeUtils::getHasPropertyTypes($classType);
-			foreach ($hasPropertyTypes as $hasPropertyType) {
-				if ($hasPropertyType->getPropertyName() === $name) {
-					return [];
-				}
-			}
-
-			return array_merge($messages, [
-				RuleErrorBuilder::message(sprintf(
-					'Static access to instance property %s::$%s.',
-					$property->getDeclaringClass()->getDisplayName(),
-					$name,
-				))->identifier('property.staticAccess')->build(),
-			]);
-		}
-
+		$property = $classType->getStaticProperty($name, $scope);
 		if (!$scope->canReadProperty($property)) {
 			return array_merge($messages, [
 				RuleErrorBuilder::message(sprintf(

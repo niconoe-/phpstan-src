@@ -91,6 +91,21 @@ class ObjectShapeType implements Type
 
 	public function hasProperty(string $propertyName): TrinaryLogic
 	{
+		return $this->hasInstanceProperty($propertyName);
+	}
+
+	public function getProperty(string $propertyName, ClassMemberAccessAnswerer $scope): ExtendedPropertyReflection
+	{
+		return $this->getInstanceProperty($propertyName, $scope);
+	}
+
+	public function getUnresolvedPropertyPrototype(string $propertyName, ClassMemberAccessAnswerer $scope): UnresolvedPropertyPrototypeReflection
+	{
+		return $this->getUnresolvedInstancePropertyPrototype($propertyName, $scope);
+	}
+
+	public function hasInstanceProperty(string $propertyName): TrinaryLogic
+	{
 		if (!array_key_exists($propertyName, $this->properties)) {
 			return TrinaryLogic::createNo();
 		}
@@ -102,12 +117,12 @@ class ObjectShapeType implements Type
 		return TrinaryLogic::createYes();
 	}
 
-	public function getProperty(string $propertyName, ClassMemberAccessAnswerer $scope): ExtendedPropertyReflection
+	public function getInstanceProperty(string $propertyName, ClassMemberAccessAnswerer $scope): ExtendedPropertyReflection
 	{
-		return $this->getUnresolvedPropertyPrototype($propertyName, $scope)->getTransformedProperty();
+		return $this->getUnresolvedInstancePropertyPrototype($propertyName, $scope)->getTransformedProperty();
 	}
 
-	public function getUnresolvedPropertyPrototype(string $propertyName, ClassMemberAccessAnswerer $scope): UnresolvedPropertyPrototypeReflection
+	public function getUnresolvedInstancePropertyPrototype(string $propertyName, ClassMemberAccessAnswerer $scope): UnresolvedPropertyPrototypeReflection
 	{
 		if (!array_key_exists($propertyName, $this->properties)) {
 			throw new ShouldNotHappenException();
@@ -120,6 +135,21 @@ class ObjectShapeType implements Type
 			false,
 			static fn (Type $type): Type => $type,
 		);
+	}
+
+	public function hasStaticProperty(string $propertyName): TrinaryLogic
+	{
+		return TrinaryLogic::createNo();
+	}
+
+	public function getStaticProperty(string $propertyName, ClassMemberAccessAnswerer $scope): ExtendedPropertyReflection
+	{
+		throw new ShouldNotHappenException();
+	}
+
+	public function getUnresolvedStaticPropertyPrototype(string $propertyName, ClassMemberAccessAnswerer $scope): UnresolvedPropertyPrototypeReflection
+	{
+		throw new ShouldNotHappenException();
 	}
 
 	public function accepts(Type $type, bool $strictTypes): AcceptsResult
@@ -143,7 +173,7 @@ class ObjectShapeType implements Type
 		$result = AcceptsResult::createYes();
 		$scope = new OutOfClassScope();
 		foreach ($this->properties as $propertyName => $propertyType) {
-			$typeHasProperty = $type->hasProperty((string) $propertyName);
+			$typeHasProperty = $type->hasInstanceProperty((string) $propertyName);
 			$hasProperty = new AcceptsResult(
 				$typeHasProperty,
 				$typeHasProperty->yes() ? [] : [
@@ -155,6 +185,12 @@ class ObjectShapeType implements Type
 					),
 				],
 			);
+			if (!$hasProperty->yes() && $type->hasStaticProperty((string) $propertyName)->yes()) {
+				$result = $result->and(new AcceptsResult(TrinaryLogic::createNo(), [
+					sprintf('Property %s::$%s is static.', $type->getStaticProperty((string) $propertyName, $scope)->getDeclaringClass()->getDisplayName(), $propertyName),
+				]));
+				continue;
+			}
 			if ($hasProperty->no()) {
 				if (in_array($propertyName, $this->optionalProperties, true)) {
 					continue;
@@ -174,7 +210,7 @@ class ObjectShapeType implements Type
 
 			$result = $result->and($hasProperty);
 			try {
-				$otherProperty = $type->getProperty((string) $propertyName, $scope);
+				$otherProperty = $type->getInstanceProperty((string) $propertyName, $scope);
 			} catch (MissingPropertyFromReflectionException) {
 				return AcceptsResult::createNo(
 					[
@@ -260,7 +296,7 @@ class ObjectShapeType implements Type
 		$result = IsSuperTypeOfResult::createYes();
 		$scope = new OutOfClassScope();
 		foreach ($this->properties as $propertyName => $propertyType) {
-			$hasProperty = new IsSuperTypeOfResult($type->hasProperty((string) $propertyName), []);
+			$hasProperty = new IsSuperTypeOfResult($type->hasInstanceProperty((string) $propertyName), []);
 			if ($hasProperty->no()) {
 				if (in_array($propertyName, $this->optionalProperties, true)) {
 					continue;
@@ -279,7 +315,7 @@ class ObjectShapeType implements Type
 
 			$result = $result->and($hasProperty);
 			try {
-				$otherProperty = $type->getProperty((string) $propertyName, $scope);
+				$otherProperty = $type->getInstanceProperty((string) $propertyName, $scope);
 			} catch (MissingPropertyFromReflectionException) {
 				return IsSuperTypeOfResult::createNo(
 					[
@@ -291,6 +327,7 @@ class ObjectShapeType implements Type
 					],
 				);
 			}
+
 			if (!$otherProperty->isPublic()) {
 				return IsSuperTypeOfResult::createNo();
 			}
@@ -383,12 +420,12 @@ class ObjectShapeType implements Type
 			$typeMap = TemplateTypeMap::createEmpty();
 			$scope = new OutOfClassScope();
 			foreach ($this->properties as $name => $propertyType) {
-				if ($receivedType->hasProperty((string) $name)->no()) {
+				if ($receivedType->hasInstanceProperty((string) $name)->no()) {
 					continue;
 				}
 
 				try {
-					$receivedProperty = $receivedType->getProperty((string) $name, $scope);
+					$receivedProperty = $receivedType->getInstanceProperty((string) $name, $scope);
 				} catch (MissingPropertyFromReflectionException) {
 					continue;
 				}
@@ -474,10 +511,10 @@ class ObjectShapeType implements Type
 
 		$scope = new OutOfClassScope();
 		foreach ($this->properties as $name => $propertyType) {
-			if (!$right->hasProperty((string) $name)->yes()) {
+			if (!$right->hasInstanceProperty((string) $name)->yes()) {
 				return $this;
 			}
-			$transformed = $cb($propertyType, $right->getProperty((string) $name, $scope)->getReadableType());
+			$transformed = $cb($propertyType, $right->getInstanceProperty((string) $name, $scope)->getReadableType());
 			if ($transformed !== $propertyType) {
 				$stillOriginal = false;
 			}

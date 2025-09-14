@@ -61,6 +61,48 @@ trait MaybeObjectTypeTrait
 		);
 	}
 
+	public function hasInstanceProperty(string $propertyName): TrinaryLogic
+	{
+		return TrinaryLogic::createMaybe();
+	}
+
+	public function getInstanceProperty(string $propertyName, ClassMemberAccessAnswerer $scope): ExtendedPropertyReflection
+	{
+		return $this->getUnresolvedInstancePropertyPrototype($propertyName, $scope)->getTransformedProperty();
+	}
+
+	public function getUnresolvedInstancePropertyPrototype(string $propertyName, ClassMemberAccessAnswerer $scope): UnresolvedPropertyPrototypeReflection
+	{
+		$property = new DummyPropertyReflection($propertyName);
+		return new CallbackUnresolvedPropertyPrototypeReflection(
+			$property,
+			$property->getDeclaringClass(),
+			false,
+			static fn (Type $type): Type => $type,
+		);
+	}
+
+	public function hasStaticProperty(string $propertyName): TrinaryLogic
+	{
+		return TrinaryLogic::createMaybe();
+	}
+
+	public function getStaticProperty(string $propertyName, ClassMemberAccessAnswerer $scope): ExtendedPropertyReflection
+	{
+		return $this->getUnresolvedStaticPropertyPrototype($propertyName, $scope)->getTransformedProperty();
+	}
+
+	public function getUnresolvedStaticPropertyPrototype(string $propertyName, ClassMemberAccessAnswerer $scope): UnresolvedPropertyPrototypeReflection
+	{
+		$property = new DummyPropertyReflection($propertyName);
+		return new CallbackUnresolvedPropertyPrototypeReflection(
+			$property,
+			$property->getDeclaringClass(),
+			false,
+			static fn (Type $type): Type => $type,
+		);
+	}
+
 	public function canCallMethods(): TrinaryLogic
 	{
 		return TrinaryLogic::createMaybe();

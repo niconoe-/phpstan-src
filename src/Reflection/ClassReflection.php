@@ -83,6 +83,12 @@ final class ClassReflection
 	/** @var ExtendedPropertyReflection[] */
 	private array $properties = [];
 
+	/** @var ExtendedPropertyReflection[] */
+	private array $instanceProperties = [];
+
+	/** @var ExtendedPropertyReflection[] */
+	private array $staticProperties = [];
+
 	/** @var RealClassClassConstantReflection[] */
 	private array $constants = [];
 
@@ -148,6 +154,12 @@ final class ClassReflection
 
 	/** @var array<string, bool> */
 	private array $hasPropertyCache = [];
+
+	/** @var array<string, bool> */
+	private array $hasInstancePropertyCache = [];
+
+	/** @var array<string, bool> */
+	private array $hasStaticPropertyCache = [];
 
 	/**
 	 * @param PropertiesClassReflectionExtension[] $propertiesClassReflectionExtensions
@@ -449,6 +461,9 @@ final class ClassReflection
 		return $attributes !== [];
 	}
 
+	/**
+	 * @deprecated Use hasInstanceProperty or hasStaticProperty instead
+	 */
 	public function hasProperty(string $propertyName): bool
 	{
 		if (array_key_exists($propertyName, $this->hasPropertyCache)) {
@@ -468,11 +483,66 @@ final class ClassReflection
 			}
 		}
 
+		// For BC purpose
+		if ($this->getPhpExtension()->hasProperty($this, $propertyName)) {
+			return $this->hasPropertyCache[$propertyName] = true;
+		}
+
 		if ($this->requireExtendsPropertiesClassReflectionExtension->hasProperty($this, $propertyName)) {
 			return $this->hasPropertyCache[$propertyName] = true;
 		}
 
 		return $this->hasPropertyCache[$propertyName] = false;
+	}
+
+	public function hasInstanceProperty(string $propertyName): bool
+	{
+		if (array_key_exists($propertyName, $this->hasInstancePropertyCache)) {
+			return $this->hasInstancePropertyCache[$propertyName];
+		}
+
+		if ($this->isEnum()) {
+			return $this->hasInstancePropertyCache[$propertyName] = $this->hasNativeProperty($propertyName);
+		}
+
+		foreach ($this->propertiesClassReflectionExtensions as $i => $extension) {
+			if ($i > 0 && !$this->allowsDynamicProperties()) {
+				break;
+			}
+			if ($extension->hasProperty($this, $propertyName)) {
+				$property = $extension->getProperty($this, $propertyName);
+				if ($property->isStatic()) {
+					continue;
+				}
+				return $this->hasInstancePropertyCache[$propertyName] = true;
+			}
+		}
+
+		if ($this->requireExtendsPropertiesClassReflectionExtension->hasInstanceProperty($this, $propertyName)) {
+			return $this->hasPropertyCache[$propertyName] = true;
+		}
+
+		return $this->hasPropertyCache[$propertyName] = false;
+	}
+
+	public function hasStaticProperty(string $propertyName): bool
+	{
+		if (array_key_exists($propertyName, $this->hasStaticPropertyCache)) {
+			return $this->hasStaticPropertyCache[$propertyName];
+		}
+
+		if ($this->getPhpExtension()->hasProperty($this, $propertyName)) {
+			$property = $this->getPhpExtension()->getProperty($this, $propertyName);
+			if ($property->isStatic()) {
+				return $this->hasStaticPropertyCache[$propertyName] = true;
+			}
+		}
+
+		if ($this->requireExtendsPropertiesClassReflectionExtension->hasStaticProperty($this, $propertyName)) {
+			return $this->hasStaticPropertyCache[$propertyName] = true;
+		}
+
+		return $this->hasStaticPropertyCache[$propertyName] = false;
 	}
 
 	public function hasMethod(string $methodName): bool
@@ -619,6 +689,20 @@ final class ClassReflection
 
 			unset($this->properties[$name]);
 		}
+		foreach ($this->instanceProperties as $name => $property) {
+			if (!$property->isPrivate()) {
+				continue;
+			}
+
+			unset($this->instanceProperties[$name]);
+		}
+		foreach ($this->staticProperties as $name => $property) {
+			if (!$property->isPrivate()) {
+				continue;
+			}
+
+			unset($this->staticProperties[$name]);
+		}
 		foreach ($this->methods as $name => $method) {
 			if (!$method->isPrivate()) {
 				continue;
@@ -629,6 +713,7 @@ final class ClassReflection
 		$this->getPhpExtension()->evictPrivateSymbols($this->getCacheKey());
 	}
 
+	/** @deprecated Use getInstanceProperty or getStaticProperty */
 	public function getProperty(string $propertyName, ClassMemberAccessAnswerer $scope): ExtendedPropertyReflection
 	{
 		if ($this->isEnum()) {
@@ -658,6 +743,13 @@ final class ClassReflection
 			}
 		}
 
+		// For BC purpose
+		if ($this->getPhpExtension()->hasProperty($this, $propertyName)) {
+			$property = $this->getPhpExtension()->getProperty($this, $propertyName);
+
+			return $this->properties[$key] = $property;
+		}
+
 		if (!isset($this->properties[$key])) {
 			if ($this->requireExtendsPropertiesClassReflectionExtension->hasProperty($this, $propertyName)) {
 				$property = $this->requireExtendsPropertiesClassReflectionExtension->getProperty($this, $propertyName);
@@ -670,6 +762,79 @@ final class ClassReflection
 		}
 
 		return $this->properties[$key];
+	}
+
+	public function getInstanceProperty(string $propertyName, ClassMemberAccessAnswerer $scope): ExtendedPropertyReflection
+	{
+		if ($this->isEnum()) {
+			return $this->getNativeProperty($propertyName);
+		}
+
+		$key = $propertyName;
+		if ($scope->isInClass()) {
+			$key = sprintf('%s-%s', $key, $scope->getClassReflection()->getCacheKey());
+		}
+
+		if (!isset($this->instanceProperties[$key])) {
+			foreach ($this->propertiesClassReflectionExtensions as $i => $extension) {
+				if ($i > 0 && !$this->allowsDynamicProperties()) {
+					break;
+				}
+
+				if (!$extension->hasProperty($this, $propertyName)) {
+					continue;
+				}
+
+				$nakedProperty = $extension->getProperty($this, $propertyName);
+				if ($nakedProperty->isStatic()) {
+					continue;
+				}
+
+				$property = $this->wrapExtendedProperty($propertyName, $nakedProperty);
+				if ($scope->canReadProperty($property)) {
+					return $this->instanceProperties[$key] = $property;
+				}
+				$this->instanceProperties[$key] = $property;
+			}
+		}
+
+		if (!isset($this->instanceProperties[$key])) {
+			if ($this->requireExtendsPropertiesClassReflectionExtension->hasInstanceProperty($this, $propertyName)) {
+				$property = $this->requireExtendsPropertiesClassReflectionExtension->getInstanceProperty($this, $propertyName);
+				$this->instanceProperties[$key] = $property;
+			}
+		}
+
+		if (!isset($this->instanceProperties[$key])) {
+			throw new MissingPropertyFromReflectionException($this->getName(), $propertyName);
+		}
+
+		return $this->instanceProperties[$key];
+	}
+
+	public function getStaticProperty(string $propertyName): ExtendedPropertyReflection
+	{
+		$key = $propertyName;
+		if (isset($this->staticProperties[$key])) {
+			return $this->staticProperties[$key];
+		}
+
+		if ($this->getPhpExtension()->hasProperty($this, $propertyName)) {
+			$nakedProperty = $this->getPhpExtension()->getProperty($this, $propertyName);
+			if ($nakedProperty->isStatic()) {
+				$property = $this->wrapExtendedProperty($propertyName, $nakedProperty);
+				if ($property->isStatic()) {
+					return $this->staticProperties[$key] = $property;
+				}
+			}
+		}
+
+		if ($this->requireExtendsPropertiesClassReflectionExtension->hasStaticProperty($this, $propertyName)) {
+			$property = $this->requireExtendsPropertiesClassReflectionExtension->getStaticProperty($this, $propertyName);
+			return $this->staticProperties[$key] = $property;
+		}
+
+		throw new MissingPropertyFromReflectionException($this->getName(), $propertyName);
 	}
 
 	public function hasNativeProperty(string $propertyName): bool

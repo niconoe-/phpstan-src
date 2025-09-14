@@ -23,7 +23,6 @@ use PHPStan\Reflection\Dummy\DummyPropertyReflection;
 use PHPStan\Reflection\ExtendedMethodReflection;
 use PHPStan\Reflection\ExtendedPropertyReflection;
 use PHPStan\Reflection\Php\UniversalObjectCratesClassReflectionExtension;
-use PHPStan\Reflection\PropertyReflection;
 use PHPStan\Reflection\ReflectionProviderStaticAccessor;
 use PHPStan\Reflection\TrivialParametersAcceptor;
 use PHPStan\Reflection\Type\CallbackUnresolvedPropertyPrototypeReflection;
@@ -102,6 +101,12 @@ class ObjectType implements TypeWithClassName, SubtractableType
 	/** @var array<string, array<string, array<string, UnresolvedPropertyPrototypeReflection>>> */
 	private static array $properties = [];
 
+	/** @var array<string, array<string, array<string, UnresolvedPropertyPrototypeReflection>>> */
+	private static array $instanceProperties = [];
+
+	/** @var array<string, array<string, array<string, UnresolvedPropertyPrototypeReflection>>> */
+	private static array $staticProperties = [];
+
 	/** @var array<string, array<string, self|null>> */
 	private static array $ancestors = [];
 
@@ -132,6 +137,8 @@ class ObjectType implements TypeWithClassName, SubtractableType
 		self::$superTypes = [];
 		self::$methods = [];
 		self::$properties = [];
+		self::$instanceProperties = [];
+		self::$staticProperties = [];
 		self::$ancestors = [];
 		self::$enumCases = [];
 	}
@@ -247,25 +254,192 @@ class ObjectType implements TypeWithClassName, SubtractableType
 		);
 	}
 
-	/**
-	 * @deprecated Not in use anymore.
-	 */
-	public function getPropertyWithoutTransformingStatic(string $propertyName, ClassMemberAccessAnswerer $scope): PropertyReflection
+	public function hasInstanceProperty(string $propertyName): TrinaryLogic
 	{
-		$classReflection = $this->getNakedClassReflection();
+		$classReflection = $this->getClassReflection();
 		if ($classReflection === null) {
+			return TrinaryLogic::createMaybe();
+		}
+
+		$classHasProperty = RecursionGuard::run($this, static fn (): bool => $classReflection->hasInstanceProperty($propertyName));
+		if ($classHasProperty === true || $classHasProperty instanceof ErrorType) {
+			return TrinaryLogic::createYes();
+		}
+
+		if ($classReflection->allowsDynamicProperties()) {
+			return TrinaryLogic::createMaybe();
+		}
+
+		if (!$classReflection->isFinal()) {
+			return TrinaryLogic::createMaybe();
+		}
+
+		return TrinaryLogic::createNo();
+	}
+
+	public function getInstanceProperty(string $propertyName, ClassMemberAccessAnswerer $scope): ExtendedPropertyReflection
+	{
+		return $this->getUnresolvedInstancePropertyPrototype($propertyName, $scope)->getTransformedProperty();
+	}
+
+	public function getUnresolvedInstancePropertyPrototype(string $propertyName, ClassMemberAccessAnswerer $scope): UnresolvedPropertyPrototypeReflection
+	{
+		if (!$scope->isInClass()) {
+			$canAccessProperty = 'no';
+		} else {
+			$canAccessProperty = $scope->getClassReflection()->getName();
+		}
+		$description = $this->describeCache();
+
+		if (isset(self::$instanceProperties[$description][$propertyName][$canAccessProperty])) {
+			return self::$instanceProperties[$description][$propertyName][$canAccessProperty];
+		}
+
+		$nakedClassReflection = $this->getNakedClassReflection();
+		if ($nakedClassReflection === null) {
 			throw new ClassNotFoundException($this->className);
 		}
 
-		if (!$classReflection->hasProperty($propertyName)) {
-			$classReflection = $this->getClassReflection();
+		if ($nakedClassReflection->isEnum()) {
+			if (
+				$propertyName === 'name'
+				|| ($propertyName === 'value' && $nakedClassReflection->isBackedEnum())
+			) {
+				$properties = [];
+				foreach ($this->getEnumCases() as $enumCase) {
+					$properties[] = $enumCase->getUnresolvedInstancePropertyPrototype($propertyName, $scope);
+				}
+
+				if (count($properties) > 0) {
+					if (count($properties) === 1) {
+						return $properties[0];
+					}
+
+					return new UnionTypeUnresolvedPropertyPrototypeReflection($propertyName, $properties);
+				}
+			}
 		}
 
-		if ($classReflection === null) {
+		if (!$nakedClassReflection->hasNativeProperty($propertyName)) {
+			$nakedClassReflection = $this->getClassReflection();
+		}
+
+		if ($nakedClassReflection === null) {
 			throw new ClassNotFoundException($this->className);
 		}
 
-		return $classReflection->getProperty($propertyName, $scope);
+		$property = RecursionGuard::run($this, static fn () => $nakedClassReflection->getInstanceProperty($propertyName, $scope));
+		if ($property instanceof ErrorType) {
+			$property = new DummyPropertyReflection($propertyName);
+
+			return new CallbackUnresolvedPropertyPrototypeReflection(
+				$property,
+				$property->getDeclaringClass(),
+				false,
+				static fn (Type $type): Type => $type,
+			);
+		}
+
+		$ancestor = $this->getAncestorWithClassName($property->getDeclaringClass()->getName());
+		$resolvedClassReflection = null;
+		if ($ancestor !== null && $ancestor->hasInstanceProperty($propertyName)->yes()) {
+			$resolvedClassReflection = $ancestor->getClassReflection();
+			if ($ancestor !== $this) {
+				$property = $ancestor->getUnresolvedInstancePropertyPrototype($propertyName, $scope)->getNakedProperty();
+			}
+		}
+		if ($resolvedClassReflection === null) {
+			$resolvedClassReflection = $property->getDeclaringClass();
+		}
+
+		return self::$instanceProperties[$description][$propertyName][$canAccessProperty] = new CalledOnTypeUnresolvedPropertyPrototypeReflection(
+			$property,
+			$resolvedClassReflection,
+			true,
+			$this,
+		);
+	}
+
+	public function hasStaticProperty(string $propertyName): TrinaryLogic
+	{
+		$classReflection = $this->getClassReflection();
+		if ($classReflection === null) {
+			return TrinaryLogic::createMaybe();
+		}
+
+		$classHasProperty = RecursionGuard::run($this, static fn (): bool => $classReflection->hasStaticProperty($propertyName));
+		if ($classHasProperty === true || $classHasProperty instanceof ErrorType) {
+			return TrinaryLogic::createYes();
+		}
+
+		if (!$classReflection->isFinal()) {
+			return TrinaryLogic::createMaybe();
+		}
+
+		return TrinaryLogic::createNo();
+	}
+
+	public function getStaticProperty(string $propertyName, ClassMemberAccessAnswerer $scope): ExtendedPropertyReflection
+	{
+		return $this->getUnresolvedStaticPropertyPrototype($propertyName, $scope)->getTransformedProperty();
+	}
+
+	public function getUnresolvedStaticPropertyPrototype(string $propertyName, ClassMemberAccessAnswerer $scope): UnresolvedPropertyPrototypeReflection
+	{
+		if (!$scope->isInClass()) {
+			$canAccessProperty = 'no';
+		} else {
+			$canAccessProperty = $scope->getClassReflection()->getName();
+		}
+		$description = $this->describeCache();
+
+		if (isset(self::$staticProperties[$description][$propertyName][$canAccessProperty])) {
+			return self::$staticProperties[$description][$propertyName][$canAccessProperty];
+		}
+
+		$nakedClassReflection = $this->getNakedClassReflection();
+		if ($nakedClassReflection === null) {
+			throw new ClassNotFoundException($this->className);
+		}
+
+		if (!$nakedClassReflection->hasNativeProperty($propertyName)) {
+			$nakedClassReflection = $this->getClassReflection();
+		}
+
+		if ($nakedClassReflection === null) {
+			throw new ClassNotFoundException($this->className);
+		}
+
+		$property = RecursionGuard::run($this, static fn () => $nakedClassReflection->getStaticProperty($propertyName));
+		if ($property instanceof ErrorType) {
+			$property = new DummyPropertyReflection($propertyName);
+
+			return new CallbackUnresolvedPropertyPrototypeReflection(
+				$property,
+				$property->getDeclaringClass(),
+				false,
+				static fn (Type $type): Type => $type,
+			);
+		}
+
+		$ancestor = $this->getAncestorWithClassName($property->getDeclaringClass()->getName());
+		$resolvedClassReflection = null;
+		if ($ancestor !== null && $ancestor->hasStaticProperty($propertyName)->yes()) {
+			$resolvedClassReflection = $ancestor->getClassReflection();
+			if ($ancestor !== $this) {
+				$property = $ancestor->getUnresolvedStaticPropertyPrototype($propertyName, $scope)->getNakedProperty();
+			}
+		}
+		if ($resolvedClassReflection === null) {
+			$resolvedClassReflection = $property->getDeclaringClass();
+		}
+
+		return self::$staticProperties[$description][$propertyName][$canAccessProperty] = new CalledOnTypeUnresolvedPropertyPrototypeReflection(
+			$property,
+			$resolvedClassReflection,
+			true,
+			$this,
+		);
 	}
 
 	public function getReferencedClasses(): array

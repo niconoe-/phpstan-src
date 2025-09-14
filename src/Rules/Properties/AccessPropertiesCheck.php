@@ -101,7 +101,9 @@ final class AccessPropertiesCheck
 			$scope,
 			NullsafeOperatorHelper::getNullsafeShortcircuitedExprRespectingScope($scope, $node->var),
 			sprintf('Access to property $%s on an unknown class %%s.', SprintfHelper::escapeFormatString($name)),
-			static fn (Type $type): bool => $type->canAccessProperties()->yes() && $type->hasProperty($name)->yes(),
+			static fn (Type $type): bool => $type->canAccessProperties()->yes() && (
+				$type->hasInstanceProperty($name)->yes() || $type->hasStaticProperty($name)->yes()
+			),
 		);
 		$type = $typeResult->getType();
 		if ($type instanceof ErrorType) {
@@ -127,8 +129,9 @@ final class AccessPropertiesCheck
 			];
 		}
 
-		$has = $type->hasProperty($name);
-		if ($has->maybe()) {
+		$has = $type->hasInstanceProperty($name);
+		$hasStatic = $type->hasStaticProperty($name);
+		if ($has->maybe() && !$hasStatic->yes()) {
 			if ($scope->isUndefinedExpressionAllowed($node)) {
 				if (!$this->checkDynamicProperties) {
 					return [];
@@ -167,12 +170,12 @@ final class AccessPropertiesCheck
 				$propertyClassReflection = $this->reflectionProvider->getClass($classNames[0]);
 				$parentClassReflection = $propertyClassReflection->getParentClass();
 				while ($parentClassReflection !== null) {
-					if ($parentClassReflection->hasProperty($name)) {
+					if ($parentClassReflection->hasInstanceProperty($name)) {
 						if ($write) {
-							if ($scope->canWriteProperty($parentClassReflection->getProperty($name, $scope))) {
+							if ($scope->canWriteProperty($parentClassReflection->getInstanceProperty($name, $scope))) {
 								return [];
 							}
-						} elseif ($scope->canReadProperty($parentClassReflection->getProperty($name, $scope))) {
+						} elseif ($scope->canReadProperty($parentClassReflection->getInstanceProperty($name, $scope))) {
 							return [];
 						}
 
@@ -200,6 +203,16 @@ final class AccessPropertiesCheck
 				}
 			}
 
+			if ($hasStatic->yes()) {
+				return [
+					RuleErrorBuilder::message(sprintf(
+						'Non-static access to static property %s::$%s.',
+						$type->getStaticProperty($name, $scope)->getDeclaringClass()->getDisplayName(),
+						$name,
+					))->identifier('staticProperty.nonStaticAccess')->build(),
+				];
+			}
+
 			$ruleErrorBuilder = RuleErrorBuilder::message(sprintf(
 				'Access to an undefined property %s::$%s.',
 				$typeForDescribe->describe(VerbosityLevel::typeOnly()),
@@ -216,17 +229,7 @@ final class AccessPropertiesCheck
 			];
 		}
 
-		$propertyReflection = $type->getProperty($name, $scope);
-		if ($propertyReflection->isStatic()) {
-			return [
-				RuleErrorBuilder::message(sprintf(
-					'Non-static access to static property %s::$%s.',
-					$propertyReflection->getDeclaringClass()->getDisplayName(),
-					$name,
-				))->identifier('staticProperty.nonStaticAccess')->build(),
-			];
-		}
-
+		$propertyReflection = $type->getInstanceProperty($name, $scope);
 		if ($write) {
 			if ($scope->canWriteProperty($propertyReflection)) {
 				return [];
@@ -272,7 +275,7 @@ final class AccessPropertiesCheck
 		$types = [];
 		if ($type instanceof UnionType) {
 			foreach ($type->getTypes() as $innerType) {
-				if ($innerType->hasProperty($name)->no()) {
+				if ($innerType->hasInstanceProperty($name)->no()) {
 					continue;
 				}
 
@@ -282,7 +285,7 @@ final class AccessPropertiesCheck
 
 		if (count($types) === 0) {
 			try {
-				return $type->getProperty($name, $scope);
+				return $type->getInstanceProperty($name, $scope);
 			} catch (MissingPropertyFromReflectionException) {
 				return null;
 			}
@@ -290,7 +293,7 @@ final class AccessPropertiesCheck
 
 		if (count($types) === 1) {
 			try {
-				return $types[0]->getProperty($name, $scope);
+				return $types[0]->getInstanceProperty($name, $scope);
 			} catch (MissingPropertyFromReflectionException) {
 				return null;
 			}
@@ -299,7 +302,7 @@ final class AccessPropertiesCheck
 		$unionType = TypeCombinator::union(...$types);
 
 		try {
-			return $unionType->getProperty($name, $scope);
+			return $unionType->getInstanceProperty($name, $scope);
 		} catch (MissingPropertyFromReflectionException) {
 			return null;
 		}
