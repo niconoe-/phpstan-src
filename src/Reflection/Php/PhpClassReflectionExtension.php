@@ -399,6 +399,7 @@ final class PhpClassReflectionExtension
 		if (
 			$includingAnnotations
 			&& !$declaringClassReflection->isEnum()
+			&& ($classReflection->allowsDynamicProperties() || !$propertyReflection->isPrivate())
 			&& $this->annotationsPropertiesClassReflectionExtension->hasProperty($classReflection, $propertyName)
 		) {
 			$hierarchyDistances = $classReflection->getClassHierarchyDistances();
