@@ -947,7 +947,12 @@ class AccessPropertiesRuleTest extends RuleTestCase
 		$this->checkThisOnly = false;
 		$this->checkUnionTypes = true;
 		$this->checkDynamicProperties = true;
-		$this->analyse([__DIR__ . '/data/conflicting-annotation-property.php'], []);
+		$this->analyse([__DIR__ . '/data/conflicting-annotation-property.php'], [
+			[
+				'Access to private property ConflictingAnnotationProperty\PropertyWithAnnotation::$test.',
+				26,
+			],
+		]);
 	}
 
 	#[RequiresPhp('>= 8.1')]
