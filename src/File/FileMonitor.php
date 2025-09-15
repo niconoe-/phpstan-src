@@ -46,7 +46,7 @@ final class FileMonitor
 	{
 		$finderResult = $this->analyseFileFinder->findFiles($this->analysedPaths);
 		$fileHashes = [];
-		foreach (array_merge($finderResult->getFiles(), $filePaths, $this->getScannedFiles($finderResult->getFiles())) as $filePath) {
+		foreach (array_unique(array_merge($finderResult->getFiles(), $filePaths, $this->getScannedFiles($finderResult->getFiles()))) as $filePath) {
 			$fileHashes[$filePath] = $this->getFileHash($filePath);
 		}
 
@@ -65,7 +65,8 @@ final class FileMonitor
 		$newFiles = [];
 		$changedFiles = [];
 		$deletedFiles = [];
-		foreach (array_merge($finderResult->getFiles(), $this->filePaths, $this->getScannedFiles($finderResult->getFiles())) as $filePath) {
+		$filePaths = array_unique(array_merge($finderResult->getFiles(), $this->filePaths, $this->getScannedFiles($finderResult->getFiles())));
+		foreach ($filePaths as $filePath) {
 			if (!array_key_exists($filePath, $oldFileHashes)) {
 				$newFiles[] = $filePath;
 				$fileHashes[$filePath] = $this->getFileHash($filePath);
