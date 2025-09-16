@@ -220,7 +220,9 @@ final class PhpClassReflectionExtension
 					$types[] = $value;
 				}
 
-				return new PhpPropertyReflection($declaringClassReflection, null, null, TypeCombinator::union(...$types), $classReflection->getNativeReflection()->getProperty($propertyName), null, null, null, false, false, false, false, [], false, true, false, false, true);
+				$phpDocType = TypeCombinator::union(...$types);
+
+				return new PhpPropertyReflection($declaringClassReflection, null, null, $phpDocType, $phpDocType, $classReflection->getNativeReflection()->getProperty($propertyName), null, null, null, false, false, false, false, [], false, true, false, false, true);
 			}
 		}
 
@@ -405,6 +407,7 @@ final class PhpClassReflectionExtension
 			$declaringTrait,
 			$nativeType,
 			$phpDocType,
+			$phpDocType,
 			$propertyReflection,
 			$getHook,
 			$setHook,
@@ -451,7 +454,8 @@ final class PhpClassReflectionExtension
 					$annotationProperty->getDeclaringClass(),
 					$declaringTrait,
 					$nativeType,
-					$annotationProperty->getPhpDocType(),
+					$annotationProperty->getReadableType(),
+					$annotationProperty->getWritableType(),
 					$propertyReflection,
 					$getHook,
 					$setHook,

@@ -13,6 +13,7 @@ use PHPStan\Reflection\ExtendedPropertyReflection;
 use PHPStan\Reflection\MissingMethodFromReflectionException;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\MixedType;
+use PHPStan\Type\NeverType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypehintHelper;
 use function sprintf;
@@ -25,7 +26,9 @@ final class PhpPropertyReflection implements ExtendedPropertyReflection
 
 	private ?Type $finalNativeType = null;
 
-	private ?Type $type = null;
+	private ?Type $readableType = null;
+
+	private ?Type $writableType = null;
 
 	/**
 	 * @param list<AttributeReflection> $attributes
@@ -34,7 +37,8 @@ final class PhpPropertyReflection implements ExtendedPropertyReflection
 		private ClassReflection $declaringClass,
 		private ?ClassReflection $declaringTrait,
 		private ReflectionUnionType|ReflectionNamedType|ReflectionIntersectionType|null $nativeType,
-		private ?Type $phpDocType,
+		private ?Type $readablePhpDocType,
+		private ?Type $writablePhpDocType,
 		private ReflectionProperty $reflection,
 		private ?ExtendedMethodReflection $getHook,
 		private ?ExtendedMethodReflection $setHook,
@@ -105,9 +109,9 @@ final class PhpPropertyReflection implements ExtendedPropertyReflection
 
 	public function getReadableType(): Type
 	{
-		return $this->type ??= TypehintHelper::decideTypeFromReflection(
+		return $this->readableType ??= TypehintHelper::decideTypeFromReflection(
 			$this->nativeType,
-			$this->phpDocType,
+			$this->readablePhpDocType,
 			$this->declaringClass,
 		);
 	}
@@ -122,13 +126,36 @@ final class PhpPropertyReflection implements ExtendedPropertyReflection
 			}
 		}
 
-		return $this->getReadableType();
+		if ($this->writableType !== null) {
+			return $this->writableType;
+		}
+
+		if ($this->writablePhpDocType === null || $this->writablePhpDocType instanceof NeverType) {
+			return $this->writableType = TypehintHelper::decideTypeFromReflection(
+				$this->nativeType,
+				$this->readablePhpDocType,
+				$this->declaringClass,
+			);
+		}
+
+		if (
+			$this->readablePhpDocType !== null
+			&& !$this->readablePhpDocType->equals($this->writablePhpDocType)
+		) {
+			return $this->writableType = $this->writablePhpDocType;
+		}
+
+		return $this->writableType = TypehintHelper::decideTypeFromReflection(
+			$this->nativeType,
+			$this->writablePhpDocType,
+			$this->declaringClass,
+		);
 	}
 
 	public function canChangeTypeAfterAssignment(): bool
 	{
 		if ($this->isStatic()) {
-			return true;
+			return $this->getReadableType()->equals($this->getWritableType());
 		}
 
 		if ($this->isVirtual()->yes()) {
@@ -143,7 +170,7 @@ final class PhpPropertyReflection implements ExtendedPropertyReflection
 			return false;
 		}
 
-		return true;
+		return $this->getReadableType()->equals($this->getWritableType());
 	}
 
 	public function isPromoted(): bool
@@ -153,13 +180,13 @@ final class PhpPropertyReflection implements ExtendedPropertyReflection
 
 	public function hasPhpDocType(): bool
 	{
-		return $this->phpDocType !== null;
+		return $this->readablePhpDocType !== null;
 	}
 
 	public function getPhpDocType(): Type
 	{
-		if ($this->phpDocType !== null) {
-			return $this->phpDocType;
+		if ($this->readablePhpDocType !== null) {
+			return $this->readablePhpDocType;
 		}
 
 		return new MixedType();
