@@ -4571,35 +4571,8 @@ final class MutatingScope implements Scope
 		if ($originalExprType->equals($nativeType)) {
 			$newType = TypeCombinator::intersect($type, $originalExprType);
 			if ($newType->isConstantScalarValue()->yes() && $newType->equals($originalExprType)) {
-				$exprString = $this->getNodeKey($expr);
-				if (array_key_exists($exprString, $this->expressionTypes)) {
-					// don't add the same type over and over again to improve performance
-					return $this;
-				}
-
-				$expressionTypes = $this->expressionTypes;
-				$expressionTypes[$exprString] = new ExpressionTypeHolder($expr, $type, TrinaryLogic::createYes());
-				$nativeTypes = $this->nativeExpressionTypes;
-				$nativeTypes[$exprString] = new ExpressionTypeHolder($expr, $nativeType, TrinaryLogic::createYes());
-
-				return $this->scopeFactory->create(
-					$this->context,
-					$this->isDeclareStrictTypes(),
-					$this->getFunction(),
-					$this->getNamespace(),
-					$expressionTypes,
-					$nativeTypes,
-					$this->conditionalExpressions,
-					$this->inClosureBindScopeClasses,
-					$this->anonymousFunctionReflection,
-					$this->inFirstLevelStatement,
-					$this->currentlyAssignedExpressions,
-					$this->currentlyAllowedUndefinedExpressions,
-					$this->inFunctionCallsStack,
-					$this->afterExtractCall,
-					$this->parentScope,
-					$this->nativeTypesPromoted,
-				);
+				// don't add the same type over and over again to improve performance
+				return $this;
 			}
 			return $this->specifyExpressionType($expr, $newType, $newType, TrinaryLogic::createYes());
 		}
