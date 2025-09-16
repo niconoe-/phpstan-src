@@ -3,6 +3,8 @@
 namespace PHPStan\Analyser;
 
 use PHPStan\Testing\PHPStanTestCase;
+use function array_merge;
+use function array_unique;
 
 class AnalyserWithCheckDynamicPropertiesTest extends PHPStanTestCase
 {
@@ -47,6 +49,5 @@ class AnalyserWithCheckDynamicPropertiesTest extends PHPStanTestCase
 			),
 		);
 	}
-
 
 }
