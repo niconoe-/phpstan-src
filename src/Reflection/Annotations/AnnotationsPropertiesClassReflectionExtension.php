@@ -47,8 +47,10 @@ final class AnnotationsPropertiesClassReflectionExtension implements PropertiesC
 			$isWritable = $propertyTags[$propertyName]->isWritable();
 			if ($classReflection->hasNativeProperty($propertyName)) {
 				$nativeProperty = $classReflection->getNativeProperty($propertyName);
-				$isReadable = $isReadable || $nativeProperty->isReadable();
-				$isWritable = $isWritable || $nativeProperty->isWritable();
+				if (!$nativeProperty->isPrivate() && !$nativeProperty->isStatic()) {
+					$isReadable = $isReadable || $nativeProperty->isReadable();
+					$isWritable = $isWritable || $nativeProperty->isWritable();
+				}
 			}
 
 			return new AnnotationPropertyReflection(

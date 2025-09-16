@@ -45,6 +45,8 @@ final class PhpPropertyReflection implements ExtendedPropertyReflection
 		private bool $isAllowedPrivateMutation,
 		private array $attributes,
 		private bool $isFinal,
+		private bool $readable,
+		private bool $writable,
 	)
 	{
 	}
@@ -176,6 +178,10 @@ final class PhpPropertyReflection implements ExtendedPropertyReflection
 
 	public function isReadable(): bool
 	{
+		if (!$this->readable) {
+			return false;
+		}
+
 		if ($this->isStatic()) {
 			return true;
 		}
@@ -189,6 +195,10 @@ final class PhpPropertyReflection implements ExtendedPropertyReflection
 
 	public function isWritable(): bool
 	{
+		if (!$this->writable) {
+			return false;
+		}
+
 		if ($this->isStatic()) {
 			return true;
 		}

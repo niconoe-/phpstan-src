@@ -111,4 +111,15 @@ class WritingToReadOnlyPropertiesRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/../Variables/data/bug-12553.php'], []);
 	}
 
+	public function testPrivatePropertyTagRead(): void
+	{
+		$this->checkThisOnly = false;
+		$this->analyse([__DIR__ . '/data/private-property-tag-read.php'], [
+			[
+				'Property PrivatePropertyTagRead\Foo::$foo is not writable.',
+				22,
+			],
+		]);
+	}
+
 }

@@ -216,7 +216,7 @@ final class PhpClassReflectionExtension
 					$types[] = $value;
 				}
 
-				return new PhpPropertyReflection($declaringClassReflection, null, null, TypeCombinator::union(...$types), $classReflection->getNativeReflection()->getProperty($propertyName), null, null, null, false, false, false, false, [], false);
+				return new PhpPropertyReflection($declaringClassReflection, null, null, TypeCombinator::union(...$types), $classReflection->getNativeReflection()->getProperty($propertyName), null, null, null, false, false, false, false, [], false, true, false);
 			}
 		}
 
@@ -433,6 +433,8 @@ final class PhpClassReflectionExtension
 					$isAllowedPrivateMutation,
 					$this->attributeReflectionFactory->fromNativeReflection($propertyReflection->getAttributes(), InitializerExprContext::fromClass($declaringClassReflection->getName(), $declaringClassReflection->getFileName())),
 					$isFinal,
+					$annotationProperty->isReadable(),
+					$annotationProperty->isWritable(),
 				);
 			}
 		}
@@ -452,6 +454,8 @@ final class PhpClassReflectionExtension
 			$isAllowedPrivateMutation,
 			$this->attributeReflectionFactory->fromNativeReflection($propertyReflection->getAttributes(), InitializerExprContext::fromClass($declaringClassReflection->getName(), $declaringClassReflection->getFileName())),
 			$isFinal,
+			true,
+			true,
 		);
 	}
 
