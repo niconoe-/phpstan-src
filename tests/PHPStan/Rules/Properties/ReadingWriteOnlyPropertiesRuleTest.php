@@ -105,4 +105,15 @@ class ReadingWriteOnlyPropertiesRuleTest extends RuleTestCase
 		]);
 	}
 
+	public function testPrivatePropertyTagWrite(): void
+	{
+		$this->checkThisOnly = false;
+		$this->analyse([__DIR__ . '/data/private-property-tag-write.php'], [
+			[
+				'Property PrivatePropertyTagWrite\Foo::$foo is not readable.',
+				22,
+			],
+		]);
+	}
+
 }
