@@ -122,4 +122,19 @@ class WritingToReadOnlyPropertiesRuleTest extends RuleTestCase
 		]);
 	}
 
+	public function testBug11241(): void
+	{
+		$this->checkThisOnly = false;
+		$this->analyse([__DIR__ . '/data/bug-11241.php'], [
+			[
+				'Property Bug11241\MagicProp::$id is not writable.',
+				27,
+			],
+			[
+				'Property Bug11241\ActualProp::$id is not writable.',
+				30,
+			],
+		]);
+	}
+
 }
