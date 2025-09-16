@@ -2,6 +2,7 @@
 
 namespace PHPStan\Reflection;
 
+use PHPStan\Reflection\Php\PhpClassReflectionExtension;
 use PHPStan\Reflection\RequireExtension\RequireExtendsMethodsClassReflectionExtension;
 use PHPStan\Reflection\RequireExtension\RequireExtendsPropertiesClassReflectionExtension;
 
@@ -19,6 +20,7 @@ final class ClassReflectionExtensionRegistry
 		private array $allowedSubTypesClassReflectionExtensions,
 		private RequireExtendsPropertiesClassReflectionExtension $requireExtendsPropertiesClassReflectionExtension,
 		private RequireExtendsMethodsClassReflectionExtension $requireExtendsMethodsClassReflectionExtension,
+		private PhpClassReflectionExtension $phpClassReflectionExtension,
 	)
 	{
 	}
@@ -55,6 +57,11 @@ final class ClassReflectionExtensionRegistry
 	public function getRequireExtendsMethodsClassReflectionExtension(): RequireExtendsMethodsClassReflectionExtension
 	{
 		return $this->requireExtendsMethodsClassReflectionExtension;
+	}
+
+	public function getPhpClassReflectionExtension(): PhpClassReflectionExtension
+	{
+		return $this->phpClassReflectionExtension;
 	}
 
 }

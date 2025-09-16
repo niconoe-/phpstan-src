@@ -27,10 +27,8 @@ use PHPStan\Reflection\ExtendedFunctionVariant;
 use PHPStan\Reflection\ExtendedMethodReflection;
 use PHPStan\Reflection\InitializerExprContext;
 use PHPStan\Reflection\MethodReflection;
-use PHPStan\Reflection\MethodsClassReflectionExtension;
 use PHPStan\Reflection\Native\ExtendedNativeParameterReflection;
 use PHPStan\Reflection\Native\NativeMethodReflection;
-use PHPStan\Reflection\PropertiesClassReflectionExtension;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Reflection\SignatureMap\FunctionSignature;
 use PHPStan\Reflection\SignatureMap\ParameterSignature;
@@ -65,7 +63,6 @@ use function sprintf;
 use function strtolower;
 
 final class PhpClassReflectionExtension
-	implements PropertiesClassReflectionExtension, MethodsClassReflectionExtension
 {
 
 	/** @var PhpPropertyReflection[][] */

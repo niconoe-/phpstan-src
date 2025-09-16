@@ -30,7 +30,6 @@ final class LazyClassReflectionExtensionRegistryProvider implements ClassReflect
 	public function getRegistry(): ClassReflectionExtensionRegistry
 	{
 		if ($this->registry === null) {
-			$phpClassReflectionExtension = $this->container->getByType(PhpClassReflectionExtension::class);
 			$annotationsMethodsClassReflectionExtension = $this->container->getByType(AnnotationsMethodsClassReflectionExtension::class);
 			$annotationsPropertiesClassReflectionExtension = $this->container->getByType(AnnotationsPropertiesClassReflectionExtension::class);
 
@@ -40,11 +39,12 @@ final class LazyClassReflectionExtensionRegistryProvider implements ClassReflect
 			$universalObjectCratesClassReflectionExtension = $this->container->getByType(UniversalObjectCratesClassReflectionExtension::class);
 
 			$this->registry = new ClassReflectionExtensionRegistry(
-				array_merge([$phpClassReflectionExtension], $this->container->getServicesByTag(BrokerFactory::PROPERTIES_CLASS_REFLECTION_EXTENSION_TAG), [$annotationsPropertiesClassReflectionExtension, $mixinPropertiesClassReflectionExtension, $universalObjectCratesClassReflectionExtension]),
-				array_merge([$phpClassReflectionExtension], $this->container->getServicesByTag(BrokerFactory::METHODS_CLASS_REFLECTION_EXTENSION_TAG), [$annotationsMethodsClassReflectionExtension, $mixinMethodsClassReflectionExtension, $soapClientMethodsClassReflectionExtension]),
+				array_merge($this->container->getServicesByTag(BrokerFactory::PROPERTIES_CLASS_REFLECTION_EXTENSION_TAG), [$annotationsPropertiesClassReflectionExtension, $mixinPropertiesClassReflectionExtension, $universalObjectCratesClassReflectionExtension]),
+				array_merge($this->container->getServicesByTag(BrokerFactory::METHODS_CLASS_REFLECTION_EXTENSION_TAG), [$annotationsMethodsClassReflectionExtension, $mixinMethodsClassReflectionExtension, $soapClientMethodsClassReflectionExtension]),
 				$this->container->getServicesByTag(BrokerFactory::ALLOWED_SUB_TYPES_CLASS_REFLECTION_EXTENSION_TAG),
 				$this->container->getByType(RequireExtendsPropertiesClassReflectionExtension::class),
 				$this->container->getByType(RequireExtendsMethodsClassReflectionExtension::class),
+				$this->container->getByType(PhpClassReflectionExtension::class),
 			);
 		}
 

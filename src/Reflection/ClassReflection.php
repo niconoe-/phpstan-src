@@ -177,6 +177,7 @@ final class ClassReflection
 		private SignatureMapProvider $signatureMapProvider,
 		private DeprecationProvider $deprecationProvider,
 		private AttributeReflectionFactory $attributeReflectionFactory,
+		private PhpClassReflectionExtension $phpClassReflectionExtension,
 		private array $propertiesClassReflectionExtensions,
 		private array $methodsClassReflectionExtensions,
 		private array $allowedSubTypesClassReflectionExtensions,
@@ -474,18 +475,16 @@ final class ClassReflection
 			return $this->hasPropertyCache[$propertyName] = $this->hasNativeProperty($propertyName);
 		}
 
-		foreach ($this->propertiesClassReflectionExtensions as $i => $extension) {
-			if ($i > 0 && !$this->allowsDynamicProperties()) {
-				break;
-			}
-			if ($extension->hasProperty($this, $propertyName)) {
-				return $this->hasPropertyCache[$propertyName] = true;
-			}
+		if ($this->phpClassReflectionExtension->hasProperty($this, $propertyName)) {
+			return $this->hasPropertyCache[$propertyName] = true;
 		}
 
-		// For BC purpose
-		if ($this->getPhpExtension()->hasProperty($this, $propertyName)) {
-			return $this->hasPropertyCache[$propertyName] = true;
+		if ($this->allowsDynamicProperties()) {
+			foreach ($this->propertiesClassReflectionExtensions as $extension) {
+				if ($extension->hasProperty($this, $propertyName)) {
+					return $this->hasPropertyCache[$propertyName] = true;
+				}
+			}
 		}
 
 		if ($this->requireExtendsPropertiesClassReflectionExtension->hasProperty($this, $propertyName)) {
@@ -505,16 +504,22 @@ final class ClassReflection
 			return $this->hasInstancePropertyCache[$propertyName] = $this->hasNativeProperty($propertyName);
 		}
 
-		foreach ($this->propertiesClassReflectionExtensions as $i => $extension) {
-			if ($i > 0 && !$this->allowsDynamicProperties()) {
-				break;
-			}
-			if ($extension->hasProperty($this, $propertyName)) {
-				$property = $extension->getProperty($this, $propertyName);
-				if ($property->isStatic()) {
-					continue;
-				}
+		if ($this->phpClassReflectionExtension->hasProperty($this, $propertyName)) {
+			$property = $this->phpClassReflectionExtension->getProperty($this, $propertyName);
+			if (!$property->isStatic()) {
 				return $this->hasInstancePropertyCache[$propertyName] = true;
+			}
+		}
+
+		if ($this->allowsDynamicProperties()) {
+			foreach ($this->propertiesClassReflectionExtensions as $extension) {
+				if ($extension->hasProperty($this, $propertyName)) {
+					$property = $extension->getProperty($this, $propertyName);
+					if ($property->isStatic()) {
+						continue;
+					}
+					return $this->hasInstancePropertyCache[$propertyName] = true;
+				}
 			}
 		}
 
@@ -531,8 +536,8 @@ final class ClassReflection
 			return $this->hasStaticPropertyCache[$propertyName];
 		}
 
-		if ($this->getPhpExtension()->hasProperty($this, $propertyName)) {
-			$property = $this->getPhpExtension()->getProperty($this, $propertyName);
+		if ($this->phpClassReflectionExtension->hasProperty($this, $propertyName)) {
+			$property = $this->phpClassReflectionExtension->getProperty($this, $propertyName);
 			if ($property->isStatic()) {
 				return $this->hasStaticPropertyCache[$propertyName] = true;
 			}
@@ -549,6 +554,10 @@ final class ClassReflection
 	{
 		if (array_key_exists($methodName, $this->hasMethodCache)) {
 			return $this->hasMethodCache[$methodName];
+		}
+
+		if ($this->phpClassReflectionExtension->hasMethod($this, $methodName)) {
+			return $this->hasMethodCache[$methodName] = true;
 		}
 
 		foreach ($this->methodsClassReflectionExtensions as $extension) {
@@ -569,6 +578,14 @@ final class ClassReflection
 		$key = $methodName;
 		if ($scope->isInClass()) {
 			$key = sprintf('%s-%s', $key, $scope->getClassReflection()->getCacheKey());
+		}
+
+		if ($this->phpClassReflectionExtension->hasMethod($this, $methodName)) {
+			$method = $this->phpClassReflectionExtension->getMethod($this, $methodName);
+			if ($scope->canCallMethod($method)) {
+				return $this->methods[$key] = $method;
+			}
+			$this->methods[$key] = $method;
 		}
 
 		if (!isset($this->methods[$key])) {
@@ -619,7 +636,7 @@ final class ClassReflection
 
 	public function hasNativeMethod(string $methodName): bool
 	{
-		return $this->getPhpExtension()->hasNativeMethod($this, $methodName);
+		return $this->phpClassReflectionExtension->hasNativeMethod($this, $methodName);
 	}
 
 	public function getNativeMethod(string $methodName): ExtendedMethodReflection
@@ -627,7 +644,7 @@ final class ClassReflection
 		if (!$this->hasNativeMethod($methodName)) {
 			throw new MissingMethodFromReflectionException($this->getName(), $methodName);
 		}
-		return $this->getPhpExtension()->getNativeMethod($this, $methodName);
+		return $this->phpClassReflectionExtension->getNativeMethod($this, $methodName);
 	}
 
 	public function hasConstructor(): bool
@@ -660,16 +677,6 @@ final class ClassReflection
 		}
 
 		return $constructor;
-	}
-
-	private function getPhpExtension(): PhpClassReflectionExtension
-	{
-		$extension = $this->methodsClassReflectionExtensions[0];
-		if (!$extension instanceof PhpClassReflectionExtension) {
-			throw new ShouldNotHappenException();
-		}
-
-		return $extension;
 	}
 
 	/** @internal */
@@ -710,7 +717,7 @@ final class ClassReflection
 
 			unset($this->methods[$name]);
 		}
-		$this->getPhpExtension()->evictPrivateSymbols($this->getCacheKey());
+		$this->phpClassReflectionExtension->evictPrivateSymbols($this->getCacheKey());
 	}
 
 	/** @deprecated Use getInstanceProperty or getStaticProperty */
@@ -725,12 +732,16 @@ final class ClassReflection
 			$key = sprintf('%s-%s', $key, $scope->getClassReflection()->getCacheKey());
 		}
 
-		if (!isset($this->properties[$key])) {
-			foreach ($this->propertiesClassReflectionExtensions as $i => $extension) {
-				if ($i > 0 && !$this->allowsDynamicProperties()) {
-					break;
-				}
+		if ($this->phpClassReflectionExtension->hasProperty($this, $propertyName)) {
+			$property = $this->phpClassReflectionExtension->getProperty($this, $propertyName);
+			if ($scope->canReadProperty($property)) {
+				return $this->properties[$key] = $property;
+			}
+			$this->properties[$key] = $property;
+		}
 
+		if (!isset($this->properties[$key]) && $this->allowsDynamicProperties()) {
+			foreach ($this->propertiesClassReflectionExtensions as $extension) {
 				if (!$extension->hasProperty($this, $propertyName)) {
 					continue;
 				}
@@ -744,8 +755,8 @@ final class ClassReflection
 		}
 
 		// For BC purpose
-		if ($this->getPhpExtension()->hasProperty($this, $propertyName)) {
-			$property = $this->getPhpExtension()->getProperty($this, $propertyName);
+		if ($this->phpClassReflectionExtension->hasProperty($this, $propertyName)) {
+			$property = $this->phpClassReflectionExtension->getProperty($this, $propertyName);
 
 			return $this->properties[$key] = $property;
 		}
@@ -775,12 +786,18 @@ final class ClassReflection
 			$key = sprintf('%s-%s', $key, $scope->getClassReflection()->getCacheKey());
 		}
 
-		if (!isset($this->instanceProperties[$key])) {
-			foreach ($this->propertiesClassReflectionExtensions as $i => $extension) {
-				if ($i > 0 && !$this->allowsDynamicProperties()) {
-					break;
+		if ($this->phpClassReflectionExtension->hasProperty($this, $propertyName)) {
+			$property = $this->phpClassReflectionExtension->getProperty($this, $propertyName);
+			if (!$property->isStatic()) {
+				if ($scope->canReadProperty($property)) {
+					return $this->instanceProperties[$key] = $property;
 				}
+				$this->instanceProperties[$key] = $property;
+			}
+		}
 
+		if (!isset($this->instanceProperties[$key]) && $this->allowsDynamicProperties()) {
+			foreach ($this->propertiesClassReflectionExtensions as $extension) {
 				if (!$extension->hasProperty($this, $propertyName)) {
 					continue;
 				}
@@ -819,8 +836,8 @@ final class ClassReflection
 			return $this->staticProperties[$key];
 		}
 
-		if ($this->getPhpExtension()->hasProperty($this, $propertyName)) {
-			$nakedProperty = $this->getPhpExtension()->getProperty($this, $propertyName);
+		if ($this->phpClassReflectionExtension->hasProperty($this, $propertyName)) {
+			$nakedProperty = $this->phpClassReflectionExtension->getProperty($this, $propertyName);
 			if ($nakedProperty->isStatic()) {
 				$property = $this->wrapExtendedProperty($propertyName, $nakedProperty);
 				if ($property->isStatic()) {
@@ -839,7 +856,7 @@ final class ClassReflection
 
 	public function hasNativeProperty(string $propertyName): bool
 	{
-		return $this->getPhpExtension()->hasProperty($this, $propertyName);
+		return $this->phpClassReflectionExtension->hasProperty($this, $propertyName);
 	}
 
 	public function getNativeProperty(string $propertyName): PhpPropertyReflection
@@ -848,7 +865,7 @@ final class ClassReflection
 			throw new MissingPropertyFromReflectionException($this->getName(), $propertyName);
 		}
 
-		return $this->getPhpExtension()->getNativeProperty($this, $propertyName);
+		return $this->phpClassReflectionExtension->getNativeProperty($this, $propertyName);
 	}
 
 	public function isAbstract(): bool
@@ -1762,6 +1779,7 @@ final class ClassReflection
 			$this->signatureMapProvider,
 			$this->deprecationProvider,
 			$this->attributeReflectionFactory,
+			$this->phpClassReflectionExtension,
 			$this->propertiesClassReflectionExtensions,
 			$this->methodsClassReflectionExtensions,
 			$this->allowedSubTypesClassReflectionExtensions,
@@ -1794,6 +1812,7 @@ final class ClassReflection
 			$this->signatureMapProvider,
 			$this->deprecationProvider,
 			$this->attributeReflectionFactory,
+			$this->phpClassReflectionExtension,
 			$this->propertiesClassReflectionExtensions,
 			$this->methodsClassReflectionExtensions,
 			$this->allowedSubTypesClassReflectionExtensions,
@@ -1836,6 +1855,7 @@ final class ClassReflection
 			$this->signatureMapProvider,
 			$this->deprecationProvider,
 			$this->attributeReflectionFactory,
+			$this->phpClassReflectionExtension,
 			$this->propertiesClassReflectionExtensions,
 			$this->methodsClassReflectionExtensions,
 			$this->allowedSubTypesClassReflectionExtensions,
@@ -1878,6 +1898,7 @@ final class ClassReflection
 			$this->signatureMapProvider,
 			$this->deprecationProvider,
 			$this->attributeReflectionFactory,
+			$this->phpClassReflectionExtension,
 			$this->propertiesClassReflectionExtensions,
 			$this->methodsClassReflectionExtensions,
 			$this->allowedSubTypesClassReflectionExtensions,

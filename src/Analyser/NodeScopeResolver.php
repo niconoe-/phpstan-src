@@ -2225,6 +2225,7 @@ final class NodeScopeResolver
 			$this->signatureMapProvider,
 			$this->deprecationProvider,
 			$this->attributeReflectionFactory,
+			$this->classReflectionExtensionRegistryProvider->getRegistry()->getPhpClassReflectionExtension(),
 			$this->classReflectionExtensionRegistryProvider->getRegistry()->getPropertiesClassReflectionExtensions(),
 			$this->classReflectionExtensionRegistryProvider->getRegistry()->getMethodsClassReflectionExtensions(),
 			$this->classReflectionExtensionRegistryProvider->getRegistry()->getAllowedSubTypesClassReflectionExtensions(),
