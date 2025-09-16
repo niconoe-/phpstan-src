@@ -561,7 +561,7 @@ class IntersectionType implements CompoundType
 
 		$propertiesCount = count($propertyPrototypes);
 		if ($propertiesCount === 0) {
-			throw new ShouldNotHappenException();
+			throw new MissingPropertyFromReflectionException($this->describe(VerbosityLevel::typeOnly()), $propertyName);
 		}
 
 		if ($propertiesCount === 1) {
@@ -594,7 +594,7 @@ class IntersectionType implements CompoundType
 
 		$propertiesCount = count($propertyPrototypes);
 		if ($propertiesCount === 0) {
-			throw new ShouldNotHappenException();
+			throw new MissingPropertyFromReflectionException($this->describe(VerbosityLevel::typeOnly()), $propertyName);
 		}
 
 		if ($propertiesCount === 1) {
