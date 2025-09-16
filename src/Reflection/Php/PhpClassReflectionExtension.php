@@ -399,6 +399,7 @@ final class PhpClassReflectionExtension
 		if (
 			$includingAnnotations
 			&& !$declaringClassReflection->isEnum()
+			&& !$propertyReflection->isStatic()
 			&& ($classReflection->allowsDynamicProperties() || !$propertyReflection->isPrivate())
 			&& $this->annotationsPropertiesClassReflectionExtension->hasProperty($classReflection, $propertyName)
 		) {
