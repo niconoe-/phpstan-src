@@ -1203,4 +1203,12 @@ class AccessPropertiesRuleTest extends RuleTestCase
 		]);
 	}
 
+	public function testPrivatePropertyWithAllowedPropertyTagIsPublic(): void
+	{
+		$this->checkThisOnly = false;
+		$this->checkUnionTypes = true;
+		$this->checkDynamicProperties = true;
+		$this->analyse([__DIR__ . '/data/private-property-with-allowed-property-tag-is-public.php'], []);
+	}
+
 }
