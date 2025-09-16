@@ -47,6 +47,8 @@ final class PhpPropertyReflection implements ExtendedPropertyReflection
 		private bool $isFinal,
 		private bool $readable,
 		private bool $writable,
+		private bool $private,
+		private bool $public,
 	)
 	{
 	}
@@ -83,12 +85,12 @@ final class PhpPropertyReflection implements ExtendedPropertyReflection
 
 	public function isPrivate(): bool
 	{
-		return $this->reflection->isPrivate();
+		return $this->private;
 	}
 
 	public function isPublic(): bool
 	{
-		return $this->reflection->isPublic();
+		return $this->public;
 	}
 
 	public function isReadOnly(): bool

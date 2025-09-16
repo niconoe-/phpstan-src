@@ -137,4 +137,11 @@ class WritingToReadOnlyPropertiesRuleTest extends RuleTestCase
 		]);
 	}
 
+	#[RequiresPhp('>= 8.0')]
+	public function testBug13530(): void
+	{
+		$this->checkThisOnly = false;
+		$this->analyse([__DIR__ . '/data/bug-13530.php'], []);
+	}
+
 }

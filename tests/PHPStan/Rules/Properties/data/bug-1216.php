@@ -33,12 +33,18 @@ class Baz extends Foo
 
 	public function __construct()
 	{
-		$this->foo = 'foo'; // OK
+		$this->foo = 'foo'; // error because property is protected so in this scope "int" type is used
 		$this->bar = 'bar'; // OK
 		$this->untypedBar = 123; // error
 	}
 
 }
+
+function (Baz $baz): void {
+	$baz->foo = 'foo'; // OK
+	$baz->bar = 'bar'; // OK
+	$baz->untypedBar = 123; // error
+};
 
 trait DecoratorTrait
 {

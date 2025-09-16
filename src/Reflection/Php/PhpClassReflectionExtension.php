@@ -8,6 +8,7 @@ use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Declare_;
 use PhpParser\Node\Stmt\Namespace_;
 use PHPStan\Analyser\NodeScopeResolver;
+use PHPStan\Analyser\OutOfClassScope;
 use PHPStan\Analyser\ScopeContext;
 use PHPStan\Analyser\ScopeFactory;
 use PHPStan\BetterReflection\Reflection\Adapter\ReflectionMethod;
@@ -21,6 +22,7 @@ use PHPStan\Reflection\Annotations\AnnotationsMethodsClassReflectionExtension;
 use PHPStan\Reflection\Annotations\AnnotationsPropertiesClassReflectionExtension;
 use PHPStan\Reflection\Assertions;
 use PHPStan\Reflection\AttributeReflectionFactory;
+use PHPStan\Reflection\ClassMemberAccessAnswerer;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\Deprecation\DeprecationProvider;
 use PHPStan\Reflection\ExtendedFunctionVariant;
@@ -155,19 +157,23 @@ final class PhpClassReflectionExtension
 		return $classReflection->getNativeReflection()->hasProperty($propertyName);
 	}
 
-	public function getProperty(ClassReflection $classReflection, string $propertyName): PhpPropertyReflection
+	public function getProperty(ClassReflection $classReflection, string $propertyName, ClassMemberAccessAnswerer $scope): PhpPropertyReflection
 	{
-		if (!isset($this->propertiesIncludingAnnotations[$classReflection->getCacheKey()][$propertyName])) {
-			$this->propertiesIncludingAnnotations[$classReflection->getCacheKey()][$propertyName] = $this->createProperty($classReflection, $propertyName, true);
+		$cacheKey = $classReflection->getCacheKey();
+		if ($scope->isInClass()) {
+			$cacheKey = sprintf('%s-%s', $cacheKey, $scope->getClassReflection()->getCacheKey());
+		}
+		if (!isset($this->propertiesIncludingAnnotations[$cacheKey][$propertyName])) {
+			$this->propertiesIncludingAnnotations[$cacheKey][$propertyName] = $this->createProperty($classReflection, $propertyName, $scope, true);
 		}
 
-		return $this->propertiesIncludingAnnotations[$classReflection->getCacheKey()][$propertyName];
+		return $this->propertiesIncludingAnnotations[$cacheKey][$propertyName];
 	}
 
 	public function getNativeProperty(ClassReflection $classReflection, string $propertyName): PhpPropertyReflection
 	{
 		if (!isset($this->nativeProperties[$classReflection->getCacheKey()][$propertyName])) {
-			$property = $this->createProperty($classReflection, $propertyName, false);
+			$property = $this->createProperty($classReflection, $propertyName, new OutOfClassScope(), false);
 			$this->nativeProperties[$classReflection->getCacheKey()][$propertyName] = $property;
 		}
 
@@ -177,6 +183,7 @@ final class PhpClassReflectionExtension
 	private function createProperty(
 		ClassReflection $classReflection,
 		string $propertyName,
+		ClassMemberAccessAnswerer $scope,
 		bool $includingAnnotations,
 	): PhpPropertyReflection
 	{
@@ -213,7 +220,7 @@ final class PhpClassReflectionExtension
 					$types[] = $value;
 				}
 
-				return new PhpPropertyReflection($declaringClassReflection, null, null, TypeCombinator::union(...$types), $classReflection->getNativeReflection()->getProperty($propertyName), null, null, null, false, false, false, false, [], false, true, false);
+				return new PhpPropertyReflection($declaringClassReflection, null, null, TypeCombinator::union(...$types), $classReflection->getNativeReflection()->getProperty($propertyName), null, null, null, false, false, false, false, [], false, true, false, false, true);
 			}
 		}
 
@@ -393,12 +400,34 @@ final class PhpClassReflectionExtension
 			}
 		}
 
+		$nativeProperty = new PhpPropertyReflection(
+			$declaringClassReflection,
+			$declaringTrait,
+			$nativeType,
+			$phpDocType,
+			$propertyReflection,
+			$getHook,
+			$setHook,
+			$deprecatedDescription,
+			$isDeprecated,
+			$isInternal,
+			$isReadOnlyByPhpDoc,
+			$isAllowedPrivateMutation,
+			$this->attributeReflectionFactory->fromNativeReflection($propertyReflection->getAttributes(), InitializerExprContext::fromClass($declaringClassReflection->getName(), $declaringClassReflection->getFileName())),
+			$isFinal,
+			true,
+			true,
+			$propertyReflection->isPrivate(),
+			$propertyReflection->isPublic(),
+		);
+
 		if (
 			$includingAnnotations
 			&& !$declaringClassReflection->isEnum()
 			&& !$propertyReflection->isStatic()
 			&& ($classReflection->allowsDynamicProperties() || !$propertyReflection->isPrivate())
 			&& $this->annotationsPropertiesClassReflectionExtension->hasProperty($classReflection, $propertyName)
+			&& (!$scope->canReadProperty($nativeProperty) || $nativeProperty->isPublic())
 		) {
 			$hierarchyDistances = $classReflection->getClassHierarchyDistances();
 			$annotationProperty = $this->annotationsPropertiesClassReflectionExtension->getProperty($classReflection, $propertyName);
@@ -415,7 +444,9 @@ final class PhpClassReflectionExtension
 				throw new ShouldNotHappenException();
 			}
 
-			if ($hierarchyDistances[$annotationProperty->getDeclaringClass()->getName()] <= $hierarchyDistances[$distanceDeclaringClass]) {
+			if (
+				$hierarchyDistances[$annotationProperty->getDeclaringClass()->getName()] <= $hierarchyDistances[$distanceDeclaringClass]
+			) {
 				return new PhpPropertyReflection(
 					$annotationProperty->getDeclaringClass(),
 					$declaringTrait,
@@ -433,28 +464,13 @@ final class PhpClassReflectionExtension
 					$isFinal,
 					$annotationProperty->isReadable(),
 					$annotationProperty->isWritable(),
+					false,
+					true,
 				);
 			}
 		}
 
-		return new PhpPropertyReflection(
-			$declaringClassReflection,
-			$declaringTrait,
-			$nativeType,
-			$phpDocType,
-			$propertyReflection,
-			$getHook,
-			$setHook,
-			$deprecatedDescription,
-			$isDeprecated,
-			$isInternal,
-			$isReadOnlyByPhpDoc,
-			$isAllowedPrivateMutation,
-			$this->attributeReflectionFactory->fromNativeReflection($propertyReflection->getAttributes(), InitializerExprContext::fromClass($declaringClassReflection->getName(), $declaringClassReflection->getFileName())),
-			$isFinal,
-			true,
-			true,
-		);
+		return $nativeProperty;
 	}
 
 	public function hasMethod(ClassReflection $classReflection, string $methodName): bool

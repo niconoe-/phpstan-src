@@ -34,7 +34,7 @@ class Baz extends Foo
 
 	public function __construct()
 	{
-		assertType('string', $this->foo);
+		assertType('int', $this->foo);
 		assertType('string', $this->bar);
 		assertType('string', $this->untypedBar);
 	}

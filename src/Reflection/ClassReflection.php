@@ -8,6 +8,7 @@ use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name\FullyQualified;
 use PHPStan\Analyser\ArgumentsNormalizer;
+use PHPStan\Analyser\OutOfClassScope;
 use PHPStan\BetterReflection\Reflection\Adapter\ReflectionClass;
 use PHPStan\BetterReflection\Reflection\Adapter\ReflectionEnum;
 use PHPStan\BetterReflection\Reflection\Adapter\ReflectionEnumBackedCase;
@@ -505,7 +506,7 @@ final class ClassReflection
 		}
 
 		if ($this->phpClassReflectionExtension->hasProperty($this, $propertyName)) {
-			$property = $this->phpClassReflectionExtension->getProperty($this, $propertyName);
+			$property = $this->phpClassReflectionExtension->getNativeProperty($this, $propertyName);
 			if (!$property->isStatic()) {
 				return $this->hasInstancePropertyCache[$propertyName] = true;
 			}
@@ -537,7 +538,7 @@ final class ClassReflection
 		}
 
 		if ($this->phpClassReflectionExtension->hasProperty($this, $propertyName)) {
-			$property = $this->phpClassReflectionExtension->getProperty($this, $propertyName);
+			$property = $this->phpClassReflectionExtension->getNativeProperty($this, $propertyName);
 			if ($property->isStatic()) {
 				return $this->hasStaticPropertyCache[$propertyName] = true;
 			}
@@ -733,7 +734,7 @@ final class ClassReflection
 		}
 
 		if ($this->phpClassReflectionExtension->hasProperty($this, $propertyName)) {
-			$property = $this->phpClassReflectionExtension->getProperty($this, $propertyName);
+			$property = $this->phpClassReflectionExtension->getProperty($this, $propertyName, $scope);
 			if ($scope->canReadProperty($property)) {
 				return $this->properties[$key] = $property;
 			}
@@ -756,7 +757,7 @@ final class ClassReflection
 
 		// For BC purpose
 		if ($this->phpClassReflectionExtension->hasProperty($this, $propertyName)) {
-			$property = $this->phpClassReflectionExtension->getProperty($this, $propertyName);
+			$property = $this->phpClassReflectionExtension->getProperty($this, $propertyName, $scope);
 
 			return $this->properties[$key] = $property;
 		}
@@ -787,7 +788,7 @@ final class ClassReflection
 		}
 
 		if ($this->phpClassReflectionExtension->hasProperty($this, $propertyName)) {
-			$property = $this->phpClassReflectionExtension->getProperty($this, $propertyName);
+			$property = $this->phpClassReflectionExtension->getProperty($this, $propertyName, $scope);
 			if (!$property->isStatic()) {
 				if ($scope->canReadProperty($property)) {
 					return $this->instanceProperties[$key] = $property;
@@ -837,7 +838,7 @@ final class ClassReflection
 		}
 
 		if ($this->phpClassReflectionExtension->hasProperty($this, $propertyName)) {
-			$nakedProperty = $this->phpClassReflectionExtension->getProperty($this, $propertyName);
+			$nakedProperty = $this->phpClassReflectionExtension->getProperty($this, $propertyName, new OutOfClassScope());
 			if ($nakedProperty->isStatic()) {
 				$property = $this->wrapExtendedProperty($propertyName, $nakedProperty);
 				if ($property->isStatic()) {
