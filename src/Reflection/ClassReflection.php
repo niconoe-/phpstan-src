@@ -733,25 +733,27 @@ final class ClassReflection
 			$key = sprintf('%s-%s', $key, $scope->getClassReflection()->getCacheKey());
 		}
 
-		if ($this->phpClassReflectionExtension->hasProperty($this, $propertyName)) {
-			$property = $this->phpClassReflectionExtension->getProperty($this, $propertyName, $scope);
-			if ($scope->canReadProperty($property)) {
-				return $this->properties[$key] = $property;
-			}
-			$this->properties[$key] = $property;
-		}
-
-		if (!isset($this->properties[$key]) && $this->allowsDynamicProperties()) {
-			foreach ($this->propertiesClassReflectionExtensions as $extension) {
-				if (!$extension->hasProperty($this, $propertyName)) {
-					continue;
-				}
-
-				$property = $this->wrapExtendedProperty($propertyName, $extension->getProperty($this, $propertyName));
+		if (!isset($this->properties[$key])) {
+			if ($this->phpClassReflectionExtension->hasProperty($this, $propertyName)) {
+				$property = $this->phpClassReflectionExtension->getProperty($this, $propertyName, $scope);
 				if ($scope->canReadProperty($property)) {
 					return $this->properties[$key] = $property;
 				}
 				$this->properties[$key] = $property;
+			}
+
+			if ($this->allowsDynamicProperties()) {
+				foreach ($this->propertiesClassReflectionExtensions as $extension) {
+					if (!$extension->hasProperty($this, $propertyName)) {
+						continue;
+					}
+
+					$property = $this->wrapExtendedProperty($propertyName, $extension->getProperty($this, $propertyName));
+					if ($scope->canReadProperty($property)) {
+						return $this->properties[$key] = $property;
+					}
+					$this->properties[$key] = $property;
+				}
 			}
 		}
 
@@ -787,32 +789,34 @@ final class ClassReflection
 			$key = sprintf('%s-%s', $key, $scope->getClassReflection()->getCacheKey());
 		}
 
-		if ($this->phpClassReflectionExtension->hasProperty($this, $propertyName)) {
-			$property = $this->phpClassReflectionExtension->getProperty($this, $propertyName, $scope);
-			if (!$property->isStatic()) {
-				if ($scope->canReadProperty($property)) {
-					return $this->instanceProperties[$key] = $property;
+		if (!isset($this->instanceProperties[$key])) {
+			if ($this->phpClassReflectionExtension->hasProperty($this, $propertyName)) {
+				$property = $this->phpClassReflectionExtension->getProperty($this, $propertyName, $scope);
+				if (!$property->isStatic()) {
+					if ($scope->canReadProperty($property)) {
+						return $this->instanceProperties[$key] = $property;
+					}
+					$this->instanceProperties[$key] = $property;
 				}
-				$this->instanceProperties[$key] = $property;
 			}
-		}
 
-		if (!isset($this->instanceProperties[$key]) && $this->allowsDynamicProperties()) {
-			foreach ($this->propertiesClassReflectionExtensions as $extension) {
-				if (!$extension->hasProperty($this, $propertyName)) {
-					continue;
-				}
+			if ($this->allowsDynamicProperties()) {
+				foreach ($this->propertiesClassReflectionExtensions as $extension) {
+					if (!$extension->hasProperty($this, $propertyName)) {
+						continue;
+					}
 
-				$nakedProperty = $extension->getProperty($this, $propertyName);
-				if ($nakedProperty->isStatic()) {
-					continue;
-				}
+					$nakedProperty = $extension->getProperty($this, $propertyName);
+					if ($nakedProperty->isStatic()) {
+						continue;
+					}
 
-				$property = $this->wrapExtendedProperty($propertyName, $nakedProperty);
-				if ($scope->canReadProperty($property)) {
-					return $this->instanceProperties[$key] = $property;
+					$property = $this->wrapExtendedProperty($propertyName, $nakedProperty);
+					if ($scope->canReadProperty($property)) {
+						return $this->instanceProperties[$key] = $property;
+					}
+					$this->instanceProperties[$key] = $property;
 				}
-				$this->instanceProperties[$key] = $property;
 			}
 		}
 
