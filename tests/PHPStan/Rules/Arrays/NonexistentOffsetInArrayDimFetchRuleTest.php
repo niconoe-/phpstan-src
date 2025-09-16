@@ -1000,4 +1000,9 @@ class NonexistentOffsetInArrayDimFetchRuleTest extends RuleTestCase
 		]);
 	}
 
+	public function testBug13526(): void
+	{
+		$this->analyse([__DIR__ . '/data/bug-13526.php'], []);
+	}
+
 }
