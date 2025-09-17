@@ -66,7 +66,10 @@ class CustomDeprecationExtension implements
 		return $this->buildDeprecation($reflection);
 	}
 
-	public function getEnumCaseDeprecation(ReflectionEnumBackedCase|ReflectionEnumUnitCase $reflection): ?Deprecation
+	/**
+	 * @param ReflectionEnumBackedCase|ReflectionEnumUnitCase $reflection
+	 */
+	public function getEnumCaseDeprecation($reflection): ?Deprecation
 	{
 		return $this->buildDeprecation($reflection);
 	}
