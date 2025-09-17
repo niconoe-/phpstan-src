@@ -110,8 +110,8 @@ use function sprintf;
 			}
 
 			foreach ($commits as $commit) {
-				$pullRequests = $searchApi->issues(sprintf('repo:phpstan/phpstan-src %s', $commit['hash']));
-				$issues = $searchApi->issues(sprintf('repo:phpstan/phpstan %s', $commit['hash']), 'created');
+				$pullRequests = $searchApi->issues(sprintf('repo:phpstan/phpstan-src %s is:pull-request', $commit['hash']));
+				$issues = $searchApi->issues(sprintf('repo:phpstan/phpstan %s is:issue', $commit['hash']), 'created');
 				$items = array_merge($pullRequests['items'], $issues['items']);
 				$parenthesis = 'https://github.com/phpstan/phpstan-src/commit/' . $commit['hash'];
 				$thanks = null;
