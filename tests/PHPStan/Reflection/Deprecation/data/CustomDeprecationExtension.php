@@ -33,7 +33,10 @@ class CustomDeprecationExtension implements
 	EnumCaseDeprecationExtension
 {
 
-	public function getClassDeprecation(ReflectionClass|ReflectionEnum $reflection): ?Deprecation
+	/**
+	 * @param ReflectionClass|ReflectionEnum $reflection
+	 */
+	public function getClassDeprecation($reflection): ?Deprecation
 	{
 		return $this->buildDeprecation($reflection);
 	}
