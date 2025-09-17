@@ -589,18 +589,16 @@ final class ClassReflection
 			$this->methods[$key] = $method;
 		}
 
-		if (!isset($this->methods[$key])) {
-			foreach ($this->methodsClassReflectionExtensions as $extension) {
-				if (!$extension->hasMethod($this, $methodName)) {
-					continue;
-				}
-
-				$method = $this->wrapExtendedMethod($extension->getMethod($this, $methodName));
-				if ($scope->canCallMethod($method)) {
-					return $this->methods[$key] = $method;
-				}
-				$this->methods[$key] = $method;
+		foreach ($this->methodsClassReflectionExtensions as $extension) {
+			if (!$extension->hasMethod($this, $methodName)) {
+				continue;
 			}
+
+			$method = $this->wrapExtendedMethod($extension->getMethod($this, $methodName));
+			if ($scope->canCallMethod($method)) {
+				return $this->methods[$key] = $method;
+			}
+			$this->methods[$key] = $method;
 		}
 
 		if (!isset($this->methods[$key])) {
