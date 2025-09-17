@@ -4,12 +4,12 @@ namespace PHPStan\Type\Generic;
 
 use Exception;
 use InvalidArgumentException;
+use PHPStan\Testing\PHPStanTestCase;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\VerbosityLevel;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-class TemplateTypeMapTest extends TestCase
+class TemplateTypeMapTest extends PHPStanTestCase
 {
 
 	public static function dataUnionWithLowerBoundTypes(): iterable

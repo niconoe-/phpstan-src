@@ -3,11 +3,11 @@
 namespace PHPStan\Type;
 
 use PHPStan\Fixture\TestDecimal;
+use PHPStan\Testing\PHPStanTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 use stdClass;
 
-class TestDecimalOperatorTypeSpecifyingExtensionTest extends TestCase
+class TestDecimalOperatorTypeSpecifyingExtensionTest extends PHPStanTestCase
 {
 
 	#[DataProvider('dataSigilAndSidesProvider')]

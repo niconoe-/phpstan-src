@@ -2,14 +2,14 @@
 
 namespace PHPStan\Type\Constant;
 
+use PHPStan\Testing\PHPStanTestCase;
 use PHPStan\Type\BooleanType;
 use PHPStan\Type\NullType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\VerbosityLevel;
-use PHPUnit\Framework\TestCase;
 
-class ConstantArrayTypeBuilderTest extends TestCase
+class ConstantArrayTypeBuilderTest extends PHPStanTestCase
 {
 
 	public function testOptionalKeysNextAutoIndex(): void

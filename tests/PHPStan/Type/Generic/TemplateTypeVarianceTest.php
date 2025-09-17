@@ -2,6 +2,7 @@
 
 namespace PHPStan\Type\Generic;
 
+use PHPStan\Testing\PHPStanTestCase;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\BenevolentUnionType;
 use PHPStan\Type\IntegerType;
@@ -10,10 +11,9 @@ use PHPStan\Type\Type;
 use PHPStan\Type\UnionType;
 use PHPStan\Type\VerbosityLevel;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 use function sprintf;
 
-class TemplateTypeVarianceTest extends TestCase
+class TemplateTypeVarianceTest extends PHPStanTestCase
 {
 
 	public static function dataIsValidVariance(): iterable
