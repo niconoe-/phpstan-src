@@ -96,6 +96,11 @@ abstract class PHPStanTestCase extends TestCase
 		return self::$containers[$cacheKey];
 	}
 
+	public static function setUpBeforeClass(): void
+	{
+		self::getContainer();
+	}
+
 	/**
 	 * @return string[]
 	 */

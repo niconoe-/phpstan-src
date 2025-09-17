@@ -1,7 +1,5 @@
 <?php declare(strict_types = 1);
 
-use PHPStan\Testing\PHPStanTestCase;
-
 error_reporting(E_ALL);
 
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -21,5 +19,3 @@ eval('trait TraitInEval {
 	}
 
 }');
-
-PHPStanTestCase::getContainer();

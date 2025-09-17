@@ -8,7 +8,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 class InvalidIgnoredErrorExceptionTest extends PHPStanTestCase
 {
 
-	private static string $configFile;
+	private static ?string $configFile = null;
 
 	/**
 	 * @return iterable<array{string, string}>
@@ -55,10 +55,14 @@ class InvalidIgnoredErrorExceptionTest extends PHPStanTestCase
 
 	public static function getAdditionalConfigFiles(): array
 	{
-		return [
+		$files = [
 			__DIR__ . '/../../../conf/bleedingEdge.neon',
-			self::$configFile,
 		];
+		if (self::$configFile !== null) {
+			$files[] = self::$configFile;
+		}
+
+		return $files;
 	}
 
 }
