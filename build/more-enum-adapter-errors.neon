@@ -22,3 +22,7 @@ parameters:
 
 		-
 			message: "#^Call to method PHPStan\\\\Reflection\\\\ClassReflection::isEnum\\(\\) will always evaluate to false\\.$#"
+		-
+			rawMessage: 'Asserted type PHPStan\BetterReflection\Reflection\Adapter\ReflectionEnum for $this->getNativeReflection() with type PHPStan\BetterReflection\Reflection\Adapter\ReflectionClass can never happen.'
+			count: 1
+			path: ../src/Reflection/ClassReflection.php
