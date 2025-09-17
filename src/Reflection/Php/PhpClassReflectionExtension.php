@@ -451,6 +451,10 @@ final class PhpClassReflectionExtension
 			if (
 				$hierarchyDistances[$annotationProperty->getDeclaringClass()->getName()] <= $hierarchyDistances[$distanceDeclaringClass]
 			) {
+				if ($nativeType->isSuperTypeOf($annotationProperty->getReadableType())->yes()) {
+					$nativeType = new MixedType();
+				}
+
 				return new PhpPropertyReflection(
 					$annotationProperty->getDeclaringClass(),
 					$declaringTrait,
