@@ -430,7 +430,11 @@ final class PhpClassReflectionExtension
 			&& !$propertyReflection->isStatic()
 			&& ($classReflection->allowsDynamicProperties() || !$propertyReflection->isPrivate())
 			&& $this->annotationsPropertiesClassReflectionExtension->hasProperty($classReflection, $propertyName)
-			&& (!$scope->canReadProperty($nativeProperty) || $nativeProperty->isPublic())
+			&& (
+				!$scope->canReadProperty($nativeProperty)
+				|| $nativeProperty->isPublic()
+				|| ($scope->isInClass() && $scope->getClassReflection()->getName() !== $declaringClassReflection->getName())
+			)
 		) {
 			$hierarchyDistances = $classReflection->getClassHierarchyDistances();
 			$annotationProperty = $this->annotationsPropertiesClassReflectionExtension->getProperty($classReflection, $propertyName);

@@ -127,10 +127,6 @@ class TypesAssignedToPropertiesRuleTest extends RuleTestCase
 	{
 		$this->analyse([__DIR__ . '/data/bug-1216.php'], [
 			[
-				'Property Bug1216PropertyTest\Foo::$foo (int) does not accept string.',
-				36,
-			],
-			[
 				'Property Bug1216PropertyTest\Baz::$untypedBar (string) does not accept int.',
 				38,
 			],

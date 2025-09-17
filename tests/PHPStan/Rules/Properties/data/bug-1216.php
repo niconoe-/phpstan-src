@@ -33,7 +33,7 @@ class Baz extends Foo
 
 	public function __construct()
 	{
-		$this->foo = 'foo'; // error because property is protected so in this scope "int" type is used
+		$this->foo = 'foo'; // OK
 		$this->bar = 'bar'; // OK
 		$this->untypedBar = 123; // error
 	}
