@@ -222,7 +222,7 @@ final class PhpClassReflectionExtension
 
 				$phpDocType = TypeCombinator::union(...$types);
 
-				return new PhpPropertyReflection($declaringClassReflection, null, null, $phpDocType, $phpDocType, $classReflection->getNativeReflection()->getProperty($propertyName), null, null, null, false, false, false, false, [], false, true, false, false, true);
+				return new PhpPropertyReflection($declaringClassReflection, null, new MixedType(), $phpDocType, $phpDocType, $classReflection->getNativeReflection()->getProperty($propertyName), null, null, null, false, false, false, false, [], false, true, false, false, true);
 			}
 		}
 
@@ -331,10 +331,7 @@ final class PhpClassReflectionExtension
 			);
 		}
 
-		$nativeType = null;
-		if ($propertyReflection->getType() !== null) {
-			$nativeType = $propertyReflection->getType();
-		}
+		$nativeType = TypehintHelper::decideTypeFromReflection($propertyReflection->getType(), selfClass: $declaringClassReflection);
 
 		$declaringTrait = null;
 		$reflectionProvider = $this->reflectionProviderProvider->getReflectionProvider();

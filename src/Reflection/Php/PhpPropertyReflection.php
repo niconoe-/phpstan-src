@@ -2,10 +2,7 @@
 
 namespace PHPStan\Reflection\Php;
 
-use PHPStan\BetterReflection\Reflection\Adapter\ReflectionIntersectionType;
-use PHPStan\BetterReflection\Reflection\Adapter\ReflectionNamedType;
 use PHPStan\BetterReflection\Reflection\Adapter\ReflectionProperty;
-use PHPStan\BetterReflection\Reflection\Adapter\ReflectionUnionType;
 use PHPStan\Reflection\AttributeReflection;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ExtendedMethodReflection;
@@ -24,8 +21,6 @@ use function sprintf;
 final class PhpPropertyReflection implements ExtendedPropertyReflection
 {
 
-	private ?Type $finalNativeType = null;
-
 	private ?Type $readableType = null;
 
 	private ?Type $writableType = null;
@@ -36,7 +31,7 @@ final class PhpPropertyReflection implements ExtendedPropertyReflection
 	public function __construct(
 		private ClassReflection $declaringClass,
 		private ?ClassReflection $declaringTrait,
-		private ReflectionUnionType|ReflectionNamedType|ReflectionIntersectionType|null $nativeType,
+		private Type $nativeType,
 		private ?Type $readablePhpDocType,
 		private ?Type $writablePhpDocType,
 		private ReflectionProperty $reflection,
@@ -109,10 +104,9 @@ final class PhpPropertyReflection implements ExtendedPropertyReflection
 
 	public function getReadableType(): Type
 	{
-		return $this->readableType ??= TypehintHelper::decideTypeFromReflection(
+		return $this->readableType ??= TypehintHelper::decideType(
 			$this->nativeType,
 			$this->readablePhpDocType,
-			$this->declaringClass,
 		);
 	}
 
@@ -131,10 +125,9 @@ final class PhpPropertyReflection implements ExtendedPropertyReflection
 		}
 
 		if ($this->writablePhpDocType === null || $this->writablePhpDocType instanceof NeverType) {
-			return $this->writableType = TypehintHelper::decideTypeFromReflection(
+			return $this->writableType = TypehintHelper::decideType(
 				$this->nativeType,
 				$this->readablePhpDocType,
-				$this->declaringClass,
 			);
 		}
 
@@ -145,10 +138,9 @@ final class PhpPropertyReflection implements ExtendedPropertyReflection
 			return $this->writableType = $this->writablePhpDocType;
 		}
 
-		return $this->writableType = TypehintHelper::decideTypeFromReflection(
+		return $this->writableType = TypehintHelper::decideType(
 			$this->nativeType,
 			$this->writablePhpDocType,
-			$this->declaringClass,
 		);
 	}
 
@@ -194,15 +186,12 @@ final class PhpPropertyReflection implements ExtendedPropertyReflection
 
 	public function hasNativeType(): bool
 	{
-		return $this->nativeType !== null;
+		return !$this->nativeType instanceof MixedType || $this->nativeType->isExplicitMixed();
 	}
 
 	public function getNativeType(): Type
 	{
-		return $this->finalNativeType ??= TypehintHelper::decideTypeFromReflection(
-			$this->nativeType,
-			selfClass: $this->declaringClass,
-		);
+		return $this->nativeType;
 	}
 
 	public function isReadable(): bool

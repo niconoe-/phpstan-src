@@ -190,8 +190,8 @@ class X {
 		assertType('int<min, 100>', $this->min);
 		assertType('int<0, max>', $this->max);
 
-		assertType('*ERROR*', $this->error1);
-		assertType('*ERROR*', $this->error2);
+		assertType('mixed', $this->error1);
+		assertType('mixed', $this->error2);
 		assertType('int', $this->int);
 	}
 
