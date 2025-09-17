@@ -11,8 +11,6 @@ use PHPStan\Node\Expr\TypeExpr;
 use PHPStan\PhpDoc\Tag\AssertTag;
 use PHPStan\Reflection\ExtendedMethodReflection;
 use PHPStan\Reflection\FunctionReflection;
-use PHPStan\Reflection\InitializerExprContext;
-use PHPStan\Reflection\InitializerExprTypeResolver;
 use PHPStan\Reflection\ParametersAcceptor;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\ClassNameCheck;
@@ -35,7 +33,6 @@ final class AssertRuleHelper
 {
 
 	public function __construct(
-		private InitializerExprTypeResolver $initializerExprTypeResolver,
 		private ReflectionProvider $reflectionProvider,
 		private UnresolvableTypeHelper $unresolvableTypeHelper,
 		private ClassNameCheck $classCheck,
@@ -69,8 +66,6 @@ final class AssertRuleHelper
 			$parametersByName['this'] = new ObjectType($class->getName(), classReflection: $class);
 		}
 
-		$context = InitializerExprContext::createEmpty();
-
 		$errors = [];
 		foreach ($reflection->getAsserts()->getAll() as $assert) {
 			$parameterName = substr($assert->getParameter()->getParameterName(), 1);
@@ -86,7 +81,7 @@ final class AssertRuleHelper
 			}
 
 			$assertedExpr = $assert->getParameter()->getExpr(new TypeExpr($parametersByName[$parameterName]));
-			$assertedExprType = $this->initializerExprTypeResolver->getType($assertedExpr, $context);
+			$assertedExprType = $scope->getType($assertedExpr);
 			$assertedExprString = $assert->getParameter()->describe();
 			if ($assertedExprType instanceof ErrorType) {
 				$errors[] = RuleErrorBuilder::message(sprintf('Assert references unknown %s.', $assertedExprString))

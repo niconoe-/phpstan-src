@@ -2,7 +2,6 @@
 
 namespace PHPStan\Rules\PhpDoc;
 
-use PHPStan\Reflection\InitializerExprTypeResolver;
 use PHPStan\Rules\ClassCaseSensitivityCheck;
 use PHPStan\Rules\ClassForbiddenNameCheck;
 use PHPStan\Rules\ClassNameCheck;
@@ -19,10 +18,8 @@ class MethodAssertRuleTest extends RuleTestCase
 
 	protected function getRule(): Rule
 	{
-		$initializerExprTypeResolver = self::getContainer()->getByType(InitializerExprTypeResolver::class);
 		$reflectionProvider = self::createReflectionProvider();
 		return new MethodAssertRule(new AssertRuleHelper(
-			$initializerExprTypeResolver,
 			$reflectionProvider,
 			new UnresolvableTypeHelper(),
 			new ClassNameCheck(
@@ -151,6 +148,16 @@ class MethodAssertRuleTest extends RuleTestCase
 	public function testBug10594(): void
 	{
 		$this->analyse([__DIR__ . '/data/bug-10594.php'], []);
+	}
+
+	public function testBugIncompatibleAssertTypeWithMethodReturnType(): void
+	{
+		$this->analyse([__DIR__ . '/data/incompatible-assert-type-with-method-return-type.php'], [
+			[
+				'Asserted type non-empty-list<static(IncompatibleAssertTypeWithMethodReturnType\Foo)> for $this->getValues() with type list<int> can never happen.',
+				19,
+			],
+		]);
 	}
 
 }

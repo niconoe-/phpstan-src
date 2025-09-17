@@ -2,7 +2,6 @@
 
 namespace PHPStan\Rules\PhpDoc;
 
-use PHPStan\Reflection\InitializerExprTypeResolver;
 use PHPStan\Rules\ClassCaseSensitivityCheck;
 use PHPStan\Rules\ClassForbiddenNameCheck;
 use PHPStan\Rules\ClassNameCheck;
@@ -19,10 +18,8 @@ class FunctionAssertRuleTest extends RuleTestCase
 
 	protected function getRule(): Rule
 	{
-		$initializerExprTypeResolver = self::getContainer()->getByType(InitializerExprTypeResolver::class);
 		$reflectionProvider = self::createReflectionProvider();
 		return new FunctionAssertRule(new AssertRuleHelper(
-			$initializerExprTypeResolver,
 			$reflectionProvider,
 			new UnresolvableTypeHelper(),
 			new ClassNameCheck(
