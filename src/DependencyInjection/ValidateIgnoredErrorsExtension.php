@@ -31,6 +31,7 @@ use PHPStan\Reflection\ReflectionProvider\DummyReflectionProvider;
 use PHPStan\Reflection\ReflectionProviderStaticAccessor;
 use PHPStan\Type\Constant\OversizedArrayBuilder;
 use PHPStan\Type\DirectTypeAliasResolverProvider;
+use PHPStan\Type\ObjectType;
 use PHPStan\Type\OperatorTypeSpecifyingExtensionRegistry;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeAliasResolver;
@@ -203,6 +204,7 @@ final class ValidateIgnoredErrorsExtension extends CompilerExtension
 			if ($originalPhpVersion !== null) {
 				PhpVersionStaticAccessor::registerInstance($originalPhpVersion);
 			}
+			ObjectType::resetCaches();
 		}
 	}
 

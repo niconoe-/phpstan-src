@@ -97,6 +97,7 @@ use PHPStan\Rules\Properties\ExistingClassesInPropertiesRule;
 use PHPStan\Rules\Properties\MissingPropertyTypehintRule;
 use PHPStan\Rules\Registry as RuleRegistry;
 use PHPStan\Type\FileTypeMapper;
+use PHPStan\Type\ObjectType;
 use Throwable;
 use function array_fill_keys;
 use function count;
@@ -174,6 +175,7 @@ final class StubValidator
 		} finally {
 			ReflectionProviderStaticAccessor::registerInstance($originalReflectionProvider);
 			PhpVersionStaticAccessor::registerInstance($originalPhpVersion);
+			ObjectType::resetCaches();
 		}
 
 		return $errors;

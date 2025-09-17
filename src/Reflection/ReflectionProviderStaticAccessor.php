@@ -2,8 +2,6 @@
 
 namespace PHPStan\Reflection;
 
-use PHPStan\Type\ObjectType;
-
 final class ReflectionProviderStaticAccessor
 {
 
@@ -16,7 +14,6 @@ final class ReflectionProviderStaticAccessor
 	public static function registerInstance(ReflectionProvider $reflectionProvider): void
 	{
 		self::$instance = $reflectionProvider;
-		ObjectType::resetCaches();
 	}
 
 	public static function getInstance(): ReflectionProvider
