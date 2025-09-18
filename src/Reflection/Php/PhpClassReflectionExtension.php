@@ -425,11 +425,10 @@ final class PhpClassReflectionExtension
 			$includingAnnotations
 			&& !$declaringClassReflection->isEnum()
 			&& !$propertyReflection->isStatic()
-			&& ($classReflection->allowsDynamicProperties() || !$propertyReflection->isPrivate())
+			&& ($classReflection->allowsDynamicProperties() || $scope->canReadProperty($nativeProperty))
 			&& $this->annotationsPropertiesClassReflectionExtension->hasProperty($classReflection, $propertyName)
 			&& (
-				!$scope->canReadProperty($nativeProperty)
-				|| $nativeProperty->isPublic()
+				$nativeProperty->isPublic()
 				|| ($scope->isInClass() && $scope->getClassReflection()->getName() !== $declaringClassReflection->getName())
 			)
 		) {

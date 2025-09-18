@@ -1216,4 +1216,21 @@ class AccessPropertiesRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/private-property-with-allowed-property-tag-is-public.php'], []);
 	}
 
+	public function testBug13537(): void
+	{
+		$this->checkThisOnly = false;
+		$this->checkUnionTypes = true;
+		$this->checkDynamicProperties = true;
+		$this->analyse([__DIR__ . '/data/bug-13537.php'], [
+			[
+				'Cannot access property $bob on array<string, mixed>.',
+				25,
+			],
+			[
+				'Access to protected property Bug13537\Bar::$test.',
+				25,
+			],
+		]);
+	}
+
 }
