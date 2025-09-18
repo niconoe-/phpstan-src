@@ -10,6 +10,7 @@ use PHPStan\ShouldNotHappenException;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\Type;
 use function count;
+use function strtolower;
 
 final class NativeFunctionReflection implements FunctionReflection
 {
@@ -148,6 +149,16 @@ final class NativeFunctionReflection implements FunctionReflection
 	public function getAttributes(): array
 	{
 		return $this->attributes;
+	}
+
+	public function mustUseReturnValue(): TrinaryLogic
+	{
+		foreach ($this->attributes as $attrib) {
+			if (strtolower($attrib->getName()) === 'nodiscard') {
+				return TrinaryLogic::createYes();
+			}
+		}
+		return TrinaryLogic::createNo();
 	}
 
 }

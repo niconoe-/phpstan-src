@@ -172,4 +172,9 @@ final class ChangedTypeMethodReflection implements ExtendedMethodReflection
 		return $this->reflection->getAttributes();
 	}
 
+	public function mustUseReturnValue(): TrinaryLogic
+	{
+		return $this->reflection->mustUseReturnValue();
+	}
+
 }

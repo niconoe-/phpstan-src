@@ -599,4 +599,43 @@ class ExistingClassesInTypehintsRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/bug-12501.php'], []);
 	}
 
+	#[RequiresPhp('>= 8.2')]
+	public function testNoDiscardVoid(): void
+	{
+		$this->analyse([__DIR__ . '/data/typehints-nodiscard.php'], [
+			[
+				'Attribute NoDiscard cannot be used on void method TestMethodTypehints\Demo::nothing().',
+				8,
+			],
+			[
+				'Attribute NoDiscard cannot be used on void method TestMethodTypehints\Demo::alsoNothing().',
+				12,
+			],
+			[
+				'Attribute NoDiscard cannot be used on never method TestMethodTypehints\Demo::returnNever().',
+				16,
+			],
+			[
+				'Attribute NoDiscard cannot be used on void method TestMethodTypehints\Demo::__construct().',
+				19,
+			],
+			[
+				'Attribute NoDiscard cannot be used on void method TestMethodTypehints\Demo::__destruct().',
+				25,
+			],
+			[
+				'Attribute NoDiscard cannot be used on void method TestMethodTypehints\Demo::__unset().',
+				31,
+			],
+			[
+				'Attribute NoDiscard cannot be used on void method TestMethodTypehints\Demo::__wakeup().',
+				37,
+			],
+			[
+				'Attribute NoDiscard cannot be used on void method TestMethodTypehints\Demo::__clone().',
+				43,
+			],
+		]);
+	}
+
 }

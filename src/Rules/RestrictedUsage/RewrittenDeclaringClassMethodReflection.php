@@ -145,4 +145,9 @@ final class RewrittenDeclaringClassMethodReflection implements ExtendedMethodRef
 		return $this->methodReflection->hasSideEffects();
 	}
 
+	public function mustUseReturnValue(): TrinaryLogic
+	{
+		return $this->methodReflection->mustUseReturnValue();
+	}
+
 }

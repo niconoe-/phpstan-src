@@ -64,6 +64,11 @@ final class ExistingClassesInTypehintsRule implements Rule
 				$className,
 				$methodName,
 			),
+			sprintf(
+				'Attribute NoDiscard cannot be used on %%s method %s::%s().',
+				$className,
+				$methodName,
+			),
 		);
 	}
 

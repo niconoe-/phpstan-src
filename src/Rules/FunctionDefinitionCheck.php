@@ -31,6 +31,7 @@ use PHPStan\Rules\PhpDoc\UnresolvableTypeHelper;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\ConditionalTypeForParameter;
 use PHPStan\Type\Generic\TemplateType;
+use PHPStan\Type\NeverType;
 use PHPStan\Type\NonexistentParentClassType;
 use PHPStan\Type\ParserNodeTypeToPHPStanType;
 use PHPStan\Type\Type;
@@ -76,6 +77,7 @@ final class FunctionDefinitionCheck
 		string $templateTypeMissingInParameterMessage,
 		string $unresolvableParameterTypeMessage,
 		string $unresolvableReturnTypeMessage,
+		string $noDiscardVoidReturnMessage,
 	): array
 	{
 		return $this->checkParametersAcceptor(
@@ -88,23 +90,27 @@ final class FunctionDefinitionCheck
 			$templateTypeMissingInParameterMessage,
 			$unresolvableParameterTypeMessage,
 			$unresolvableReturnTypeMessage,
+			$noDiscardVoidReturnMessage,
 		);
 	}
 
 	/**
 	 * @param Node\Param[] $parameters
 	 * @param Node\Identifier|Node\Name|Node\ComplexType|null $returnTypeNode
+	 * @param Node\AttributeGroup[] $attribGroups
 	 * @return list<IdentifierRuleError>
 	 */
 	public function checkAnonymousFunction(
 		Scope $scope,
 		array $parameters,
 		$returnTypeNode,
+		array $attribGroups,
 		string $parameterMessage,
 		string $returnMessage,
 		string $unionTypesMessage,
 		string $unresolvableParameterTypeMessage,
 		string $unresolvableReturnTypeMessage,
+		string $noDiscardReturnTypeMessage,
 	): array
 	{
 		$errors = [];
@@ -197,6 +203,22 @@ final class FunctionDefinitionCheck
 		if ($returnTypeNode === null) {
 			return $errors;
 		}
+		if (
+			$returnTypeNode instanceof Identifier
+			&& in_array($returnTypeNode->toLowerString(), ['void', 'never'], true)
+		) {
+			foreach ($attribGroups as $attribGroup) {
+				foreach ($attribGroup->attrs as $attrib) {
+					if (strtolower($attrib->name->name) === 'nodiscard') {
+						$errors[] = RuleErrorBuilder::message(sprintf($noDiscardReturnTypeMessage, $returnTypeNode->toString()))
+							->line($returnTypeNode->getStartLine())
+							->identifier('attribute.target')
+							->build();
+						break 2;
+					}
+				}
+			}
+		}
 
 		if (
 			!$unionTypeReported
@@ -266,6 +288,7 @@ final class FunctionDefinitionCheck
 		string $unresolvableParameterTypeMessage,
 		string $unresolvableReturnTypeMessage,
 		string $selfOutMessage,
+		string $noDiscardVoidReturnMessage,
 	): array
 	{
 		$errors = $this->checkParametersAcceptor(
@@ -278,6 +301,7 @@ final class FunctionDefinitionCheck
 			$templateTypeMissingInParameterMessage,
 			$unresolvableParameterTypeMessage,
 			$unresolvableReturnTypeMessage,
+			$noDiscardVoidReturnMessage,
 		);
 
 		$selfOutType = $methodReflection->getSelfOutType();
@@ -329,6 +353,7 @@ final class FunctionDefinitionCheck
 		string $templateTypeMissingInParameterMessage,
 		string $unresolvableParameterTypeMessage,
 		string $unresolvableReturnTypeMessage,
+		string $noDiscardReturnTypeMessage,
 	): array
 	{
 		$errors = [];
@@ -470,6 +495,18 @@ final class FunctionDefinitionCheck
 					->nonIgnorable()
 					->line($returnTypeNode->getStartLine())
 					->identifier('return.unresolvableNativeType')
+					->build();
+			}
+		}
+		if ($parametersAcceptor->mustUseReturnValue()->yes()) {
+			$returnType = $parametersAcceptor->getReturnType();
+			if (
+				$returnType->isVoid()->yes()
+				|| ($returnType instanceof NeverType && $returnType->isExplicit())
+			) {
+				$errors[] = RuleErrorBuilder::message(sprintf($noDiscardReturnTypeMessage, $returnType->describe(VerbosityLevel::typeOnly())))
+					->line($returnTypeNode->getStartLine())
+					->identifier('attribute.target')
 					->build();
 			}
 		}

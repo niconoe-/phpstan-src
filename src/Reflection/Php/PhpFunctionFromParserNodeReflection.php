@@ -24,6 +24,7 @@ use PHPStan\Type\TypehintHelper;
 use function array_reverse;
 use function is_array;
 use function is_string;
+use function strtolower;
 
 /**
  * @api
@@ -336,6 +337,16 @@ class PhpFunctionFromParserNodeReflection implements FunctionReflection, Extende
 	public function getAttributes(): array
 	{
 		return $this->attributes;
+	}
+
+	public function mustUseReturnValue(): TrinaryLogic
+	{
+		foreach ($this->attributes as $attrib) {
+			if (strtolower($attrib->getName()) === 'nodiscard') {
+				return TrinaryLogic::createYes();
+			}
+		}
+		return TrinaryLogic::createNo();
 	}
 
 }

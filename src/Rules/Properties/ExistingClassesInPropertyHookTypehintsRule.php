@@ -84,6 +84,13 @@ final class ExistingClassesInPropertyHookTypehintsRule implements Rule
 				$className,
 				$propertyName,
 			),
+			// Should be impossible, property hooks do not support return types
+			sprintf(
+				'Impossible condition: Attribute NoDiscard cannot be used on void %s hook for property %s::$%s.',
+				ucfirst($hookName),
+				$className,
+				$propertyName,
+			),
 		);
 	}
 

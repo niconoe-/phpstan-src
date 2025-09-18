@@ -29,6 +29,7 @@ use function array_map;
 use function count;
 use function is_array;
 use function is_file;
+use function strtolower;
 
 #[GenerateFactory(interface: FunctionReflectionFactory::class)]
 final class PhpFunctionReflection implements FunctionReflection
@@ -273,6 +274,16 @@ final class PhpFunctionReflection implements FunctionReflection
 	public function getAttributes(): array
 	{
 		return $this->attributes;
+	}
+
+	public function mustUseReturnValue(): TrinaryLogic
+	{
+		foreach ($this->attributes as $attrib) {
+			if (strtolower($attrib->getName()) === 'nodiscard') {
+				return TrinaryLogic::createYes();
+			}
+		}
+		return TrinaryLogic::createNo();
 	}
 
 }
