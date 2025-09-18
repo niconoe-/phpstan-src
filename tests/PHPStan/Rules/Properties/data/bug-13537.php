@@ -22,7 +22,8 @@ class Bar extends Foo
 }
 
 function (): void {
-	$bob = new Bar()->test->bob;
+	$bar = new Bar();
+	$bob = $bar->test->bob;
 };
 
 class BaseModel

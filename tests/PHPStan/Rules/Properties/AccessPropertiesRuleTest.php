@@ -1221,16 +1221,21 @@ class AccessPropertiesRuleTest extends RuleTestCase
 		$this->checkThisOnly = false;
 		$this->checkUnionTypes = true;
 		$this->checkDynamicProperties = true;
-		$this->analyse([__DIR__ . '/data/bug-13537.php'], [
-			[
-				'Cannot access property $bob on array<string, mixed>.',
-				25,
-			],
-			[
-				'Access to protected property Bug13537\Bar::$test.',
-				25,
-			],
-		]);
+
+		$errors = [];
+		if (PHP_VERSION_ID >= 80200) {
+			$errors = [
+				[
+					'Cannot access property $bob on array<string, mixed>.',
+					26,
+				],
+				[
+					'Access to protected property Bug13537\Bar::$test.',
+					26,
+				],
+			];
+		}
+		$this->analyse([__DIR__ . '/data/bug-13537.php'], $errors);
 	}
 
 }
