@@ -71,6 +71,11 @@ final class AllowedArrayKeysTypes
 			return $narrowedKey;
 		} elseif ($varIterableKeyType->isInteger()->yes() && $keyType->isString()->yes()) {
 			return TypeCombinator::intersect($varIterableKeyType->toString(), $keyType);
+		} elseif ($varType->isList()->yes()) {
+			return TypeCombinator::intersect(
+				$varIterableKeyType,
+				$keyType,
+			);
 		}
 
 		return new MixedType(
