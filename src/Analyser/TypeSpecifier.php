@@ -1303,6 +1303,28 @@ final class TypeSpecifier
 			)->setRootExpr($rootExpr);
 		}
 
+		if (
+			$context->false()
+			&& $exprNode instanceof FuncCall
+			&& $exprNode->name instanceof Name
+			&& in_array(strtolower((string) $exprNode->name), [
+				'trim', 'ltrim', 'rtrim',
+				'mb_trim', 'mb_ltrim', 'mb_rtrim',
+			], true)
+			&& isset($exprNode->getArgs()[0])
+			&& $constantStringValue === ''
+		) {
+			return $this->create(
+				$exprNode->getArgs()[0]->value,
+				TypeCombinator::intersect(
+					new StringType(),
+					new AccessoryNonEmptyStringType(),
+				),
+				$context->negate(),
+				$scope,
+			)->setRootExpr($rootExpr);
+		}
+
 		return null;
 	}
 
