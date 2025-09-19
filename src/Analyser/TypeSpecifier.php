@@ -1314,15 +1314,19 @@ final class TypeSpecifier
 			&& isset($exprNode->getArgs()[0])
 			&& $constantStringValue === ''
 		) {
-			return $this->create(
-				$exprNode->getArgs()[0]->value,
-				TypeCombinator::intersect(
-					new StringType(),
-					new AccessoryNonEmptyStringType(),
-				),
-				$context->negate(),
-				$scope,
-			)->setRootExpr($rootExpr);
+			$argValue = $exprNode->getArgs()[0]->value;
+			$argType = $scope->getType($argValue);
+			if ($argType->isString()->yes()) {
+				return $this->create(
+					$argValue,
+					TypeCombinator::intersect(
+						new StringType(),
+						new AccessoryNonEmptyStringType(),
+					),
+					$context->negate(),
+					$scope,
+				)->setRootExpr($rootExpr);
+			}
 		}
 
 		return null;
