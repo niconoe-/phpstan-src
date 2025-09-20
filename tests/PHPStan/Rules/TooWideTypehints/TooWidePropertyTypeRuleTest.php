@@ -20,8 +20,7 @@ class TooWidePropertyTypeRuleTest extends RuleTestCase
 	{
 		return new TooWidePropertyTypeRule(
 			new DirectReadWritePropertiesExtensionProvider([]),
-			new PropertyReflectionFinder(),
-			new TooWideTypeCheck($this->reportTooWideBool),
+			new TooWideTypeCheck(new PropertyReflectionFinder(), $this->reportTooWideBool),
 		);
 	}
 

@@ -2,6 +2,7 @@
 
 namespace PHPStan\Rules\TooWideTypehints;
 
+use PHPStan\Rules\Properties\PropertyReflectionFinder;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
 use PHPUnit\Framework\Attributes\RequiresPhp;
@@ -16,7 +17,7 @@ class TooWideFunctionReturnTypehintRuleTest extends RuleTestCase
 
 	protected function getRule(): Rule
 	{
-		return new TooWideFunctionReturnTypehintRule(new TooWideTypeCheck($this->reportTooWideBool));
+		return new TooWideFunctionReturnTypehintRule(new TooWideTypeCheck(new PropertyReflectionFinder(), $this->reportTooWideBool));
 	}
 
 	public function testRule(): void

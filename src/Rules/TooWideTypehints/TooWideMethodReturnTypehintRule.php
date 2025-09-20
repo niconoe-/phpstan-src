@@ -49,9 +49,9 @@ final class TooWideMethodReturnTypehintRule implements Rule
 			}
 		}
 
-		return $this->check->checkFunction(
+		return $this->check->checkFunctionReturnType(
 			$node,
-			$method->getReturnType(),
+			$method->getNativeReturnType(),
 			$method->getPhpDocReturnType(),
 			sprintf(
 				'Method %s::%s()',

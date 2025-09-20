@@ -7,11 +7,8 @@ use PHPStan\Analyser\Scope;
 use PHPStan\DependencyInjection\RegisteredRule;
 use PHPStan\Node\ClassPropertiesNode;
 use PHPStan\Reflection\PropertyReflection;
-use PHPStan\Rules\Properties\PropertyReflectionFinder;
 use PHPStan\Rules\Properties\ReadWritePropertiesExtensionProvider;
 use PHPStan\Rules\Rule;
-use PHPStan\Type\TypeCombinator;
-use function count;
 use function sprintf;
 
 /**
@@ -23,7 +20,6 @@ final class TooWidePropertyTypeRule implements Rule
 
 	public function __construct(
 		private ReadWritePropertiesExtensionProvider $extensionProvider,
-		private PropertyReflectionFinder $propertyReflectionFinder,
 		private TooWideTypeCheck $check,
 	)
 	{
@@ -55,13 +51,6 @@ final class TooWidePropertyTypeRule implements Rule
 			}
 
 			$propertyReflection = $classReflection->getNativeProperty($propertyName);
-			$propertyType = $propertyReflection->getWritableType();
-			$phpdocType = $propertyReflection->getPhpDocType();
-
-			$propertyType = $this->check->findTypeToCheck($propertyType, $phpdocType, $scope);
-			if ($propertyType === null) {
-				continue;
-			}
 
 			foreach ($this->extensionProvider->getExtensions() as $extension) {
 				if ($extension->isAlwaysRead($propertyReflection, $propertyName)) {
@@ -75,33 +64,17 @@ final class TooWidePropertyTypeRule implements Rule
 				}
 			}
 
-			$assignedTypes = [];
-			foreach ($node->getPropertyAssigns() as $assign) {
-				$assignNode = $assign->getAssign();
-				$assignPropertyReflections = $this->propertyReflectionFinder->findPropertyReflectionsFromNode($assignNode->getPropertyFetch(), $assign->getScope());
-				foreach ($assignPropertyReflections as $assignPropertyReflection) {
-					if ($propertyName !== $assignPropertyReflection->getName()) {
-						continue;
-					}
-					if ($propertyReflection->getDeclaringClass()->getName() !== $assignPropertyReflection->getDeclaringClass()->getName()) {
-						continue;
-					}
-
-					$assignedTypes[] = $assignPropertyReflection->getScope()->getType($assignNode->getAssignedExpr());
-				}
-			}
-
-			if ($property->getDefault() !== null) {
-				$assignedTypes[] = $scope->getType($property->getDefault());
-			}
-
-			if (count($assignedTypes) === 0) {
-				continue;
-			}
-
-			$assignedType = TypeCombinator::union(...$assignedTypes);
 			$propertyDescription = $this->describePropertyByName($propertyReflection, $propertyName);
-			foreach ($this->check->checkProperty($property, $propertyType, $propertyDescription, $assignedType) as $error) {
+			$propertyErrors = $this->check->checkProperty(
+				$property,
+				$propertyReflection->getDeclaringClass(),
+				$node->getPropertyAssigns(),
+				$propertyReflection->getNativeType(),
+				$propertyReflection->getPhpDocType(),
+				$propertyDescription,
+				$scope,
+			);
+			foreach ($propertyErrors as $error) {
 				$errors[] = $error;
 			}
 		}

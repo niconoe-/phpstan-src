@@ -8,9 +8,14 @@ use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Node\ClassPropertyNode;
 use PHPStan\Node\FunctionReturnStatementsNode;
 use PHPStan\Node\MethodReturnStatementsNode;
+use PHPStan\Node\Property\PropertyAssign;
+use PHPStan\Reflection\ClassReflection;
 use PHPStan\Rules\IdentifierRuleError;
+use PHPStan\Rules\Properties\PropertyReflectionFinder;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\Constant\ConstantBooleanType;
+use PHPStan\Type\MixedType;
+use PHPStan\Type\NullType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\TypehintHelper;
@@ -26,6 +31,7 @@ final class TooWideTypeCheck
 {
 
 	public function __construct(
+		private PropertyReflectionFinder $propertyReflectionFinder,
 		#[AutowiredParameter(ref: '%featureToggles.reportTooWideBool%')]
 		private bool $reportTooWideBool,
 	)
@@ -33,54 +39,84 @@ final class TooWideTypeCheck
 	}
 
 	/**
+	 * @param PropertyAssign[] $propertyAssigns
 	 * @return list<IdentifierRuleError>
 	 */
 	public function checkProperty(
-		ClassPropertyNode $property,
-		Type $propertyType,
+		ClassPropertyNode $node,
+		ClassReflection $declaringClass,
+		array $propertyAssigns,
+		Type $nativePropertyType,
+		Type $phpDocPropertyType,
 		string $propertyDescription,
-		Type $assignedType,
+		Scope $scope,
 	): array
 	{
 		$errors = [];
 
-		$verbosityLevel = VerbosityLevel::getRecommendedLevelByType($propertyType, $assignedType);
-		$propertyTypes = $propertyType instanceof UnionType ? $propertyType->getTypes() : $propertyType->getFiniteTypes();
-		foreach ($propertyTypes as $type) {
-			if (!$type->isSuperTypeOf($assignedType)->no()) {
-				continue;
+		$assignedTypes = [];
+		foreach ($propertyAssigns as $assign) {
+			$assignNode = $assign->getAssign();
+			$assignPropertyReflections = $this->propertyReflectionFinder->findPropertyReflectionsFromNode($assignNode->getPropertyFetch(), $assign->getScope());
+			foreach ($assignPropertyReflections as $assignPropertyReflection) {
+				if ($node->getName() !== $assignPropertyReflection->getName()) {
+					continue;
+				}
+				if ($declaringClass->getName() !== $assignPropertyReflection->getDeclaringClass()->getName()) {
+					continue;
+				}
+
+				$assignedTypes[] = $assignPropertyReflection->getScope()->getType($assignNode->getAssignedExpr());
+			}
+		}
+
+		if ($node->getDefault() !== null) {
+			$assignedTypes[] = $scope->getType($node->getDefault());
+		}
+
+		if ($node->getNativeType() === null) {
+			$assignedTypes[] = new NullType();
+		}
+
+		if (count($assignedTypes) === 0) {
+			return [];
+		}
+
+		$assignedType = TypeCombinator::union(...$assignedTypes);
+
+		$unionMessagePattern = '%s (%s) is never assigned %%s so it can be removed from the property type.';
+		$boolMessagePattern = '%s (%s) is never assigned %%s so the property type can be changed to %%s.';
+
+		if (!$phpDocPropertyType instanceof MixedType || $phpDocPropertyType->isExplicitMixed()) {
+			$phpDocPropertyType = TypeUtils::resolveLateResolvableTypes($phpDocPropertyType);
+			$narrowedPhpDocType = $this->narrowType($phpDocPropertyType, $assignedType, $scope, false);
+			if (!$narrowedPhpDocType->equals($phpDocPropertyType)) {
+				$phpDocPropertyTypeDescription = $phpDocPropertyType->describe(VerbosityLevel::getRecommendedLevelByType($phpDocPropertyType));
+				return $this->createErrors(
+					$narrowedPhpDocType,
+					$phpDocPropertyType,
+					sprintf($unionMessagePattern, $propertyDescription, $phpDocPropertyTypeDescription),
+					sprintf($boolMessagePattern, $propertyDescription, $phpDocPropertyTypeDescription),
+					$node->getStartLine(),
+					'property',
+				);
 			}
 
-			if ($property->getNativeType() === null && $type->isNull()->yes()) {
-				continue;
-			}
+			return [];
+		}
 
-			if ($propertyType->isBoolean()->yes()) {
-				$suggestedType = $type->isTrue()->yes() ? new ConstantBooleanType(false) : new ConstantBooleanType(true);
-
-				$errors[] = RuleErrorBuilder::message(sprintf(
-					'%s (%s) is never assigned %s so the property type can be changed to %s.',
-					$propertyDescription,
-					$propertyType->describe($verbosityLevel),
-					$type->describe($verbosityLevel),
-					$suggestedType->describe($verbosityLevel),
-				))
-					->identifier('property.tooWideBool')
-					->line($property->getStartLine())
-					->build();
-
-				continue;
-			}
-
-			$errors[] = RuleErrorBuilder::message(sprintf(
-				'%s (%s) is never assigned %s so it can be removed from the property type.',
-				$propertyDescription,
-				$propertyType->describe($verbosityLevel),
-				$type->describe($verbosityLevel),
-			))
-				->identifier('property.unusedType')
-				->line($property->getStartLine())
-				->build();
+		$narrowedNativeType = $this->narrowType($nativePropertyType, $assignedType, $scope, true);
+		if (!$narrowedNativeType->equals($nativePropertyType)) {
+			$finalPropertyType = TypehintHelper::decideType($phpDocPropertyType, $nativePropertyType);
+			$propertyTypeDescription = $finalPropertyType->describe(VerbosityLevel::getRecommendedLevelByType($finalPropertyType));
+			return $this->createErrors(
+				$narrowedNativeType,
+				$nativePropertyType,
+				sprintf($unionMessagePattern, $propertyDescription, $propertyTypeDescription),
+				sprintf($boolMessagePattern, $propertyDescription, $propertyTypeDescription),
+				$node->getStartLine(),
+				'property',
+			);
 		}
 
 		return $errors;
@@ -89,20 +125,15 @@ final class TooWideTypeCheck
 	/**
 	 * @return list<IdentifierRuleError>
 	 */
-	public function checkFunction(
+	public function checkFunctionReturnType(
 		MethodReturnStatementsNode|FunctionReturnStatementsNode $node,
 		Type $nativeFunctionReturnType,
-		Type $phpdocFunctionReturnType,
+		Type $phpDocFunctionReturnType,
 		string $functionDescription,
 		bool $checkDescendantClass,
 		Scope $scope,
 	): array
 	{
-		$functionReturnType = $this->findTypeToCheck($nativeFunctionReturnType, $phpdocFunctionReturnType, $scope);
-		if ($functionReturnType === null) {
-			return [];
-		}
-
 		$statementResult = $node->getStatementResult();
 		if ($statementResult->hasYield()) {
 			return [];
@@ -128,12 +159,36 @@ final class TooWideTypeCheck
 			$returnTypes[] = new VoidType();
 		}
 
+		if (!$node->hasNativeReturnTypehint()) {
+			foreach ($node->getExecutionEnds() as $executionEnd) {
+				if ($executionEnd->getStatementResult()->isAlwaysTerminating()) {
+					continue;
+				}
+
+				$returnTypes[] = new NullType();
+				break;
+			}
+		}
+
 		$returnType = TypeCombinator::union(...$returnTypes);
 
-		if (
-			$returnType->isConstantScalarValue()->yes()
-			&& $functionReturnType->isConstantScalarValue()->yes()
-		) {
+		$unionMessagePattern = sprintf('%s never returns %%s so it can be removed from the return type.', $functionDescription);
+		$boolMessagePattern = sprintf('%s never returns %%s so the return type can be changed to %%s.', $functionDescription);
+
+		if (!$phpDocFunctionReturnType instanceof MixedType || $phpDocFunctionReturnType->isExplicitMixed()) {
+			$phpDocFunctionReturnType = TypeUtils::resolveLateResolvableTypes($phpDocFunctionReturnType);
+			$narrowedPhpDocType = $this->narrowType($phpDocFunctionReturnType, $returnType, $scope, false);
+			if (!$narrowedPhpDocType->equals($phpDocFunctionReturnType)) {
+				return $this->createErrors(
+					$narrowedPhpDocType,
+					$phpDocFunctionReturnType,
+					$unionMessagePattern,
+					$boolMessagePattern,
+					$node->getStartLine(),
+					'return',
+				);
+			}
+
 			return [];
 		}
 
@@ -142,44 +197,91 @@ final class TooWideTypeCheck
 			$checkDescendantClass
 			&& ($returnType->isNull()->yes() || $returnType->isTrue()->yes() || $returnType->isFalse()->yes())
 		) {
+			$narrowedNativeType = $nativeFunctionReturnType;
+		} else {
+			$narrowedNativeType = $this->narrowType($nativeFunctionReturnType, $returnType, $scope, true);
+		}
+
+		if (!$narrowedNativeType->equals($nativeFunctionReturnType)) {
+			return $this->createErrors(
+				$narrowedNativeType,
+				$nativeFunctionReturnType,
+				$unionMessagePattern,
+				$boolMessagePattern,
+				$node->getStartLine(),
+				'return',
+			);
+		}
+
+		return [];
+	}
+
+	/**
+	 * @return list<IdentifierRuleError>
+	 */
+	public function checkParameterOutType(
+		Type $parameterOutType,
+		Type $actualVariableType,
+		Scope $scope,
+		string $identifierPart,
+		?string $tip,
+	): array
+	{
+		$parameterOutType = TypeUtils::resolveLateResolvableTypes($parameterOutType);
+		$narrowedType = $this->narrowType($parameterOutType, $actualVariableType, $scope, false);
+		if ($narrowedType->equals($parameterOutType)) {
+			return [];
+		}
+
+		return $this->createErrors(
+			$narrowedType,
+			$parameterOutType,
+			$unionMessagePattern,
+			$boolMessagePattern,
+			$node->getStartLine(),
+			$identifierPart,
+		);
+	}
+
+	/**
+	 * @param 'return'|'property' $identifierPart
+	 * @return list<IdentifierRuleError>
+	 */
+	private function createErrors(
+		Type $narrowedType,
+		Type $originalType,
+		string $unionMessagePattern,
+		string $boolMessagePattern,
+		int $startLine,
+		string $identifierPart,
+	): array
+	{
+		if ($originalType->isBoolean()->yes()) {
+			$neverReturns = $narrowedType->isTrue()->yes() ? new ConstantBooleanType(false) : new ConstantBooleanType(true);
+
+			return [
+				RuleErrorBuilder::message(sprintf(
+					$boolMessagePattern,
+					$neverReturns->describe(VerbosityLevel::getRecommendedLevelByType($neverReturns)),
+					$narrowedType->describe(VerbosityLevel::getRecommendedLevelByType($narrowedType)),
+				))->identifier(sprintf('%s.tooWideBool', $identifierPart))->line($startLine)->build(),
+			];
+		}
+
+		if (!$originalType instanceof UnionType) {
 			return [];
 		}
 
 		$messages = [];
-		$functionReturnTypes = $functionReturnType instanceof UnionType ? $functionReturnType->getTypes() : $functionReturnType->getFiniteTypes();
-		foreach ($functionReturnTypes as $type) {
-			if (!$type->isSuperTypeOf($returnType)->no()) {
-				continue;
-			}
-
-			if ($type->isNull()->yes() && !$node->hasNativeReturnTypehint()) {
-				foreach ($node->getExecutionEnds() as $executionEnd) {
-					if ($executionEnd->getStatementResult()->isAlwaysTerminating()) {
-						continue;
-					}
-
-					continue 2;
-				}
-			}
-
-			if ($functionReturnType->isBoolean()->yes()) {
-				$suggestedType = $type->isTrue()->yes() ? new ConstantBooleanType(false) : new ConstantBooleanType(true);
-
-				$messages[] = RuleErrorBuilder::message(sprintf(
-					'%s never returns %s so the return type can be changed to %s.',
-					$functionDescription,
-					$type->describe(VerbosityLevel::getRecommendedLevelByType($type)),
-					$suggestedType->describe(VerbosityLevel::getRecommendedLevelByType($suggestedType)),
-				))->identifier('return.tooWideBool')->build();
-
+		foreach ($originalType->getTypes() as $innerType) {
+			if (!$narrowedType->isSuperTypeOf($innerType)->no()) {
 				continue;
 			}
 
 			$messages[] = RuleErrorBuilder::message(sprintf(
-				'%s never returns %s so it can be removed from the return type.',
-				$functionDescription,
-				$type->describe(VerbosityLevel::getRecommendedLevelByType($type)),
-			))->identifier('return.unusedType')->build();
+				$unionMessagePattern,
+				$innerType->describe(VerbosityLevel::getRecommendedLevelByType($innerType)),
+			))->identifier(sprintf('%s.unusedType', $identifierPart))->line($startLine)->build();
 		}
 
 		return $messages;
@@ -211,46 +313,61 @@ final class TooWideTypeCheck
 		return $messages;
 	}
 
-	/**
-	 * Returns null when type should not be checked, e.g. because it would be too annoying.
-	 */
-	public function findTypeToCheck(
-		Type $nativeType,
-		Type $phpdocType,
+	private function narrowType(
+		Type $declaredType,
+		Type $actualReturnType,
 		Scope $scope,
-	): ?Type
+		bool $native,
+	): Type
 	{
-		$combinedType = TypeUtils::resolveLateResolvableTypes(TypehintHelper::decideType($nativeType, $phpdocType));
-		if ($combinedType instanceof UnionType) {
-			return $combinedType;
+		if ($declaredType instanceof UnionType) {
+			if (
+				$declaredType->isConstantScalarValue()->yes()
+				&& $actualReturnType->isConstantScalarValue()->yes()
+			) {
+				return $declaredType;
+			}
+			$usedTypes = [];
+			foreach ($declaredType->getTypes() as $innerType) {
+				if ($innerType->isSuperTypeOf($actualReturnType)->no()) {
+					continue;
+				}
+
+				$usedTypes[] = $innerType;
+			}
+
+			return TypeCombinator::union(...$usedTypes);
 		}
 
 		if (!$this->reportTooWideBool) {
-			return null;
+			return $declaredType;
+		}
+
+		if ($native && !$scope->getPhpVersion()->supportsTrueAndFalseStandaloneType()->yes()) {
+			return $declaredType;
+		}
+
+		if (!$declaredType->isBoolean()->yes()) {
+			return $declaredType;
 		}
 
 		if (
-			$phpdocType->isBoolean()->yes()
+			$declaredType->isTrue()->yes()
+			|| $declaredType->isFalse()->yes()
 		) {
-			if (
-				!$phpdocType->isTrue()->yes()
-				&& !$phpdocType->isFalse()->yes()
-			) {
-				return $combinedType;
-			}
-		} elseif (
-			$scope->getPhpVersion()->supportsTrueAndFalseStandaloneType()->yes()
-			&& $nativeType->isBoolean()->yes()
-		) {
-			if (
-				!$nativeType->isTrue()->yes()
-				&& !$nativeType->isFalse()->yes()
-			) {
-				return $combinedType;
-			}
+			return $declaredType;
 		}
 
-		return null;
+		$usedTypes = [];
+		foreach ($declaredType->getFiniteTypes() as $innerType) {
+			if ($innerType->isSuperTypeOf($actualReturnType)->no()) {
+				continue;
+			}
+
+			$usedTypes[] = $innerType;
+		}
+
+		return TypeCombinator::union(...$usedTypes);
 	}
 
 }

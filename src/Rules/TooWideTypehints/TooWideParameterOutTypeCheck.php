@@ -19,6 +19,12 @@ use function sprintf;
 final class TooWideParameterOutTypeCheck
 {
 
+	public function __construct(
+		private TooWideTypeCheck $tooWideTypeCheck,
+	)
+	{
+	}
+
 	/**
 	 * @param list<ExecutionEndNode> $executionEnds
 	 * @param list<ReturnStatement> $returnStatements
@@ -86,35 +92,24 @@ final class TooWideParameterOutTypeCheck
 			$outType = $parameter->getType();
 		}
 
-		$outType = TypeUtils::resolveLateResolvableTypes($outType);
-		if (!$outType instanceof UnionType) {
-			return [];
-		}
-
 		$variableExpr = new Variable($parameter->getName());
 		$variableType = $scope->getType($variableExpr);
 
-		$messages = [];
-		foreach ($outType->getTypes() as $type) {
-			if (!$type->isSuperTypeOf($variableType)->no()) {
-				continue;
-			}
-
-			$errorBuilder = RuleErrorBuilder::message(sprintf(
+		/* sprintf(
 				'%s never assigns %s to &$%s so it can be removed from the %s.',
 				$functionDescription,
 				$type->describe(VerbosityLevel::getRecommendedLevelByType($type)),
 				$parameter->getName(),
 				$isParamOutType ? '@param-out type' : 'by-ref type',
-			))->identifier(sprintf('%s.unusedType', $isParamOutType ? 'paramOut' : 'parameterByRef'));
-			if (!$isParamOutType) {
-				$errorBuilder->tip('You can narrow the parameter out type with @param-out PHPDoc tag.');
-			}
+			) */
 
-			$messages[] = $errorBuilder->build();
-		}
-
-		return $messages;
+		return $this->tooWideTypeCheck->checkParameterOutType(
+			$outType,
+			$variableType,
+			$scope,
+			$isParamOutType ? 'paramOut' : 'parameterByRef',
+			$isParamOutType ? null : 'You can narrow the parameter out type with @param-out PHPDoc tag.',
+		);
 	}
 
 }
