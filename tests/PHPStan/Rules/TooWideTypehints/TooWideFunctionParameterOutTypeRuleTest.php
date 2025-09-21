@@ -39,4 +39,14 @@ class TooWideFunctionParameterOutTypeRuleTest extends RuleTestCase
 		]);
 	}
 
+	public function testNestedTooWideType(): void
+	{
+		$this->analyse([__DIR__ . '/data/nested-too-wide-function-parameter-out-type.php'], [
+			[
+				'PHPDoc tag @param-out type array<array{int, bool}> of function NestedTooWideFunctionParameterOutType\doFoo() can be narrowed to array<array{int, false}>.',
+				9,
+			],
+		]);
+	}
+
 }

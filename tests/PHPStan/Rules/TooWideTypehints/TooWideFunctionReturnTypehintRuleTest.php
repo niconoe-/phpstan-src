@@ -115,4 +115,15 @@ class TooWideFunctionReturnTypehintRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/bug-13384c.php'], []);
 	}
 
+	public function testNestedTooWideType(): void
+	{
+		$this->reportTooWideBool = true;
+		$this->analyse([__DIR__ . '/data/nested-too-wide-function-return-type.php'], [
+			[
+				'Return type array<array{int, bool}> of function NestedTooWideFunctionReturnType\dataProvider() can be narrowed to array<array{int, false}>.',
+				8,
+			],
+		]);
+	}
+
 }

@@ -111,4 +111,15 @@ class TooWidePropertyTypeRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/bug-pr-4318.php'], []);
 	}
 
+	public function testNestedTooWideType(): void
+	{
+		$this->reportTooWideBool = true;
+		$this->analyse([__DIR__ . '/data/nested-too-wide-property-type.php'], [
+			[
+				'Type array<array{int, bool}> of property NestedTooWidePropertyType\Foo::$a can be narrowed to array<array{int, false}>.',
+				9,
+			],
+		]);
+	}
+
 }

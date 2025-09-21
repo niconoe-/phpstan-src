@@ -16,6 +16,7 @@ use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\Constant\ConstantBooleanType;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\NullType;
+use PHPStan\Type\SimultaneousTypeTraverser;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\TypehintHelper;
@@ -24,6 +25,7 @@ use PHPStan\Type\UnionType;
 use PHPStan\Type\VerbosityLevel;
 use PHPStan\Type\VoidType;
 use function count;
+use function lcfirst;
 use function sprintf;
 
 #[AutowiredService]
@@ -103,7 +105,31 @@ final class TooWideTypeCheck
 				);
 			}
 
-			return [];
+			if (!$this->reportTooWideBool) {
+				return [];
+			}
+
+			$narrowedPhpDocType = SimultaneousTypeTraverser::map($phpDocPropertyType, $assignedType, function (Type $declaredType, Type $actualType, callable $traverse) use ($scope) {
+				$narrowed = $this->narrowType($declaredType, $actualType, $scope, false);
+				if (!$narrowed->equals($declaredType)) {
+					return $narrowed;
+				}
+				return $traverse($declaredType, $actualType);
+			});
+			if ($narrowedPhpDocType->equals($phpDocPropertyType)) {
+				return [];
+			}
+
+			return [
+				RuleErrorBuilder::message(sprintf(
+					'Type %s of %s can be narrowed to %s.',
+					$phpDocPropertyType->describe(VerbosityLevel::getRecommendedLevelByType($phpDocPropertyType)),
+					lcfirst($propertyDescription),
+					$narrowedPhpDocType->describe(VerbosityLevel::getRecommendedLevelByType($narrowedPhpDocType)),
+				))->identifier('property.nestedUnusedType')
+					->line($node->getStartLine())
+					->build(),
+			];
 		}
 
 		$narrowedNativeType = $this->narrowType($nativePropertyType, $assignedType, $scope, true);
@@ -200,7 +226,31 @@ final class TooWideTypeCheck
 				);
 			}
 
-			return [];
+			if (!$this->reportTooWideBool) {
+				return [];
+			}
+
+			$narrowedPhpDocType = SimultaneousTypeTraverser::map($phpDocFunctionReturnType, $returnType, function (Type $declaredType, Type $actualReturnType, callable $traverse) use ($scope) {
+				$narrowed = $this->narrowType($declaredType, $actualReturnType, $scope, false);
+				if (!$narrowed->equals($declaredType)) {
+					return $narrowed;
+				}
+				return $traverse($declaredType, $actualReturnType);
+			});
+			if ($narrowedPhpDocType->equals($phpDocFunctionReturnType)) {
+				return [];
+			}
+
+			return [
+				RuleErrorBuilder::message(sprintf(
+					'Return type %s of %s can be narrowed to %s.',
+					$phpDocFunctionReturnType->describe(VerbosityLevel::getRecommendedLevelByType($phpDocFunctionReturnType)),
+					lcfirst($functionDescription),
+					$narrowedPhpDocType->describe(VerbosityLevel::getRecommendedLevelByType($narrowedPhpDocType)),
+				))->identifier('return.nestedUnusedType')
+					->line($node->getStartLine())
+					->build(),
+			];
 		}
 
 		$narrowedNativeType = $this->narrowType($nativeFunctionReturnType, $returnType, $scope, true);
@@ -228,6 +278,7 @@ final class TooWideTypeCheck
 		Type $actualVariableType,
 		string $unionMessagePattern,
 		string $boolMessagePattern,
+		string $nestedTooWideTypePattern,
 		Scope $scope,
 		int $startLine,
 		string $identifierPart,
@@ -237,7 +288,30 @@ final class TooWideTypeCheck
 		$parameterOutType = TypeUtils::resolveLateResolvableTypes($parameterOutType);
 		$narrowedType = $this->narrowType($parameterOutType, $actualVariableType, $scope, false);
 		if ($narrowedType->equals($parameterOutType)) {
-			return [];
+			if (!$this->reportTooWideBool) {
+				return [];
+			}
+
+			$narrowedType = SimultaneousTypeTraverser::map($parameterOutType, $actualVariableType, function (Type $declaredType, Type $actualType, callable $traverse) use ($scope) {
+				$narrowed = $this->narrowType($declaredType, $actualType, $scope, false);
+				if (!$narrowed->equals($declaredType)) {
+					return $narrowed;
+				}
+				return $traverse($declaredType, $actualType);
+			});
+			if ($narrowedType->equals($parameterOutType)) {
+				return [];
+			}
+
+			return [
+				RuleErrorBuilder::message(sprintf(
+					$nestedTooWideTypePattern,
+					$parameterOutType->describe(VerbosityLevel::getRecommendedLevelByType($parameterOutType)),
+					$narrowedType->describe(VerbosityLevel::getRecommendedLevelByType($narrowedType)),
+				))->identifier(sprintf('%s.nestedUnusedType', $identifierPart))
+					->line($startLine)
+					->build(),
+			];
 		}
 
 		return $this->createErrors(

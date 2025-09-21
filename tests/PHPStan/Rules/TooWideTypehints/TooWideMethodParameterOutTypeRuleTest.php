@@ -133,4 +133,14 @@ class TooWideMethodParameterOutTypeRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/bug-12080.php'], []);
 	}
 
+	public function testNestedTooWideType(): void
+	{
+		$this->analyse([__DIR__ . '/data/nested-too-wide-method-parameter-out-type.php'], [
+			[
+				'PHPDoc tag @param-out type array<array{int, bool}> of method NestedTooWideMethodParameterOutType\Foo::doFoo() can be narrowed to array<array{int, false}>.',
+				12,
+			],
+		]);
+	}
+
 }

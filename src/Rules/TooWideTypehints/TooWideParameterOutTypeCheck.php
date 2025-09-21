@@ -9,6 +9,7 @@ use PHPStan\Node\ExecutionEndNode;
 use PHPStan\Node\ReturnStatement;
 use PHPStan\Reflection\ExtendedParameterReflection;
 use PHPStan\Rules\IdentifierRuleError;
+use function lcfirst;
 use function sprintf;
 
 #[AutowiredService]
@@ -107,6 +108,11 @@ final class TooWideParameterOutTypeCheck
 				$functionDescription,
 				$parameter->getName(),
 				$isParamOutType ? '@param-out type' : 'by-ref type',
+			),
+			sprintf(
+				'%s %%s of %s can be narrowed to %%s.',
+				$isParamOutType ? 'PHPDoc tag @param-out type' : 'By-ref type',
+				lcfirst($functionDescription),
 			),
 			$scope,
 			$startLine,
