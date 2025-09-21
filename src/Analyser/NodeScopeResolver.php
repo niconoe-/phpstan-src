@@ -1913,22 +1913,7 @@ final class NodeScopeResolver
 
 					/** @var Expr $clonedVar */
 					[$clonedVar] = $traverser->traverse([$clonedVar]);
-					$scope = $this->processAssignVar(
-						$scope,
-						$stmt,
-						$clonedVar,
-						new UnsetOffsetExpr($var->var, $var->dim),
-						static function (Node $node, Scope $scope) use ($nodeCallback): void {
-							if (!$node instanceof PropertyAssignNode && !$node instanceof VariableAssignNode) {
-								return;
-							}
-
-							$nodeCallback($node, $scope);
-						},
-						ExpressionContext::createDeep(),
-						static fn (MutatingScope $scope): ExpressionResult => new ExpressionResult($scope, false, false, [], []),
-						false,
-					)->getScope();
+					$scope = $this->processVirtualAssign($scope, $stmt, $clonedVar, new UnsetOffsetExpr($var->var, $var->dim), $nodeCallback)->getScope();
 				} elseif ($var instanceof PropertyFetch) {
 					$scope = $scope->invalidateExpression($var);
 					$impurePoints[] = new ImpurePoint(
@@ -2674,7 +2659,7 @@ final class NodeScopeResolver
 				$arrayArgNativeType = $scope->getNativeType($arrayArg);
 				$isArrayPop = $functionReflection->getName() === 'array_pop';
 
-				$scope = $this->processAssignVar(
+				$scope = $this->processVirtualAssign(
 					$scope,
 					$stmt,
 					$arrayArg,
@@ -2682,16 +2667,7 @@ final class NodeScopeResolver
 						$isArrayPop ? $arrayArgType->popArray() : $arrayArgType->shiftArray(),
 						$isArrayPop ? $arrayArgNativeType->popArray() : $arrayArgNativeType->shiftArray(),
 					),
-					static function (Node $node, Scope $scope) use ($nodeCallback): void {
-						if (!$node instanceof PropertyAssignNode && !$node instanceof VariableAssignNode) {
-							return;
-						}
-
-						$nodeCallback($node, $scope);
-					},
-					$context,
-					static fn (MutatingScope $scope): ExpressionResult => new ExpressionResult($scope, false, false, [], []),
-					true,
+					$nodeCallback,
 				)->getScope();
 			}
 
@@ -2702,7 +2678,7 @@ final class NodeScopeResolver
 			) {
 				$arrayArg = $expr->getArgs()[0]->value;
 
-				$scope = $this->processAssignVar(
+				$scope = $this->processVirtualAssign(
 					$scope,
 					$stmt,
 					$arrayArg,
@@ -2710,16 +2686,7 @@ final class NodeScopeResolver
 						$this->getArrayFunctionAppendingType($functionReflection, $scope, $expr),
 						$this->getArrayFunctionAppendingType($functionReflection, $scope->doNotTreatPhpDocTypesAsCertain(), $expr),
 					),
-					static function (Node $node, Scope $scope) use ($nodeCallback): void {
-						if (!$node instanceof PropertyAssignNode && !$node instanceof VariableAssignNode) {
-							return;
-						}
-
-						$nodeCallback($node, $scope);
-					},
-					$context,
-					static fn (MutatingScope $scope): ExpressionResult => new ExpressionResult($scope, false, false, [], []),
-					true,
+					$nodeCallback,
 				)->getScope();
 			}
 
@@ -2736,21 +2703,12 @@ final class NodeScopeResolver
 			) {
 				$arrayArg = $expr->getArgs()[0]->value;
 
-				$scope = $this->processAssignVar(
+				$scope = $this->processVirtualAssign(
 					$scope,
 					$stmt,
 					$arrayArg,
 					new NativeTypeExpr($scope->getType($arrayArg)->shuffleArray(), $scope->getNativeType($arrayArg)->shuffleArray()),
-					static function (Node $node, Scope $scope) use ($nodeCallback): void {
-						if (!$node instanceof PropertyAssignNode && !$node instanceof VariableAssignNode) {
-							return;
-						}
-
-						$nodeCallback($node, $scope);
-					},
-					$context,
-					static fn (MutatingScope $scope): ExpressionResult => new ExpressionResult($scope, false, false, [], []),
-					true,
+					$nodeCallback,
 				)->getScope();
 			}
 
@@ -2767,7 +2725,7 @@ final class NodeScopeResolver
 				$lengthType = isset($expr->getArgs()[2]) ? $scope->getType($expr->getArgs()[2]->value) : new NullType();
 				$replacementType = isset($expr->getArgs()[3]) ? $scope->getType($expr->getArgs()[3]->value) : new ConstantArrayType([], []);
 
-				$scope = $this->processAssignVar(
+				$scope = $this->processVirtualAssign(
 					$scope,
 					$stmt,
 					$arrayArg,
@@ -2775,16 +2733,7 @@ final class NodeScopeResolver
 						$arrayArgType->spliceArray($offsetType, $lengthType, $replacementType),
 						$arrayArgNativeType->spliceArray($offsetType, $lengthType, $replacementType),
 					),
-					static function (Node $node, Scope $scope) use ($nodeCallback): void {
-						if (!$node instanceof PropertyAssignNode && !$node instanceof VariableAssignNode) {
-							return;
-						}
-
-						$nodeCallback($node, $scope);
-					},
-					$context,
-					static fn (MutatingScope $scope): ExpressionResult => new ExpressionResult($scope, false, false, [], []),
-					true,
+					$nodeCallback,
 				)->getScope();
 			}
 
@@ -2795,21 +2744,12 @@ final class NodeScopeResolver
 			) {
 				$arrayArg = $expr->getArgs()[0]->value;
 
-				$scope = $this->processAssignVar(
+				$scope = $this->processVirtualAssign(
 					$scope,
 					$stmt,
 					$arrayArg,
 					new NativeTypeExpr($this->getArraySortPreserveListFunctionType($scope->getType($arrayArg)), $this->getArraySortPreserveListFunctionType($scope->getNativeType($arrayArg))),
-					static function (Node $node, Scope $scope) use ($nodeCallback): void {
-						if (!$node instanceof PropertyAssignNode && !$node instanceof VariableAssignNode) {
-							return;
-						}
-
-						$nodeCallback($node, $scope);
-					},
-					$context,
-					static fn (MutatingScope $scope): ExpressionResult => new ExpressionResult($scope, false, false, [], []),
-					true,
+					$nodeCallback,
 				)->getScope();
 			}
 
@@ -2820,21 +2760,12 @@ final class NodeScopeResolver
 			) {
 				$arrayArg = $expr->getArgs()[0]->value;
 
-				$scope = $this->processAssignVar(
+				$scope = $this->processVirtualAssign(
 					$scope,
 					$stmt,
 					$arrayArg,
 					new NativeTypeExpr($this->getArraySortDoNotPreserveListFunctionType($scope->getType($arrayArg)), $this->getArraySortDoNotPreserveListFunctionType($scope->getNativeType($arrayArg))),
-					static function (Node $node, Scope $scope) use ($nodeCallback): void {
-						if (!$node instanceof PropertyAssignNode && !$node instanceof VariableAssignNode) {
-							return;
-						}
-
-						$nodeCallback($node, $scope);
-					},
-					$context,
-					static fn (MutatingScope $scope): ExpressionResult => new ExpressionResult($scope, false, false, [], []),
-					true,
+					$nodeCallback,
 				)->getScope();
 			}
 
@@ -3768,21 +3699,12 @@ final class NodeScopeResolver
 				$newExpr = new Expr\PreDec($expr->var);
 			}
 
-			$scope = $this->processAssignVar(
+			$scope = $this->processVirtualAssign(
 				$scope,
 				$stmt,
 				$expr->var,
 				$newExpr,
-				static function (Node $node, Scope $scope) use ($nodeCallback): void {
-					if (!$node instanceof PropertyAssignNode && !$node instanceof VariableAssignNode) {
-						return;
-					}
-
-					$nodeCallback($node, $scope);
-				},
-				$context,
-				static fn (MutatingScope $scope): ExpressionResult => new ExpressionResult($scope, false, false, [], []),
-				false,
+				$nodeCallback,
 			)->getScope();
 		} elseif ($expr instanceof Ternary) {
 			$ternaryCondResult = $this->processExprNode($stmt, $expr->cond, $scope, $nodeCallback, $context->enterDeep());
@@ -5469,23 +5391,13 @@ final class NodeScopeResolver
 						$byRefType = $paramOutType;
 					}
 
-					$result = $this->processAssignVar(
+					$scope = $this->processVirtualAssign(
 						$scope,
 						$stmt,
 						$argValue,
 						new TypeExpr($byRefType),
-						static function (Node $node, Scope $scope) use ($nodeCallback): void {
-							if (!$node instanceof PropertyAssignNode && !$node instanceof VariableAssignNode) {
-								return;
-							}
-
-							$nodeCallback($node, $scope);
-						},
-						$context,
-						static fn (MutatingScope $scope): ExpressionResult => new ExpressionResult($scope, false, false, [], []),
-						true,
-					);
-					$scope = $result->getScope();
+						$nodeCallback,
+					)->getScope();
 				}
 			} elseif ($calleeReflection !== null && $calleeReflection->hasSideEffects()->yes()) {
 				$argType = $scope->getType($arg->value);
@@ -6160,6 +6072,29 @@ final class NodeScopeResolver
 		}
 
 		return new ExpressionResult($scope, $hasYield, $isAlwaysTerminating, $throwPoints, $impurePoints);
+	}
+
+	/**
+	 * @param callable(Node $node, Scope $scope): void $nodeCallback
+	 */
+	private function processVirtualAssign(MutatingScope $scope, Node\Stmt $stmt, Expr $var, Expr $assignedExpr, callable $nodeCallback): ExpressionResult
+	{
+		return $this->processAssignVar(
+			$scope,
+			$stmt,
+			$var,
+			$assignedExpr,
+			static function (Node $node, Scope $scope) use ($nodeCallback): void {
+				if (!$node instanceof PropertyAssignNode && !$node instanceof VariableAssignNode) {
+					return;
+				}
+
+				$nodeCallback($node, $scope);
+			},
+			ExpressionContext::createDeep(),
+			static fn (MutatingScope $scope): ExpressionResult => new ExpressionResult($scope, false, false, [], []),
+			false,
+		);
 	}
 
 	/**
