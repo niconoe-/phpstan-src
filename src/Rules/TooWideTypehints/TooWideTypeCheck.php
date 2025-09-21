@@ -108,8 +108,7 @@ final class TooWideTypeCheck
 
 		$narrowedNativeType = $this->narrowType($nativePropertyType, $assignedType, $scope, true);
 		if (!$narrowedNativeType->equals($nativePropertyType)) {
-			$finalPropertyType = TypehintHelper::decideType($phpDocPropertyType, $nativePropertyType);
-			$propertyTypeDescription = $finalPropertyType->describe(VerbosityLevel::getRecommendedLevelByType($finalPropertyType));
+			$propertyTypeDescription = $nativePropertyType->describe(VerbosityLevel::getRecommendedLevelByType($nativePropertyType));
 			return $this->createErrors(
 				$narrowedNativeType,
 				$nativePropertyType,
