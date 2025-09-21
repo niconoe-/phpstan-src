@@ -177,19 +177,18 @@ final class TooWideTypeCheck
 		$unionMessagePattern = sprintf('%s never returns %%s so it can be removed from the return type.', $functionDescription);
 		$boolMessagePattern = sprintf('%s never returns %%s so the return type can be changed to %%s.', $functionDescription);
 
+		// Do not require to have @return null/true/false in descendant classes
+		if (
+			$checkDescendantClass
+			&& ($returnType->isNull()->yes() || $returnType->isTrue()->yes() || $returnType->isFalse()->yes())
+		) {
+			return [];
+		}
+
 		if (!$phpDocFunctionReturnType instanceof MixedType || $phpDocFunctionReturnType->isExplicitMixed()) {
 			$phpDocFunctionReturnType = TypeUtils::resolveLateResolvableTypes(TypehintHelper::decideType($nativeFunctionReturnType, $phpDocFunctionReturnType));
 
-			// Do not require to have @return null/true/false in descendant classes
-			if (
-				$checkDescendantClass
-				&& ($returnType->isNull()->yes() || $returnType->isTrue()->yes() || $returnType->isFalse()->yes())
-			) {
-				$narrowedPhpDocType = $phpDocFunctionReturnType;
-			} else {
-				$narrowedPhpDocType = $this->narrowType($phpDocFunctionReturnType, $returnType, $scope, false);
-			}
-
+			$narrowedPhpDocType = $this->narrowType($phpDocFunctionReturnType, $returnType, $scope, false);
 			if (!$narrowedPhpDocType->equals($phpDocFunctionReturnType)) {
 				return $this->createErrors(
 					$narrowedPhpDocType,
@@ -205,16 +204,7 @@ final class TooWideTypeCheck
 			return [];
 		}
 
-		// Do not require to have @return null/true/false in descendant classes
-		if (
-			$checkDescendantClass
-			&& ($returnType->isNull()->yes() || $returnType->isTrue()->yes() || $returnType->isFalse()->yes())
-		) {
-			$narrowedNativeType = $nativeFunctionReturnType;
-		} else {
-			$narrowedNativeType = $this->narrowType($nativeFunctionReturnType, $returnType, $scope, true);
-		}
-
+		$narrowedNativeType = $this->narrowType($nativeFunctionReturnType, $returnType, $scope, true);
 		if (!$narrowedNativeType->equals($nativeFunctionReturnType)) {
 			return $this->createErrors(
 				$narrowedNativeType,
