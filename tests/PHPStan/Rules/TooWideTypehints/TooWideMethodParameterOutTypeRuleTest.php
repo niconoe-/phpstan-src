@@ -2,6 +2,7 @@
 
 namespace PHPStan\Rules\TooWideTypehints;
 
+use PHPStan\Rules\Properties\PropertyReflectionFinder;
 use PHPStan\Rules\Rule as TRule;
 use PHPStan\Testing\RuleTestCase;
 
@@ -15,7 +16,12 @@ class TooWideMethodParameterOutTypeRuleTest extends RuleTestCase
 
 	protected function getRule(): TRule
 	{
-		return new TooWideMethodParameterOutTypeRule(new TooWideParameterOutTypeCheck(), $this->checkProtectedAndPublicMethods);
+		return new TooWideMethodParameterOutTypeRule(
+			new TooWideParameterOutTypeCheck(
+				new TooWideTypeCheck(new PropertyReflectionFinder(), true),
+			),
+			$this->checkProtectedAndPublicMethods,
+		);
 	}
 
 	public function testRule(): void
@@ -34,10 +40,6 @@ class TooWideMethodParameterOutTypeRuleTest extends RuleTestCase
 				'Method TooWideMethodParameterOut\Foo::doLorem() never assigns null to &$p so it can be removed from the by-ref type.',
 				26,
 				'You can narrow the parameter out type with @param-out PHPDoc tag.',
-			],
-			[
-				'Method TooWideMethodParameterOut\Foo::bug10699() never assigns 20 to &$out so it can be removed from the @param-out type.',
-				37,
 			],
 			[
 				'Method TooWideMethodParameterOut\Foo::finalDoBaz() never assigns null to &$p so it can be removed from the @param-out type.',
@@ -66,8 +68,13 @@ class TooWideMethodParameterOutTypeRuleTest extends RuleTestCase
 				'You can narrow the parameter out type with @param-out PHPDoc tag.',
 			],
 			[
-				'Method TooWideMethodParameterOut\FinalFoo::bug10699() never assigns 20 to &$out so it can be removed from the @param-out type.',
-				100,
+				'Method TooWideMethodParameterOut\FinalFoo::doBool() never assigns false to &$b so the by-ref type can be changed to true.',
+				105,
+				'You can narrow the parameter out type with @param-out PHPDoc tag.',
+			],
+			[
+				'Method TooWideMethodParameterOut\FinalFoo::doBool2() never assigns false to &$b so the @param-out type can be changed to true.',
+				113,
 			],
 		]);
 	}
@@ -99,8 +106,13 @@ class TooWideMethodParameterOutTypeRuleTest extends RuleTestCase
 				'You can narrow the parameter out type with @param-out PHPDoc tag.',
 			],
 			[
-				'Method TooWideMethodParameterOut\FinalFoo::bug10699() never assigns 20 to &$out so it can be removed from the @param-out type.',
-				100,
+				'Method TooWideMethodParameterOut\FinalFoo::doBool() never assigns false to &$b so the by-ref type can be changed to true.',
+				105,
+				'You can narrow the parameter out type with @param-out PHPDoc tag.',
+			],
+			[
+				'Method TooWideMethodParameterOut\FinalFoo::doBool2() never assigns false to &$b so the @param-out type can be changed to true.',
+				113,
 			],
 		]);
 	}

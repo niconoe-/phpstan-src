@@ -43,6 +43,7 @@ final class TooWideMethodParameterOutTypeRule implements Rule
 		}
 
 		return $this->check->check(
+			$node->getStartLine(),
 			$node->getExecutionEnds(),
 			$node->getReturnStatements(),
 			$inMethod->getParameters(),

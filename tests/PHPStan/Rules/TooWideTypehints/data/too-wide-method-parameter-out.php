@@ -102,4 +102,17 @@ final class FinalFoo
 
 	}
 
+	public function doBool(bool &$b): void
+	{
+		$b = true;
+	}
+
+	/**
+	 * @param-out bool $b
+	 */
+	public function doBool2(bool &$b): void
+	{
+		$b = true;
+	}
+
 }

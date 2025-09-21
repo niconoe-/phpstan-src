@@ -32,6 +32,7 @@ final class TooWideFunctionParameterOutTypeRule implements Rule
 		$inFunction = $node->getFunctionReflection();
 
 		return $this->check->check(
+			$node->getStartLine(),
 			$node->getExecutionEnds(),
 			$node->getReturnStatements(),
 			$inFunction->getParameters(),

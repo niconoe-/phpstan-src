@@ -9,10 +9,6 @@ use PHPStan\Node\ExecutionEndNode;
 use PHPStan\Node\ReturnStatement;
 use PHPStan\Reflection\ExtendedParameterReflection;
 use PHPStan\Rules\IdentifierRuleError;
-use PHPStan\Rules\RuleErrorBuilder;
-use PHPStan\Type\TypeUtils;
-use PHPStan\Type\UnionType;
-use PHPStan\Type\VerbosityLevel;
 use function sprintf;
 
 #[AutowiredService]
@@ -32,6 +28,7 @@ final class TooWideParameterOutTypeCheck
 	 * @return list<IdentifierRuleError>
 	 */
 	public function check(
+		int $startLine,
 		array $executionEnds,
 		array $returnStatements,
 		array $parameters,
@@ -68,7 +65,7 @@ final class TooWideParameterOutTypeCheck
 				continue;
 			}
 
-			foreach ($this->processSingleParameter($finalScope, $functionDescription, $parameter) as $error) {
+			foreach ($this->processSingleParameter($startLine, $finalScope, $functionDescription, $parameter) as $error) {
 				$errors[] = $error;
 			}
 		}
@@ -80,6 +77,7 @@ final class TooWideParameterOutTypeCheck
 	 * @return list<IdentifierRuleError>
 	 */
 	private function processSingleParameter(
+		int $startLine,
 		Scope $scope,
 		string $functionDescription,
 		ExtendedParameterReflection $parameter,
@@ -95,18 +93,23 @@ final class TooWideParameterOutTypeCheck
 		$variableExpr = new Variable($parameter->getName());
 		$variableType = $scope->getType($variableExpr);
 
-		/* sprintf(
-				'%s never assigns %s to &$%s so it can be removed from the %s.',
-				$functionDescription,
-				$type->describe(VerbosityLevel::getRecommendedLevelByType($type)),
-				$parameter->getName(),
-				$isParamOutType ? '@param-out type' : 'by-ref type',
-			) */
-
 		return $this->tooWideTypeCheck->checkParameterOutType(
 			$outType,
 			$variableType,
+			sprintf(
+				'%s never assigns %%s to &$%s so it can be removed from the %s.',
+				$functionDescription,
+				$parameter->getName(),
+				$isParamOutType ? '@param-out type' : 'by-ref type',
+			),
+			sprintf(
+				'%s never assigns %%s to &$%s so the %s can be changed to %%s.',
+				$functionDescription,
+				$parameter->getName(),
+				$isParamOutType ? '@param-out type' : 'by-ref type',
+			),
 			$scope,
+			$startLine,
 			$isParamOutType ? 'paramOut' : 'parameterByRef',
 			$isParamOutType ? null : 'You can narrow the parameter out type with @param-out PHPDoc tag.',
 		);

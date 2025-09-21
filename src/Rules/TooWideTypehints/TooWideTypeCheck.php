@@ -99,6 +99,7 @@ final class TooWideTypeCheck
 					sprintf($boolMessagePattern, $propertyDescription, $phpDocPropertyTypeDescription),
 					$node->getStartLine(),
 					'property',
+					null,
 				);
 			}
 
@@ -116,6 +117,7 @@ final class TooWideTypeCheck
 				sprintf($boolMessagePattern, $propertyDescription, $propertyTypeDescription),
 				$node->getStartLine(),
 				'property',
+				null,
 			);
 		}
 
@@ -177,7 +179,17 @@ final class TooWideTypeCheck
 
 		if (!$phpDocFunctionReturnType instanceof MixedType || $phpDocFunctionReturnType->isExplicitMixed()) {
 			$phpDocFunctionReturnType = TypeUtils::resolveLateResolvableTypes($phpDocFunctionReturnType);
-			$narrowedPhpDocType = $this->narrowType($phpDocFunctionReturnType, $returnType, $scope, false);
+
+			// Do not require to have @return null/true/false in descendant classes
+			if (
+				$checkDescendantClass
+				&& ($returnType->isNull()->yes() || $returnType->isTrue()->yes() || $returnType->isFalse()->yes())
+			) {
+				$narrowedPhpDocType = $phpDocFunctionReturnType;
+			} else {
+				$narrowedPhpDocType = $this->narrowType($phpDocFunctionReturnType, $returnType, $scope, false);
+			}
+
 			if (!$narrowedPhpDocType->equals($phpDocFunctionReturnType)) {
 				return $this->createErrors(
 					$narrowedPhpDocType,
@@ -186,6 +198,7 @@ final class TooWideTypeCheck
 					$boolMessagePattern,
 					$node->getStartLine(),
 					'return',
+					null,
 				);
 			}
 
@@ -210,6 +223,7 @@ final class TooWideTypeCheck
 				$boolMessagePattern,
 				$node->getStartLine(),
 				'return',
+				null,
 			);
 		}
 
@@ -217,12 +231,16 @@ final class TooWideTypeCheck
 	}
 
 	/**
+	 * @param 'paramOut'|'parameterByRef' $identifierPart
 	 * @return list<IdentifierRuleError>
 	 */
 	public function checkParameterOutType(
 		Type $parameterOutType,
 		Type $actualVariableType,
+		string $unionMessagePattern,
+		string $boolMessagePattern,
 		Scope $scope,
+		int $startLine,
 		string $identifierPart,
 		?string $tip,
 	): array
@@ -238,13 +256,14 @@ final class TooWideTypeCheck
 			$parameterOutType,
 			$unionMessagePattern,
 			$boolMessagePattern,
-			$node->getStartLine(),
+			$startLine,
 			$identifierPart,
+			$tip,
 		);
 	}
 
 	/**
-	 * @param 'return'|'property' $identifierPart
+	 * @param 'return'|'property'|'paramOut'|'parameterByRef' $identifierPart
 	 * @return list<IdentifierRuleError>
 	 */
 	private function createErrors(
@@ -254,18 +273,22 @@ final class TooWideTypeCheck
 		string $boolMessagePattern,
 		int $startLine,
 		string $identifierPart,
+		?string $tip,
 	): array
 	{
 		if ($originalType->isBoolean()->yes()) {
 			$neverReturns = $narrowedType->isTrue()->yes() ? new ConstantBooleanType(false) : new ConstantBooleanType(true);
 
-			return [
-				RuleErrorBuilder::message(sprintf(
-					$boolMessagePattern,
-					$neverReturns->describe(VerbosityLevel::getRecommendedLevelByType($neverReturns)),
-					$narrowedType->describe(VerbosityLevel::getRecommendedLevelByType($narrowedType)),
-				))->identifier(sprintf('%s.tooWideBool', $identifierPart))->line($startLine)->build(),
-			];
+			$errorBuilder = RuleErrorBuilder::message(sprintf(
+				$boolMessagePattern,
+				$neverReturns->describe(VerbosityLevel::getRecommendedLevelByType($neverReturns)),
+				$narrowedType->describe(VerbosityLevel::getRecommendedLevelByType($narrowedType)),
+			))->identifier(sprintf('%s.tooWideBool', $identifierPart))->line($startLine);
+			if ($tip !== null) {
+				$errorBuilder->tip($tip);
+			}
+
+			return [$errorBuilder->build()];
 		}
 
 		if (!$originalType instanceof UnionType) {
@@ -278,10 +301,15 @@ final class TooWideTypeCheck
 				continue;
 			}
 
-			$messages[] = RuleErrorBuilder::message(sprintf(
+			$errorBuilder = RuleErrorBuilder::message(sprintf(
 				$unionMessagePattern,
 				$innerType->describe(VerbosityLevel::getRecommendedLevelByType($innerType)),
-			))->identifier(sprintf('%s.unusedType', $identifierPart))->line($startLine)->build();
+			))->identifier(sprintf('%s.unusedType', $identifierPart))->line($startLine);
+			if ($tip !== null) {
+				$errorBuilder->tip($tip);
+			}
+
+			$messages[] = $errorBuilder->build();
 		}
 
 		return $messages;

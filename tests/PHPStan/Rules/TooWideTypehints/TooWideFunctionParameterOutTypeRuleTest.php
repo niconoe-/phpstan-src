@@ -2,6 +2,7 @@
 
 namespace PHPStan\Rules\TooWideTypehints;
 
+use PHPStan\Rules\Properties\PropertyReflectionFinder;
 use PHPStan\Rules\Rule as TRule;
 use PHPStan\Testing\RuleTestCase;
 
@@ -13,7 +14,9 @@ class TooWideFunctionParameterOutTypeRuleTest extends RuleTestCase
 
 	protected function getRule(): TRule
 	{
-		return new TooWideFunctionParameterOutTypeRule(new TooWideParameterOutTypeCheck());
+		return new TooWideFunctionParameterOutTypeRule(new TooWideParameterOutTypeCheck(
+			new TooWideTypeCheck(new PropertyReflectionFinder(), true),
+		));
 	}
 
 	public function testRule(): void
@@ -32,10 +35,6 @@ class TooWideFunctionParameterOutTypeRuleTest extends RuleTestCase
 				'Function TooWideFunctionParameterOut\doLorem() never assigns null to &$p so it can be removed from the by-ref type.',
 				23,
 				'You can narrow the parameter out type with @param-out PHPDoc tag.',
-			],
-			[
-				'Function TooWideFunctionParameterOut\bug10699() never assigns 20 to &$out so it can be removed from the @param-out type.',
-				48,
 			],
 		]);
 	}
