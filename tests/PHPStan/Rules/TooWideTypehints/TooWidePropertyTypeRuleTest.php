@@ -32,11 +32,11 @@ class TooWidePropertyTypeRuleTest extends RuleTestCase
 				'Property TooWidePropertyType\Foo::$foo (int|string) is never assigned string so it can be removed from the property type.',
 				9,
 			],
-			/*[
+			[
 				'Property TooWidePropertyType\Foo::$barr (int|null) is never assigned null so it can be removed from the property type.',
 				15,
 			],
-			[
+			/*[
 				'Property TooWidePropertyType\Foo::$barrr (int|null) is never assigned null so it can be removed from the property type.',
 				18,
 			],*/

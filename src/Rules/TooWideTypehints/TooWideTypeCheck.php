@@ -74,7 +74,7 @@ final class TooWideTypeCheck
 			$assignedTypes[] = $scope->getType($node->getDefault());
 		}
 
-		if ($node->getNativeType() === null) {
+		if ($node->getNativeType() === null && $node->getDefault() === null) {
 			$assignedTypes[] = new NullType();
 		}
 
