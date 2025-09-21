@@ -123,3 +123,16 @@ class ConditionalTypeClass
 
 
 }
+
+class InvalidPhpDoc
+{
+
+	/**
+	 * @return int|string
+	 */
+	private function doFoo(): int
+	{
+		return 1;
+	}
+
+}

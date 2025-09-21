@@ -88,7 +88,7 @@ final class TooWideTypeCheck
 		$boolMessagePattern = '%s (%s) is never assigned %%s so the property type can be changed to %%s.';
 
 		if (!$phpDocPropertyType instanceof MixedType || $phpDocPropertyType->isExplicitMixed()) {
-			$phpDocPropertyType = TypeUtils::resolveLateResolvableTypes($phpDocPropertyType);
+			$phpDocPropertyType = TypeUtils::resolveLateResolvableTypes(TypehintHelper::decideType($nativePropertyType, $phpDocPropertyType));
 			$narrowedPhpDocType = $this->narrowType($phpDocPropertyType, $assignedType, $scope, false);
 			if (!$narrowedPhpDocType->equals($phpDocPropertyType)) {
 				$phpDocPropertyTypeDescription = $phpDocPropertyType->describe(VerbosityLevel::getRecommendedLevelByType($phpDocPropertyType));
@@ -178,7 +178,7 @@ final class TooWideTypeCheck
 		$boolMessagePattern = sprintf('%s never returns %%s so the return type can be changed to %%s.', $functionDescription);
 
 		if (!$phpDocFunctionReturnType instanceof MixedType || $phpDocFunctionReturnType->isExplicitMixed()) {
-			$phpDocFunctionReturnType = TypeUtils::resolveLateResolvableTypes($phpDocFunctionReturnType);
+			$phpDocFunctionReturnType = TypeUtils::resolveLateResolvableTypes(TypehintHelper::decideType($nativeFunctionReturnType, $phpDocFunctionReturnType));
 
 			// Do not require to have @return null/true/false in descendant classes
 			if (

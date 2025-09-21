@@ -85,3 +85,16 @@ class Lorem
 	}
 
 }
+
+class InvalidPhpDoc
+{
+
+	/** @var int|string */
+	private int $a;
+
+	public function doFoo(): void
+	{
+		$this->a = 1;
+	}
+
+}
