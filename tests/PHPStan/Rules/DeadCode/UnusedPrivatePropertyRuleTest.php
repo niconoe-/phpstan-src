@@ -402,4 +402,12 @@ class UnusedPrivatePropertyRuleTest extends RuleTestCase
 		]);
 	}
 
+	public function testBug9213(): void
+	{
+		$this->alwaysWrittenTags = [];
+		$this->alwaysReadTags = [];
+
+		$this->analyse([__DIR__ . '/data/bug-9213.php'], []);
+	}
+
 }

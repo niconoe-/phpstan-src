@@ -1210,12 +1210,12 @@ final class NodeScopeResolver
 
 			if ($context->isTopLevel()) {
 				$originalScope = $this->polluteScopeWithAlwaysIterableForeach ? $scope->filterByTruthyValue($arrayComparisonExpr) : $scope;
-				$bodyScope = $this->enterForeach($originalScope, $originalScope, $stmt);
+				$bodyScope = $this->enterForeach($originalScope, $originalScope, $stmt, $nodeCallback);
 				$count = 0;
 				do {
 					$prevScope = $bodyScope;
 					$bodyScope = $bodyScope->mergeWith($this->polluteScopeWithAlwaysIterableForeach ? $scope->filterByTruthyValue($arrayComparisonExpr) : $scope);
-					$bodyScope = $this->enterForeach($bodyScope, $originalScope, $stmt);
+					$bodyScope = $this->enterForeach($bodyScope, $originalScope, $stmt, $nodeCallback);
 					$bodyScopeResult = $this->processStmtNodes($stmt, $stmt->stmts, $bodyScope, static function (): void {
 					}, $context->enterDeep())->filterOutLoopExitPoints();
 					$bodyScope = $bodyScopeResult->getScope();
@@ -1234,7 +1234,7 @@ final class NodeScopeResolver
 			}
 
 			$bodyScope = $bodyScope->mergeWith($this->polluteScopeWithAlwaysIterableForeach ? $scope->filterByTruthyValue($arrayComparisonExpr) : $scope);
-			$bodyScope = $this->enterForeach($bodyScope, $originalScope, $stmt);
+			$bodyScope = $this->enterForeach($bodyScope, $originalScope, $stmt, $nodeCallback);
 			$finalScopeResult = $this->processStmtNodes($stmt, $stmt->stmts, $bodyScope, $nodeCallback, $context)->filterOutLoopExitPoints();
 			$finalScope = $finalScopeResult->getScope();
 			foreach ($finalScopeResult->getExitPointsByType(Continue_::class) as $continueExitPoint) {
@@ -6420,7 +6420,10 @@ final class NodeScopeResolver
 		return $scope;
 	}
 
-	private function enterForeach(MutatingScope $scope, MutatingScope $originalScope, Foreach_ $stmt): MutatingScope
+	/**
+	 * @param callable(Node $node, Scope $scope): void $nodeCallback
+	 */
+	private function enterForeach(MutatingScope $scope, MutatingScope $originalScope, Foreach_ $stmt, callable $nodeCallback): MutatingScope
 	{
 		if ($stmt->expr instanceof Variable && is_string($stmt->expr->name)) {
 			$scope = $this->processVarAnnotation($scope, [$stmt->expr->name], $stmt);
@@ -6446,16 +6449,12 @@ final class NodeScopeResolver
 				$vars[] = $keyVarName;
 			}
 		} else {
-			$scope = $this->processAssignVar(
+			$scope = $this->processVirtualAssign(
 				$scope,
 				$stmt,
 				$stmt->valueVar,
 				new GetIterableValueTypeExpr($stmt->expr),
-				static function (): void {
-				},
-				ExpressionContext::createDeep(),
-				static fn (MutatingScope $scope): ExpressionResult => new ExpressionResult($scope, false, false, [], []),
-				true,
+				$nodeCallback,
 			)->getScope();
 			$vars = $this->getAssignedVariables($stmt->valueVar);
 			if (
@@ -6464,16 +6463,12 @@ final class NodeScopeResolver
 				$scope = $scope->enterForeachKey($originalScope, $stmt->expr, $stmt->keyVar->name);
 				$vars[] = $stmt->keyVar->name;
 			} elseif ($stmt->keyVar !== null) {
-				$scope = $this->processAssignVar(
+				$scope = $this->processVirtualAssign(
 					$scope,
 					$stmt,
 					$stmt->keyVar,
 					new GetIterableKeyTypeExpr($stmt->expr),
-					static function (): void {
-					},
-					ExpressionContext::createDeep(),
-					static fn (MutatingScope $scope): ExpressionResult => new ExpressionResult($scope, false, false, [], []),
-					true,
+					$nodeCallback,
 				)->getScope();
 				$vars = array_merge($vars, $this->getAssignedVariables($stmt->keyVar));
 			}
