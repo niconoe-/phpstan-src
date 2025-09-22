@@ -1882,12 +1882,6 @@ parameters:
 			path: src/Type/VoidType.php
 
 		-
-			rawMessage: Unreachable statement - code above always terminates.
-			identifier: deadCode.unreachable
-			count: 1
-			path: tests/PHPStan/Analyser/AnalyserTest.php
-
-		-
 			rawMessage: 'Class PHPStan\Analyser\AnonymousClassNameRuleTest extends generic class PHPStan\Testing\RuleTestCase but does not specify its types: TRule'
 			identifier: missingType.generics
 			count: 1
