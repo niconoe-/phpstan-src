@@ -44,7 +44,6 @@ class ParametersAcceptorSelectorTest extends PHPStanTestCase
 	 */
 	public static function dataSelectFromTypes(): Generator
 	{
-		require_once __DIR__ . '/data/function-definitions.php';
 		$reflectionProvider = self::createReflectionProvider();
 
 		$arrayRandVariants = $reflectionProvider->getFunction(new Name('array_rand'), null)->getVariants();
@@ -185,7 +184,7 @@ class ParametersAcceptorSelectorTest extends PHPStanTestCase
 						new MixedType(),
 						PassedByReference::createNo(),
 						true,
-						null,
+						new NullType(),
 					),
 				],
 				true,

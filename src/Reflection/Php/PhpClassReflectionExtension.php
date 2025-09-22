@@ -579,7 +579,7 @@ final class PhpClassReflectionExtension
 			return new EnumCasesMethodReflection($declaringClass, $arrayBuilder->getArray());
 		}
 
-		if ($this->signatureMapProvider->hasMethodSignature($declaringClassName, $methodReflection->getName())) {
+		if (($declaringClass->isBuiltin() || $declaringClass->isEnum()) && $this->signatureMapProvider->hasMethodSignature($declaringClassName, $methodReflection->getName())) {
 			$variantsByType = ['positional' => []];
 			$throwType = null;
 			$asserts = Assertions::createEmpty();
@@ -880,12 +880,14 @@ final class PhpClassReflectionExtension
 		$isInternal = $resolvedPhpDoc->isInternal();
 		$isFinal = $resolvedPhpDoc->isFinal();
 		$isPure = null;
-		foreach (array_keys($actualDeclaringClass->getAncestors()) as $className) {
-			if ($this->signatureMapProvider->hasMethodMetadata($className, $methodReflection->getName())) {
-				$hasSideEffects = $this->signatureMapProvider->getMethodMetadata($className, $methodReflection->getName())['hasSideEffects'];
-				$isPure = !$hasSideEffects;
+		if ($actualDeclaringClass->isBuiltin() || $actualDeclaringClass->isEnum()) {
+			foreach (array_keys($actualDeclaringClass->getAncestors()) as $className) {
+				if ($this->signatureMapProvider->hasMethodMetadata($className, $methodReflection->getName())) {
+					$hasSideEffects = $this->signatureMapProvider->getMethodMetadata($className, $methodReflection->getName())['hasSideEffects'];
+					$isPure = !$hasSideEffects;
 
-				break;
+					break;
+				}
 			}
 		}
 

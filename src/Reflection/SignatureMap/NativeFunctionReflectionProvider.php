@@ -24,6 +24,7 @@ use PHPStan\Type\Type;
 use PHPStan\Type\TypehintHelper;
 use function array_key_exists;
 use function array_map;
+use function str_contains;
 use function strtolower;
 
 #[AutowiredService]
@@ -75,6 +76,9 @@ final class NativeFunctionReflectionProvider
 			$isDeprecated = $reflectionFunction->isDeprecated();
 			if ($reflectionFunction->getFileName() !== null) {
 				$fileName = $reflectionFunction->getFileName();
+				if (!$reflectionFunctionAdapter->isInternal() && !str_contains(strtolower($fileName), 'polyfill')) {
+					return null;
+				}
 				$docComment = $reflectionFunction->getDocComment();
 				if ($docComment !== null) {
 					$resolvedPhpDoc = $this->fileTypeMapper->getResolvedPhpDoc($fileName, null, null, $reflectionFunction->getName(), $docComment);
