@@ -18,7 +18,7 @@ final class PathRoutingParser implements Parser
 
 	private ?string $singleReflectionFile;
 
-	/** @var bool[] filePath(string) => bool(true) */
+	/** @var array<string, true> filePath(string) => bool(true) */
 	private array $analysedFiles = [];
 
 	public function __construct(

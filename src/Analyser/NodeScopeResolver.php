@@ -236,7 +236,7 @@ final class NodeScopeResolver
 	private const LOOP_SCOPE_ITERATIONS = 3;
 	private const GENERALIZE_AFTER_ITERATION = 1;
 
-	/** @var bool[] filePath(string) => bool(true) */
+	/** @var array<string, true> filePath(string) => bool(true) */
 	private array $analysedFiles = [];
 
 	/** @var array<string, true> */

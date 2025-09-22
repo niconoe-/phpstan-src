@@ -43,7 +43,7 @@ final class RuleErrorBuilder
 	}
 
 	/**
-	 * @return array<int, array{string, array<array{string|null, string|null, string|null}>}>
+	 * @return array<int, array{string, array<array{string, string|null, string}>}>
 	 */
 	public static function getRuleErrorTypes(): array
 	{
