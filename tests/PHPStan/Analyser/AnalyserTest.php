@@ -161,16 +161,6 @@ class AnalyserTest extends PHPStanTestCase
 		$this->assertSame('Ignored error pattern wrong.identifier was not matched in reported errors.', $result[1]);
 	}
 
-	public function testIgnoringBrokenConfigurationDoesNotWork(): void
-	{
-		$this->markTestIncomplete();
-		$result = $this->runAnalyser(['#was not found while trying to analyse it#'], true, __DIR__ . '/../../notAutoloaded/Baz.php', false);
-		$this->assertCount(2, $result);
-		assert($result[0] instanceof Error);
-		$this->assertSame('Class PHPStan\Tests\Baz was not found while trying to analyse it - autoloading is probably not configured properly.', $result[0]->getMessage());
-		$this->assertSame('Error message "Class PHPStan\Tests\Baz was not found while trying to analyse it - autoloading is probably not configured properly." cannot be ignored, use excludePaths instead.', $result[1]);
-	}
-
 	public function testIgnoreErrorByPath(): void
 	{
 		$ignoreErrors = [

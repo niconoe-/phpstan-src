@@ -1129,7 +1129,7 @@ class MixedTypeTest extends PHPStanTestCase
 		);
 	}
 
-	/** @dataProvider dataEquals */
+	#[DataProvider('dataEquals')]
 	public function testEquals(MixedType $mixedType, Type $typeToCompare, bool $expectedResult): void
 	{
 		$this->assertSame(
