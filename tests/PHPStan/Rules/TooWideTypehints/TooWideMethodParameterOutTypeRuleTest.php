@@ -139,6 +139,7 @@ class TooWideMethodParameterOutTypeRuleTest extends RuleTestCase
 			[
 				'PHPDoc tag @param-out type array<array{int, bool}> of method NestedTooWideMethodParameterOutType\Foo::doFoo() can be narrowed to array<array{int, false}>.',
 				12,
+				'Offset 1 (false) does not accept type bool.',
 			],
 		]);
 	}

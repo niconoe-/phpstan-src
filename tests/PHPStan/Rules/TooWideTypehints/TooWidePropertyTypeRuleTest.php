@@ -118,6 +118,7 @@ class TooWidePropertyTypeRuleTest extends RuleTestCase
 			[
 				'Type array<array{int, bool}> of property NestedTooWidePropertyType\Foo::$a can be narrowed to array<array{int, false}>.',
 				9,
+				'Offset 1 (false) does not accept type bool.',
 			],
 		]);
 	}

@@ -122,6 +122,7 @@ class TooWideFunctionReturnTypehintRuleTest extends RuleTestCase
 			[
 				'Return type array<array{int, bool}> of function NestedTooWideFunctionReturnType\dataProvider() can be narrowed to array<array{int, false}>.',
 				8,
+				'Offset 1 (false) does not accept type bool.',
 			],
 		]);
 	}

@@ -128,6 +128,7 @@ final class TooWideTypeCheck
 					$narrowedPhpDocType->describe(VerbosityLevel::getRecommendedLevelByType($narrowedPhpDocType)),
 				))->identifier('property.nestedUnusedType')
 					->line($node->getStartLine())
+					->acceptsReasonsTip($narrowedPhpDocType->accepts($phpDocPropertyType, true)->reasons)
 					->build(),
 			];
 		}
@@ -249,6 +250,7 @@ final class TooWideTypeCheck
 					$narrowedPhpDocType->describe(VerbosityLevel::getRecommendedLevelByType($narrowedPhpDocType)),
 				))->identifier('return.nestedUnusedType')
 					->line($node->getStartLine())
+					->acceptsReasonsTip($narrowedPhpDocType->accepts($phpDocFunctionReturnType, true)->reasons)
 					->build(),
 			];
 		}
@@ -310,6 +312,7 @@ final class TooWideTypeCheck
 					$narrowedType->describe(VerbosityLevel::getRecommendedLevelByType($narrowedType)),
 				))->identifier(sprintf('%s.nestedUnusedType', $identifierPart))
 					->line($startLine)
+					->acceptsReasonsTip($narrowedType->accepts($parameterOutType, true)->reasons)
 					->build(),
 			];
 		}

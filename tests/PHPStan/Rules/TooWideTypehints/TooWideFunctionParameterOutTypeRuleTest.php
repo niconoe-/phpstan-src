@@ -45,6 +45,7 @@ class TooWideFunctionParameterOutTypeRuleTest extends RuleTestCase
 			[
 				'PHPDoc tag @param-out type array<array{int, bool}> of function NestedTooWideFunctionParameterOutType\doFoo() can be narrowed to array<array{int, false}>.',
 				9,
+				'Offset 1 (false) does not accept type bool.',
 			],
 		]);
 	}

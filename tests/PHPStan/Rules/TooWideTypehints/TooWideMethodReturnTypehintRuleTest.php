@@ -283,10 +283,12 @@ class TooWideMethodReturnTypehintRuleTest extends RuleTestCase
 			[
 				'Return type array<array{int, bool}> of method NestedTooWideMethodReturnType\Foo::dataProvider() can be narrowed to array<array{int, false}>.',
 				11,
+				'Offset 1 (false) does not accept type bool.',
 			],
 			[
 				'Return type array<array{int|null}> of method NestedTooWideMethodReturnType\Foo::dataProvider2() can be narrowed to array<array{int}>.',
 				28,
+				'Offset 0 (int) does not accept type int|null.',
 			],
 		]);
 	}
