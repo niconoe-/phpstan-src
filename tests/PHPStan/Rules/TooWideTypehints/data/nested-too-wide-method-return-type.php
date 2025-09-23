@@ -77,3 +77,31 @@ class ChildClassNull extends ParentClass
 	}
 
 }
+
+class ParentClassBool
+{
+
+	/**
+	 * @return array<array{bool}>
+	 */
+	public function doFoo(): array
+	{
+		return [];
+	}
+
+}
+
+class ChildClassTrue extends ParentClassBool
+{
+
+	/**
+	 * @return array<array{bool}>
+	 */
+	public function doFoo(): array
+	{
+		return [
+			[true],
+		];
+	}
+
+}

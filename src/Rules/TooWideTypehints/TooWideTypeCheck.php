@@ -466,7 +466,16 @@ final class TooWideTypeCheck
 		$usedTypes = [];
 		foreach ($declaredType->getFiniteTypes() as $innerType) {
 			if ($innerType->isSuperTypeOf($actualReturnType)->no()) {
-				continue;
+				if (!$checkDescendantClass) {
+					continue;
+				}
+				if (
+					!$actualReturnType->isTrue()->yes()
+					&& !$actualReturnType->isFalse()->yes()
+					&& !$actualReturnType->isNull()->yes()
+				) {
+					continue;
+				}
 			}
 
 			$usedTypes[] = $innerType;
