@@ -91,7 +91,7 @@ final class TooWideTypeCheck
 
 		if (!$phpDocPropertyType instanceof MixedType || $phpDocPropertyType->isExplicitMixed()) {
 			$phpDocPropertyType = TypeUtils::resolveLateResolvableTypes(TypehintHelper::decideType($nativePropertyType, $phpDocPropertyType));
-			$narrowedPhpDocType = $this->narrowType($phpDocPropertyType, $assignedType, $scope, false);
+			$narrowedPhpDocType = $this->narrowType($phpDocPropertyType, $assignedType, $scope, false, false);
 			if (!$narrowedPhpDocType->equals($phpDocPropertyType)) {
 				$phpDocPropertyTypeDescription = $phpDocPropertyType->describe(VerbosityLevel::getRecommendedLevelByType($phpDocPropertyType));
 				return $this->createErrors(
@@ -110,7 +110,7 @@ final class TooWideTypeCheck
 			}
 
 			$narrowedPhpDocType = SimultaneousTypeTraverser::map($phpDocPropertyType, $assignedType, function (Type $declaredType, Type $actualType, callable $traverse) use ($scope) {
-				$narrowed = $this->narrowType($declaredType, $actualType, $scope, false);
+				$narrowed = $this->narrowType($declaredType, $actualType, $scope, false, false);
 				if (!$narrowed->equals($declaredType)) {
 					return $narrowed;
 				}
@@ -132,7 +132,7 @@ final class TooWideTypeCheck
 			];
 		}
 
-		$narrowedNativeType = $this->narrowType($nativePropertyType, $assignedType, $scope, true);
+		$narrowedNativeType = $this->narrowType($nativePropertyType, $assignedType, $scope, false, true);
 		if (!$narrowedNativeType->equals($nativePropertyType)) {
 			$propertyTypeDescription = $nativePropertyType->describe(VerbosityLevel::getRecommendedLevelByType($nativePropertyType));
 			return $this->createErrors(
@@ -213,7 +213,7 @@ final class TooWideTypeCheck
 		if (!$phpDocFunctionReturnType instanceof MixedType || $phpDocFunctionReturnType->isExplicitMixed()) {
 			$phpDocFunctionReturnType = TypeUtils::resolveLateResolvableTypes(TypehintHelper::decideType($nativeFunctionReturnType, $phpDocFunctionReturnType));
 
-			$narrowedPhpDocType = $this->narrowType($phpDocFunctionReturnType, $returnType, $scope, false);
+			$narrowedPhpDocType = $this->narrowType($phpDocFunctionReturnType, $returnType, $scope, false, false);
 			if (!$narrowedPhpDocType->equals($phpDocFunctionReturnType)) {
 				return $this->createErrors(
 					$narrowedPhpDocType,
@@ -230,8 +230,8 @@ final class TooWideTypeCheck
 				return [];
 			}
 
-			$narrowedPhpDocType = SimultaneousTypeTraverser::map($phpDocFunctionReturnType, $returnType, function (Type $declaredType, Type $actualReturnType, callable $traverse) use ($scope) {
-				$narrowed = $this->narrowType($declaredType, $actualReturnType, $scope, false);
+			$narrowedPhpDocType = SimultaneousTypeTraverser::map($phpDocFunctionReturnType, $returnType, function (Type $declaredType, Type $actualReturnType, callable $traverse) use ($scope, $checkDescendantClass) {
+				$narrowed = $this->narrowType($declaredType, $actualReturnType, $scope, $checkDescendantClass, false);
 				if (!$narrowed->equals($declaredType)) {
 					return $narrowed;
 				}
@@ -253,7 +253,7 @@ final class TooWideTypeCheck
 			];
 		}
 
-		$narrowedNativeType = $this->narrowType($nativeFunctionReturnType, $returnType, $scope, true);
+		$narrowedNativeType = $this->narrowType($nativeFunctionReturnType, $returnType, $scope, false, true);
 		if (!$narrowedNativeType->equals($nativeFunctionReturnType)) {
 			return $this->createErrors(
 				$narrowedNativeType,
@@ -286,14 +286,14 @@ final class TooWideTypeCheck
 	): array
 	{
 		$parameterOutType = TypeUtils::resolveLateResolvableTypes($parameterOutType);
-		$narrowedType = $this->narrowType($parameterOutType, $actualVariableType, $scope, false);
+		$narrowedType = $this->narrowType($parameterOutType, $actualVariableType, $scope, false, false);
 		if ($narrowedType->equals($parameterOutType)) {
 			if (!$this->reportTooWideBool) {
 				return [];
 			}
 
 			$narrowedType = SimultaneousTypeTraverser::map($parameterOutType, $actualVariableType, function (Type $declaredType, Type $actualType, callable $traverse) use ($scope) {
-				$narrowed = $this->narrowType($declaredType, $actualType, $scope, false);
+				$narrowed = $this->narrowType($declaredType, $actualType, $scope, false, false);
 				if (!$narrowed->equals($declaredType)) {
 					return $narrowed;
 				}
@@ -408,6 +408,7 @@ final class TooWideTypeCheck
 		Type $declaredType,
 		Type $actualReturnType,
 		Scope $scope,
+		bool $checkDescendantClass,
 		bool $native,
 	): Type
 	{
@@ -421,7 +422,20 @@ final class TooWideTypeCheck
 			$usedTypes = [];
 			foreach ($declaredType->getTypes() as $innerType) {
 				if ($innerType->isSuperTypeOf($actualReturnType)->no()) {
-					continue;
+					if (!$checkDescendantClass) {
+						continue;
+					}
+					if ($innerType->isNull()->yes()) {
+						$usedTypes[] = $innerType;
+						continue;
+					}
+					if (
+						!$actualReturnType->isTrue()->yes()
+						&& !$actualReturnType->isFalse()->yes()
+						&& !$actualReturnType->isNull()->yes()
+					) {
+						continue;
+					}
 				}
 
 				$usedTypes[] = $innerType;

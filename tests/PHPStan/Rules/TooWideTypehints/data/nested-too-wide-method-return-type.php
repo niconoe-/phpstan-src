@@ -22,4 +22,58 @@ final class Foo
 		];
 	}
 
+	/**
+	 * @return array<array{int|null}>
+	 */
+	public function dataProvider2(): array
+	{
+		return [
+			[
+				1,
+			],
+			[
+				2,
+			],
+		];
+	}
+
+}
+
+class ParentClass
+{
+
+	/**
+	 * @return array<array{int|null}>
+	 */
+	public function doFoo(): array
+	{
+		return [];
+	}
+
+}
+
+class ChildClass extends ParentClass
+{
+
+	public function doFoo(): array
+	{
+		return [
+			[1],
+			[2],
+		];
+	}
+
+}
+
+class ChildClassNull extends ParentClass
+{
+
+	public function doFoo(): array
+	{
+		return [
+			[null],
+			[null],
+		];
+	}
+
 }

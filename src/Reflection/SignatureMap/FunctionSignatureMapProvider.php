@@ -51,13 +51,11 @@ final class FunctionSignatureMapProvider implements SignatureMapProvider
 		return array_key_exists(strtolower($name), $this->getSignatureMap());
 	}
 
-	/** @return array{positional: array<int, FunctionSignature>, named: null} */
 	public function getMethodSignatures(string $className, string $methodName, ?ReflectionMethod $reflectionMethod): array
 	{
 		return $this->getFunctionSignatures(sprintf('%s::%s', $className, $methodName), $className, $reflectionMethod);
 	}
 
-	/** @return array{positional: array<int, FunctionSignature>, named: null} */
 	public function getFunctionSignatures(string $functionName, ?string $className, ?ReflectionFunctionAbstract $reflectionFunction): array
 	{
 		$functionName = strtolower($functionName);

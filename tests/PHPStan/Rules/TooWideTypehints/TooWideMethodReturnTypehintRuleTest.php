@@ -284,6 +284,10 @@ class TooWideMethodReturnTypehintRuleTest extends RuleTestCase
 				'Return type array<array{int, bool}> of method NestedTooWideMethodReturnType\Foo::dataProvider() can be narrowed to array<array{int, false}>.',
 				11,
 			],
+			[
+				'Return type array<array{int|null}> of method NestedTooWideMethodReturnType\Foo::dataProvider2() can be narrowed to array<array{int}>.',
+				28,
+			],
 		]);
 	}
 
