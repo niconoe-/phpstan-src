@@ -15,7 +15,7 @@ class TooWideClosureReturnTypehintRuleTest extends RuleTestCase
 	protected function getRule(): Rule
 	{
 		return new TooWideClosureReturnTypehintRule(
-			new TooWideTypeCheck(new PropertyReflectionFinder(), true),
+			new TooWideTypeCheck(new PropertyReflectionFinder(), true, true),
 		);
 	}
 

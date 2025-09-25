@@ -36,6 +36,7 @@ parameters:
 		checkExtensionsForComparisonOperators: false
 		reportTooWideBool: false
 		rawMessageInBaseline: false
+		reportNestedTooWideType: false
 	fileExtensions:
 		- php
 	checkAdvancedIsset: false

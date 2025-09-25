@@ -36,6 +36,8 @@ final class TooWideTypeCheck
 		private PropertyReflectionFinder $propertyReflectionFinder,
 		#[AutowiredParameter(ref: '%featureToggles.reportTooWideBool%')]
 		private bool $reportTooWideBool,
+		#[AutowiredParameter(ref: '%featureToggles.reportNestedTooWideType%')]
+		private bool $reportNestedTooWideType,
 	)
 	{
 	}
@@ -105,7 +107,7 @@ final class TooWideTypeCheck
 				);
 			}
 
-			if (!$this->reportTooWideBool) {
+			if (!$this->reportNestedTooWideType) {
 				return [];
 			}
 
@@ -227,7 +229,7 @@ final class TooWideTypeCheck
 				);
 			}
 
-			if (!$this->reportTooWideBool) {
+			if (!$this->reportNestedTooWideType) {
 				return [];
 			}
 
@@ -290,7 +292,7 @@ final class TooWideTypeCheck
 		$parameterOutType = TypeUtils::resolveLateResolvableTypes($parameterOutType);
 		$narrowedType = $this->narrowType($parameterOutType, $actualVariableType, $scope, false, false);
 		if ($narrowedType->equals($parameterOutType)) {
-			if (!$this->reportTooWideBool) {
+			if (!$this->reportNestedTooWideType) {
 				return [];
 			}
 

@@ -12,3 +12,4 @@ parameters:
 		checkExtensionsForComparisonOperators: true
 		reportTooWideBool: true
 		rawMessageInBaseline: true
+		reportNestedTooWideType: false

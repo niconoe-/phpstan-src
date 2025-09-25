@@ -39,6 +39,7 @@ parametersSchema:
 		checkExtensionsForComparisonOperators: bool()
 		reportTooWideBool: bool()
 		rawMessageInBaseline: bool()
+		reportNestedTooWideType: bool()
 	])
 	fileExtensions: listOf(string())
 	checkAdvancedIsset: bool()

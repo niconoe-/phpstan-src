@@ -18,9 +18,11 @@ class TooWideMethodReturnTypehintRuleTest extends RuleTestCase
 
 	private bool $reportTooWideBool = false;
 
+	private bool $reportNestedTooWideType = false;
+
 	protected function getRule(): Rule
 	{
-		return new TooWideMethodReturnTypehintRule($this->checkProtectedAndPublicMethods, new TooWideTypeCheck(new PropertyReflectionFinder(), $this->reportTooWideBool));
+		return new TooWideMethodReturnTypehintRule($this->checkProtectedAndPublicMethods, new TooWideTypeCheck(new PropertyReflectionFinder(), $this->reportTooWideBool, $this->reportNestedTooWideType));
 	}
 
 	public function testPrivate(): void
@@ -227,6 +229,7 @@ class TooWideMethodReturnTypehintRuleTest extends RuleTestCase
 	public function testBug13384c(): void
 	{
 		$this->reportTooWideBool = true;
+		$this->reportNestedTooWideType = true;
 		$this->analyse([__DIR__ . '/data/bug-13384c.php'], [
 			[
 				'Method Bug13384c\Bug13384c::doBar() never returns true so the return type can be changed to false.',
@@ -259,6 +262,7 @@ class TooWideMethodReturnTypehintRuleTest extends RuleTestCase
 	public function testBug13384cPrePhp82(): void
 	{
 		$this->reportTooWideBool = true;
+		$this->reportNestedTooWideType = true;
 		$this->analyse([__DIR__ . '/data/bug-13384c.php'], [
 			[
 				'Method Bug13384c\Bug13384c::doBarPhpdoc() never returns false so the return type can be changed to true.',
@@ -279,6 +283,7 @@ class TooWideMethodReturnTypehintRuleTest extends RuleTestCase
 	public function testNestedTooWideType(): void
 	{
 		$this->reportTooWideBool = true;
+		$this->reportNestedTooWideType = true;
 		$this->analyse([__DIR__ . '/data/nested-too-wide-method-return-type.php'], [
 			[
 				'Return type array<array{int, bool}> of method NestedTooWideMethodReturnType\Foo::dataProvider() can be narrowed to array<array{int, false}>.',

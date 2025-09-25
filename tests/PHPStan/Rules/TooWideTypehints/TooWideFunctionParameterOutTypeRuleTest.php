@@ -15,7 +15,7 @@ class TooWideFunctionParameterOutTypeRuleTest extends RuleTestCase
 	protected function getRule(): TRule
 	{
 		return new TooWideFunctionParameterOutTypeRule(new TooWideParameterOutTypeCheck(
-			new TooWideTypeCheck(new PropertyReflectionFinder(), true),
+			new TooWideTypeCheck(new PropertyReflectionFinder(), true, true),
 		));
 	}
 

@@ -18,7 +18,7 @@ class TooWideMethodParameterOutTypeRuleTest extends RuleTestCase
 	{
 		return new TooWideMethodParameterOutTypeRule(
 			new TooWideParameterOutTypeCheck(
-				new TooWideTypeCheck(new PropertyReflectionFinder(), true),
+				new TooWideTypeCheck(new PropertyReflectionFinder(), true, true),
 			),
 			$this->checkProtectedAndPublicMethods,
 		);

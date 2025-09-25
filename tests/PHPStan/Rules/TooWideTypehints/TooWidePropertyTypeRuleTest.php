@@ -16,11 +16,13 @@ class TooWidePropertyTypeRuleTest extends RuleTestCase
 
 	private bool $reportTooWideBool = false;
 
+	private bool $reportNestedTooWideType = false;
+
 	protected function getRule(): Rule
 	{
 		return new TooWidePropertyTypeRule(
 			new DirectReadWritePropertiesExtensionProvider([]),
-			new TooWideTypeCheck(new PropertyReflectionFinder(), $this->reportTooWideBool),
+			new TooWideTypeCheck(new PropertyReflectionFinder(), $this->reportTooWideBool, $this->reportNestedTooWideType),
 		);
 	}
 
@@ -64,6 +66,7 @@ class TooWidePropertyTypeRuleTest extends RuleTestCase
 	public function testBug13384(): void
 	{
 		$this->reportTooWideBool = true;
+		$this->reportNestedTooWideType = true;
 		$this->analyse([__DIR__ . '/data/bug-13384.php'], [
 			[
 				'Static property Bug13384\ShutdownHandlerFalseDefault::$registered (bool) is never assigned true so the property type can be changed to false.',
@@ -80,12 +83,14 @@ class TooWidePropertyTypeRuleTest extends RuleTestCase
 	public function testBug13384PrePhp82(): void
 	{
 		$this->reportTooWideBool = true;
+		$this->reportNestedTooWideType = true;
 		$this->analyse([__DIR__ . '/data/bug-13384.php'], []);
 	}
 
 	public function testBug13384Phpdoc(): void
 	{
 		$this->reportTooWideBool = true;
+		$this->reportNestedTooWideType = true;
 		$this->analyse([__DIR__ . '/data/bug-13384-phpdoc.php'], [
 			[
 				'Static property Bug13384Phpdoc\ShutdownHandlerPhpdocTypes::$registered (bool) is never assigned true so the property type can be changed to false.',
@@ -97,6 +102,7 @@ class TooWidePropertyTypeRuleTest extends RuleTestCase
 	public function testBug13384b(): void
 	{
 		$this->reportTooWideBool = true;
+		$this->reportNestedTooWideType = true;
 		$this->analyse([__DIR__ . '/data/bug-13384b.php'], []);
 	}
 
@@ -108,12 +114,14 @@ class TooWidePropertyTypeRuleTest extends RuleTestCase
 	public function testBugPR4318(): void
 	{
 		$this->reportTooWideBool = true;
+		$this->reportNestedTooWideType = true;
 		$this->analyse([__DIR__ . '/data/bug-pr-4318.php'], []);
 	}
 
 	public function testNestedTooWideType(): void
 	{
 		$this->reportTooWideBool = true;
+		$this->reportNestedTooWideType = true;
 		$this->analyse([__DIR__ . '/data/nested-too-wide-property-type.php'], [
 			[
 				'Type array<array{int, bool}> of property NestedTooWidePropertyType\Foo::$a can be narrowed to array<array{int, false}>.',
