@@ -5706,10 +5706,10 @@ final class NodeScopeResolver
 			$offsetValueType = $varType;
 			$offsetNativeValueType = $varNativeType;
 
-			$valueToWrite = $this->produceArrayDimFetchAssignValueToWrite($dimFetchStack, $offsetTypes, $offsetValueType, $valueToWrite, $scope);
+			[$valueToWrite, $additionalExpressions] = $this->produceArrayDimFetchAssignValueToWrite($dimFetchStack, $offsetTypes, $offsetValueType, $valueToWrite, $scope);
 
 			if (!$offsetValueType->equals($offsetNativeValueType) || !$valueToWrite->equals($nativeValueToWrite)) {
-				$nativeValueToWrite = $this->produceArrayDimFetchAssignValueToWrite($dimFetchStack, $offsetNativeTypes, $offsetNativeValueType, $nativeValueToWrite, $scope);
+				[$nativeValueToWrite, $additionalNativeExpressions] = $this->produceArrayDimFetchAssignValueToWrite($dimFetchStack, $offsetNativeTypes, $offsetNativeValueType, $nativeValueToWrite, $scope);
 			} else {
 				$rewritten = false;
 				foreach ($offsetTypes as $i => $offsetType) {
@@ -5728,7 +5728,7 @@ final class NodeScopeResolver
 						continue;
 					}
 
-					$nativeValueToWrite = $this->produceArrayDimFetchAssignValueToWrite($dimFetchStack, $offsetNativeTypes, $offsetNativeValueType, $nativeValueToWrite, $scope);
+					[$nativeValueToWrite] = $this->produceArrayDimFetchAssignValueToWrite($dimFetchStack, $offsetNativeTypes, $offsetNativeValueType, $nativeValueToWrite, $scope);
 					$rewritten = true;
 					break;
 				}
@@ -5779,6 +5779,16 @@ final class NodeScopeResolver
 						$scope = $scope->assignInitializedProperty($scope->getType($var->var), $var->name->toString());
 					}
 				}
+			}
+
+			foreach ($additionalExpressions as $k => $additionalExpression) {
+				[$expr, $type] = $additionalExpression;
+				$nativeType = $type;
+				if (isset($additionalNativeExpressions[$k])) {
+					[, $nativeType] = $additionalNativeExpressions[$k];
+				}
+
+				$scope = $scope->assignExpression($expr, $type, $nativeType);
 			}
 
 			if (!$varType->isArray()->yes() && !(new ObjectType(ArrayAccess::class))->isSuperTypeOf($varType)->no()) {
@@ -6134,9 +6144,13 @@ final class NodeScopeResolver
 	/**
 	 * @param list<ArrayDimFetch> $dimFetchStack
 	 * @param list<Type|null> $offsetTypes
+	 *
+	 * @return array{Type, list<array{Expr, Type}>}
 	 */
-	private function produceArrayDimFetchAssignValueToWrite(array $dimFetchStack, array $offsetTypes, Type $offsetValueType, Type $valueToWrite, Scope $scope): Type
+	private function produceArrayDimFetchAssignValueToWrite(array $dimFetchStack, array $offsetTypes, Type $offsetValueType, Type $valueToWrite, Scope $scope): array
 	{
+		$originalValueToWrite = $valueToWrite;
+
 		$offsetValueTypeStack = [$offsetValueType];
 		foreach (array_slice($offsetTypes, 0, -1) as $offsetType) {
 			if ($offsetType === null) {
@@ -6204,28 +6218,47 @@ final class NodeScopeResolver
 				continue;
 			}
 
-			if ($scope->hasExpressionType($arrayDimFetch)->yes()) { // keep list for $list[$index] assignments
+			if (!$arrayDimFetch->dim instanceof BinaryOp\Plus) {
+				continue;
+			}
+
+			if ( // keep list for $list[$index + 1] assignments
+				$arrayDimFetch->dim->right instanceof Variable
+				&& $arrayDimFetch->dim->left instanceof Node\Scalar\Int_
+				&& $arrayDimFetch->dim->left->value === 1
+				&& $scope->hasExpressionType(new ArrayDimFetch($arrayDimFetch->var, $arrayDimFetch->dim->right))->yes()
+			) {
 				$valueToWrite = TypeCombinator::intersect($valueToWrite, new AccessoryArrayListType());
-			} elseif ($arrayDimFetch->dim instanceof BinaryOp\Plus) {
-				if ( // keep list for $list[$index + 1] assignments
-					$arrayDimFetch->dim->right instanceof Variable
-					&& $arrayDimFetch->dim->left instanceof Node\Scalar\Int_
-					&& $arrayDimFetch->dim->left->value === 1
-					&& $scope->hasExpressionType(new ArrayDimFetch($arrayDimFetch->var, $arrayDimFetch->dim->right))->yes()
-				) {
-					$valueToWrite = TypeCombinator::intersect($valueToWrite, new AccessoryArrayListType());
-				} elseif ( // keep list for $list[1 + $index] assignments
-					$arrayDimFetch->dim->left instanceof Variable
-					&& $arrayDimFetch->dim->right instanceof Node\Scalar\Int_
-					&& $arrayDimFetch->dim->right->value === 1
-					&& $scope->hasExpressionType(new ArrayDimFetch($arrayDimFetch->var, $arrayDimFetch->dim->left))->yes()
-				) {
-					$valueToWrite = TypeCombinator::intersect($valueToWrite, new AccessoryArrayListType());
-				}
+			} elseif ( // keep list for $list[1 + $index] assignments
+				$arrayDimFetch->dim->left instanceof Variable
+				&& $arrayDimFetch->dim->right instanceof Node\Scalar\Int_
+				&& $arrayDimFetch->dim->right->value === 1
+				&& $scope->hasExpressionType(new ArrayDimFetch($arrayDimFetch->var, $arrayDimFetch->dim->left))->yes()
+			) {
+				$valueToWrite = TypeCombinator::intersect($valueToWrite, new AccessoryArrayListType());
 			}
 		}
 
-		return $valueToWrite;
+		$additionalExpressions = [];
+		$offsetValueType = $valueToWrite;
+		$lastDimKey = array_key_last($dimFetchStack);
+		foreach ($dimFetchStack as $key => $dimFetch) {
+			if ($dimFetch->dim === null) {
+				$additionalExpressions = [];
+				break;
+			}
+
+			if ($key === $lastDimKey) {
+				$offsetValueType = $originalValueToWrite;
+			} else {
+				$offsetType = $scope->getType($dimFetch->dim);
+				$offsetValueType = $offsetValueType->getOffsetValueType($offsetType);
+			}
+
+			$additionalExpressions[] = [$dimFetch, $offsetValueType];
+		}
+
+		return [$valueToWrite, $additionalExpressions];
 	}
 
 	private function unwrapAssign(Expr $expr): Expr
