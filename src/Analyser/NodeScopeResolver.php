@@ -173,7 +173,6 @@ use PHPStan\Type\Constant\ConstantArrayType;
 use PHPStan\Type\Constant\ConstantArrayTypeBuilder;
 use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\Constant\ConstantStringType;
-use PHPStan\Type\ErrorType;
 use PHPStan\Type\FileTypeMapper;
 use PHPStan\Type\GeneralizePrecision;
 use PHPStan\Type\Generic\TemplateTypeHelper;
@@ -6157,12 +6156,17 @@ final class NodeScopeResolver
 				$offsetValueType = new ConstantArrayType([], []);
 
 			} else {
-				$add = $offsetValueType->hasOffsetValueType($offsetType)->maybe();
-				$offsetValueType = $offsetValueType->getOffsetValueType($offsetType);
-				if ($offsetValueType instanceof ErrorType) {
+				$has = $offsetValueType->hasOffsetValueType($offsetType);
+				if ($has->yes()) {
+					$offsetValueType = $offsetValueType->getOffsetValueType($offsetType);
+				} elseif ($has->maybe()) {
+					if (!$scope->hasExpressionType($dimFetch)->yes()) {
+						$offsetValueType = TypeCombinator::union($offsetValueType->getOffsetValueType($offsetType), new ConstantArrayType([], []));
+					} else {
+						$offsetValueType = $offsetValueType->getOffsetValueType($offsetType);
+					}
+				} else {
 					$offsetValueType = new ConstantArrayType([], []);
-				} elseif ($add && !$scope->hasExpressionType($dimFetch)->yes()) {
-					$offsetValueType = TypeCombinator::union($offsetValueType, new ConstantArrayType([], []));
 				}
 			}
 
