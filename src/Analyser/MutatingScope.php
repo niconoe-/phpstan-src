@@ -168,6 +168,7 @@ use function str_starts_with;
 use function strlen;
 use function strtolower;
 use function substr;
+use function uksort;
 use function usort;
 use const PHP_INT_MAX;
 use const PHP_INT_MIN;
@@ -5296,19 +5297,37 @@ final class MutatingScope implements Scope
 		array $otherVariableTypeHolders,
 	): array
 	{
+		uksort($variableTypeHolders, static fn (string $exprA, string $exprB): int => strlen($exprA) <=> strlen($exprB));
+
+		$generalizedExpressions = [];
+		$newVariableTypeHolders = [];
 		foreach ($variableTypeHolders as $variableExprString => $variableTypeHolder) {
+			foreach ($generalizedExpressions as $generalizedExprString => $generalizedExpr) {
+				if (!$this->shouldInvalidateExpression($generalizedExprString, $generalizedExpr, $variableTypeHolder->getExpr())) {
+					continue;
+				}
+
+				continue 2;
+			}
 			if (!isset($otherVariableTypeHolders[$variableExprString])) {
+				$newVariableTypeHolders[$variableExprString] = $variableTypeHolder;
 				continue;
 			}
 
-			$variableTypeHolders[$variableExprString] = new ExpressionTypeHolder(
+			$generalizedType = $this->generalizeType($variableTypeHolder->getType(), $otherVariableTypeHolders[$variableExprString]->getType(), 0);
+			if (
+				!$generalizedType->equals($variableTypeHolder->getType())
+			) {
+				$generalizedExpressions[$variableExprString] = $variableTypeHolder->getExpr();
+			}
+			$newVariableTypeHolders[$variableExprString] = new ExpressionTypeHolder(
 				$variableTypeHolder->getExpr(),
-				$this->generalizeType($variableTypeHolder->getType(), $otherVariableTypeHolders[$variableExprString]->getType(), 0),
+				$generalizedType,
 				$variableTypeHolder->getCertainty(),
 			);
 		}
 
-		return $variableTypeHolders;
+		return $newVariableTypeHolders;
 	}
 
 	private function generalizeType(Type $a, Type $b, int $depth): Type
