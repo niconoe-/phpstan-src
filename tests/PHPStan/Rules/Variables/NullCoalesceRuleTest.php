@@ -347,4 +347,9 @@ class NullCoalesceRuleTest extends RuleTestCase
 		]);
 	}
 
+	public function testPr4372(): void
+	{
+		$this->analyse([__DIR__ . '/data/pr-4372-null-coalesce.php'], []);
+	}
+
 }

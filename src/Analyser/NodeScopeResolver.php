@@ -5659,12 +5659,12 @@ final class NodeScopeResolver
 				}
 
 				if ($dimExpr === null) {
-					$offsetTypes[] = null;
-					$offsetNativeTypes[] = null;
+					$offsetTypes[] = [null, $dimFetch];
+					$offsetNativeTypes[] = [null, $dimFetch];
 
 				} else {
-					$offsetTypes[] = $scope->getType($dimExpr);
-					$offsetNativeTypes[] = $scope->getNativeType($dimExpr);
+					$offsetTypes[] = [$scope->getType($dimExpr), $dimFetch];
+					$offsetNativeTypes[] = [$scope->getNativeType($dimExpr), $dimFetch];
 
 					if ($enterExpressionAssign) {
 						$scope->enterExpressionAssign($dimExpr);
@@ -5712,8 +5712,8 @@ final class NodeScopeResolver
 				[$nativeValueToWrite, $additionalNativeExpressions] = $this->produceArrayDimFetchAssignValueToWrite($dimFetchStack, $offsetNativeTypes, $offsetNativeValueType, $nativeValueToWrite, $scope);
 			} else {
 				$rewritten = false;
-				foreach ($offsetTypes as $i => $offsetType) {
-					$offsetNativeType = $offsetNativeTypes[$i];
+				foreach ($offsetTypes as $i => [$offsetType]) {
+					[$offsetNativeType] = $offsetNativeTypes[$i];
 
 					if ($offsetType === null) {
 						if ($offsetNativeType !== null) {
@@ -6046,8 +6046,8 @@ final class NodeScopeResolver
 			$offsetNativeTypes = [];
 			foreach (array_reverse($dimFetchStack) as $dimFetch) {
 				$dimExpr = $dimFetch->getDim();
-				$offsetTypes[] = $scope->getType($dimExpr);
-				$offsetNativeTypes[] = $scope->getNativeType($dimExpr);
+				$offsetTypes[] = [$scope->getType($dimExpr), $dimFetch];
+				$offsetNativeTypes[] = [$scope->getNativeType($dimExpr), $dimFetch];
 			}
 
 			$valueToWrite = $scope->getType($assignedExpr);
@@ -6059,21 +6059,21 @@ final class NodeScopeResolver
 			$offsetNativeValueType = $varNativeType;
 			$offsetValueTypeStack = [$offsetValueType];
 			$offsetValueNativeTypeStack = [$offsetNativeValueType];
-			foreach (array_slice($offsetTypes, 0, -1) as $offsetType) {
+			foreach (array_slice($offsetTypes, 0, -1) as [$offsetType]) {
 				$offsetValueType = $offsetValueType->getOffsetValueType($offsetType);
 				$offsetValueTypeStack[] = $offsetValueType;
 			}
-			foreach (array_slice($offsetNativeTypes, 0, -1) as $offsetNativeType) {
+			foreach (array_slice($offsetNativeTypes, 0, -1) as [$offsetNativeType]) {
 				$offsetNativeValueType = $offsetNativeValueType->getOffsetValueType($offsetNativeType);
 				$offsetValueNativeTypeStack[] = $offsetNativeValueType;
 			}
 
-			foreach (array_reverse($offsetTypes) as $offsetType) {
+			foreach (array_reverse($offsetTypes) as [$offsetType]) {
 				/** @var Type $offsetValueType */
 				$offsetValueType = array_pop($offsetValueTypeStack);
 				$valueToWrite = $offsetValueType->setExistingOffsetValueType($offsetType, $valueToWrite);
 			}
-			foreach (array_reverse($offsetNativeTypes) as $offsetNativeType) {
+			foreach (array_reverse($offsetNativeTypes) as [$offsetNativeType]) {
 				/** @var Type $offsetNativeValueType */
 				$offsetNativeValueType = array_pop($offsetValueNativeTypeStack);
 				$nativeValueToWrite = $offsetNativeValueType->setExistingOffsetValueType($offsetNativeType, $nativeValueToWrite);
@@ -6143,7 +6143,7 @@ final class NodeScopeResolver
 
 	/**
 	 * @param list<ArrayDimFetch> $dimFetchStack
-	 * @param list<Type|null> $offsetTypes
+	 * @param list<array{Type|null, ArrayDimFetch}> $offsetTypes
 	 *
 	 * @return array{Type, list<array{Expr, Type}>}
 	 */
@@ -6152,21 +6152,24 @@ final class NodeScopeResolver
 		$originalValueToWrite = $valueToWrite;
 
 		$offsetValueTypeStack = [$offsetValueType];
-		foreach (array_slice($offsetTypes, 0, -1) as $offsetType) {
+		foreach (array_slice($offsetTypes, 0, -1) as [$offsetType, $dimFetch]) {
 			if ($offsetType === null) {
 				$offsetValueType = new ConstantArrayType([], []);
 
 			} else {
+				$add = $offsetValueType->hasOffsetValueType($offsetType)->maybe();
 				$offsetValueType = $offsetValueType->getOffsetValueType($offsetType);
 				if ($offsetValueType instanceof ErrorType) {
 					$offsetValueType = new ConstantArrayType([], []);
+				} elseif ($add && !$scope->hasExpressionType($dimFetch)->yes()) {
+					$offsetValueType = TypeCombinator::union($offsetValueType, new ConstantArrayType([], []));
 				}
 			}
 
 			$offsetValueTypeStack[] = $offsetValueType;
 		}
 
-		foreach (array_reverse($offsetTypes) as $i => $offsetType) {
+		foreach (array_reverse($offsetTypes) as $i => [$offsetType]) {
 			/** @var Type $offsetValueType */
 			$offsetValueType = array_pop($offsetValueTypeStack);
 			if (

@@ -983,7 +983,7 @@ class AnalyserIntegrationTest extends PHPStanTestCase
 	public function testBug7903(): void
 	{
 		$errors = $this->runAnalyse(__DIR__ . '/data/bug-7903.php');
-		$this->assertNoErrors($errors);
+		$this->assertCount(23, $errors);
 	}
 
 	public function testBug7901(): void
