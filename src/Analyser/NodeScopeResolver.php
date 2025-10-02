@@ -6251,8 +6251,7 @@ final class NodeScopeResolver
 		$lastDimKey = array_key_last($dimFetchStack);
 		foreach ($dimFetchStack as $key => $dimFetch) {
 			if ($dimFetch->dim === null) {
-				$additionalExpressions = [];
-				break;
+				continue;
 			}
 
 			if ($key === $lastDimKey) {
