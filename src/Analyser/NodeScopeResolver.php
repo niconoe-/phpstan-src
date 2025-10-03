@@ -86,6 +86,7 @@ use PHPStan\Node\DoWhileLoopConditionNode;
 use PHPStan\Node\ExecutionEndNode;
 use PHPStan\Node\Expr\AlwaysRememberedExpr;
 use PHPStan\Node\Expr\ExistingArrayDimFetch;
+use PHPStan\Node\Expr\ForeachValueByRefExpr;
 use PHPStan\Node\Expr\GetIterableKeyTypeExpr;
 use PHPStan\Node\Expr\GetIterableValueTypeExpr;
 use PHPStan\Node\Expr\GetOffsetValueTypeExpr;
@@ -1207,6 +1208,14 @@ final class NodeScopeResolver
 			$originalScope = $scope;
 			$bodyScope = $scope;
 
+			if ($stmt->keyVar instanceof Variable) {
+				$nodeCallback(new VariableAssignNode($stmt->keyVar, new GetIterableKeyTypeExpr($stmt->expr)), $originalScope);
+			}
+
+			if ($stmt->valueVar instanceof Variable) {
+				$nodeCallback(new VariableAssignNode($stmt->valueVar, new GetIterableValueTypeExpr($stmt->expr)), $originalScope);
+			}
+
 			if ($context->isTopLevel()) {
 				$originalScope = $this->polluteScopeWithAlwaysIterableForeach ? $scope->filterByTruthyValue($arrayComparisonExpr) : $scope;
 				$bodyScope = $this->enterForeach($originalScope, $originalScope, $stmt, $nodeCallback);
@@ -1268,6 +1277,9 @@ final class NodeScopeResolver
 			}
 			if (!(new ObjectType(Traversable::class))->isSuperTypeOf($scope->getType($stmt->expr))->no()) {
 				$throwPoints[] = ThrowPoint::createImplicit($scope, $stmt->expr);
+			}
+			if ($stmt->byRef) {
+				$finalScope = $finalScope->assignExpression(new ForeachValueByRefExpr($stmt->valueVar), new MixedType(), new MixedType());
 			}
 
 			return new StatementResult(
@@ -1926,6 +1938,7 @@ final class NodeScopeResolver
 					$scope = $scope->invalidateExpression($var);
 				}
 
+				$scope = $scope->invalidateExpression(new ForeachValueByRefExpr($var));
 			}
 		} elseif ($stmt instanceof Node\Stmt\Use_) {
 			$hasYield = false;

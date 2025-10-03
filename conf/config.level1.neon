@@ -10,3 +10,11 @@ parameters:
 autowiredAttributeServices:
 	# registers rules with #[RegisteredRule] attribute
 	level: 1
+
+conditionalTags:
+	PHPStan\Rules\Variables\AssignToByRefExprFromForeachRule:
+		phpstan.rules.rule: %featureToggles.assignToByRefForeachExpr%
+
+services:
+	-
+		class: PHPStan\Rules\Variables\AssignToByRefExprFromForeachRule

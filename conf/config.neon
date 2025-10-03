@@ -37,6 +37,7 @@ parameters:
 		reportTooWideBool: false
 		rawMessageInBaseline: false
 		reportNestedTooWideType: false
+		assignToByRefForeachExpr: false
 	fileExtensions:
 		- php
 	checkAdvancedIsset: false

@@ -13,3 +13,4 @@ parameters:
 		reportTooWideBool: true
 		rawMessageInBaseline: true
 		reportNestedTooWideType: false
+		assignToByRefForeachExpr: true
