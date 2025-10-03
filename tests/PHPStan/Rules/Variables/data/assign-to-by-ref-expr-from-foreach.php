@@ -64,4 +64,14 @@ class Foo
 		}
 	}
 
+	public function doFoo4(): void
+	{
+		while (true) {
+			$array = [0, 1, 2, 3];
+			foreach ($array as &$item) {
+
+			}
+		}
+	}
+
 }

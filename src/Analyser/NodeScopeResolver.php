@@ -1278,7 +1278,7 @@ final class NodeScopeResolver
 			if (!(new ObjectType(Traversable::class))->isSuperTypeOf($scope->getType($stmt->expr))->no()) {
 				$throwPoints[] = ThrowPoint::createImplicit($scope, $stmt->expr);
 			}
-			if ($stmt->byRef) {
+			if ($context->isTopLevel() && $stmt->byRef) {
 				$finalScope = $finalScope->assignExpression(new ForeachValueByRefExpr($stmt->valueVar), new MixedType(), new MixedType());
 			}
 
