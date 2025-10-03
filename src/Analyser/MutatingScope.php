@@ -4250,7 +4250,7 @@ final class MutatingScope implements Scope
 		return $scope;
 	}
 
-	public function unsetExpression(Expr $expr): self
+	private function unsetExpression(Expr $expr): self
 	{
 		$scope = $this;
 		if ($expr instanceof Expr\ArrayDimFetch && $expr->dim !== null) {
