@@ -687,6 +687,34 @@ final class TypeSpecifier
 			if ($context->null()) {
 				$specifiedTypes = $this->specifyTypesInCondition($scope->exitFirstLevelStatements(), $expr->expr, $context)->setRootExpr($expr);
 
+				// infer $arr[$key] after $key = array_rand($arr)
+				if (
+					$expr->expr instanceof FuncCall
+					&& $expr->expr->name instanceof Name
+					&& in_array($expr->expr->name->toLowerString(), ['array_rand'], true)
+					&& count($expr->expr->getArgs()) >= 1
+				) {
+					$numArg = null;
+					$arrayArg = $expr->expr->getArgs()[0]->value;
+					if (count($expr->expr->getArgs()) > 1) {
+						$numArg = $expr->expr->getArgs()[1]->value;
+					}
+					$one = new ConstantIntegerType(1);
+					$arrayType = $scope->getType($arrayArg);
+
+					if (
+						$arrayType->isArray()->yes()
+						&& $arrayType->isIterableAtLeastOnce()->yes()
+						&& ($numArg === null || $one->isSuperTypeOf($scope->getType($numArg))->yes())
+					) {
+						$dimFetch = new ArrayDimFetch($arrayArg, $expr->var);
+
+						return $specifiedTypes->unionWith(
+							$this->create($dimFetch, $arrayType->getIterableValueType(), TypeSpecifierContext::createTrue(), $scope),
+						);
+					}
+				}
+
 				// infer $arr[$key] after $key = array_key_first/last($arr)
 				if (
 					$expr->expr instanceof FuncCall
