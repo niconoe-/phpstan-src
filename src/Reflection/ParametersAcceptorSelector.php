@@ -50,6 +50,7 @@ use function array_values;
 use function constant;
 use function count;
 use function defined;
+use function is_int;
 use function is_string;
 use function sprintf;
 use const ARRAY_FILTER_USE_BOTH;
@@ -126,33 +127,46 @@ final class ParametersAcceptorSelector
 
 			if (count($args) >= 3 && (bool) $args[0]->getAttribute(CurlSetOptArgVisitor::ATTRIBUTE_NAME)) {
 				$optType = $scope->getType($args[1]->value);
-				if ($optType instanceof ConstantIntegerType) {
-					$optValueType = self::getCurlOptValueType($optType->getValue());
 
-					if ($optValueType !== null) {
-						$acceptor = $parametersAcceptors[0];
-						$parameters = $acceptor->getParameters();
-
-						$parameters[2] = new NativeParameterReflection(
-							$parameters[2]->getName(),
-							$parameters[2]->isOptional(),
-							$optValueType,
-							$parameters[2]->passedByReference(),
-							$parameters[2]->isVariadic(),
-							$parameters[2]->getDefaultValue(),
-						);
-
-						$parametersAcceptors = [
-							new FunctionVariant(
-								$acceptor->getTemplateTypeMap(),
-								$acceptor->getResolvedTemplateTypeMap(),
-								array_values($parameters),
-								$acceptor->isVariadic(),
-								$acceptor->getReturnType(),
-								$acceptor instanceof ExtendedParametersAcceptor ? $acceptor->getCallSiteVarianceMap() : TemplateTypeVarianceMap::createEmpty(),
-							),
-						];
+				$valueTypes = [];
+				foreach ($optType->getConstantScalarValues() as $scalarValue) {
+					if (!is_int($scalarValue)) {
+						$valueTypes = [];
+						break;
 					}
+
+					$valueType = self::getCurlOptValueType($scalarValue);
+					if ($valueType === null) {
+						$valueTypes = [];
+						break;
+					}
+
+					$valueTypes[] = $valueType;
+				}
+
+				if (count($valueTypes) !== 0) {
+					$acceptor = $parametersAcceptors[0];
+					$parameters = $acceptor->getParameters();
+
+					$parameters[2] = new NativeParameterReflection(
+						$parameters[2]->getName(),
+						$parameters[2]->isOptional(),
+						TypeCombinator::union(...$valueTypes),
+						$parameters[2]->passedByReference(),
+						$parameters[2]->isVariadic(),
+						$parameters[2]->getDefaultValue(),
+					);
+
+					$parametersAcceptors = [
+						new FunctionVariant(
+							$acceptor->getTemplateTypeMap(),
+							$acceptor->getResolvedTemplateTypeMap(),
+							array_values($parameters),
+							$acceptor->isVariadic(),
+							$acceptor->getReturnType(),
+							$acceptor instanceof ExtendedParametersAcceptor ? $acceptor->getCallSiteVarianceMap() : TemplateTypeVarianceMap::createEmpty(),
+						),
+					];
 				}
 			}
 
