@@ -9,6 +9,7 @@ use PHPStan\Rules\Generics\GenericObjectTypeCheck;
 use PHPStan\Rules\Generics\TemplateTypeCheck;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 
 /**
  * @extends RuleTestCase<IncompatiblePropertyPhpDocTypeRule>
@@ -193,6 +194,7 @@ class IncompatiblePropertyPhpDocTypeRuleTest extends RuleTestCase
 		]);
 	}
 
+	#[RequiresPhp('>= 8.0')]
 	public function testBug11033(): void
 	{
 		$this->analyse([__DIR__ . '/data/bug-11033.php'], []);
