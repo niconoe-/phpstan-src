@@ -131,4 +131,11 @@ class TooWidePropertyTypeRuleTest extends RuleTestCase
 		]);
 	}
 
+	public function testBug13624(): void
+	{
+		$this->reportTooWideBool = true;
+		$this->reportNestedTooWideType = true;
+		$this->analyse([__DIR__ . '/data/bug-13624.php'], []);
+	}
+
 }

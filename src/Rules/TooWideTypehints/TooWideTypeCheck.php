@@ -62,6 +62,9 @@ final class TooWideTypeCheck
 		foreach ($propertyAssigns as $assign) {
 			$assignNode = $assign->getAssign();
 			$assignPropertyReflections = $this->propertyReflectionFinder->findPropertyReflectionsFromNode($assignNode->getPropertyFetch(), $assign->getScope());
+			if (count($assignPropertyReflections) === 0) {
+				return [];
+			}
 			foreach ($assignPropertyReflections as $assignPropertyReflection) {
 				if ($node->getName() !== $assignPropertyReflection->getName()) {
 					continue;
