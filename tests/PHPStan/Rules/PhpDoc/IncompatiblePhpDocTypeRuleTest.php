@@ -466,4 +466,19 @@ class IncompatiblePhpDocTypeRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/bug-13452.php'], []);
 	}
 
+	#[RequiresPhp('>= 8.0')]
+	public function testBug13652(): void
+	{
+		$this->analyse([__DIR__ . '/data/bug-13652.php'], [
+			[
+				'PHPDoc tag @return with type array{a: string, b: bool, c: int, d: float}[TKey] is not subtype of native type bool|int|string.',
+				28,
+			],
+			[
+				'PHPDoc tag @param for parameter $value with type array{a: string, b: bool, c: int, d: float}[TKey] is not subtype of native type bool|int|string.',
+				48,
+			],
+		]);
+	}
+
 }
