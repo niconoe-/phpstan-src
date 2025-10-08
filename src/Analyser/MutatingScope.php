@@ -778,13 +778,29 @@ final class MutatingScope implements Scope
 			return $this->getType($node->getVar())->unsetOffset($this->getType($node->getDim()));
 		}
 		if ($node instanceof SetOffsetValueTypeExpr) {
-			return $this->getType($node->getVar())->setOffsetValueType(
+			$varNode = $node->getVar();
+			$varType = $this->getType($varNode);
+			if ($varNode instanceof OriginalPropertyTypeExpr) {
+				$currentPropertyType = $this->getType($varNode->getPropertyFetch());
+				if ($varType instanceof UnionType) {
+					$varType = $varType->filterTypes(static fn (Type $innerType) => !$innerType->isSuperTypeOf($currentPropertyType)->no());
+				}
+			}
+			return $varType->setOffsetValueType(
 				$node->getDim() !== null ? $this->getType($node->getDim()) : null,
 				$this->getType($node->getValue()),
 			);
 		}
 		if ($node instanceof SetExistingOffsetValueTypeExpr) {
-			return $this->getType($node->getVar())->setExistingOffsetValueType(
+			$varNode = $node->getVar();
+			$varType = $this->getType($varNode);
+			if ($varNode instanceof OriginalPropertyTypeExpr) {
+				$currentPropertyType = $this->getType($varNode->getPropertyFetch());
+				if ($varType instanceof UnionType) {
+					$varType = $varType->filterTypes(static fn (Type $innerType) => !$innerType->isSuperTypeOf($currentPropertyType)->no());
+				}
+			}
+			return $varType->setExistingOffsetValueType(
 				$this->getType($node->getDim()),
 				$this->getType($node->getValue()),
 			);
