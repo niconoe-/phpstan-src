@@ -4876,10 +4876,7 @@ final class NodeScopeResolver
 			}
 		} elseif ($passedToType !== null && !$passedToType->isCallable()->no()) {
 			if ($passedToType instanceof UnionType) {
-				$passedToType = TypeCombinator::union(...array_filter(
-					$passedToType->getTypes(),
-					static fn (Type $type) => $type->isCallable()->yes(),
-				));
+				$passedToType = $passedToType->filterTypes(static fn (Type $innerType) => $innerType->isCallable()->yes());
 
 				if ($passedToType->isCallable()->no()) {
 					return null;
