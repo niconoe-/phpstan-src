@@ -112,6 +112,7 @@ class NodeScopeResolverTest extends TypeInferenceTestCase
 		yield __DIR__ . '/../Rules/Functions/data/varying-acceptor.php';
 		yield __DIR__ . '/../Rules/Methods/data/bug-4415.php';
 		yield __DIR__ . '/../Rules/Methods/data/bug-5372.php';
+		yield __DIR__ . '/../Rules/PhpDoc/data/bug-11033.php';
 		yield __DIR__ . '/../Rules/Arrays/data/bug-5372_2.php';
 		yield __DIR__ . '/../Rules/Methods/data/bug-5562.php';
 
