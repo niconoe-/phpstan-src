@@ -19,6 +19,7 @@ use function implode;
 use function in_array;
 use function is_dir;
 use function is_file;
+use function ksort;
 use function restore_error_handler;
 use function set_error_handler;
 use function sha1_file;
@@ -81,10 +82,15 @@ final class Configurator extends \Nette\Bootstrap\Configurator
 
 		$attributesPhp = __DIR__ . '/../../vendor/attributes.php';
 
+		$staticParameters = $this->staticParameters;
+		ksort($staticParameters['env']);
+		unset($staticParameters['env']['_']);
+		unset($staticParameters['env']['SHLVL']);
+
 		$className = $loader->load(
 			[$this, 'generateContainer'],
 			[
-				$this->staticParameters,
+				$staticParameters,
 				array_keys($this->dynamicParameters),
 				$this->configs,
 				PHP_VERSION_ID - PHP_RELEASE_VERSION,
