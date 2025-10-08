@@ -3,6 +3,7 @@
 namespace PHPStan\PhpDoc;
 
 use Override;
+use PHPStan\File\FileHelper;
 use PHPStan\Testing\PHPStanTestCase;
 use function sprintf;
 
@@ -49,7 +50,7 @@ class DefaultStubFilesProviderTest extends PHPStanTestCase
 	 */
 	private function createDefaultStubFilesProvider(array $stubFiles): DefaultStubFilesProvider
 	{
-		return new DefaultStubFilesProvider($this->getContainer(), $stubFiles, [$this->currentWorkingDirectory]);
+		return new DefaultStubFilesProvider($this->getContainer(), new FileHelper(__DIR__), $stubFiles, [$this->currentWorkingDirectory]);
 	}
 
 }

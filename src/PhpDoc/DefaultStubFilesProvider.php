@@ -5,11 +5,11 @@ namespace PHPStan\PhpDoc;
 use PHPStan\DependencyInjection\AutowiredParameter;
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\DependencyInjection\Container;
+use PHPStan\File\FileHelper;
 use PHPStan\Internal\ComposerHelper;
 use function array_filter;
 use function array_values;
 use function str_contains;
-use function strtr;
 
 #[AutowiredService(as: StubFilesProvider::class)]
 final class DefaultStubFilesProvider implements StubFilesProvider
@@ -27,6 +27,7 @@ final class DefaultStubFilesProvider implements StubFilesProvider
 	 */
 	public function __construct(
 		private Container $container,
+		private FileHelper $fileHelper,
 		#[AutowiredParameter]
 		private array $stubFiles,
 		#[AutowiredParameter]
@@ -45,7 +46,7 @@ final class DefaultStubFilesProvider implements StubFilesProvider
 		$extensions = $this->container->getServicesByTag(StubFilesExtension::EXTENSION_TAG);
 		foreach ($extensions as $extension) {
 			foreach ($extension->getFiles() as $extensionFile) {
-				$files[] = $extensionFile;
+				$files[] = $this->fileHelper->normalizePath($extensionFile);
 			}
 		}
 
@@ -66,10 +67,10 @@ final class DefaultStubFilesProvider implements StubFilesProvider
 			}
 
 			$vendorDir = ComposerHelper::getVendorDirFromComposerConfig($composerAutoloaderProjectPath, $composerConfig);
-			$vendorDir = strtr($vendorDir, '\\', '/');
+			$vendorDir = $this->fileHelper->normalizePath($vendorDir);
 			$filteredStubFiles = array_filter(
 				$filteredStubFiles,
-				static fn (string $file): bool => !str_contains(strtr($file, '\\', '/'), $vendorDir),
+				static fn (string $file): bool => !str_contains($file, $vendorDir),
 			);
 		}
 
