@@ -6,10 +6,8 @@ use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Node\InClassMethodNode;
 use PHPStan\Reflection\ClassReflection;
-use PHPStan\Reflection\ExtendedMethodReflection;
 use PHPStan\Reflection\ExtendedParameterReflection;
 use PHPStan\Reflection\ExtendedParametersAcceptor;
-use PHPStan\Reflection\Php\PhpClassReflectionExtension;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleError;
@@ -40,7 +38,7 @@ final class MethodSignatureRule implements Rule
 {
 
 	public function __construct(
-		private PhpClassReflectionExtension $phpClassReflectionExtension,
+		private ParentMethodHelper $parentMethodHelper,
 		private bool $reportMaybes,
 		private bool $reportStatic,
 	)
@@ -67,7 +65,7 @@ final class MethodSignatureRule implements Rule
 		}
 		$errors = [];
 		$declaringClass = $method->getDeclaringClass();
-		foreach ($this->collectParentMethods($methodName, $method->getDeclaringClass()) as [$parentMethod, $parentMethodDeclaringClass]) {
+		foreach ($this->parentMethodHelper->collectParentMethods($methodName, $method->getDeclaringClass()) as [$parentMethod, $parentMethodDeclaringClass]) {
 			$parentVariants = $parentMethod->getVariants();
 			if (count($parentVariants) !== 1) {
 				continue;
@@ -139,57 +137,6 @@ final class MethodSignatureRule implements Rule
 		}
 
 		return $errors;
-	}
-
-	/**
-	 * @return list<array{ExtendedMethodReflection, ClassReflection}>
-	 */
-	private function collectParentMethods(string $methodName, ClassReflection $class): array
-	{
-		$parentMethods = [];
-
-		$parentClass = $class->getParentClass();
-		if ($parentClass !== null && $parentClass->hasNativeMethod($methodName)) {
-			$parentMethod = $parentClass->getNativeMethod($methodName);
-			if (!$parentMethod->isPrivate()) {
-				$parentMethods[] = [$parentMethod, $parentMethod->getDeclaringClass()];
-			}
-		}
-
-		foreach ($class->getInterfaces() as $interface) {
-			if (!$interface->hasNativeMethod($methodName)) {
-				continue;
-			}
-
-			$method = $interface->getNativeMethod($methodName);
-			$parentMethods[] = [$method, $method->getDeclaringClass()];
-		}
-
-		foreach ($class->getTraits(true) as $trait) {
-			$nativeTraitReflection = $trait->getNativeReflection();
-			if (!$nativeTraitReflection->hasMethod($methodName)) {
-				continue;
-			}
-
-			$methodReflection = $nativeTraitReflection->getMethod($methodName);
-			$isAbstract = $methodReflection->isAbstract();
-			if (!$isAbstract) {
-				continue;
-			}
-
-			$declaringTrait = $trait->getNativeMethod($methodName)->getDeclaringClass();
-			$parentMethods[] = [
-				$this->phpClassReflectionExtension->createUserlandMethodReflection(
-					$trait,
-					$class,
-					$methodReflection,
-					$declaringTrait->getName(),
-				),
-				$declaringTrait,
-			];
-		}
-
-		return $parentMethods;
 	}
 
 	/**

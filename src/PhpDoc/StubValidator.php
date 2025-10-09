@@ -75,6 +75,7 @@ use PHPStan\Rules\Methods\MissingMethodParameterTypehintRule;
 use PHPStan\Rules\Methods\MissingMethodReturnTypehintRule;
 use PHPStan\Rules\Methods\MissingMethodSelfOutTypeRule;
 use PHPStan\Rules\Methods\OverridingMethodRule;
+use PHPStan\Rules\Methods\ParentMethodHelper;
 use PHPStan\Rules\MissingTypehintCheck;
 use PHPStan\Rules\PhpDoc\AssertRuleHelper;
 use PHPStan\Rules\PhpDoc\ConditionalReturnTypeRuleHelper;
@@ -207,6 +208,7 @@ final class StubValidator
 		$relativePathHelper = $container->getService('simpleRelativePathHelper');
 		$assertRuleHelper = $container->getByType(AssertRuleHelper::class);
 		$conditionalReturnTypeRuleHelper = $container->getByType(ConditionalReturnTypeRuleHelper::class);
+		$parentMethodHelper = $container->getByType(ParentMethodHelper::class);
 
 		$rules = [
 			// level 0
@@ -219,7 +221,7 @@ final class StubValidator
 			new ExistingClassesInPropertiesRule($reflectionProvider, $classNameCheck, $unresolvableTypeHelper, $phpVersion, true, false, $discoveringSymbolsTip),
 			new OverridingMethodRule(
 				$phpVersion,
-				new MethodSignatureRule($phpClassReflectionExtension, true, true),
+				new MethodSignatureRule($parentMethodHelper, true, true),
 				true,
 				new MethodParameterComparisonHelper($phpVersion),
 				new MethodVisibilityComparisonHelper(),
