@@ -23,7 +23,8 @@ parametersSchema:
 		checkedExceptionClasses: listOf(string()),
 		check: structure([
 			missingCheckedExceptionInThrows: bool(),
-			tooWideThrowType: bool()
+			tooWideThrowType: bool(),
+			throwTypeCovariance: bool()
 		])
 	])
 	featureToggles: structure([

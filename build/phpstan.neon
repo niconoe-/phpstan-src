@@ -70,6 +70,7 @@ parameters:
 		check:
 			missingCheckedExceptionInThrows: true
 			tooWideThrowType: true
+			throwTypeCovariance: true
 	ignoreErrors:
 		- '#^Dynamic call to static method PHPUnit\\Framework\\\S+\(\)\.$#'
 		- '#should be contravariant with parameter \$node \(PhpParser\\Node\) of method PHPStan\\Rules\\Rule<PhpParser\\Node>::processNode\(\)$#'
