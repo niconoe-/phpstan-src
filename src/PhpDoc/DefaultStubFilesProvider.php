@@ -67,7 +67,7 @@ final class DefaultStubFilesProvider implements StubFilesProvider
 		$filteredStubFiles = $this->getStubFiles();
 		$filteredStubFiles = array_filter(
 			$filteredStubFiles,
-			static fn (string $file): bool => !str_starts_with($file, $phpstanStubsDirectory)
+			static fn (string $file): bool => !str_starts_with($file, $phpstanStubsDirectory),
 		);
 		foreach ($this->composerAutoloaderProjectPaths as $composerAutoloaderProjectPath) {
 			$composerConfig = ComposerHelper::getComposerConfig($composerAutoloaderProjectPath);
