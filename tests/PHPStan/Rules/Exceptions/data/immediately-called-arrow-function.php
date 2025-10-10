@@ -2,7 +2,7 @@
 
 namespace ImmediatelyCalledArrowFunction;
 
-class ImmediatelyCalledCallback
+final class ImmediatelyCalledCallback
 {
 
 	/**

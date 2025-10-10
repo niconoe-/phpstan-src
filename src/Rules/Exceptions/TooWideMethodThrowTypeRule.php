@@ -7,7 +7,6 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Node\MethodReturnStatementsNode;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
-use PHPStan\Type\FileTypeMapper;
 use function sprintf;
 
 /**
@@ -16,7 +15,10 @@ use function sprintf;
 final class TooWideMethodThrowTypeRule implements Rule
 {
 
-	public function __construct(private FileTypeMapper $fileTypeMapper, private TooWideThrowTypeCheck $check)
+	public function __construct(
+		private TooWideThrowTypeCheck $check,
+		private bool $checkProtectedAndPublicMethods,
+	)
 	{
 	}
 
@@ -27,34 +29,32 @@ final class TooWideMethodThrowTypeRule implements Rule
 
 	public function processNode(Node $node, Scope $scope): array
 	{
-		$docComment = $node->getDocComment();
-		if ($docComment === null) {
-			return [];
-		}
-
 		$statementResult = $node->getStatementResult();
-		$methodReflection = $node->getMethodReflection();
-		$classReflection = $node->getClassReflection();
-		$resolvedPhpDoc = $this->fileTypeMapper->getResolvedPhpDoc(
-			$scope->getFile(),
-			$classReflection->getName(),
-			$scope->isInTrait() ? $scope->getTraitReflection()->getName() : null,
-			$methodReflection->getName(),
-			$docComment->getText(),
-		);
+		$method = $node->getMethodReflection();
+		$isFirstDeclaration = $method->getPrototype()->getDeclaringClass() === $method->getDeclaringClass();
+		if (!$method->isPrivate()) {
+			if (!$method->getDeclaringClass()->isFinal() && !$method->isFinal()->yes()) {
+				if (!$this->checkProtectedAndPublicMethods) {
+					return [];
+				}
 
-		if ($resolvedPhpDoc->getThrowsTag() === null) {
-			return [];
+				if ($isFirstDeclaration) {
+					return [];
+				}
+			}
 		}
 
-		$throwType = $resolvedPhpDoc->getThrowsTag()->getType();
+		$throwType = $method->getThrowType();
+		if ($throwType === null) {
+			return [];
+		}
 
 		$errors = [];
 		foreach ($this->check->check($throwType, $statementResult->getThrowPoints()) as $throwClass) {
 			$errors[] = RuleErrorBuilder::message(sprintf(
 				'Method %s::%s() has %s in PHPDoc @throws tag but it\'s not thrown.',
-				$methodReflection->getDeclaringClass()->getDisplayName(),
-				$methodReflection->getName(),
+				$method->getDeclaringClass()->getDisplayName(),
+				$method->getName(),
 				$throwClass,
 			))
 				->identifier('throws.unusedType')

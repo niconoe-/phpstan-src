@@ -65,6 +65,7 @@ parameters:
 	checkMissingTypehints: false
 	checkTooWideParameterOutInProtectedAndPublicMethods: false
 	checkTooWideReturnTypesInProtectedAndPublicMethods: false
+	checkTooWideThrowTypesInProtectedAndPublicMethods: false
 	checkUninitializedProperties: false
 	checkDynamicProperties: false
 	strictRulesInstalled: false

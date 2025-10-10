@@ -4,7 +4,6 @@ namespace PHPStan\Rules\Exceptions;
 
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
-use PHPStan\Type\FileTypeMapper;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresPhp;
 
@@ -16,9 +15,11 @@ class TooWideMethodThrowTypeRuleTest extends RuleTestCase
 
 	private bool $implicitThrows = true;
 
+	private bool $checkProtectedAndPublicMethods = true;
+
 	protected function getRule(): Rule
 	{
-		return new TooWideMethodThrowTypeRule(self::getContainer()->getByType(FileTypeMapper::class), new TooWideThrowTypeCheck($this->implicitThrows));
+		return new TooWideMethodThrowTypeRule(new TooWideThrowTypeCheck($this->implicitThrows), $this->checkProtectedAndPublicMethods);
 	}
 
 	public function testRule(): void
@@ -45,8 +46,8 @@ class TooWideMethodThrowTypeRuleTest extends RuleTestCase
 				66,
 			],
 			[
-				'Method TooWideThrowsMethod\ParentClass::doFoo() has LogicException in PHPDoc @throws tag but it\'s not thrown.',
-				77,
+				'Method TooWideThrowsMethod\ChildClass::doFoo() has LogicException in PHPDoc @throws tag but it\'s not thrown.',
+				87,
 			],
 			[
 				'Method TooWideThrowsMethod\ImmediatelyCalledCallback::doFoo2() has InvalidArgumentException in PHPDoc @throws tag but it\'s not thrown.',
@@ -101,6 +102,52 @@ class TooWideMethodThrowTypeRuleTest extends RuleTestCase
 	{
 		$this->implicitThrows = $implicitThrows;
 		$this->analyse([__DIR__ . '/data/too-wide-throws-explicit.php'], $errors);
+	}
+
+	public static function dataAlwaysCheckFinal(): iterable
+	{
+		yield [
+			false,
+			[
+				[
+					'Method TooWideThrowTypeAlwaysCheckFinal\Foo::doFoo() has RuntimeException in PHPDoc @throws tag but it\'s not thrown.',
+					14,
+				],
+				[
+					'Method TooWideThrowTypeAlwaysCheckFinal\Baz::doBar() has RuntimeException in PHPDoc @throws tag but it\'s not thrown.',
+					46,
+				],
+			],
+		];
+
+		yield [
+			true,
+			[
+				[
+					'Method TooWideThrowTypeAlwaysCheckFinal\Foo::doFoo() has RuntimeException in PHPDoc @throws tag but it\'s not thrown.',
+					14,
+				],
+				[
+					'Method TooWideThrowTypeAlwaysCheckFinal\Baz::doFoo() has RuntimeException in PHPDoc @throws tag but it\'s not thrown.',
+					38,
+				],
+				[
+					'Method TooWideThrowTypeAlwaysCheckFinal\Baz::doBar() has RuntimeException in PHPDoc @throws tag but it\'s not thrown.',
+					46,
+				],
+			],
+		];
+	}
+
+	/**
+	 * @param list<array{0: string, 1: int, 2?: string|null}> $expectedErrors
+	 */
+	#[DataProvider('dataAlwaysCheckFinal')]
+	public function testAlwaysCheckFinal(bool $checkProtectedAndPublicMethods, array $expectedErrors): void
+	{
+		$this->implicitThrows = true;
+		$this->checkProtectedAndPublicMethods = $checkProtectedAndPublicMethods;
+		$this->analyse([__DIR__ . '/data/too-wide-throw-type-always-check-final.php'], $expectedErrors);
 	}
 
 }

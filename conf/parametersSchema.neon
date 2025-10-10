@@ -68,6 +68,7 @@ parametersSchema:
 	checkMissingTypehints: bool()
 	checkTooWideParameterOutInProtectedAndPublicMethods: bool()
 	checkTooWideReturnTypesInProtectedAndPublicMethods: bool()
+	checkTooWideThrowTypesInProtectedAndPublicMethods: bool()
 	checkUninitializedProperties: bool()
 	checkDynamicProperties: bool()
 	strictRulesInstalled: bool()

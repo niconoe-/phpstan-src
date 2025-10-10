@@ -4,7 +4,7 @@ namespace TooWideThrowsMethod;
 
 use DomainException;
 
-class Foo
+final class Foo
 {
 
 	/** @throws \InvalidArgumentException */
@@ -81,7 +81,7 @@ class ParentClass
 
 }
 
-class ChildClass extends ParentClass
+final class ChildClass extends ParentClass
 {
 
 	public function doFoo(): void
@@ -91,7 +91,7 @@ class ChildClass extends ParentClass
 
 }
 
-class ThrowsReflectionException
+final class ThrowsReflectionException
 {
 
 	/** @throws \ReflectionException */
@@ -102,7 +102,7 @@ class ThrowsReflectionException
 
 }
 
-class SkipThrowable
+final class SkipThrowable
 {
 
 	/**
@@ -148,7 +148,7 @@ class SkipThrowable
 
 }
 
-class ImmediatelyCalledCallback
+final class ImmediatelyCalledCallback
 {
 
 	/**

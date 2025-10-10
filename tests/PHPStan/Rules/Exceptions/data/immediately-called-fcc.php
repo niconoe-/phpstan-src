@@ -2,7 +2,7 @@
 
 namespace ImmediatelyCalledFcc;
 
-class Foo
+final class Foo
 {
 
 	/**

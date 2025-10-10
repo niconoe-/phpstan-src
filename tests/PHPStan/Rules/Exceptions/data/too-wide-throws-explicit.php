@@ -2,7 +2,7 @@
 
 namespace TooWideThrowsExplicit;
 
-class Foo
+final class Foo
 {
 
 	/**

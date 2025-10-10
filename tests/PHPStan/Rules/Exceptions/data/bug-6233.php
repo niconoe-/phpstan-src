@@ -2,7 +2,7 @@
 
 namespace Bug6233;
 
-class TestClass {
+final class TestClass {
 	/**
 	 * @throws \Exception
 	 **/
@@ -11,7 +11,7 @@ class TestClass {
 	}
 }
 
-class TestClass2 {
+final class TestClass2 {
 	/**
 	 * @throws \Exception
 	 **/
@@ -20,7 +20,7 @@ class TestClass2 {
 	}
 }
 
-class Container {
+final class Container {
 	/**
 	 * @throws \Exception
 	 **/
