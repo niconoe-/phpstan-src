@@ -295,6 +295,10 @@ class TooWideMethodReturnTypehintRuleTest extends RuleTestCase
 				28,
 				'Offset 0 (int) does not accept type int|null.',
 			],
+			[
+				'Return type array<string, bool|int|string> of method NestedTooWideMethodReturnType\WebhookTest::dataTest() can be narrowed to array<string, int|string|true>.',
+				115,
+			],
 		]);
 	}
 

@@ -1143,28 +1143,35 @@ class UnionType implements CompoundType
 
 	public function traverseSimultaneously(Type $right, callable $cb): Type
 	{
-		$types = [];
+		$rightTypes = TypeUtils::flattenTypes($right);
+		$newTypes = [];
 		$changed = false;
+		foreach ($this->types as $innerType) {
+			$candidates = [];
+			foreach ($rightTypes as $i => $rightType) {
+				if (!$innerType->isSuperTypeOf($rightType)->yes()) {
+					continue;
+				}
 
-		if (!$right instanceof self) {
-			return $this;
-		}
+				$candidates[] = $rightType;
+				unset($rightTypes[$i]);
+			}
 
-		if (count($this->getTypes()) !== count($right->getTypes())) {
-			return $this;
-		}
+			if (count($candidates) === 0) {
+				$newTypes[] = $innerType;
+				continue;
+			}
 
-		foreach ($this->getSortedTypes() as $i => $leftType) {
-			$rightType = $right->getSortedTypes()[$i];
-			$newType = $cb($leftType, $rightType);
-			if ($leftType !== $newType) {
+			$newType = $cb($innerType, TypeCombinator::union(...$candidates));
+			if ($innerType !== $newType) {
 				$changed = true;
 			}
-			$types[] = $newType;
+
+			$newTypes[] = $newType;
 		}
 
 		if ($changed) {
-			return TypeCombinator::union(...$types);
+			return TypeCombinator::union(...$newTypes);
 		}
 
 		return $this;

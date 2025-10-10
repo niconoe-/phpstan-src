@@ -105,3 +105,20 @@ class ChildClassTrue extends ParentClassBool
 	}
 
 }
+
+final class WebhookTest
+{
+
+	/**
+	 * @return array<string, int|string|bool>
+	 */
+	public function dataTest(int $remoteId, string $hookUrl): array
+	{
+		return [
+			'id' => $remoteId,
+			'url' => $hookUrl,
+			'push_events' => true,
+		];
+	}
+
+}
