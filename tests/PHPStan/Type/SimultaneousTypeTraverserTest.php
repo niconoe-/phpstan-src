@@ -2,6 +2,7 @@
 
 namespace PHPStan\Type;
 
+use PHPStan\PhpDoc\TypeStringResolver;
 use PHPStan\Testing\PHPStanTestCase;
 use PHPStan\Type\Accessory\AccessoryNonEmptyStringType;
 use PHPStan\Type\Constant\ConstantArrayType;
@@ -85,6 +86,49 @@ class SimultaneousTypeTraverserTest extends PHPStanTestCase
 			return $right;
 		};
 		$actualType = SimultaneousTypeTraverser::map($left, $right, $cb);
+		$this->assertSame($expectedTypeDescription, $actualType->describe(VerbosityLevel::precise()));
+	}
+
+	public static function dataDescriptionBased(): iterable
+	{
+		$chooseScalarSubtype = static function (Type $left, Type $right, callable $traverse): Type {
+			if (!$left->isScalar()->yes()) {
+				return $traverse($left, $right);
+			}
+			if (!$right->isScalar()->yes()) {
+				return $traverse($left, $right);
+			}
+			if (!$left->isSuperTypeOf($right)->yes()) {
+				return $traverse($left, $right);
+			}
+
+			return $right;
+		};
+		yield [
+			'object|int',
+			'1|2|3',
+			$chooseScalarSubtype,
+			'1|2|3|object',
+		];
+
+		yield [
+			'Foo|non-empty-string',
+			"'aaa'",
+			$chooseScalarSubtype,
+			"'aaa'|Foo",
+		];
+	}
+
+	/**
+	 * @param callable(Type $left, Type $right, callable(Type, Type): Type $traverse): Type $callback
+	 */
+	#[DataProvider('dataDescriptionBased')]
+	public function testDescriptionBased(string $left, string $right, callable $callback, string $expectedTypeDescription): void
+	{
+		$typeStringResolver = self::getContainer()->getByType(TypeStringResolver::class);
+		$leftType = $typeStringResolver->resolve($left);
+		$rightType = $typeStringResolver->resolve($right);
+		$actualType = SimultaneousTypeTraverser::map($leftType, $rightType, $callback);
 		$this->assertSame($expectedTypeDescription, $actualType->describe(VerbosityLevel::precise()));
 	}
 
