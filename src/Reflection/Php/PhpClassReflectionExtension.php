@@ -430,7 +430,8 @@ final class PhpClassReflectionExtension
 			&& $this->annotationsPropertiesClassReflectionExtension->hasProperty($classReflection, $propertyName)
 			&& (
 				$nativeProperty->isPublic()
-				|| ($scope->isInClass() && $scope->getClassReflection()->getName() !== $declaringClassReflection->getName())
+				|| !$scope->isInClass()
+				|| $scope->getClassReflection()->getName() !== $declaringClassReflection->getName()
 			)
 		) {
 			$hierarchyDistances = $classReflection->getClassHierarchyDistances();
@@ -451,7 +452,7 @@ final class PhpClassReflectionExtension
 			if (
 				$hierarchyDistances[$annotationProperty->getDeclaringClass()->getName()] <= $hierarchyDistances[$distanceDeclaringClass]
 			) {
-				if ($nativeType->isSuperTypeOf($annotationProperty->getReadableType())->yes()) {
+				if ($nativeType->isSuperTypeOf($annotationProperty->getReadableType())->yes() || !$scope->canReadProperty($nativeProperty)) {
 					$nativeType = new MixedType();
 				}
 

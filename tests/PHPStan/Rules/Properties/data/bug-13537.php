@@ -62,3 +62,14 @@ function (): void {
 
 	assertType(stdClass::class, $bar->attributes);
 };
+
+class Test
+{
+	public function doFoo(): void
+	{
+		$bar = new Bar2();
+		echo $bar->attributes->foo;
+
+		assertType(stdClass::class, $bar->attributes);
+	}
+}
