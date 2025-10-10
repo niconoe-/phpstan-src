@@ -285,6 +285,14 @@ jobs:
           - script: |
               cd e2e/bug-10483
               ../../bin/phpstan
+          - script: |
+              cd e2e/stub-files-errors
+              OUTPUT=$(../bashunit -a exit_code "1" "../../bin/phpstan")
+              echo "$OUTPUT"
+              ../bashunit -a contains 'Method StubFiles\Foo::doFoo() has no return type specified.' "$OUTPUT"
+              OUTPUT=$(../bashunit -a exit_code "1" "../../bin/phpstan")
+              echo "$OUTPUT"
+              ../bashunit -a contains 'Method StubFiles\Foo::doFoo() has no return type specified.' "$OUTPUT"
 
     steps:
       - name: "Checkout"

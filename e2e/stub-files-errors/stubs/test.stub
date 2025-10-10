@@ -1,0 +1,13 @@
+<?php
+
+namespace StubFiles;
+
+class Foo
+{
+
+	public function doFoo()
+	{
+
+	}
+
+}

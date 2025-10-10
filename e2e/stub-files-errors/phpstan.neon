@@ -1,0 +1,6 @@
+parameters:
+	stubFiles:
+		- stubs/test.stub
+	paths:
+		- src
+	level: 8
