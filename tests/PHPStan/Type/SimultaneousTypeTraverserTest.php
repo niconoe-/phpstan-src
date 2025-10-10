@@ -92,10 +92,10 @@ class SimultaneousTypeTraverserTest extends PHPStanTestCase
 	public static function dataDescriptionBased(): iterable
 	{
 		$chooseScalarSubtype = static function (Type $left, Type $right, callable $traverse): Type {
-			if (!$left->isScalar()->yes()) {
+			if (!$left->isScalar()->yes() || $left instanceof BenevolentUnionType) {
 				return $traverse($left, $right);
 			}
-			if (!$right->isScalar()->yes()) {
+			if (!$right->isScalar()->yes() || $right instanceof BenevolentUnionType) {
 				return $traverse($left, $right);
 			}
 			if (!$left->isSuperTypeOf($right)->yes()) {
