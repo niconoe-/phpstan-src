@@ -43,6 +43,9 @@ class DefaultStubFilesProviderTest extends PHPStanTestCase
 		$projectStubFiles = $defaultStubFilesProvider->getProjectStubFiles();
 		$this->assertContains('/projectStub.stub', $projectStubFiles);
 		$this->assertNotContains($thirdPartyStubFile, $projectStubFiles);
+
+		$fileHelper = new FileHelper(__DIR__);
+		$this->assertNotContains($fileHelper->normalizePath($thirdPartyStubFile), $projectStubFiles);
 	}
 
 	/**
