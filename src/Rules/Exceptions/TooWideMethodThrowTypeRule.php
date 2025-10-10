@@ -2,12 +2,20 @@
 
 namespace PHPStan\Rules\Exceptions;
 
+use PhpParser\Comment\Doc;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Node\MethodReturnStatementsNode;
+use PHPStan\Reflection\ClassReflection;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\FileTypeMapper;
+use PHPStan\Type\TypeUtils;
+use PHPStan\Type\VerbosityLevel;
+use function array_diff;
+use function array_map;
+use function count;
+use function implode;
 use function sprintf;
 
 /**
@@ -53,44 +61,60 @@ final class TooWideMethodThrowTypeRule implements Rule
 		}
 
 		$unusedThrowClasses = $this->check->check($throwType, $statementResult->getThrowPoints());
-		if (!$this->tooWideImplicitThrows) {
-			$docComment = $node->getDocComment();
-			if ($docComment === null) {
-				return [];
-			}
-
-			$classReflection = $node->getClassReflection();
-			$resolvedPhpDoc = $this->fileTypeMapper->getResolvedPhpDoc(
-				$scope->getFile(),
-				$classReflection->getName(),
-				$scope->isInTrait() ? $scope->getTraitReflection()->getName() : null,
-				$method->getName(),
-				$docComment->getText(),
-			);
-
-			if ($resolvedPhpDoc->getThrowsTag() === null) {
-				return [];
-			}
-
-			$explicitThrowType = $resolvedPhpDoc->getThrowsTag()->getType();
-			if ($explicitThrowType->equals($throwType)) {
-				return [];
-			}
+		if (count($unusedThrowClasses) === 0) {
+			return [];
 		}
+
+		$isThrowTypeExplicit = $this->isThrowTypeExplicit(
+			$node->getDocComment(),
+			$scope,
+			$node->getClassReflection(),
+			$method->getName(),
+		);
+
+		if (!$isThrowTypeExplicit && !$this->tooWideImplicitThrows) {
+			return [];
+		}
+
+		$throwClasses = array_map(static fn ($type) => $type->describe(VerbosityLevel::typeOnly()), TypeUtils::flattenTypes($throwType));
+		$usedClasses = array_diff($throwClasses, $unusedThrowClasses);
 
 		$errors = [];
 		foreach ($unusedThrowClasses as $throwClass) {
-			$errors[] = RuleErrorBuilder::message(sprintf(
+			$builder = RuleErrorBuilder::message(sprintf(
 				'Method %s::%s() has %s in PHPDoc @throws tag but it\'s not thrown.',
 				$method->getDeclaringClass()->getDisplayName(),
 				$method->getName(),
 				$throwClass,
-			))
-				->identifier('throws.unusedType')
-				->build();
+			))->identifier('throws.unusedType');
+
+			if (!$isThrowTypeExplicit) {
+				$builder->tip(sprintf(
+					'You can narrow the thrown type with PHPDoc tag @throws %s.',
+					count($usedClasses) === 0 ? 'void' : implode('|', $usedClasses),
+				));
+			}
+			$errors[] = $builder->build();
 		}
 
 		return $errors;
+	}
+
+	private function isThrowTypeExplicit(?Doc $docComment, Scope $scope, ClassReflection $classReflection, string $methodName): bool
+	{
+		if ($docComment === null) {
+			return false;
+		}
+
+		$resolvedPhpDoc = $this->fileTypeMapper->getResolvedPhpDoc(
+			$scope->getFile(),
+			$classReflection->getName(),
+			$scope->isInTrait() ? $scope->getTraitReflection()->getName() : null,
+			$methodName,
+			$docComment->getText(),
+		);
+
+		return $resolvedPhpDoc->getThrowsTag() !== null;
 	}
 
 }

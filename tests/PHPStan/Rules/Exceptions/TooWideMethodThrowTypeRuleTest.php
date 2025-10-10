@@ -56,6 +56,7 @@ class TooWideMethodThrowTypeRuleTest extends RuleTestCase
 			[
 				'Method TooWideThrowsMethod\ChildClass::doFoo() has LogicException in PHPDoc @throws tag but it\'s not thrown.',
 				87,
+				'You can narrow the thrown type with PHPDoc tag @throws void.',
 			],
 			[
 				'Method TooWideThrowsMethod\ImmediatelyCalledCallback::doFoo2() has InvalidArgumentException in PHPDoc @throws tag but it\'s not thrown.',
@@ -138,6 +139,7 @@ class TooWideMethodThrowTypeRuleTest extends RuleTestCase
 				[
 					'Method TooWideThrowTypeAlwaysCheckFinal\Baz::doFoo() has RuntimeException in PHPDoc @throws tag but it\'s not thrown.',
 					38,
+					'You can narrow the thrown type with PHPDoc tag @throws LogicException.',
 				],
 				[
 					'Method TooWideThrowTypeAlwaysCheckFinal\Baz::doBar() has RuntimeException in PHPDoc @throws tag but it\'s not thrown.',
@@ -171,6 +173,7 @@ class TooWideMethodThrowTypeRuleTest extends RuleTestCase
 				[
 					'Method TooWideImplicitThrows\Bar::doFoo() has LogicException in PHPDoc @throws tag but it\'s not thrown.',
 					23,
+					'You can narrow the thrown type with PHPDoc tag @throws void.',
 				],
 			],
 		];
