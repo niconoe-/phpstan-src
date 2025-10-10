@@ -4,6 +4,7 @@ namespace PHPStan\Rules\Exceptions;
 
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
+use PHPStan\Type\FileTypeMapper;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresPhp;
 
@@ -17,9 +18,16 @@ class TooWideMethodThrowTypeRuleTest extends RuleTestCase
 
 	private bool $checkProtectedAndPublicMethods = true;
 
+	private bool $tooWideImplicitThrows = true;
+
 	protected function getRule(): Rule
 	{
-		return new TooWideMethodThrowTypeRule(new TooWideThrowTypeCheck($this->implicitThrows), $this->checkProtectedAndPublicMethods);
+		return new TooWideMethodThrowTypeRule(
+			self::getContainer()->getByType(FileTypeMapper::class),
+			new TooWideThrowTypeCheck($this->implicitThrows),
+			$this->checkProtectedAndPublicMethods,
+			$this->tooWideImplicitThrows,
+		);
 	}
 
 	public function testRule(): void
@@ -148,6 +156,34 @@ class TooWideMethodThrowTypeRuleTest extends RuleTestCase
 		$this->implicitThrows = true;
 		$this->checkProtectedAndPublicMethods = $checkProtectedAndPublicMethods;
 		$this->analyse([__DIR__ . '/data/too-wide-throw-type-always-check-final.php'], $expectedErrors);
+	}
+
+	public static function dataTooWideImplicitThrows(): iterable
+	{
+		yield [
+			false,
+			[],
+		];
+
+		yield [
+			true,
+			[
+				[
+					'Method TooWideImplicitThrows\Bar::doFoo() has LogicException in PHPDoc @throws tag but it\'s not thrown.',
+					23,
+				],
+			],
+		];
+	}
+
+	/**
+	 * @param list<array{0: string, 1: int, 2?: string|null}> $expectedErrors
+	 */
+	#[DataProvider('dataTooWideImplicitThrows')]
+	public function testTooWideImplicitThrows(bool $tooWideImplicitThrows, array $expectedErrors): void
+	{
+		$this->tooWideImplicitThrows = $tooWideImplicitThrows;
+		$this->analyse([__DIR__ . '/data/too-wide-implicit-throws.php'], $expectedErrors);
 	}
 
 }

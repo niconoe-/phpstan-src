@@ -7,6 +7,7 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Node\MethodReturnStatementsNode;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
+use PHPStan\Type\FileTypeMapper;
 use function sprintf;
 
 /**
@@ -16,8 +17,10 @@ final class TooWideMethodThrowTypeRule implements Rule
 {
 
 	public function __construct(
+		private FileTypeMapper $fileTypeMapper,
 		private TooWideThrowTypeCheck $check,
 		private bool $checkProtectedAndPublicMethods,
+		private bool $tooWideImplicitThrows,
 	)
 	{
 	}
@@ -49,8 +52,34 @@ final class TooWideMethodThrowTypeRule implements Rule
 			return [];
 		}
 
+		$unusedThrowClasses = $this->check->check($throwType, $statementResult->getThrowPoints());
+		if (!$this->tooWideImplicitThrows) {
+			$docComment = $node->getDocComment();
+			if ($docComment === null) {
+				return [];
+			}
+
+			$classReflection = $node->getClassReflection();
+			$resolvedPhpDoc = $this->fileTypeMapper->getResolvedPhpDoc(
+				$scope->getFile(),
+				$classReflection->getName(),
+				$scope->isInTrait() ? $scope->getTraitReflection()->getName() : null,
+				$method->getName(),
+				$docComment->getText(),
+			);
+
+			if ($resolvedPhpDoc->getThrowsTag() === null) {
+				return [];
+			}
+
+			$explicitThrowType = $resolvedPhpDoc->getThrowsTag()->getType();
+			if ($explicitThrowType->equals($throwType)) {
+				return [];
+			}
+		}
+
 		$errors = [];
-		foreach ($this->check->check($throwType, $statementResult->getThrowPoints()) as $throwClass) {
+		foreach ($unusedThrowClasses as $throwClass) {
 			$errors[] = RuleErrorBuilder::message(sprintf(
 				'Method %s::%s() has %s in PHPDoc @throws tag but it\'s not thrown.',
 				$method->getDeclaringClass()->getDisplayName(),

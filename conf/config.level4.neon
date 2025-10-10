@@ -24,6 +24,7 @@ services:
 		class: PHPStan\Rules\Exceptions\TooWideMethodThrowTypeRule
 		arguments:
 			checkProtectedAndPublicMethods: %checkTooWideThrowTypesInProtectedAndPublicMethods%
+			tooWideImplicitThrows: %featureToggles.tooWideImplicitThrows%
 
 	-
 		class: PHPStan\Rules\Exceptions\TooWidePropertyHookThrowTypeRule

@@ -40,6 +40,7 @@ parameters:
 		reportNestedTooWideType: false
 		assignToByRefForeachExpr: false
 		curlSetOptArrayTypes: false
+		tooWideImplicitThrows: false
 	fileExtensions:
 		- php
 	checkAdvancedIsset: false

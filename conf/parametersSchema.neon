@@ -43,6 +43,7 @@ parametersSchema:
 		reportNestedTooWideType: bool()
 		assignToByRefForeachExpr: bool()
 		curlSetOptArrayTypes: bool()
+		tooWideImplicitThrows: bool()
 	])
 	fileExtensions: listOf(string())
 	checkAdvancedIsset: bool()
