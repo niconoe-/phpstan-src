@@ -25,8 +25,10 @@ class DefaultStubFilesProviderTest extends PHPStanTestCase
 		$thirdPartyStubFile = sprintf('%s/vendor/thirdpartyStub.stub', $this->currentWorkingDirectory);
 		$defaultStubFilesProvider = $this->createDefaultStubFilesProvider(['/projectStub.stub', $thirdPartyStubFile]);
 		$stubFiles = $defaultStubFilesProvider->getStubFiles();
-		$this->assertContains('/projectStub.stub', $stubFiles);
-		$this->assertContains($thirdPartyStubFile, $stubFiles);
+
+		$fileHelper = new FileHelper(__DIR__);
+		$this->assertContains($fileHelper->normalizePath('/projectStub.stub'), $stubFiles);
+		$this->assertContains($fileHelper->normalizePath($thirdPartyStubFile), $stubFiles);
 	}
 
 	public function testGetProjectStubFiles(): void
@@ -35,11 +37,12 @@ class DefaultStubFilesProviderTest extends PHPStanTestCase
 		$firstPartyStubFile = dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'stubs' . DIRECTORY_SEPARATOR . 'spl.stub';
 		$defaultStubFilesProvider = $this->createDefaultStubFilesProvider(['/projectStub.stub', $thirdPartyStubFile, $firstPartyStubFile]);
 		$projectStubFiles = $defaultStubFilesProvider->getProjectStubFiles();
-		$this->assertContains('/projectStub.stub', $projectStubFiles);
-		$this->assertNotContains($thirdPartyStubFile, $projectStubFiles);
-		$this->assertNotContains($firstPartyStubFile, $projectStubFiles);
 
 		$fileHelper = new FileHelper(__DIR__);
+		$this->assertContains($fileHelper->normalizePath('/projectStub.stub'), $projectStubFiles);
+		$this->assertNotContains($thirdPartyStubFile, $projectStubFiles);
+		$this->assertNotContains($fileHelper->normalizePath($thirdPartyStubFile), $projectStubFiles);
+		$this->assertNotContains($firstPartyStubFile, $projectStubFiles);
 		$this->assertNotContains($fileHelper->normalizePath($firstPartyStubFile), $projectStubFiles);
 	}
 
@@ -48,10 +51,10 @@ class DefaultStubFilesProviderTest extends PHPStanTestCase
 		$thirdPartyStubFile = sprintf('%s\\vendor\\thirdpartyStub.stub', $this->currentWorkingDirectory);
 		$defaultStubFilesProvider = $this->createDefaultStubFilesProvider(['/projectStub.stub', $thirdPartyStubFile]);
 		$projectStubFiles = $defaultStubFilesProvider->getProjectStubFiles();
-		$this->assertContains('/projectStub.stub', $projectStubFiles);
-		$this->assertNotContains($thirdPartyStubFile, $projectStubFiles);
 
 		$fileHelper = new FileHelper(__DIR__);
+		$this->assertContains($fileHelper->normalizePath('/projectStub.stub'), $projectStubFiles);
+		$this->assertNotContains($thirdPartyStubFile, $projectStubFiles);
 		$this->assertNotContains($fileHelper->normalizePath($thirdPartyStubFile), $projectStubFiles);
 	}
 
