@@ -8,7 +8,6 @@ use PHPStan\Node\PropertyHookReturnStatementsNode;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\ShouldNotHappenException;
-use PHPStan\Type\FileTypeMapper;
 use function sprintf;
 use function ucfirst;
 
@@ -18,7 +17,10 @@ use function ucfirst;
 final class TooWidePropertyHookThrowTypeRule implements Rule
 {
 
-	public function __construct(private FileTypeMapper $fileTypeMapper, private TooWideThrowTypeCheck $check)
+	public function __construct(
+		private TooWideThrowTypeCheck $check,
+		private bool $checkProtectedAndPublicMethods,
+	)
 	{
 	}
 
@@ -29,31 +31,28 @@ final class TooWidePropertyHookThrowTypeRule implements Rule
 
 	public function processNode(Node $node, Scope $scope): array
 	{
-		$docComment = $node->getDocComment();
-		if ($docComment === null) {
-			return [];
-		}
-
 		$statementResult = $node->getStatementResult();
 		$hookReflection = $node->getHookReflection();
 		if ($hookReflection->getPropertyHookName() === null) {
 			throw new ShouldNotHappenException();
 		}
 
-		$classReflection = $node->getClassReflection();
-		$resolvedPhpDoc = $this->fileTypeMapper->getResolvedPhpDoc(
-			$scope->getFile(),
-			$classReflection->getName(),
-			$scope->isInTrait() ? $scope->getTraitReflection()->getName() : null,
-			$hookReflection->getName(),
-			$docComment->getText(),
-		);
+		$propertyReflection = $node->getPropertyReflection();
 
-		if ($resolvedPhpDoc->getThrowsTag() === null) {
+		$throwType = $hookReflection->getThrowType();
+		if ($throwType === null) {
 			return [];
 		}
 
-		$throwType = $resolvedPhpDoc->getThrowsTag()->getType();
+		if (
+			!$propertyReflection->isPrivate()
+			&& !$propertyReflection->getDeclaringClass()->isFinal()
+			&& !$propertyReflection->isFinal()->yes()
+			&& !$hookReflection->isFinal()->yes()
+			&& !$this->checkProtectedAndPublicMethods
+		) {
+			return [];
+		}
 
 		$errors = [];
 		foreach ($this->check->check($throwType, $statementResult->getThrowPoints()) as $throwClass) {

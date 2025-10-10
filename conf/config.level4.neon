@@ -27,3 +27,5 @@ services:
 
 	-
 		class: PHPStan\Rules\Exceptions\TooWidePropertyHookThrowTypeRule
+		arguments:
+			checkProtectedAndPublicMethods: %checkTooWideThrowTypesInProtectedAndPublicMethods%

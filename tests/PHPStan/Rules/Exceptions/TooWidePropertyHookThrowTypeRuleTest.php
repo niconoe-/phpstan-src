@@ -4,7 +4,7 @@ namespace PHPStan\Rules\Exceptions;
 
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
-use PHPStan\Type\FileTypeMapper;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresPhp;
 
 /**
@@ -13,9 +13,11 @@ use PHPUnit\Framework\Attributes\RequiresPhp;
 class TooWidePropertyHookThrowTypeRuleTest extends RuleTestCase
 {
 
+	private bool $checkProtectedAndPublicMethods = true;
+
 	protected function getRule(): Rule
 	{
-		return new TooWidePropertyHookThrowTypeRule(self::getContainer()->getByType(FileTypeMapper::class), new TooWideThrowTypeCheck(true));
+		return new TooWidePropertyHookThrowTypeRule(new TooWideThrowTypeCheck(true), $this->checkProtectedAndPublicMethods);
 	}
 
 	#[RequiresPhp('>= 8.4')]
@@ -47,6 +49,72 @@ class TooWidePropertyHookThrowTypeRuleTest extends RuleTestCase
 				83,
 			],
 		]);
+	}
+
+	public static function dataAlwaysCheckFinal(): iterable
+	{
+		yield [
+			false,
+			[
+				[
+					'Get hook for property TooWideThrowsPropertyHookAlwaysCheckFinal\Foo::$foo has RuntimeException in PHPDoc @throws tag but it\'s not thrown.',
+					13,
+				],
+				[
+					'Get hook for property TooWideThrowsPropertyHookAlwaysCheckFinal\Foo::$baz2 has RuntimeException in PHPDoc @throws tag but it\'s not thrown.',
+					34,
+				],
+				[
+					'Get hook for property TooWideThrowsPropertyHookAlwaysCheckFinal\Foo::$baz3 has RuntimeException in PHPDoc @throws tag but it\'s not thrown.',
+					41,
+				],
+				[
+					'Get hook for property TooWideThrowsPropertyHookAlwaysCheckFinal\FinalFoo::$baz has RuntimeException in PHPDoc @throws tag but it\'s not thrown.',
+					53,
+				],
+			],
+		];
+
+		yield [
+			true,
+			[
+				[
+					'Get hook for property TooWideThrowsPropertyHookAlwaysCheckFinal\Foo::$foo has RuntimeException in PHPDoc @throws tag but it\'s not thrown.',
+					13,
+				],
+				[
+					'Get hook for property TooWideThrowsPropertyHookAlwaysCheckFinal\Foo::$bar has RuntimeException in PHPDoc @throws tag but it\'s not thrown.',
+					20,
+				],
+				[
+					'Get hook for property TooWideThrowsPropertyHookAlwaysCheckFinal\Foo::$baz has RuntimeException in PHPDoc @throws tag but it\'s not thrown.',
+					27,
+				],
+				[
+					'Get hook for property TooWideThrowsPropertyHookAlwaysCheckFinal\Foo::$baz2 has RuntimeException in PHPDoc @throws tag but it\'s not thrown.',
+					34,
+				],
+				[
+					'Get hook for property TooWideThrowsPropertyHookAlwaysCheckFinal\Foo::$baz3 has RuntimeException in PHPDoc @throws tag but it\'s not thrown.',
+					41,
+				],
+				[
+					'Get hook for property TooWideThrowsPropertyHookAlwaysCheckFinal\FinalFoo::$baz has RuntimeException in PHPDoc @throws tag but it\'s not thrown.',
+					53,
+				],
+			],
+		];
+	}
+
+	/**
+	 * @param list<array{0: string, 1: int, 2?: string|null}> $expectedErrors
+	 */
+	#[DataProvider('dataAlwaysCheckFinal')]
+	#[RequiresPhp('>= 8.4')]
+	public function testAlwaysCheckFinal(bool $checkProtectedAndPublicMethods, array $expectedErrors): void
+	{
+		$this->checkProtectedAndPublicMethods = $checkProtectedAndPublicMethods;
+		$this->analyse([__DIR__ . '/data/too-wide-throw-type-always-check-final-property-hooks.php'], $expectedErrors);
 	}
 
 }
