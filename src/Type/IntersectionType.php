@@ -1260,28 +1260,36 @@ class IntersectionType implements CompoundType
 
 	public function traverseSimultaneously(Type $right, callable $cb): Type
 	{
-		$types = [];
-		$changed = false;
+		if ($this->isArray()->yes() && $right->isArray()->yes()) {
+			$changed = false;
+			$newTypes = [];
 
-		if (!$right instanceof self) {
-			return $this;
-		}
+			foreach ($this->types as $innerType) {
+				$newKeyType = $cb($innerType->getIterableKeyType(), $right->getIterableKeyType());
+				$newValueType = $cb($innerType->getIterableValueType(), $right->getIterableValueType());
+				if ($newKeyType === $innerType->getIterableKeyType() && $newValueType === $innerType->getIterableValueType()) {
+					$newTypes[] = $innerType;
+					continue;
+				}
 
-		if (count($this->getTypes()) !== count($right->getTypes())) {
-			return $this;
-		}
-
-		foreach ($this->getSortedTypes() as $i => $leftType) {
-			$rightType = $right->getSortedTypes()[$i];
-			$newType = $cb($leftType, $rightType);
-			if ($leftType !== $newType) {
 				$changed = true;
-			}
-			$types[] = $newType;
-		}
+				$newTypes[] = TypeTraverser::map($innerType, static function (Type $type, callable $traverse) use ($innerType, $newKeyType, $newValueType): Type {
+					if ($type === $innerType->getIterableKeyType()) {
+						return $newKeyType;
+					}
+					if ($type === $innerType->getIterableValueType()) {
+						return $newValueType;
+					}
 
-		if ($changed) {
-			return TypeCombinator::intersect(...$types);
+					return $traverse($type);
+				});
+			}
+
+			if (!$changed) {
+				return $this;
+			}
+
+			return TypeCombinator::intersect(...$newTypes);
 		}
 
 		return $this;
