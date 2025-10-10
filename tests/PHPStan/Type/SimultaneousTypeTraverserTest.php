@@ -57,7 +57,7 @@ class SimultaneousTypeTraverserTest extends PHPStanTestCase
 				new IntegerType(),
 				new FloatType(),
 			]),
-			'(int|string)',
+			'(int|non-empty-string)',
 		];
 
 		yield [
@@ -104,6 +104,14 @@ class SimultaneousTypeTraverserTest extends PHPStanTestCase
 
 			return $right;
 		};
+
+		yield [
+			'__benevolent<object|int>',
+			'1|2|3',
+			$chooseScalarSubtype,
+			'(1|2|3|object)',
+		];
+
 		yield [
 			'object|int',
 			'1|2|3',
