@@ -5,6 +5,7 @@ namespace PHPStan\ChangelogGenerator;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
+use Github\Api\Repo;
 use Github\Api\Search;
 use Github\AuthMethod;
 use Github\Client;
@@ -53,6 +54,9 @@ use function sprintf;
 
 			/** @var Search $searchApi */
 			$searchApi = $gitHubClient->api('search');
+
+			/** @var Repo $repoApi */
+			$repoApi = $gitHubClient->api('repo');
 
 			$command = ['git', 'log', sprintf('%s..%s', $input->getArgument('fromCommit'), $input->getArgument('toCommit'))];
 			$excludeBranch = $input->getOption('exclude-branch');
@@ -110,9 +114,15 @@ use function sprintf;
 			}
 
 			foreach ($commits as $commit) {
-				$pullRequests = $searchApi->issues(sprintf('repo:phpstan/phpstan-src %s is:pull-request', $commit['hash']));
-				$issues = $searchApi->issues(sprintf('repo:phpstan/phpstan %s is:issue', $commit['hash']), 'created');
-				$items = array_merge($pullRequests['items'], $issues['items']);
+				$pullRequests = $repoApi->commits()->pulls('phpstan', 'phpstan-src', $commit['hash']);
+				$items = $searchApi->issues(sprintf('repo:phpstan/phpstan %s is:issue', $commit['hash']), 'created')['items'];
+				if (count($pullRequests) > 0) {
+					$items[] = [
+						'pull_request' => true,
+						'number' => $pullRequests[0]['number'],
+						'user' => $pullRequests[0]['user'],
+					];
+				}
 				$parenthesis = 'https://github.com/phpstan/phpstan-src/commit/' . $commit['hash'];
 				$thanks = null;
 				$issuesToReference = [];
