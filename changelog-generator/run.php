@@ -118,9 +118,6 @@ use function sprintf;
 				$issuesToReference = [];
 				foreach ($items as $responseItem) {
 					if (isset($responseItem['pull_request'])) {
-						if ($responseItem['number'] === 13191) {
-							continue;
-						}
 						$parenthesis = sprintf('[#%d](%s)', $responseItem['number'], 'https://github.com/phpstan/phpstan-src/pull/' . $responseItem['number']);
 
 						if ($responseItem['user']['login'] !== 'ondrejmirtes') {
