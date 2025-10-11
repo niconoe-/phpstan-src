@@ -122,7 +122,10 @@ use function sprintf;
 							continue;
 						}
 						$parenthesis = sprintf('[#%d](%s)', $responseItem['number'], 'https://github.com/phpstan/phpstan-src/pull/' . $responseItem['number']);
-						$thanks = $responseItem['user']['login'];
+
+						if ($responseItem['user']['login'] !== 'ondrejmirtes') {
+							$thanks = $responseItem['user']['login'];
+						}
 					} else {
 						$issuesToReference[] = sprintf('#%d', $responseItem['number']);
 					}
