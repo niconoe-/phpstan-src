@@ -22,7 +22,8 @@ final class CompositeRule implements Rule
 	private DirectRegistry $registry;
 
 	/**
-	 * @param array<Rule<Node>> $rules
+	 * @template T of Node
+	 * @param array<Rule<T>> $rules
 	 *
 	 * @api
 	 */
