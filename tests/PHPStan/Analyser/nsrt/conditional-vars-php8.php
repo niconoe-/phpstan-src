@@ -1,8 +1,8 @@
-<?php // lint < 8.0
+<?php // lint >= 8.0
 
 declare(strict_types = 1);
 
-namespace ConditionalVars;
+namespace ConditionalVarsPhp8;
 
 use function PHPStan\Testing\assertType;
 
@@ -15,7 +15,7 @@ class HelloWorld
 			assertType('non-empty-array', $innerHits);
 			$x = array_key_exists('nearest_premise', $innerHits)
 				? assertType("non-empty-array&hasOffset('nearest_premise')", $innerHits)
-				: assertType('non-empty-array', $innerHits);
+				: assertType("non-empty-array<mixed~'nearest_premise', mixed>", $innerHits);
 
 			assertType('non-empty-array', $innerHits);
 		}
@@ -30,7 +30,7 @@ class HelloWorld
 			if (array_key_exists('nearest_premise', $innerHits)) {
 				assertType("non-empty-array&hasOffset('nearest_premise')", $innerHits);
 			} else {
-				assertType('non-empty-array', $innerHits);
+				assertType("non-empty-array<mixed~'nearest_premise', mixed>", $innerHits);
 			}
 
 			assertType('non-empty-array', $innerHits);

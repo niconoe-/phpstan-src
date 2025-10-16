@@ -1,6 +1,6 @@
-<?php // lint < 8.0
+<?php // lint >= 8.0
 
-namespace Bug2001;
+namespace Bug2001Php8;
 
 use function PHPStan\Testing\assertType;
 
@@ -16,7 +16,7 @@ class HelloWorld
 			throw new \RuntimeException('Absolute URLs are prohibited for the redirectTo parameter.');
 		}
 
-		assertType('array{scheme?: string, port?: int<0, 65535>, user?: string, pass?: string, path?: string, query?: string, fragment?: string}|false', $parsedUrl);
+		assertType('array{scheme?: string, port?: int<0, 65535>, user?: string, pass?: string, path?: string, query?: string, fragment?: string}', $parsedUrl);
 
 		$redirectUrl = $parsedUrl['path'];
 
@@ -30,7 +30,7 @@ class HelloWorld
 			$redirectUrl .= '#' . $parsedUrl['query'];
 		}
 
-		assertType('array{scheme?: string, port?: int<0, 65535>, user?: string, pass?: string, path?: string, query?: string, fragment?: string}|false', $parsedUrl);
+		assertType('array{scheme?: string, port?: int<0, 65535>, user?: string, pass?: string, path?: string, query?: string, fragment?: string}', $parsedUrl);
 
 		return $redirectUrl;
 	}

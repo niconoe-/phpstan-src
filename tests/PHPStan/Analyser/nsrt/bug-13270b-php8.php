@@ -1,8 +1,8 @@
-<?php // lint < 8.0
+<?php // lint >= 8.0
 
 declare(strict_types=1);
 
-namespace Bug13270b;
+namespace Bug13270bPhp8;
 
 use function PHPStan\Testing\assertType;
 
@@ -19,11 +19,11 @@ class Test
 			if (!array_key_exists('priceWithVat', $data['price'])) {
 				$data['price']['priceWithVat'] = null;
 			}
-			assertType("mixed", $data['price']);
+			assertType("non-empty-array&hasOffsetValue('priceWithVat', mixed)", $data['price']);
 			if (!array_key_exists('priceWithoutVat', $data['price'])) {
 				$data['price']['priceWithoutVat'] = null;
 			}
-			assertType('mixed', $data['price']);
+			assertType("non-empty-array&hasOffsetValue('priceWithoutVat', mixed)&hasOffsetValue('priceWithVat', mixed)", $data['price']);
 		}
 		return $data;
 	}
