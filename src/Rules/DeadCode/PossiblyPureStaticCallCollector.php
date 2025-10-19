@@ -26,7 +26,7 @@ final class PossiblyPureStaticCallCollector implements Collector
 
 	public function processNode(Node $node, Scope $scope)
 	{
-		if (!$node->expr instanceof Node\Expr\StaticCall) {
+		if (!$node->expr instanceof Node\Expr\StaticCall || $node->expr->isFirstClassCallable()) {
 			return null;
 		}
 		if (!$node->expr->name instanceof Node\Identifier) {

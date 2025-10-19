@@ -17,7 +17,7 @@ final class ImplodeArgVisitor extends NodeVisitorAbstract
 	#[Override]
 	public function enterNode(Node $node): ?Node
 	{
-		if ($node instanceof Node\Expr\FuncCall && $node->name instanceof Node\Name) {
+		if ($node instanceof Node\Expr\FuncCall && $node->name instanceof Node\Name && !$node->isFirstClassCallable()) {
 			$functionName = $node->name->toLowerString();
 			if (in_array($functionName, ['implode', 'join'], true)) {
 				$args = $node->getRawArgs();

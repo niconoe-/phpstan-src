@@ -16,7 +16,7 @@ final class ImmediatelyInvokedClosureVisitor extends NodeVisitorAbstract
 	#[Override]
 	public function enterNode(Node $node): ?Node
 	{
-		if ($node instanceof Node\Expr\FuncCall && $node->name instanceof Node\Expr\Closure) {
+		if ($node instanceof Node\Expr\FuncCall && $node->name instanceof Node\Expr\Closure && !$node->isFirstClassCallable()) {
 			$node->name->setAttribute(self::ATTRIBUTE_NAME, true);
 		}
 

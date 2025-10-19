@@ -17,10 +17,10 @@ final class ArrayFindArgVisitor extends NodeVisitorAbstract
 	#[Override]
 	public function enterNode(Node $node): ?Node
 	{
-		if ($node instanceof Node\Expr\FuncCall && $node->name instanceof Node\Name) {
+		if ($node instanceof Node\Expr\FuncCall && $node->name instanceof Node\Name && !$node->isFirstClassCallable()) {
 			$functionName = $node->name->toLowerString();
 			if (in_array($functionName, ['array_all', 'array_any', 'array_find', 'array_find_key'], true)) {
-				$args = $node->getRawArgs();
+				$args = $node->getArgs();
 				if (isset($args[0])) {
 					$args[0]->setAttribute(self::ATTRIBUTE_NAME, true);
 				}

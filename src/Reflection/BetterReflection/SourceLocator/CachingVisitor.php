@@ -85,7 +85,7 @@ final class CachingVisitor extends NodeVisitorAbstract
 			return NodeVisitor::DONT_TRAVERSE_CHILDREN;
 		}
 
-		if ($node instanceof Node\Expr\FuncCall) {
+		if ($node instanceof Node\Expr\FuncCall && !$node->isFirstClassCallable()) {
 			try {
 				ConstantNodeChecker::assertValidDefineFunctionCall($node);
 			} catch (InvalidConstantNode) {

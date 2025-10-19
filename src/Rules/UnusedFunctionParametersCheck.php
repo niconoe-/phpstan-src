@@ -73,7 +73,7 @@ final class UnusedFunctionParametersCheck
 	{
 		$variableNames = [];
 		if ($node instanceof Node) {
-			if ($node instanceof Node\Expr\FuncCall && $node->name instanceof Node\Name) {
+			if ($node instanceof Node\Expr\FuncCall && $node->name instanceof Node\Name && !$node->isFirstClassCallable()) {
 				$functionName = $this->reflectionProvider->resolveFunctionName($node->name, $scope);
 				if (in_array($functionName, ['func_get_args', 'get_defined_vars'], true)) {
 					return $scope->getDefinedVariables();
@@ -87,6 +87,7 @@ final class UnusedFunctionParametersCheck
 			}
 			if (
 				$node instanceof Node\Expr\FuncCall
+				&& !$node->isFirstClassCallable()
 				&& $node->name instanceof Node\Name
 				&& (string) $node->name === 'compact'
 			) {

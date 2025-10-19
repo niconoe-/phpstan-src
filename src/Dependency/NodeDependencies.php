@@ -22,6 +22,14 @@ final class NodeDependencies
 	}
 
 	/**
+	 * @return array<int, ClassReflection|FunctionReflection>
+	 */
+	public function getReflections(): array
+	{
+		return $this->reflections;
+	}
+
+	/**
 	 * @param array<string, true> $analysedFiles
 	 * @return string[]
 	 */

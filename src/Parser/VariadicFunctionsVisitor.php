@@ -57,6 +57,7 @@ final class VariadicFunctionsVisitor extends NodeVisitorAbstract
 		if (
 			$this->inFunction !== null
 			&& $node instanceof Node\Expr\FuncCall
+			&& !$node->isFirstClassCallable()
 			&& $node->name instanceof Name
 			&& in_array((string) $node->name, ParametersAcceptor::VARIADIC_FUNCTIONS, true)
 			&& !array_key_exists($this->inFunction, $this->variadicFunctions)

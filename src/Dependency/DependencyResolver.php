@@ -14,10 +14,14 @@ use PHPStan\Broker\FunctionNotFoundException;
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\File\FileHelper;
 use PHPStan\Node\ClassPropertyNode;
+use PHPStan\Node\FunctionCallableNode;
 use PHPStan\Node\InClassMethodNode;
 use PHPStan\Node\InClassNode;
 use PHPStan\Node\InFunctionNode;
 use PHPStan\Node\InPropertyHookNode;
+use PHPStan\Node\InstantiationCallableNode;
+use PHPStan\Node\MethodCallableNode;
+use PHPStan\Node\StaticMethodCallableNode;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ExtendedParameterReflection;
 use PHPStan\Reflection\ExtendedParametersAcceptor;
@@ -469,6 +473,22 @@ final class DependencyResolver
 						$this->addClassToDependencies($referencedClass, $dependenciesReflections);
 					}
 				}
+			}
+		} elseif ($node instanceof StaticMethodCallableNode) {
+			foreach ($this->resolveDependencies(new Node\Expr\StaticCall($node->getClass(), $node->getName()), $scope)->getReflections() as $dependency) {
+				$dependenciesReflections[] = $dependency;
+			}
+		} elseif ($node instanceof MethodCallableNode) {
+			foreach ($this->resolveDependencies(new Node\Expr\MethodCall($node->getVar(), $node->getName()), $scope)->getReflections() as $dependency) {
+				$dependenciesReflections[] = $dependency;
+			}
+		} elseif ($node instanceof FunctionCallableNode) {
+			foreach ($this->resolveDependencies(new Node\Expr\FuncCall($node->getName()), $scope)->getReflections() as $dependency) {
+				$dependenciesReflections[] = $dependency;
+			}
+		} elseif ($node instanceof InstantiationCallableNode) {
+			foreach ($this->resolveDependencies(new Node\Expr\New_($node->getClass()), $scope)->getReflections() as $dependency) {
+				$dependenciesReflections[] = $dependency;
 			}
 		}
 

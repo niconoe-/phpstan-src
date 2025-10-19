@@ -26,7 +26,10 @@ final class PossiblyPureMethodCallCollector implements Collector
 
 	public function processNode(Node $node, Scope $scope)
 	{
-		if (!$node->expr instanceof Node\Expr\MethodCall) {
+		if (!$node->expr instanceof Node\Expr\MethodCall && !$node->expr instanceof Node\Expr\NullsafeMethodCall) {
+			return null;
+		}
+		if ($node->expr->isFirstClassCallable()) {
 			return null;
 		}
 		if (!$node->expr->name instanceof Node\Identifier) {

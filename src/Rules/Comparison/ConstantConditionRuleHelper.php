@@ -51,9 +51,11 @@ final class ConstantConditionRuleHelper
 		}
 
 		if (
-			$expr instanceof FuncCall
-			|| $expr instanceof MethodCall
-			|| $expr instanceof Expr\StaticCall
+			(
+				$expr instanceof FuncCall
+				|| $expr instanceof MethodCall
+				|| $expr instanceof Expr\StaticCall
+			) && !$expr->isFirstClassCallable()
 		) {
 			$isAlways = $this->impossibleCheckTypeHelper->findSpecifiedType($scope, $expr);
 			if ($isAlways !== null) {

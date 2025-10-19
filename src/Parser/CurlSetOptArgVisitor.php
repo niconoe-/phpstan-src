@@ -16,7 +16,7 @@ final class CurlSetOptArgVisitor extends NodeVisitorAbstract
 	#[Override]
 	public function enterNode(Node $node): ?Node
 	{
-		if ($node instanceof Node\Expr\FuncCall && $node->name instanceof Node\Name) {
+		if ($node instanceof Node\Expr\FuncCall && $node->name instanceof Node\Name && !$node->isFirstClassCallable()) {
 			$functionName = $node->name->toLowerString();
 			if ($functionName === 'curl_setopt') {
 				$args = $node->getRawArgs();

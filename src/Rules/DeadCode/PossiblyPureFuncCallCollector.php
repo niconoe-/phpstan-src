@@ -27,7 +27,7 @@ final class PossiblyPureFuncCallCollector implements Collector
 
 	public function processNode(Node $node, Scope $scope)
 	{
-		if (!$node->expr instanceof Node\Expr\FuncCall) {
+		if (!$node->expr instanceof Node\Expr\FuncCall || $node->expr->isFirstClassCallable()) {
 			return null;
 		}
 		if (!$node->expr->name instanceof Node\Name) {
