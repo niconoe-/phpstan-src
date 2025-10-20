@@ -3696,4 +3696,39 @@ class CallMethodsRuleTest extends RuleTestCase
 		]);
 	}
 
+	#[RequiresPhp('>= 8.5')]
+	public function testPipeOperator(): void
+	{
+		$this->checkThisOnly = false;
+		$this->checkNullables = true;
+		$this->checkUnionTypes = true;
+		$this->checkExplicitMixed = true;
+		$this->analyse([__DIR__ . '/data/method-call-pipe.php'], [
+			[
+				'Method MethodCallPipe\Foo::doFoo() invoked with 1 parameter, 2 required.',
+				20,
+			],
+			[
+				'Parameter #1 $i of method MethodCallPipe\Foo::doBar() expects int, string given.',
+				24,
+			],
+			[
+				'Parameter #1 $i of method MethodCallPipe\Foo::doBar() expects int, null given.',
+				26,
+			],
+			[
+				'Method MethodCallPipe\Foo::doFoo() invoked with 1 parameter, 2 required.',
+				26,
+			],
+			[
+				'Result of method MethodCallPipe\Foo::doFoo() (void) is used.',
+				26,
+			],
+			[
+				'Result of method MethodCallPipe\Foo::doBar() (void) is used.',
+				28,
+			],
+		]);
+	}
+
 }

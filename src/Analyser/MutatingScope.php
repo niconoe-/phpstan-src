@@ -2314,6 +2314,26 @@ final class MutatingScope implements Scope, NodeCallbackInvoker
 			}
 		}
 
+		if ($node instanceof BinaryOp\Pipe) {
+			if ($node->right instanceof FuncCall && $node->right->isFirstClassCallable()) {
+				return $this->getType(new FuncCall($node->right->name, [
+					new Arg($node->left),
+				]));
+			} elseif ($node->right instanceof MethodCall && $node->right->isFirstClassCallable()) {
+				return $this->getType(new MethodCall($node->right->var, $node->right->name, [
+					new Arg($node->left),
+				]));
+			} elseif ($node->right instanceof Expr\StaticCall && $node->right->isFirstClassCallable()) {
+				return $this->getType(new Expr\StaticCall($node->right->class, $node->right->name, [
+					new Arg($node->left),
+				]));
+			}
+
+			return $this->getType(new FuncCall($node->right, [
+				new Arg($node->left),
+			]));
+		}
+
 		if ($node instanceof PropertyFetch) {
 			if ($node->name instanceof Node\Identifier) {
 				if ($this->nativeTypesPromoted) {

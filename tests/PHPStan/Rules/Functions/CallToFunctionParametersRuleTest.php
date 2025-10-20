@@ -2403,4 +2403,35 @@ class CallToFunctionParametersRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/array_rand.php'], []);
 	}
 
+	#[RequiresPhp('>= 8.5')]
+	public function testPipeOperator(): void
+	{
+		$this->analyse([__DIR__ . '/data/func-call-pipe.php'], [
+			[
+				'Function FuncCallPipe\doFoo invoked with 1 parameter, 2 required.',
+				20,
+			],
+			[
+				'Parameter #1 $i of function FuncCallPipe\doBar expects int, string given.',
+				24,
+			],
+			[
+				'Parameter #1 $i of function FuncCallPipe\doBar expects int, null given.',
+				26,
+			],
+			[
+				'Function FuncCallPipe\doFoo invoked with 1 parameter, 2 required.',
+				26,
+			],
+			[
+				'Result of function FuncCallPipe\doFoo (void) is used.',
+				26,
+			],
+			[
+				'Result of function FuncCallPipe\doBar (void) is used.',
+				28,
+			],
+		]);
+	}
+
 }

@@ -916,4 +916,38 @@ class CallStaticMethodsRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/bug-13556.php'], []);
 	}
 
+	#[RequiresPhp('>= 8.5')]
+	public function testPipeOperator(): void
+	{
+		$this->checkThisOnly = false;
+		$this->checkExplicitMixed = true;
+		$this->checkImplicitMixed = true;
+		$this->analyse([__DIR__ . '/data/static-call-pipe.php'], [
+			[
+				'Static method StaticCallPipe\Foo::doFoo() invoked with 1 parameter, 2 required.',
+				20,
+			],
+			[
+				'Parameter #1 $i of static method StaticCallPipe\Foo::doBar() expects int, string given.',
+				24,
+			],
+			[
+				'Parameter #1 $i of static method StaticCallPipe\Foo::doBar() expects int, null given.',
+				26,
+			],
+			[
+				'Static method StaticCallPipe\Foo::doFoo() invoked with 1 parameter, 2 required.',
+				26,
+			],
+			[
+				'Result of static method StaticCallPipe\Foo::doFoo() (void) is used.',
+				26,
+			],
+			[
+				'Result of static method StaticCallPipe\Foo::doBar() (void) is used.',
+				28,
+			],
+		]);
+	}
+
 }

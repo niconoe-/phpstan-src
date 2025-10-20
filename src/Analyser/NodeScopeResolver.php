@@ -3382,6 +3382,44 @@ final class NodeScopeResolver
 			$throwPoints = array_merge($condResult->getThrowPoints(), $rightResult->getThrowPoints());
 			$impurePoints = array_merge($condResult->getImpurePoints(), $rightResult->getImpurePoints());
 			$isAlwaysTerminating = $condResult->isAlwaysTerminating();
+		} elseif ($expr instanceof BinaryOp\Pipe) {
+			if ($expr->right instanceof FuncCall && $expr->right->isFirstClassCallable()) {
+				$exprResult = $this->processExprNode($stmt, new FuncCall($expr->right->name, [
+					new Arg($expr->left, attributes: $expr->left->getAttributes()),
+				], array_merge($expr->right->getAttributes(), ['virtualPipeOperatorCall' => true])), $scope, $nodeCallback, $context);
+				$scope = $exprResult->getScope();
+				$hasYield = $exprResult->hasYield();
+				$throwPoints = $exprResult->getThrowPoints();
+				$impurePoints = $exprResult->getImpurePoints();
+				$isAlwaysTerminating = $exprResult->isAlwaysTerminating();
+			} elseif ($expr->right instanceof MethodCall && $expr->right->isFirstClassCallable()) {
+				$exprResult = $this->processExprNode($stmt, new MethodCall($expr->right->var, $expr->right->name, [
+					new Arg($expr->left, attributes: $expr->left->getAttributes()),
+				], array_merge($expr->right->getAttributes(), ['virtualPipeOperatorCall' => true])), $scope, $nodeCallback, $context);
+				$scope = $exprResult->getScope();
+				$hasYield = $exprResult->hasYield();
+				$throwPoints = $exprResult->getThrowPoints();
+				$impurePoints = $exprResult->getImpurePoints();
+				$isAlwaysTerminating = $exprResult->isAlwaysTerminating();
+			} elseif ($expr->right instanceof StaticCall && $expr->right->isFirstClassCallable()) {
+				$exprResult = $this->processExprNode($stmt, new StaticCall($expr->right->class, $expr->right->name, [
+					new Arg($expr->left, attributes: $expr->left->getAttributes()),
+				], array_merge($expr->right->getAttributes(), ['virtualPipeOperatorCall' => true])), $scope, $nodeCallback, $context);
+				$scope = $exprResult->getScope();
+				$hasYield = $exprResult->hasYield();
+				$throwPoints = $exprResult->getThrowPoints();
+				$impurePoints = $exprResult->getImpurePoints();
+				$isAlwaysTerminating = $exprResult->isAlwaysTerminating();
+			} else {
+				$exprResult = $this->processExprNode($stmt, new FuncCall($expr->right, [
+					new Arg($expr->left, attributes: $expr->left->getAttributes()),
+				], array_merge($expr->right->getAttributes(), ['virtualPipeOperatorCall' => true])), $scope, $nodeCallback, $context);
+				$scope = $exprResult->getScope();
+				$hasYield = $exprResult->hasYield();
+				$throwPoints = $exprResult->getThrowPoints();
+				$impurePoints = $exprResult->getImpurePoints();
+				$isAlwaysTerminating = $exprResult->isAlwaysTerminating();
+			}
 		} elseif ($expr instanceof BinaryOp) {
 			$result = $this->processExprNode($stmt, $expr->left, $scope, $nodeCallback, $context->enterDeep());
 			$scope = $result->getScope();

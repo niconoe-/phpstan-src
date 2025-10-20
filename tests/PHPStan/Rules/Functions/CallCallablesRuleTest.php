@@ -322,4 +322,35 @@ class CallCallablesRuleTest extends RuleTestCase
 		]);
 	}
 
+	#[RequiresPhp('>= 8.5')]
+	public function testPipeOperator(): void
+	{
+		$this->analyse([__DIR__ . '/data/call-callable-pipe.php'], [
+			[
+				'Callable \'CallCallablePipe…\' invoked with 1 parameter, 2 required.',
+				20,
+			],
+			[
+				'Parameter #1 $i of callable \'CallCallablePipe…\' expects int, string given.',
+				24,
+			],
+			[
+				'Parameter #1 $i of callable \'CallCallablePipe…\' expects int, void given.',
+				26,
+			],
+			[
+				'Callable \'CallCallablePipe…\' invoked with 1 parameter, 2 required.',
+				26,
+			],
+			[
+				'Result of callable \'CallCallablePipe…\' (void) is used.',
+				26,
+			],
+			[
+				'Result of callable \'CallCallablePipe…\' (void) is used.',
+				28,
+			],
+		]);
+	}
+
 }
