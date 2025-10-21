@@ -50,6 +50,7 @@ use PHPStan\Node\IssetExpr;
 use PHPStan\Node\Printer\ExprPrinter;
 use PHPStan\Node\PropertyAssignNode;
 use PHPStan\Parser\ArrayMapArgVisitor;
+use PHPStan\Parser\ImmediatelyInvokedClosureVisitor;
 use PHPStan\Parser\NewAssignedToPropertyVisitor;
 use PHPStan\Parser\Parser;
 use PHPStan\Php\PhpVersion;
@@ -1374,10 +1375,15 @@ final class MutatingScope implements Scope, NodeCallbackInvoker
 
 			$callableParameters = null;
 			$arrayMapArgs = $node->getAttribute(ArrayMapArgVisitor::ATTRIBUTE_NAME);
+			$immediatelyInvokedArgs = $node->getAttribute(ImmediatelyInvokedClosureVisitor::ARGS_ATTRIBUTE_NAME);
 			if ($arrayMapArgs !== null) {
 				$callableParameters = [];
 				foreach ($arrayMapArgs as $funcCallArg) {
 					$callableParameters[] = new DummyParameter('item', $this->getType($funcCallArg->value)->getIterableValueType(), false, PassedByReference::createNo(), false, null);
+				}
+			} elseif ($immediatelyInvokedArgs !== null) {
+				foreach ($immediatelyInvokedArgs as $immediatelyInvokedArg) {
+					$callableParameters[] = new DummyParameter('item', $this->getType($immediatelyInvokedArg->value), false, PassedByReference::createNo(), false, null);
 				}
 			} else {
 				$inFunctionCallsStackCount = count($this->inFunctionCallsStack);
