@@ -17,10 +17,18 @@ final class ReversePipeTransformerVisitor extends NodeVisitorAbstract
 			$attributes = $node->getAttributes();
 			$origPipeAttributes = $attributes[PipeTransformerVisitor::ORIGINAL_PIPE_ATTRIBUTE_NAME] ?? [];
 			if ($origPipeAttributes !== [] && count($node->getArgs()) === 1) {
-				unset($attributes[PipeTransformerVisitor::ORIGINAL_PIPE_ATTRIBUTE_NAME]);
+				if ($node->name instanceof Node\Name) {
+					unset($attributes[PipeTransformerVisitor::ORIGINAL_PIPE_ATTRIBUTE_NAME]);
+					return new Node\Expr\BinaryOp\Pipe(
+						$node->getArgs()[0]->value,
+						new Node\Expr\FuncCall($node->name, [new Node\VariadicPlaceholder()], attributes: $attributes),
+						attributes: $origPipeAttributes,
+					);
+				}
+
 				return new Node\Expr\BinaryOp\Pipe(
 					$node->getArgs()[0]->value,
-					new Node\Expr\FuncCall($node->name, [new Node\VariadicPlaceholder()], attributes: $attributes),
+					$node->name,
 					attributes: $origPipeAttributes,
 				);
 			}

@@ -113,13 +113,13 @@ class FunctionFoo
 		});
 
 		assertType('array<int<1, max>>', $ints |> function (array $x) {
-		assertType('array<int<1, max>>', $x);
-		return array_map(function (int $i) {
-			assertType('int<1, max>', $i);
+			assertType('array<int<1, max>>', $x);
+			return array_map(function (int $i) {
+				assertType('int<1, max>', $i);
 
-			return $i;
-		}, $x);
-	});
+				return $i;
+			}, $x);
+		});
 	}
 
 	/**
