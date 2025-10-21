@@ -77,6 +77,10 @@ final class RichParser implements Parser
 			throw new ShouldNotHappenException();
 		}
 
+		$pipeTransformer = new NodeTraverser(new PipeTransformerVisitor());
+		/** @var array<Node\Stmt> */
+		$nodes = $pipeTransformer->traverse($nodes);
+
 		$nodeTraverser = new NodeTraverser();
 		$nodeTraverser->addVisitor($this->nameResolver);
 
@@ -89,6 +93,11 @@ final class RichParser implements Parser
 
 		/** @var array<Node\Stmt> */
 		$nodes = $nodeTraverser->traverse($nodes);
+
+		$reversePipeTransformer = new NodeTraverser(new ReversePipeTransformerVisitor());
+		/** @var array<Node\Stmt> */
+		$nodes = $reversePipeTransformer->traverse($nodes);
+
 		['lines' => $linesToIgnore, 'errors' => $ignoreParseErrors] = $this->getLinesToIgnore($tokens);
 		if (isset($nodes[0])) {
 			$nodes[0]->setAttribute('linesToIgnore', $linesToIgnore);

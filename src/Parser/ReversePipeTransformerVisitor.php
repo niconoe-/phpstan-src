@@ -1,0 +1,58 @@
+<?php declare(strict_types = 1);
+
+namespace PHPStan\Parser;
+
+use Override;
+use PhpParser\Node;
+use PhpParser\NodeVisitorAbstract;
+use function count;
+
+final class ReversePipeTransformerVisitor extends NodeVisitorAbstract
+{
+
+	#[Override]
+	public function enterNode(Node $node): ?Node
+	{
+		if ($node instanceof Node\Expr\FuncCall && !$node->isFirstClassCallable()) {
+			$attributes = $node->getAttributes();
+			$origPipeAttributes = $attributes[PipeTransformerVisitor::ORIGINAL_PIPE_ATTRIBUTE_NAME] ?? [];
+			if ($origPipeAttributes !== [] && count($node->getArgs()) === 1) {
+				unset($attributes[PipeTransformerVisitor::ORIGINAL_PIPE_ATTRIBUTE_NAME]);
+				return new Node\Expr\BinaryOp\Pipe(
+					$node->getArgs()[0]->value,
+					new Node\Expr\FuncCall($node->name, [new Node\VariadicPlaceholder()], attributes: $attributes),
+					attributes: $origPipeAttributes,
+				);
+			}
+		}
+
+		if ($node instanceof Node\Expr\MethodCall && !$node->isFirstClassCallable()) {
+			$attributes = $node->getAttributes();
+			$origPipeAttributes = $attributes[PipeTransformerVisitor::ORIGINAL_PIPE_ATTRIBUTE_NAME] ?? [];
+			if ($origPipeAttributes !== [] && count($node->getArgs()) === 1) {
+				unset($attributes[PipeTransformerVisitor::ORIGINAL_PIPE_ATTRIBUTE_NAME]);
+				return new Node\Expr\BinaryOp\Pipe(
+					$node->getArgs()[0]->value,
+					new Node\Expr\MethodCall($node->var, $node->name, [new Node\VariadicPlaceholder()], attributes: $attributes),
+					attributes: $origPipeAttributes,
+				);
+			}
+		}
+
+		if ($node instanceof Node\Expr\StaticCall && !$node->isFirstClassCallable()) {
+			$attributes = $node->getAttributes();
+			$origPipeAttributes = $attributes[PipeTransformerVisitor::ORIGINAL_PIPE_ATTRIBUTE_NAME] ?? [];
+			if ($origPipeAttributes !== [] && count($node->getArgs()) === 1) {
+				unset($attributes[PipeTransformerVisitor::ORIGINAL_PIPE_ATTRIBUTE_NAME]);
+				return new Node\Expr\BinaryOp\Pipe(
+					$node->getArgs()[0]->value,
+					new Node\Expr\StaticCall($node->class, $node->name, [new Node\VariadicPlaceholder()], attributes: $attributes),
+					attributes: $origPipeAttributes,
+				);
+			}
+		}
+
+		return null;
+	}
+
+}
