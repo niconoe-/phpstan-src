@@ -54,7 +54,7 @@ final class PipeOperatorRule implements Rule
 					RuleErrorBuilder::message(sprintf(
 						'Parameter #1%s of callable on the right side of pipe operator is passed by reference.',
 						$parameter->getName() !== '' ? ' $' . $parameter->getName() : '',
-					))->identifier('pipe.parameterPassedByReference')
+					))->identifier('pipe.byRef')
 						->build(),
 				];
 			}
