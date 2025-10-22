@@ -5,6 +5,7 @@ namespace PHPStan\Rules\Cast;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\DependencyInjection\RegisteredRule;
+use PHPStan\Php\PhpVersion;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 
@@ -15,7 +16,9 @@ use PHPStan\Rules\RuleErrorBuilder;
 final class VoidCastRule implements Rule
 {
 
-	public function __construct()
+	public function __construct(
+		private PhpVersion $phpVersion,
+	)
 	{
 	}
 
@@ -26,16 +29,24 @@ final class VoidCastRule implements Rule
 
 	public function processNode(Node $node, Scope $scope): array
 	{
-		if ($scope->isInFirstLevelStatement()) {
-			return [];
+		$errors = [];
+		if (!$this->phpVersion->supportsVoidCast()) {
+			$errors[] = RuleErrorBuilder::message('The (void) cast is supported only on PHP 8.5 and later.')
+				->identifier('cast.voidNotSupported')
+				->nonIgnorable()
+				->build();
 		}
 
-		return [
-			RuleErrorBuilder::message('The (void) cast cannot be used within an expression.')
-				->identifier('cast.void')
-				->nonIgnorable()
-				->build(),
-		];
+		if ($scope->isInFirstLevelStatement()) {
+			return $errors;
+		}
+
+		$errors[] = RuleErrorBuilder::message('The (void) cast cannot be used within an expression.')
+			->identifier('cast.void')
+			->nonIgnorable()
+			->build();
+
+		return $errors;
 	}
 
 }
