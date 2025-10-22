@@ -5,6 +5,7 @@ namespace PHPStan\Rules\Functions;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\DependencyInjection\RegisteredRule;
+use PHPStan\Php\PhpVersion;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
@@ -19,7 +20,10 @@ use function sprintf;
 final class CallToFunctionStatementWithNoDiscardRule implements Rule
 {
 
-	public function __construct(private ReflectionProvider $reflectionProvider)
+	public function __construct(
+		private ReflectionProvider $reflectionProvider,
+		private PhpVersion $phpVersion,
+	)
 	{
 	}
 
@@ -38,6 +42,10 @@ final class CallToFunctionStatementWithNoDiscardRule implements Rule
 			return [];
 		}
 
+		if (!$this->phpVersion->supportsNoDiscardAttribute()) {
+			return [];
+		}
+
 		$funcCall = $node->expr;
 		if ($funcCall->name instanceof Node\Name) {
 			if (!$this->reflectionProvider->hasFunction($funcCall->name, $scope)) {
@@ -53,7 +61,7 @@ final class CallToFunctionStatementWithNoDiscardRule implements Rule
 				RuleErrorBuilder::message(sprintf(
 					'Call to function %s() on a separate line discards return value.',
 					$function->getName(),
-				))->identifier('function.resultDiscarded')->build(),
+				))->identifier('function.resultDiscarded')->nonIgnorable()->build(),
 			];
 		}
 
@@ -75,7 +83,7 @@ final class CallToFunctionStatementWithNoDiscardRule implements Rule
 			RuleErrorBuilder::message(sprintf(
 				'Call to callable %s on a separate line discards return value.',
 				$callableType->describe(VerbosityLevel::value()),
-			))->identifier('callable.resultDiscarded')->build(),
+			))->identifier('callable.resultDiscarded')->nonIgnorable()->build(),
 		];
 	}
 

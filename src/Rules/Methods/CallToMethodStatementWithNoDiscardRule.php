@@ -6,6 +6,7 @@ use PhpParser\Node;
 use PHPStan\Analyser\NullsafeOperatorHelper;
 use PHPStan\Analyser\Scope;
 use PHPStan\DependencyInjection\RegisteredRule;
+use PHPStan\Php\PhpVersion;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Rules\RuleLevelHelper;
@@ -20,7 +21,10 @@ use function sprintf;
 final class CallToMethodStatementWithNoDiscardRule implements Rule
 {
 
-	public function __construct(private RuleLevelHelper $ruleLevelHelper)
+	public function __construct(
+		private RuleLevelHelper $ruleLevelHelper,
+		private PhpVersion $phpVersion,
+	)
 	{
 	}
 
@@ -38,6 +42,10 @@ final class CallToMethodStatementWithNoDiscardRule implements Rule
 		}
 
 		if ($node->expr->isFirstClassCallable()) {
+			return [];
+		}
+
+		if (!$this->phpVersion->supportsNoDiscardAttribute()) {
 			return [];
 		}
 
@@ -77,7 +85,7 @@ final class CallToMethodStatementWithNoDiscardRule implements Rule
 				$method->isStatic() ? 'static method' : 'method',
 				$method->getDeclaringClass()->getDisplayName(),
 				$method->getName(),
-			))->identifier('method.resultDiscarded')->build(),
+			))->identifier('method.resultDiscarded')->nonIgnorable()->build(),
 		];
 	}
 
