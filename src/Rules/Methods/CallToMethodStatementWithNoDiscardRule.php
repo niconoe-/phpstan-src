@@ -35,13 +35,20 @@ final class CallToMethodStatementWithNoDiscardRule implements Rule
 
 	public function processNode(Node $node, Scope $scope): array
 	{
-		if (!$node->expr instanceof Node\Expr\MethodCall
-			&& !$node->expr instanceof Node\Expr\NullsafeMethodCall
+		$methodCall = $node->expr;
+		$isInVoidCast = false;
+		if ($methodCall instanceof Node\Expr\Cast\Void_) {
+			$isInVoidCast = true;
+			$methodCall = $methodCall->expr;
+		}
+
+		if (!$methodCall instanceof Node\Expr\MethodCall
+			&& !$methodCall instanceof Node\Expr\NullsafeMethodCall
 		) {
 			return [];
 		}
 
-		if ($node->expr->isFirstClassCallable()) {
+		if ($methodCall->isFirstClassCallable()) {
 			return [];
 		}
 
@@ -49,15 +56,14 @@ final class CallToMethodStatementWithNoDiscardRule implements Rule
 			return [];
 		}
 
-		$funcCall = $node->expr;
-		if (!$funcCall->name instanceof Node\Identifier) {
+		if (!$methodCall->name instanceof Node\Identifier) {
 			return [];
 		}
-		$methodName = $funcCall->name->toString();
+		$methodName = $methodCall->name->toString();
 
 		$typeResult = $this->ruleLevelHelper->findTypeToCheck(
 			$scope,
-			NullsafeOperatorHelper::getNullsafeShortcircuitedExprRespectingScope($scope, $funcCall->var),
+			NullsafeOperatorHelper::getNullsafeShortcircuitedExprRespectingScope($scope, $methodCall->var),
 			'',
 			static fn (Type $type): bool => $type->canCallMethods()->yes() && $type->hasMethod($methodName)->yes(),
 		);
@@ -74,8 +80,23 @@ final class CallToMethodStatementWithNoDiscardRule implements Rule
 		}
 
 		$method = $calledOnType->getMethod($methodName, $scope);
+		$mustUseReturnValue = $method->mustUseReturnValue();
+		if ($isInVoidCast) {
+			if ($mustUseReturnValue->no()) {
+				return [
+					RuleErrorBuilder::message(sprintf(
+						'Call to %s %s::%s() in (void) cast but method allows discarding return value.',
+						$method->isStatic() ? 'static method' : 'method',
+						$method->getDeclaringClass()->getDisplayName(),
+						$method->getName(),
+					))->identifier('method.inVoidCast')->build(),
+				];
+			}
 
-		if (!$method->mustUseReturnValue()->yes()) {
+			return [];
+		}
+
+		if (!$mustUseReturnValue->yes()) {
 			return [];
 		}
 

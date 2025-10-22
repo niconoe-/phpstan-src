@@ -30,3 +30,16 @@ foreach ($o->instanceMethod() as $num) {
 $o->differentCase();
 
 $o->instanceMethod(...);
+
+class Foo
+{
+
+	public function canDiscard(): array {
+		return [];
+	}
+
+}
+
+$foo = new Foo();
+$foo->canDiscard();
+(void) $foo->canDiscard();

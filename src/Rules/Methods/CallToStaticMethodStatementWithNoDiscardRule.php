@@ -38,11 +38,17 @@ final class CallToStaticMethodStatementWithNoDiscardRule implements Rule
 
 	public function processNode(Node $node, Scope $scope): array
 	{
-		if (!$node->expr instanceof Node\Expr\StaticCall) {
+		$methodCall = $node->expr;
+		$isInVoidCast = false;
+		if ($methodCall instanceof Node\Expr\Cast\Void_) {
+			$isInVoidCast = true;
+			$methodCall = $methodCall->expr;
+		}
+		if (!$methodCall instanceof Node\Expr\StaticCall) {
 			return [];
 		}
 
-		if ($node->expr->isFirstClassCallable()) {
+		if ($methodCall->isFirstClassCallable()) {
 			return [];
 		}
 
@@ -50,14 +56,13 @@ final class CallToStaticMethodStatementWithNoDiscardRule implements Rule
 			return [];
 		}
 
-		$funcCall = $node->expr;
-		if (!$funcCall->name instanceof Node\Identifier) {
+		if (!$methodCall->name instanceof Node\Identifier) {
 			return [];
 		}
 
-		$methodName = $funcCall->name->toString();
-		if ($funcCall->class instanceof Node\Name) {
-			$className = $scope->resolveName($funcCall->class);
+		$methodName = $methodCall->name->toString();
+		if ($methodCall->class instanceof Node\Name) {
+			$className = $scope->resolveName($methodCall->class);
 			if (!$this->reflectionProvider->hasClass($className)) {
 				return [];
 			}
@@ -66,7 +71,7 @@ final class CallToStaticMethodStatementWithNoDiscardRule implements Rule
 		} else {
 			$typeResult = $this->ruleLevelHelper->findTypeToCheck(
 				$scope,
-				NullsafeOperatorHelper::getNullsafeShortcircuitedExprRespectingScope($scope, $funcCall->class),
+				NullsafeOperatorHelper::getNullsafeShortcircuitedExprRespectingScope($scope, $methodCall->class),
 				'',
 				static fn (Type $type): bool => $type->canCallMethods()->yes() && $type->hasMethod($methodName)->yes(),
 			);
@@ -85,8 +90,23 @@ final class CallToStaticMethodStatementWithNoDiscardRule implements Rule
 		}
 
 		$method = $calledOnType->getMethod($methodName, $scope);
+		$mustUseReturnValue = $method->mustUseReturnValue();
+		if ($isInVoidCast) {
+			if ($mustUseReturnValue->no()) {
+				return [
+					RuleErrorBuilder::message(sprintf(
+						'Call to %s %s::%s() in (void) cast but method allows discarding return value.',
+						$method->isStatic() ? 'static method' : 'method',
+						$method->getDeclaringClass()->getDisplayName(),
+						$method->getName(),
+					))->identifier('staticMethod.inVoidCast')->build(),
+				];
+			}
 
-		if (!$method->mustUseReturnValue()->yes()) {
+			return [];
+		}
+
+		if (!$mustUseReturnValue->yes()) {
 			return [];
 		}
 

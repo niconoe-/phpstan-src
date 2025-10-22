@@ -45,3 +45,15 @@ $b = $arrowWithNoDiscard();
 $arrowWithNoDiscard();
 
 withSideEffects(...);
+
+function canDiscard(): int
+{
+	return 1;
+}
+
+canDiscard();
+(void) canDiscard();
+
+$canDiscardCb = 'FunctionCallStatementResultDiscarded\\canDiscard';
+$canDiscardCb();
+(void) $canDiscardCb();

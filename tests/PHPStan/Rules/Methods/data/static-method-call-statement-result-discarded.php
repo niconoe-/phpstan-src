@@ -27,3 +27,15 @@ foreach (ClassWithStaticSideEffects::staticMethod() as $num) {
 ClassWithStaticSideEffects::differentCase();
 
 ClassWithStaticSideEffects::staticMethod(...);
+
+class Foo
+{
+
+	public static function canDiscard(): array {
+		return [];
+	}
+
+}
+
+Foo::canDiscard();
+(void) Foo::canDiscard();

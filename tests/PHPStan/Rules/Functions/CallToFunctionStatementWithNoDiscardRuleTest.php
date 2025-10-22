@@ -47,6 +47,14 @@ class CallToFunctionStatementWithNoDiscardRuleTest extends RuleTestCase
 				'Call to callable Closure(): 1 on a separate line discards return value.',
 				45,
 			],
+			[
+				'Call to function FunctionCallStatementResultDiscarded\canDiscard() in (void) cast but function allows discarding return value.',
+				55,
+			],
+			[
+				'Call to callable \'FunctionCallStateme…\' in (void) cast but callable allows discarding return value.',
+				59,
+			],
 		]);
 	}
 

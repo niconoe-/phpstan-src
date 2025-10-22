@@ -34,11 +34,18 @@ final class CallToFunctionStatementWithNoDiscardRule implements Rule
 
 	public function processNode(Node $node, Scope $scope): array
 	{
-		if (!$node->expr instanceof Node\Expr\FuncCall) {
+		$funcCall = $node->expr;
+		$isInVoidCast = false;
+		if ($funcCall instanceof Node\Expr\Cast\Void_) {
+			$isInVoidCast = true;
+			$funcCall = $funcCall->expr;
+		}
+
+		if (!$funcCall instanceof Node\Expr\FuncCall) {
 			return [];
 		}
 
-		if ($node->expr->isFirstClassCallable()) {
+		if ($funcCall->isFirstClassCallable()) {
 			return [];
 		}
 
@@ -46,14 +53,27 @@ final class CallToFunctionStatementWithNoDiscardRule implements Rule
 			return [];
 		}
 
-		$funcCall = $node->expr;
 		if ($funcCall->name instanceof Node\Name) {
 			if (!$this->reflectionProvider->hasFunction($funcCall->name, $scope)) {
 				return [];
 			}
 
 			$function = $this->reflectionProvider->getFunction($funcCall->name, $scope);
-			if (!$function->mustUseReturnValue()->yes()) {
+			$mustUseReturnValue = $function->mustUseReturnValue();
+			if ($isInVoidCast) {
+				if ($mustUseReturnValue->no()) {
+					return [
+						RuleErrorBuilder::message(sprintf(
+							'Call to function %s() in (void) cast but function allows discarding return value.',
+							$function->getName(),
+						))->identifier('function.inVoidCast')->build(),
+					];
+				}
+
+				return [];
+			}
+
+			if (!$mustUseReturnValue->yes()) {
 				return [];
 			}
 
@@ -73,6 +93,19 @@ final class CallToFunctionStatementWithNoDiscardRule implements Rule
 		$mustUseReturnValue = TrinaryLogic::createNo();
 		foreach ($callableType->getCallableParametersAcceptors($scope) as $callableParametersAcceptor) {
 			$mustUseReturnValue = $mustUseReturnValue->or($callableParametersAcceptor->mustUseReturnValue());
+		}
+
+		if ($isInVoidCast) {
+			if ($mustUseReturnValue->no()) {
+				return [
+					RuleErrorBuilder::message(sprintf(
+						'Call to callable %s in (void) cast but callable allows discarding return value.',
+						$callableType->describe(VerbosityLevel::value()),
+					))->identifier('callable.inVoidCast')->build(),
+				];
+			}
+
+			return [];
 		}
 
 		if (!$mustUseReturnValue->yes()) {
