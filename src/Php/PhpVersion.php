@@ -439,4 +439,9 @@ final class PhpVersion
 		return $this->versionId >= 80500;
 	}
 
+	public function deprecatesNonStandardCasts(): bool
+	{
+		return $this->versionId >= 80500;
+	}
+
 }
