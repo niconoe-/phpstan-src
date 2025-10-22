@@ -424,4 +424,9 @@ final class PhpVersion
 		return $this->versionId >= 80500;
 	}
 
+	public function supportsFinalPromotedProperties(): bool
+	{
+		return $this->versionId >= 80500;
+	}
+
 }

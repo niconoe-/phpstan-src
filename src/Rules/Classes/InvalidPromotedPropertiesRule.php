@@ -89,6 +89,12 @@ final class InvalidPromotedPropertiesRule implements Rule
 				throw new ShouldNotHappenException();
 			}
 
+			if ($param->isFinal() && !$this->phpVersion->supportsFinalPromotedProperties()) {
+				$errors[] = RuleErrorBuilder::message(
+					'Final promoted properties are supported only on PHP 8.5 and later.',
+				)->identifier('property.invalidPromoted')->nonIgnorable()->line($param->getStartLine())->build();
+			}
+
 			if (!$param->variadic) {
 				continue;
 			}
