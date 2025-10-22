@@ -444,4 +444,9 @@ final class PhpVersion
 		return $this->versionId >= 80500;
 	}
 
+	public function deprecatesBacktickOperator(): bool
+	{
+		return $this->versionId >= 80500;
+	}
+
 }
