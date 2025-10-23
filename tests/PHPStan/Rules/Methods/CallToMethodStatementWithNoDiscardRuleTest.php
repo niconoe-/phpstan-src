@@ -40,6 +40,22 @@ class CallToMethodStatementWithNoDiscardRuleTest extends RuleTestCase
 				'Call to method MethodCallStatementResultDiscarded\Foo::canDiscard() in (void) cast but method allows discarding return value.',
 				45,
 			],
+			[
+				'Call to method MethodCallStatementResultDiscarded\ClassWithInstanceSideEffects::instanceMethod() on a separate line discards return value.',
+				47,
+			],
+			[
+				'Call to method MethodCallStatementResultDiscarded\Foo::canDiscard() in (void) cast but method allows discarding return value.',
+				50,
+			],
+			[
+				'Call to method MethodCallStatementResultDiscarded\ClassWithInstanceSideEffects::instanceMethod() on a separate line discards return value.',
+				52,
+			],
+			[
+				'Call to method MethodCallStatementResultDiscarded\Foo::canDiscard() in (void) cast but method allows discarding return value.',
+				55,
+			],
 		]);
 	}
 

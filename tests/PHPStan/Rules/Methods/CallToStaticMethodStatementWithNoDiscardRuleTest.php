@@ -41,6 +41,22 @@ class CallToStaticMethodStatementWithNoDiscardRuleTest extends RuleTestCase
 				'Call to static method StaticMethodCallStatementResultDiscarded\Foo::canDiscard() in (void) cast but method allows discarding return value.',
 				41,
 			],
+			[
+				'Call to static method StaticMethodCallStatementResultDiscarded\ClassWithStaticSideEffects::staticMethod() on a separate line discards return value.',
+				43,
+			],
+			[
+				'Call to static method StaticMethodCallStatementResultDiscarded\Foo::canDiscard() in (void) cast but method allows discarding return value.',
+				46,
+			],
+			[
+				'Call to static method StaticMethodCallStatementResultDiscarded\ClassWithStaticSideEffects::staticMethod() on a separate line discards return value.',
+				48,
+			],
+			[
+				'Call to static method StaticMethodCallStatementResultDiscarded\Foo::canDiscard() in (void) cast but method allows discarding return value.',
+				51,
+			],
 		]);
 	}
 

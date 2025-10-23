@@ -43,3 +43,13 @@ class Foo
 $foo = new Foo();
 $foo->canDiscard();
 (void) $foo->canDiscard();
+
+5 |> $o->instanceMethod(...);
+5 |> $foo->canDiscard(...);
+(void) 5 |> $o->instanceMethod(...);
+(void) 5 |> $foo->canDiscard(...);
+
+5 |> fn ($x) => $o->instanceMethod($x);
+5 |> fn ($x) => $foo->canDiscard($x);
+(void) 5 |> fn ($x) => $o->instanceMethod($x);
+(void) 5 |> fn ($x) => $foo->canDiscard($x);

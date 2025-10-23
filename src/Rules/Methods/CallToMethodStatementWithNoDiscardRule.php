@@ -42,6 +42,18 @@ final class CallToMethodStatementWithNoDiscardRule implements Rule
 			$methodCall = $methodCall->expr;
 		}
 
+		if ($methodCall instanceof Node\Expr\BinaryOp\Pipe) {
+			if ($methodCall->right instanceof Node\Expr\MethodCall || $methodCall->right instanceof Node\Expr\NullsafeMethodCall) {
+				if (!$methodCall->right->isFirstClassCallable()) {
+					return [];
+				}
+
+				$methodCall = new Node\Expr\MethodCall($methodCall->right->var, $methodCall->right->name, []);
+			} elseif ($methodCall->right instanceof Node\Expr\ArrowFunction) {
+				$methodCall = $methodCall->right->expr;
+			}
+		}
+
 		if (!$methodCall instanceof Node\Expr\MethodCall
 			&& !$methodCall instanceof Node\Expr\NullsafeMethodCall
 		) {

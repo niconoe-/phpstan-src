@@ -36,7 +36,7 @@ class CallToFunctionStatementWithNoDiscardRuleTest extends RuleTestCase
 				30,
 			],
 			[
-				'Call to callable Closure(): array on a separate line discards return value.',
+				'Call to callable Closure(int): array on a separate line discards return value.',
 				35,
 			],
 			[
@@ -54,6 +54,22 @@ class CallToFunctionStatementWithNoDiscardRuleTest extends RuleTestCase
 			[
 				'Call to callable \'FunctionCallStateme…\' in (void) cast but callable allows discarding return value.',
 				59,
+			],
+			[
+				'Call to function FunctionCallStatementResultDiscarded\withSideEffects() on a separate line discards return value.',
+				61,
+			],
+			[
+				'Call to function FunctionCallStatementResultDiscarded\canDiscard() in (void) cast but function allows discarding return value.',
+				64,
+			],
+			[
+				'Call to function FunctionCallStatementResultDiscarded\withSideEffects() on a separate line discards return value.',
+				66,
+			],
+			[
+				'Call to function FunctionCallStatementResultDiscarded\canDiscard() in (void) cast but function allows discarding return value.',
+				69,
 			],
 		]);
 	}

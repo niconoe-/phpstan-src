@@ -44,6 +44,19 @@ final class CallToStaticMethodStatementWithNoDiscardRule implements Rule
 			$isInVoidCast = true;
 			$methodCall = $methodCall->expr;
 		}
+
+		if ($methodCall instanceof Node\Expr\BinaryOp\Pipe) {
+			if ($methodCall->right instanceof Node\Expr\StaticCall) {
+				if (!$methodCall->right->isFirstClassCallable()) {
+					return [];
+				}
+
+				$methodCall = new Node\Expr\StaticCall($methodCall->right->class, $methodCall->right->name, []);
+			} elseif ($methodCall->right instanceof Node\Expr\ArrowFunction) {
+				$methodCall = $methodCall->right->expr;
+			}
+		}
+
 		if (!$methodCall instanceof Node\Expr\StaticCall) {
 			return [];
 		}

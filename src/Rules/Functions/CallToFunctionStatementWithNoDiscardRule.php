@@ -41,6 +41,18 @@ final class CallToFunctionStatementWithNoDiscardRule implements Rule
 			$funcCall = $funcCall->expr;
 		}
 
+		if ($funcCall instanceof Node\Expr\BinaryOp\Pipe) {
+			if ($funcCall->right instanceof Node\Expr\FuncCall) {
+				if (!$funcCall->right->isFirstClassCallable()) {
+					return [];
+				}
+
+				$funcCall = new Node\Expr\FuncCall($funcCall->right->name, []);
+			} elseif ($funcCall->right instanceof Node\Expr\ArrowFunction) {
+				$funcCall = $funcCall->right->expr;
+			}
+		}
+
 		if (!$funcCall instanceof Node\Expr\FuncCall) {
 			return [];
 		}
