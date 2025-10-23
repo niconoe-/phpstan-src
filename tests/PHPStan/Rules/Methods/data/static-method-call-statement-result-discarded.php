@@ -1,6 +1,6 @@
 <?php
 
-namespace MethodCallStatementResultDiscarded;
+namespace StaticMethodCallStatementResultDiscarded;
 
 class ClassWithStaticSideEffects {
 	#[\NoDiscard]

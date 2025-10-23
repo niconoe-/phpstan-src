@@ -114,6 +114,7 @@ class InvalidPromotedPropertiesRuleTest extends RuleTestCase
 		]);
 	}
 
+	#[RequiresPhp('>= 8.0')]
 	public function testFinalProperty(): void
 	{
 		$this->phpVersion = PHP_VERSION_ID;

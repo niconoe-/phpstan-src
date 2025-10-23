@@ -30,15 +30,15 @@ class CallToStaticMethodStatementWithNoDiscardRuleTest extends RuleTestCase
 	{
 		$this->analyse([__DIR__ . '/data/static-method-call-statement-result-discarded.php'], [
 			[
-				'Call to static method MethodCallStatementResultDiscarded\ClassWithStaticSideEffects::staticMethod() on a separate line discards return value.',
+				'Call to static method StaticMethodCallStatementResultDiscarded\ClassWithStaticSideEffects::staticMethod() on a separate line discards return value.',
 				19,
 			],
 			[
-				'Call to static method MethodCallStatementResultDiscarded\ClassWithStaticSideEffects::differentCase() on a separate line discards return value.',
+				'Call to static method StaticMethodCallStatementResultDiscarded\ClassWithStaticSideEffects::differentCase() on a separate line discards return value.',
 				27,
 			],
 			[
-				'Call to static method MethodCallStatementResultDiscarded\Foo::canDiscard() in (void) cast but method allows discarding return value.',
+				'Call to static method StaticMethodCallStatementResultDiscarded\Foo::canDiscard() in (void) cast but method allows discarding return value.',
 				41,
 			],
 		]);
