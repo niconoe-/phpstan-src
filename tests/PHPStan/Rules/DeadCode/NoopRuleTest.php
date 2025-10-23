@@ -6,6 +6,7 @@ use PHPStan\Node\Printer\ExprPrinter;
 use PHPStan\Node\Printer\Printer;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 
 /**
  * @extends RuleTestCase<NoopRule>
@@ -168,6 +169,17 @@ class NoopRuleTest extends RuleTestCase
 			[
 				'Expression "new class…" on a separate line does not do anything.',
 				50,
+			],
+		]);
+	}
+
+	#[RequiresPhp('>= 8.5')]
+	public function testPipeOperator(): void
+	{
+		$this->analyse([__DIR__ . '/data/noop-pipe.php'], [
+			[
+				'Expression "\'doFoo\'" on a separate line does not do anything.',
+				13,
 			],
 		]);
 	}

@@ -41,6 +41,9 @@ final class CallToStaticMethodStatementWithoutSideEffectsRule implements Rule
 	public function processNode(Node $node, Scope $scope): array
 	{
 		$staticCall = $node->getOriginalExpr();
+		if ($staticCall instanceof Node\Expr\BinaryOp\Pipe) {
+			$staticCall = $staticCall->right;
+		}
 		if (!$staticCall instanceof Node\Expr\StaticCall) {
 			return [];
 		}

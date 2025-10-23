@@ -2604,7 +2604,7 @@ final class NodeScopeResolver
 					$functionReflection->getVariants(),
 					$functionReflection->getNamedArgumentsVariants(),
 				);
-				$impurePoint = SimpleImpurePoint::createFromVariant($functionReflection, $parametersAcceptor);
+				$impurePoint = SimpleImpurePoint::createFromVariant($functionReflection, $parametersAcceptor, $scope, $expr->getArgs());
 				if ($impurePoint !== null) {
 					$impurePoints[] = new ImpurePoint($scope, $expr, $impurePoint->getIdentifier(), $impurePoint->getDescription(), $impurePoint->isCertain());
 				}
@@ -2890,7 +2890,7 @@ final class NodeScopeResolver
 			}
 
 			if ($methodReflection !== null) {
-				$impurePoint = SimpleImpurePoint::createFromVariant($methodReflection, $parametersAcceptor);
+				$impurePoint = SimpleImpurePoint::createFromVariant($methodReflection, $parametersAcceptor, $scope, $expr->getArgs());
 				if ($impurePoint !== null) {
 					$impurePoints[] = new ImpurePoint($scope, $expr, $impurePoint->getIdentifier(), $impurePoint->getDescription(), $impurePoint->isCertain());
 				}
@@ -3082,7 +3082,7 @@ final class NodeScopeResolver
 			}
 
 			if ($methodReflection !== null) {
-				$impurePoint = SimpleImpurePoint::createFromVariant($methodReflection, $parametersAcceptor);
+				$impurePoint = SimpleImpurePoint::createFromVariant($methodReflection, $parametersAcceptor, $scope, $expr->getArgs());
 				if ($impurePoint !== null) {
 					$impurePoints[] = new ImpurePoint($scope, $expr, $impurePoint->getIdentifier(), $impurePoint->getDescription(), $impurePoint->isCertain());
 				}

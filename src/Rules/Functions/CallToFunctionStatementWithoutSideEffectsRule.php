@@ -3,32 +3,23 @@
 namespace PHPStan\Rules\Functions;
 
 use PhpParser\Node;
-use PhpParser\Node\Arg;
 use PHPStan\Analyser\Scope;
 use PHPStan\DependencyInjection\RegisteredRule;
+use PHPStan\Node\NoopExpressionNode;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\NeverType;
-use PHPStan\Type\Type;
 use function count;
 use function in_array;
 use function sprintf;
 
 /**
- * @implements Rule<Node\Stmt\Expression>
+ * @implements Rule<NoopExpressionNode>
  */
 #[RegisteredRule(level: 4)]
 final class CallToFunctionStatementWithoutSideEffectsRule implements Rule
 {
-
-	private const SIDE_EFFECT_FLIP_PARAMETERS = [
-		// functionName => [name, pos, testName]
-		'print_r' => ['return', 1, 'isTruthy'],
-		'var_export' => ['return', 1, 'isTruthy'],
-		'highlight_string' => ['return', 1, 'isTruthy'],
-
-	];
 
 	public const PHPSTAN_TESTING_FUNCTIONS = [
 		'PHPStan\\dumpNativeType',
@@ -47,16 +38,20 @@ final class CallToFunctionStatementWithoutSideEffectsRule implements Rule
 
 	public function getNodeType(): string
 	{
-		return Node\Stmt\Expression::class;
+		return NoopExpressionNode::class;
 	}
 
 	public function processNode(Node $node, Scope $scope): array
 	{
-		if (!$node->expr instanceof Node\Expr\FuncCall) {
+		$expr = $node->getOriginalExpr();
+		if ($expr instanceof Node\Expr\BinaryOp\Pipe) {
+			$expr = $expr->right;
+		}
+		if (!$expr instanceof Node\Expr\FuncCall) {
 			return [];
 		}
 
-		$funcCall = $node->expr;
+		$funcCall = $expr;
 		if (!($funcCall->name instanceof Node\Name)) {
 			return [];
 		}
@@ -71,79 +66,21 @@ final class CallToFunctionStatementWithoutSideEffectsRule implements Rule
 		}
 
 		$functionName = $function->getName();
-		$functionHasSideEffects = !$function->hasSideEffects()->no();
-
 		if (in_array($functionName, self::PHPSTAN_TESTING_FUNCTIONS, true)) {
 			return [];
 		}
 
-		if (isset(self::SIDE_EFFECT_FLIP_PARAMETERS[$functionName])) {
-			[
-				$flipParameterName,
-				$flipParameterPosition,
-				$testName,
-			] = self::SIDE_EFFECT_FLIP_PARAMETERS[$functionName];
-
-			$sideEffectFlipped = false;
-			$hasNamedParameter = false;
-			$checker = [
-				'isNotNull' => static fn (Type $type) => $type->isNull()->no(),
-				'isTruthy' => static fn (Type $type) => $type->toBoolean()->isTrue()->yes(),
-			][$testName];
-
-			foreach ($funcCall->getRawArgs() as $i => $arg) {
-				if (!$arg instanceof Arg) {
-					return [];
-				}
-
-				$isFlipParameter = false;
-
-				if ($arg->name !== null) {
-					$hasNamedParameter = true;
-					if ($arg->name->name === $flipParameterName) {
-						$isFlipParameter = true;
-					}
-				}
-
-				if (!$hasNamedParameter && $i === $flipParameterPosition) {
-					$isFlipParameter = true;
-				}
-
-				if ($isFlipParameter) {
-					$sideEffectFlipped = $checker($scope->getType($arg->value));
-					break;
-				}
-			}
-
-			if (!$sideEffectFlipped) {
-				return [];
-			}
-
-			$functionHasSideEffects = false;
+		$functionResult = $scope->getType($funcCall);
+		if ($functionResult instanceof NeverType && $functionResult->isExplicit()) {
+			return [];
 		}
 
-		if (!$functionHasSideEffects || $node->expr->isFirstClassCallable()) {
-			if (!$node->expr->isFirstClassCallable()) {
-				$throwsType = $function->getThrowType();
-				if ($throwsType !== null && !$throwsType->isVoid()->yes()) {
-					return [];
-				}
-			}
-
-			$functionResult = $scope->getType($funcCall);
-			if ($functionResult instanceof NeverType && $functionResult->isExplicit()) {
-				return [];
-			}
-
-			return [
-				RuleErrorBuilder::message(sprintf(
-					'Call to function %s() on a separate line has no effect.',
-					$function->getName(),
-				))->identifier('function.resultUnused')->build(),
-			];
-		}
-
-		return [];
+		return [
+			RuleErrorBuilder::message(sprintf(
+				'Call to function %s() on a separate line has no effect.',
+				$function->getName(),
+			))->identifier('function.resultUnused')->build(),
+		];
 	}
 
 }

@@ -121,4 +121,15 @@ class CallToStaticMethodStatementWithoutSideEffectsRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/bug-10819.php'], $errors);
 	}
 
+	#[RequiresPhp('>= 8.5')]
+	public function testPipeOperator(): void
+	{
+		$this->analyse([__DIR__ . '/data/static-method-call-without-side-effect-pipe.php'], [
+			[
+				'Call to static method StaticMethodCallWithoutSideEffectPipe\Foo::doPure() on a separate line has no effect.',
+				33,
+			],
+		]);
+	}
+
 }

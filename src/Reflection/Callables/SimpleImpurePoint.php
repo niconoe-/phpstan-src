@@ -2,10 +2,13 @@
 
 namespace PHPStan\Reflection\Callables;
 
+use PhpParser\Node\Arg;
 use PHPStan\Analyser\ImpurePoint;
+use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ExtendedMethodReflection;
 use PHPStan\Reflection\FunctionReflection;
 use PHPStan\Reflection\ParametersAcceptor;
+use PHPStan\Type\Type;
 use function sprintf;
 
 /**
@@ -13,6 +16,13 @@ use function sprintf;
  */
 final class SimpleImpurePoint
 {
+
+	private const SIDE_EFFECT_FLIP_PARAMETERS = [
+		// functionName => [name, pos, testName]
+		'print_r' => ['return', 1, 'isTruthy'],
+		'var_export' => ['return', 1, 'isTruthy'],
+		'highlight_string' => ['return', 1, 'isTruthy'],
+	];
 
 	/**
 	 * @param ImpurePointIdentifier $identifier
@@ -25,7 +35,10 @@ final class SimpleImpurePoint
 	{
 	}
 
-	public static function createFromVariant(FunctionReflection|ExtendedMethodReflection $function, ?ParametersAcceptor $variant): ?self
+	/**
+	 * @param Arg[] $args
+	 */
+	public static function createFromVariant(FunctionReflection|ExtendedMethodReflection $function, ?ParametersAcceptor $variant, ?Scope $scope = null, array $args = []): ?self
 	{
 		if (!$function->hasSideEffects()->no()) {
 			$certain = $function->isPure()->no();
@@ -34,6 +47,45 @@ final class SimpleImpurePoint
 			}
 
 			if ($function instanceof FunctionReflection) {
+				if (isset(self::SIDE_EFFECT_FLIP_PARAMETERS[$function->getName()]) && $scope !== null) {
+					[
+						$flipParameterName,
+						$flipParameterPosition,
+						$testName,
+					] = self::SIDE_EFFECT_FLIP_PARAMETERS[$function->getName()];
+
+					$sideEffectFlipped = false;
+					$hasNamedParameter = false;
+					$checker = [
+						'isNotNull' => static fn (Type $type) => $type->isNull()->no(),
+						'isTruthy' => static fn (Type $type) => $type->toBoolean()->isTrue()->yes(),
+					][$testName];
+
+					foreach ($args as $i => $arg) {
+						$isFlipParameter = false;
+
+						if ($arg->name !== null) {
+							$hasNamedParameter = true;
+							if ($arg->name->name === $flipParameterName) {
+								$isFlipParameter = true;
+							}
+						}
+
+						if (!$hasNamedParameter && $i === $flipParameterPosition) {
+							$isFlipParameter = true;
+						}
+
+						if ($isFlipParameter) {
+							$sideEffectFlipped = $checker($scope->getType($arg->value));
+							break;
+						}
+					}
+
+					if ($sideEffectFlipped) {
+						return null;
+					}
+				}
+
 				return new SimpleImpurePoint(
 					'functionCall',
 					sprintf('call to function %s()', $function->getName()),

@@ -159,4 +159,15 @@ class CallToMethodStatementWithoutSideEffectsRuleTest extends RuleTestCase
 		]);
 	}
 
+	#[RequiresPhp('>= 8.5')]
+	public function testPipeOperator(): void
+	{
+		$this->analyse([__DIR__ . '/data/method-call-without-side-effect-pipe.php'], [
+			[
+				'Call to method MethodCallWithoutSideEffectPipe\Foo::doPure() on a separate line has no effect.',
+				33,
+			],
+		]);
+	}
+
 }

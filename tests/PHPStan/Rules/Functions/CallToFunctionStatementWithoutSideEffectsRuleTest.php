@@ -4,6 +4,7 @@ namespace PHPStan\Rules\Functions;
 
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 use const PHP_VERSION_ID;
 
 /**
@@ -114,6 +115,17 @@ class CallToFunctionStatementWithoutSideEffectsRuleTest extends RuleTestCase
 			[
 				'Call to function FirstClassCallableFunctionWithoutSideEffect\bar() on a separate line has no effect.',
 				49,
+			],
+		]);
+	}
+
+	#[RequiresPhp('>= 8.5')]
+	public function testPipeOperator(): void
+	{
+		$this->analyse([__DIR__ . '/data/function-call-without-side-effect-pipe.php'], [
+			[
+				'Call to function FunctionCallWithoutSideEffectPipe\pureFunc() on a separate line has no effect.',
+				28,
 			],
 		]);
 	}

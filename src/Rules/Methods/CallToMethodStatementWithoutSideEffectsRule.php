@@ -35,6 +35,9 @@ final class CallToMethodStatementWithoutSideEffectsRule implements Rule
 	public function processNode(Node $node, Scope $scope): array
 	{
 		$methodCall = $node->getOriginalExpr();
+		if ($methodCall instanceof Node\Expr\BinaryOp\Pipe) {
+			$methodCall = $methodCall->right;
+		}
 		if ($methodCall instanceof Node\Expr\NullsafeMethodCall) {
 			$scope = $scope->filterByTruthyValue(new Node\Expr\BinaryOp\NotIdentical($methodCall->var, new Node\Expr\ConstFetch(new Node\Name('null'))));
 		} elseif (!$methodCall instanceof Node\Expr\MethodCall) {

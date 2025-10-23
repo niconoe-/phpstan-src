@@ -83,6 +83,10 @@ final class NoopRule implements Rule
 			];
 		}
 
+		if ($expr instanceof Node\Expr\BinaryOp\Pipe) {
+			$expr = $expr->right;
+		}
+
 		if ($expr instanceof Node\Expr\FuncCall) {
 			if ($expr->name instanceof Node\Name) {
 				// handled by CallToFunctionStatementWithoutSideEffectsRule
