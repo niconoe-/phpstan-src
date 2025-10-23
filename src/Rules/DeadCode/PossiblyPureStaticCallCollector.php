@@ -26,19 +26,31 @@ final class PossiblyPureStaticCallCollector implements Collector
 
 	public function processNode(Node $node, Scope $scope)
 	{
-		if (!$node->expr instanceof Node\Expr\StaticCall || $node->expr->isFirstClassCallable()) {
+		$expr = $node->expr;
+		if ($expr instanceof Node\Expr\BinaryOp\Pipe) {
+			if ($expr->right instanceof Node\Expr\StaticCall) {
+				if (!$expr->right->isFirstClassCallable()) {
+					return null;
+				}
+
+				$expr = new Node\Expr\StaticCall($expr->right->class, $expr->right->name, []);
+			} elseif ($expr->right instanceof Node\Expr\ArrowFunction) {
+				$expr = $expr->right->expr;
+			}
+		}
+		if (!$expr instanceof Node\Expr\StaticCall || $expr->isFirstClassCallable()) {
 			return null;
 		}
-		if (!$node->expr->name instanceof Node\Identifier) {
+		if (!$expr->name instanceof Node\Identifier) {
 			return null;
 		}
 
-		if (!$node->expr->class instanceof Node\Name) {
+		if (!$expr->class instanceof Node\Name) {
 			return null;
 		}
 
-		$methodName = $node->expr->name->toString();
-		$calledOnType = $scope->resolveTypeByName($node->expr->class);
+		$methodName = $expr->name->toString();
+		$calledOnType = $scope->resolveTypeByName($expr->class);
 		$methodReflection = $scope->getMethodReflection($calledOnType, $methodName);
 
 		if ($methodReflection === null) {

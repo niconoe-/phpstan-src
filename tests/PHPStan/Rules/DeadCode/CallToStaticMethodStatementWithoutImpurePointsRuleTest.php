@@ -4,6 +4,7 @@ namespace PHPStan\Rules\DeadCode;
 
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 
 /**
  * @extends RuleTestCase<CallToStaticMethodStatementWithoutImpurePointsRule>
@@ -54,6 +55,21 @@ class CallToStaticMethodStatementWithoutImpurePointsRuleTest extends RuleTestCas
 			[
 				'Call to CallToStaticMethodWithoutImpurePoints\y::myFunc() on a separate line has no effect.',
 				58,
+			],
+		]);
+	}
+
+	#[RequiresPhp('>= 8.5')]
+	public function testPipeOperator(): void
+	{
+		$this->analyse([__DIR__ . '/data/call-to-static-method-without-impure-points-pipe.php'], [
+			[
+				'Call to CallToStaticMethodWithoutImpurePointsPipe\Foo::doFoo() on a separate line has no effect.',
+				16,
+			],
+			[
+				'Call to CallToStaticMethodWithoutImpurePointsPipe\Foo::doFoo() on a separate line has no effect.',
+				17,
 			],
 		]);
 	}

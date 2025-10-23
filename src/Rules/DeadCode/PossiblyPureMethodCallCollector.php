@@ -26,18 +26,31 @@ final class PossiblyPureMethodCallCollector implements Collector
 
 	public function processNode(Node $node, Scope $scope)
 	{
-		if (!$node->expr instanceof Node\Expr\MethodCall && !$node->expr instanceof Node\Expr\NullsafeMethodCall) {
+		$expr = $node->expr;
+		if ($expr instanceof Node\Expr\BinaryOp\Pipe) {
+			if ($expr->right instanceof Node\Expr\MethodCall || $expr->right instanceof Node\Expr\NullsafeMethodCall) {
+				if (!$expr->right->isFirstClassCallable()) {
+					return null;
+				}
+
+				$expr = new Node\Expr\MethodCall($expr->right->var, $expr->right->name, []);
+			} elseif ($expr->right instanceof Node\Expr\ArrowFunction) {
+				$expr = $expr->right->expr;
+			}
+		}
+
+		if (!$expr instanceof Node\Expr\MethodCall && !$expr instanceof Node\Expr\NullsafeMethodCall) {
 			return null;
 		}
-		if ($node->expr->isFirstClassCallable()) {
+		if ($expr->isFirstClassCallable()) {
 			return null;
 		}
-		if (!$node->expr->name instanceof Node\Identifier) {
+		if (!$expr->name instanceof Node\Identifier) {
 			return null;
 		}
 
-		$methodName = $node->expr->name->toString();
-		$calledOnType = $scope->getType($node->expr->var);
+		$methodName = $expr->name->toString();
+		$calledOnType = $scope->getType($expr->var);
 		if (!$calledOnType->hasMethod($methodName)->yes()) {
 			return null;
 		}

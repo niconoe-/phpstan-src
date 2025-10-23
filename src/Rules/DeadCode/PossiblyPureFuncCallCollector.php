@@ -27,18 +27,33 @@ final class PossiblyPureFuncCallCollector implements Collector
 
 	public function processNode(Node $node, Scope $scope)
 	{
-		if (!$node->expr instanceof Node\Expr\FuncCall || $node->expr->isFirstClassCallable()) {
+		$expr = $node->expr;
+		if ($expr instanceof Node\Expr\BinaryOp\Pipe) {
+			if ($expr->right instanceof Node\Expr\FuncCall) {
+				if (!$expr->right->isFirstClassCallable()) {
+					return null;
+				}
+
+				$expr = new Node\Expr\FuncCall($expr->right->name, []);
+			} elseif ($expr->right instanceof Node\Expr\ArrowFunction) {
+				$expr = $expr->right->expr;
+			}
+		}
+		if (!$expr instanceof Node\Expr\FuncCall) {
 			return null;
 		}
-		if (!$node->expr->name instanceof Node\Name) {
+		if ($expr->isFirstClassCallable()) {
+			return null;
+		}
+		if (!$expr->name instanceof Node\Name) {
 			return null;
 		}
 
-		if (!$this->reflectionProvider->hasFunction($node->expr->name, $scope)) {
+		if (!$this->reflectionProvider->hasFunction($expr->name, $scope)) {
 			return null;
 		}
 
-		$functionReflection = $this->reflectionProvider->getFunction($node->expr->name, $scope);
+		$functionReflection = $this->reflectionProvider->getFunction($expr->name, $scope);
 		if (!$functionReflection->isPure()->maybe()) {
 			return null;
 		}

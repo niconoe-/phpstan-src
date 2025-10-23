@@ -4,6 +4,7 @@ namespace PHPStan\Rules\DeadCode;
 
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 
 /**
  * @extends RuleTestCase<CallToFunctionStatementWithoutImpurePointsRule>
@@ -22,6 +23,21 @@ class CallToFunctionStatementWithoutImpurePointsRuleTest extends RuleTestCase
 			[
 				'Call to function CallToFunctionWithoutImpurePoints\myFunc() on a separate line has no effect.',
 				29,
+			],
+		]);
+	}
+
+	#[RequiresPhp('>= 8.5')]
+	public function testPipeOperator(): void
+	{
+		$this->analyse([__DIR__ . '/data/call-to-function-without-impure-points-pipe.php'], [
+			[
+				'Call to function CallToFunctionWithoutImpurePointsPipe\myFunc() on a separate line has no effect.',
+				9,
+			],
+			[
+				'Call to function CallToFunctionWithoutImpurePointsPipe\myFunc() on a separate line has no effect.',
+				10,
 			],
 		]);
 	}

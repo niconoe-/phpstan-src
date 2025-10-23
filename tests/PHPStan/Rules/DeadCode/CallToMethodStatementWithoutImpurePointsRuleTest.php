@@ -92,6 +92,21 @@ class CallToMethodStatementWithoutImpurePointsRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/bug-12379.php'], []);
 	}
 
+	#[RequiresPhp('>= 8.5')]
+	public function testPipeOperator(): void
+	{
+		$this->analyse([__DIR__ . '/data/call-to-method-without-impure-points-pipe.php'], [
+			[
+				'Call to method CallToMethodWithoutImpurePointsPipe\Foo::maybePure() on a separate line has no effect.',
+				17,
+			],
+			[
+				'Call to method CallToMethodWithoutImpurePointsPipe\Foo::maybePure() on a separate line has no effect.',
+				18,
+			],
+		]);
+	}
+
 	protected function getCollectors(): array
 	{
 		return [
