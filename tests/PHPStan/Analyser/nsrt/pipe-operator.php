@@ -246,4 +246,15 @@ class FunctionFoo
 		assertType('int', 'foo' |> $this->doConditional(...) |> $this->doGenerics(...));
 	}
 
+	public function testArrayFindKey(): void
+	{
+		$result = ['foo' => 1, 'bar' => null, 'buz' => ''] |> (fn($subject) => array_find_key($subject, function ($value, $key) {
+			assertType("array{value: 1|''|null, key: 'bar'|'buz'|'foo'}", compact('value', 'key'));
+
+			return is_int($value);
+		}));
+
+		assertType("'bar'|'buz'|'foo'|null", $result);
+	}
+
 }
