@@ -2,6 +2,7 @@
 
 namespace PipeOperatorTypes;
 
+use stdClass;
 use function PHPStan\Testing\assertType;
 
 class Foo
@@ -221,6 +222,28 @@ class FunctionFoo
 
 		assertType('null', null |> fn($x) => $this->doConditional($x));
 		assertType('int', 'foo' |> fn($x) => $this->doConditional($x));
+	}
+
+	/**
+	 * @template T
+	 * @param T $input
+	 * @return T
+	 */
+	public function doGenerics($input)
+	{
+		return $t;
+	}
+
+	public function testGenerics(): void
+	{
+		assertType(stdClass::class, new stdClass() |> $this->doGenerics(...));
+		assertType(stdClass::class, new stdClass() |> $this->doGenerics(...));
+
+		assertType(stdClass::class, new stdClass() |> fn($x) => $this->doGenerics($x));
+		assertType(stdClass::class, new stdClass() |> fn($x) => $this->doGenerics($x));
+
+		assertType('null', null |> $this->doConditional(...) |> $this->doGenerics(...));
+		assertType('int', 'foo' |> $this->doConditional(...) |> $this->doGenerics(...));
 	}
 
 }
