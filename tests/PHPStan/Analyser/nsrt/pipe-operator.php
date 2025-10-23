@@ -202,4 +202,25 @@ class FunctionFoo
 		})(1));
 	}
 
+	/**
+	 * @return ($s is null ? null : int)
+	 */
+	public function doConditional(string|null $s): int|null
+	{
+		if ($s === null) {
+			return null;
+		}
+
+		return strlen($s);
+	}
+
+	public function testConditional(): void
+	{
+		assertType('null', null |> $this->doConditional(...));
+		assertType('int', 'foo' |> $this->doConditional(...));
+
+		assertType('null', null |> fn($x) => $this->doConditional($x));
+		assertType('int', 'foo' |> fn($x) => $this->doConditional($x));
+	}
+
 }
