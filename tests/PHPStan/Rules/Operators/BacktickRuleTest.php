@@ -5,6 +5,7 @@ namespace PHPStan\Rules\Operators;
 use PHPStan\Php\PhpVersion;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 use const PHP_VERSION_ID;
 
 /**
@@ -27,9 +28,23 @@ class BacktickRuleTest extends RuleTestCase
 					'Backtick operator is deprecated in PHP 8.5. Use shell_exec() function call instead.',
 					4,
 				],
+				[
+					'Backtick operator is deprecated in PHP 8.5. Use shell_exec() function call instead.',
+					5,
+				],
+				[
+					'Backtick operator is deprecated in PHP 8.5. Use shell_exec() function call instead.',
+					6,
+				],
 			];
 		}
 		$this->analyse([__DIR__ . '/data/backtick.php'], $errors);
+	}
+
+	#[RequiresPhp('>= 8.5')]
+	public function testFix(): void
+	{
+		$this->fix(__DIR__ . '/data/backtick.php', __DIR__ . '/data/backtick.php.fixed');
 	}
 
 }

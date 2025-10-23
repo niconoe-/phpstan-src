@@ -1,0 +1,7 @@
+<?php
+
+function (string $s, string $t): void {
+	shell_exec('echo "foo";');
+	shell_exec($s . ' ' . $a);
+	shell_exec($s . ' ' . $a . ' foo ' . $t);
+};
