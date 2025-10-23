@@ -15,6 +15,8 @@ final class PipeTransformerVisitor extends NodeVisitorAbstract
 
 	public const ORIGINAL_PIPE_ATTRIBUTE_NAME = 'originalPipeAttrs';
 
+	public const ORIGINAL_VARIADIC_PLACEHOLDER_ATTRIBUTE_NAME = 'originalVariadicPlaceholderAttrs';
+
 	#[Override]
 	public function enterNode(Node $node): ?Node
 	{
@@ -27,6 +29,7 @@ final class PipeTransformerVisitor extends NodeVisitorAbstract
 				new Arg($node->left),
 			], attributes: array_merge($node->right->getAttributes(), [
 				self::ORIGINAL_PIPE_ATTRIBUTE_NAME => $node->getAttributes(),
+				self::ORIGINAL_VARIADIC_PLACEHOLDER_ATTRIBUTE_NAME => $node->right->getRawArgs()[0]->getAttributes(),
 			]));
 		}
 
@@ -35,6 +38,7 @@ final class PipeTransformerVisitor extends NodeVisitorAbstract
 				new Arg($node->left),
 			], attributes: array_merge($node->right->getAttributes(), [
 				self::ORIGINAL_PIPE_ATTRIBUTE_NAME => $node->getAttributes(),
+				self::ORIGINAL_VARIADIC_PLACEHOLDER_ATTRIBUTE_NAME => $node->right->getRawArgs()[0]->getAttributes(),
 			]));
 		}
 
@@ -43,6 +47,7 @@ final class PipeTransformerVisitor extends NodeVisitorAbstract
 				new Arg($node->left),
 			], attributes: array_merge($node->right->getAttributes(), [
 				self::ORIGINAL_PIPE_ATTRIBUTE_NAME => $node->getAttributes(),
+				self::ORIGINAL_VARIADIC_PLACEHOLDER_ATTRIBUTE_NAME => $node->right->getRawArgs()[0]->getAttributes(),
 			]));
 		}
 

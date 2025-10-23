@@ -5,6 +5,7 @@ namespace PHPStan\Build;
 use PHPStan\File\FileHelper;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 
 /**
  * @extends RuleTestCase<FinalClassRule>
@@ -30,6 +31,12 @@ class FinalClassRuleTest extends RuleTestCase
 	public function testFix(): void
 	{
 		$this->fix(__DIR__ . '/data/final-class-rule.php', __DIR__ . '/data/final-class-rule.php.fixed');
+	}
+
+	#[RequiresPhp('>= 8.5')]
+	public function testFixWithPipe(): void
+	{
+		$this->fix(__DIR__ . '/data/final-class-rule-pipe.php', __DIR__ . '/data/final-class-rule-pipe.php.fixed');
 	}
 
 }
