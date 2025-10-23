@@ -2431,6 +2431,14 @@ class CallToFunctionParametersRuleTest extends RuleTestCase
 				'Result of function FuncCallPipe\doBar (void) is used.',
 				28,
 			],
+			[
+				'Parameter #1 $separator of function implode expects array, string given.',
+				38,
+			],
+			[
+				'Parameter #1 $separator of function implode expects array, string given.',
+				40,
+			],
 		]);
 	}
 

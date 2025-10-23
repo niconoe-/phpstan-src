@@ -10,6 +10,8 @@ use function count;
 final class ReversePipeTransformerVisitor extends NodeVisitorAbstract
 {
 
+	public const ARG_ATTRIBUTES_NAME = 'argAttributes';
+
 	#[Override]
 	public function enterNode(Node $node): ?Node
 	{
@@ -17,6 +19,7 @@ final class ReversePipeTransformerVisitor extends NodeVisitorAbstract
 			$attributes = $node->getAttributes();
 			$origPipeAttributes = $attributes[PipeTransformerVisitor::ORIGINAL_PIPE_ATTRIBUTE_NAME] ?? [];
 			if ($origPipeAttributes !== [] && count($node->getArgs()) === 1) {
+				$origPipeAttributes[self::ARG_ATTRIBUTES_NAME] = $node->getArgs()[0]->getAttributes();
 				if ($node->name instanceof Node\Name) {
 					unset($attributes[PipeTransformerVisitor::ORIGINAL_PIPE_ATTRIBUTE_NAME]);
 					return new Node\Expr\BinaryOp\Pipe(
@@ -38,6 +41,7 @@ final class ReversePipeTransformerVisitor extends NodeVisitorAbstract
 			$attributes = $node->getAttributes();
 			$origPipeAttributes = $attributes[PipeTransformerVisitor::ORIGINAL_PIPE_ATTRIBUTE_NAME] ?? [];
 			if ($origPipeAttributes !== [] && count($node->getArgs()) === 1) {
+				$origPipeAttributes[self::ARG_ATTRIBUTES_NAME] = $node->getArgs()[0]->getAttributes();
 				unset($attributes[PipeTransformerVisitor::ORIGINAL_PIPE_ATTRIBUTE_NAME]);
 				return new Node\Expr\BinaryOp\Pipe(
 					$node->getArgs()[0]->value,
@@ -51,6 +55,7 @@ final class ReversePipeTransformerVisitor extends NodeVisitorAbstract
 			$attributes = $node->getAttributes();
 			$origPipeAttributes = $attributes[PipeTransformerVisitor::ORIGINAL_PIPE_ATTRIBUTE_NAME] ?? [];
 			if ($origPipeAttributes !== [] && count($node->getArgs()) === 1) {
+				$origPipeAttributes[self::ARG_ATTRIBUTES_NAME] = $node->getArgs()[0]->getAttributes();
 				unset($attributes[PipeTransformerVisitor::ORIGINAL_PIPE_ATTRIBUTE_NAME]);
 				return new Node\Expr\BinaryOp\Pipe(
 					$node->getArgs()[0]->value,

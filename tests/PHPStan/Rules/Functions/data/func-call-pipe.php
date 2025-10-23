@@ -29,3 +29,15 @@ class Foo
 	}
 
 }
+
+class TestImplode
+{
+
+	public function doFoo(): void
+	{
+		implode('foo');
+
+		'foo' |> implode(...);
+	}
+
+}

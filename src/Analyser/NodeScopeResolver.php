@@ -132,6 +132,7 @@ use PHPStan\Parser\ClosureArgVisitor;
 use PHPStan\Parser\ImmediatelyInvokedClosureVisitor;
 use PHPStan\Parser\LineAttributesVisitor;
 use PHPStan\Parser\Parser;
+use PHPStan\Parser\ReversePipeTransformerVisitor;
 use PHPStan\Php\PhpVersion;
 use PHPStan\PhpDoc\PhpDocInheritanceResolver;
 use PHPStan\PhpDoc\ResolvedPhpDocBlock;
@@ -3385,7 +3386,7 @@ final class NodeScopeResolver
 		} elseif ($expr instanceof BinaryOp\Pipe) {
 			if ($expr->right instanceof FuncCall && $expr->right->isFirstClassCallable()) {
 				$exprResult = $this->processExprNode($stmt, new FuncCall($expr->right->name, [
-					new Arg($expr->left, attributes: $expr->left->getAttributes()),
+					new Arg($expr->left, attributes: $expr->getAttribute(ReversePipeTransformerVisitor::ARG_ATTRIBUTES_NAME, [])),
 				], array_merge($expr->right->getAttributes(), ['virtualPipeOperatorCall' => true])), $scope, $nodeCallback, $context);
 				$scope = $exprResult->getScope();
 				$hasYield = $exprResult->hasYield();
@@ -3394,7 +3395,7 @@ final class NodeScopeResolver
 				$isAlwaysTerminating = $exprResult->isAlwaysTerminating();
 			} elseif ($expr->right instanceof MethodCall && $expr->right->isFirstClassCallable()) {
 				$exprResult = $this->processExprNode($stmt, new MethodCall($expr->right->var, $expr->right->name, [
-					new Arg($expr->left, attributes: $expr->left->getAttributes()),
+					new Arg($expr->left, attributes: $expr->getAttribute(ReversePipeTransformerVisitor::ARG_ATTRIBUTES_NAME, [])),
 				], array_merge($expr->right->getAttributes(), ['virtualPipeOperatorCall' => true])), $scope, $nodeCallback, $context);
 				$scope = $exprResult->getScope();
 				$hasYield = $exprResult->hasYield();
@@ -3403,7 +3404,7 @@ final class NodeScopeResolver
 				$isAlwaysTerminating = $exprResult->isAlwaysTerminating();
 			} elseif ($expr->right instanceof StaticCall && $expr->right->isFirstClassCallable()) {
 				$exprResult = $this->processExprNode($stmt, new StaticCall($expr->right->class, $expr->right->name, [
-					new Arg($expr->left, attributes: $expr->left->getAttributes()),
+					new Arg($expr->left, attributes: $expr->getAttribute(ReversePipeTransformerVisitor::ARG_ATTRIBUTES_NAME, [])),
 				], array_merge($expr->right->getAttributes(), ['virtualPipeOperatorCall' => true])), $scope, $nodeCallback, $context);
 				$scope = $exprResult->getScope();
 				$hasYield = $exprResult->hasYield();
@@ -3412,7 +3413,7 @@ final class NodeScopeResolver
 				$isAlwaysTerminating = $exprResult->isAlwaysTerminating();
 			} else {
 				$exprResult = $this->processExprNode($stmt, new FuncCall($expr->right, [
-					new Arg($expr->left, attributes: $expr->left->getAttributes()),
+					new Arg($expr->left, attributes: $expr->getAttribute(ReversePipeTransformerVisitor::ARG_ATTRIBUTES_NAME, [])),
 				], array_merge($expr->right->getAttributes(), ['virtualPipeOperatorCall' => true])), $scope, $nodeCallback, $context);
 				$scope = $exprResult->getScope();
 				$hasYield = $exprResult->hasYield();
