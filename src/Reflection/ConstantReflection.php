@@ -21,4 +21,9 @@ interface ConstantReflection
 
 	public function getFileName(): ?string;
 
+	/**
+	 * @return list<AttributeReflection>
+	 */
+	public function getAttributes(): array;
+
 }

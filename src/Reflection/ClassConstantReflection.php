@@ -21,9 +21,4 @@ interface ClassConstantReflection extends ClassMemberReflection, ConstantReflect
 
 	public function getNativeType(): ?Type;
 
-	/**
-	 * @return list<AttributeReflection>
-	 */
-	public function getAttributes(): array;
-
 }

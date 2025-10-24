@@ -8,9 +8,11 @@ use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\BetterReflection\Identifier\Exception\InvalidIdentifierName;
 use PHPStan\BetterReflection\NodeCompiler\Exception\UnableToCompileNode;
+use PHPStan\BetterReflection\Reflection\Adapter\ReflectionAttributeFactory;
 use PHPStan\BetterReflection\Reflection\Adapter\ReflectionClass;
 use PHPStan\BetterReflection\Reflection\Adapter\ReflectionFunction;
 use PHPStan\BetterReflection\Reflection\Adapter\ReflectionParameter;
+use PHPStan\BetterReflection\Reflection\ReflectionAttribute as BetterReflectionAttribute;
 use PHPStan\BetterReflection\Reflection\ReflectionEnum;
 use PHPStan\BetterReflection\Reflector\Exception\IdentifierNotFound;
 use PHPStan\BetterReflection\Reflector\Reflector;
@@ -450,12 +452,20 @@ final class BetterReflectionProvider implements ReflectionProvider
 			}
 		}
 
+		if (!$isDeprecated) {
+			$isDeprecated = $constantReflection->isDeprecated();
+		}
+
 		return $this->cachedConstants[$constantName] = new RuntimeConstantReflection(
 			$constantName,
 			$constantValueType,
 			$fileName,
 			TrinaryLogic::createFromBoolean($isDeprecated),
 			$deprecatedDescription,
+			$this->attributeReflectionFactory->fromNativeReflection(
+				array_map(static fn (BetterReflectionAttribute $betterReflectionAttribute) => ReflectionAttributeFactory::create($betterReflectionAttribute), $constantReflection->getAttributes()),
+				InitializerExprContext::fromGlobalConstant($constantReflection),
+			),
 		);
 	}
 

@@ -1,0 +1,3 @@
+parameters:
+	excludePaths:
+		- ../src/Rules/Constants/ConstantAttributesRule.php

@@ -135,6 +135,21 @@ class AttributeReflectionTest extends PHPStanTestCase
 			];
 		}
 
+		if (PHP_VERSION_ID >= 80500) {
+			yield [
+				$reflectionProvider->getConstant(new Name('AttributeReflectionTest\\ExampleConstWithAttribute'), null)->getAttributes(),
+				[
+					[
+						MyAttr::class,
+						[
+							'one' => '1',
+							'two' => '2',
+						],
+					],
+				],
+			];
+		}
+
 		yield [
 			$foo->getConstructor()->getOnlyVariant()->getParameters()[0]->getAttributes(),
 			[

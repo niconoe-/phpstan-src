@@ -41,6 +41,10 @@ if (PHP_VERSION_ID < 80200) {
 	$includes[] = __DIR__ . '/new-phpunit.neon';
 }
 
+if (PHP_VERSION_ID < 80500) {
+	$includes[] = __DIR__ . '/pre-php-85.neon';
+}
+
 $config = [];
 $config['includes'] = $includes;
 

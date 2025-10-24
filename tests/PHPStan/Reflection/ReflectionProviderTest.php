@@ -108,6 +108,36 @@ class ReflectionProviderTest extends PHPStanTestCase
 		$this->assertEquals(TrinaryLogic::createFromBoolean($isDeprecated), $function->isDeprecated());
 	}
 
+	public static function dataConstantDeprecated(): iterable
+	{
+		if (PHP_VERSION_ID >= 80500) {
+			yield [
+				'AttributeReflectionTest\\ExampleConstWithAttribute',
+				false,
+			];
+			yield [
+				'AttributeReflectionTest\\DeprecatedConst',
+				true,
+			];
+		}
+
+		yield [
+			'AttributeReflectionTest\\DeprecatedConstWithPhpDoc',
+			true,
+		];
+	}
+
+	/**
+	 * @param non-empty-string $constantName
+	 */
+	#[DataProvider('dataConstantDeprecated')]
+	public function testConstantDeprecated(string $constantName, bool $isDeprecated): void
+	{
+		$reflectionProvider = self::createReflectionProvider();
+		$constant = $reflectionProvider->getConstant(new Name($constantName), null);
+		$this->assertSame(TrinaryLogic::createFromBoolean($isDeprecated)->describe(), $constant->isDeprecated()->describe());
+	}
+
 	public static function dataMethodThrowType(): array
 	{
 		return [
