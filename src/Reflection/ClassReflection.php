@@ -1434,6 +1434,12 @@ final class ClassReflection
 			return;
 		}
 
+		if ($this->isTrait() && count($this->getNativeReflection()->getAttributes('Deprecated')) > 0) {
+			$this->isDeprecated = true;
+			$this->deprecatedDescription = null;
+			return;
+		}
+
 		$this->isDeprecated = false;
 		$this->deprecatedDescription = null;
 	}

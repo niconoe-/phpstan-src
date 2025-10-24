@@ -12,6 +12,7 @@ use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use function count;
 use function sprintf;
+use function strtolower;
 
 /**
  * @implements Rule<InClassNode>
@@ -41,6 +42,15 @@ final class ClassAttributesRule implements Rule
 		);
 
 		$classReflection = $node->getClassReflection();
+
+		if (count($classReflection->getNativeReflection()->getAttributes('Deprecated')) > 0) {
+			$typeName = strtolower($classReflection->getClassTypeDescription());
+			$errors[] = RuleErrorBuilder::message(sprintf('Attribute class Deprecated cannot be used with %s %s.', $typeName, $classReflection->getDisplayName()))
+				->identifier(sprintf('%s.deprecatedAttribute', $typeName))
+				->nonIgnorable()
+				->build();
+		}
+
 		if (
 			$classReflection->isReadOnly()
 			|| $classReflection->isEnum()

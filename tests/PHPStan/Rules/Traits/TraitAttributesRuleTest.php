@@ -2,6 +2,7 @@
 
 namespace PHPStan\Rules\Traits;
 
+use PHPStan\Php\PhpVersion;
 use PHPStan\Rules\AttributesCheck;
 use PHPStan\Rules\ClassCaseSensitivityCheck;
 use PHPStan\Rules\ClassForbiddenNameCheck;
@@ -13,6 +14,7 @@ use PHPStan\Rules\Properties\PropertyReflectionFinder;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleLevelHelper;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 use const PHP_VERSION_ID;
 
 /**
@@ -49,6 +51,7 @@ class TraitAttributesRuleTest extends RuleTestCase
 				),
 				true,
 			),
+			new PhpVersion(PHP_VERSION_ID),
 		);
 	}
 
@@ -88,6 +91,23 @@ class TraitAttributesRuleTest extends RuleTestCase
 			[
 				'Attribute class AllowDynamicProperties cannot be used with trait.',
 				11,
+			],
+		]);
+	}
+
+	#[RequiresPhp('>= 8.5')]
+	public function testBugDeprecatedAttributeAllowed(): void
+	{
+		$this->analyse([__DIR__ . '/data/deprecated-attr-on-trait.php'], []);
+	}
+
+	#[RequiresPhp('< 8.5')]
+	public function testBugDeprecatedAttributeNotAllowed(): void
+	{
+		$this->analyse([__DIR__ . '/data/deprecated-attr-on-trait.php'], [
+			[
+				'Attribute class Deprecated can be used with traits only on PHP 8.5 and later.',
+				5,
 			],
 		]);
 	}

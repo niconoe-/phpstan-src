@@ -185,4 +185,22 @@ class ClassAttributesRuleTest extends RuleTestCase
 		]);
 	}
 
+	public function testDeprecatedAttribute(): void
+	{
+		$this->analyse([__DIR__ . '/data/deprecated-attr-on-class.php'], [
+			[
+				'Attribute class Deprecated cannot be used with class DeprecatedAttrOnClass\Foo.',
+				7,
+			],
+			[
+				'Attribute class Deprecated cannot be used with interface DeprecatedAttrOnClass\Bar.',
+				13,
+			],
+			[
+				'Attribute class Deprecated cannot be used with enum DeprecatedAttrOnClass\Baz.',
+				19,
+			],
+		]);
+	}
+
 }

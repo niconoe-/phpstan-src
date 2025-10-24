@@ -7,6 +7,7 @@ use Attributes\IsAttribute;
 use Attributes\IsAttribute2;
 use Attributes\IsAttribute3;
 use Attributes\IsNotAttribute;
+use DeprecatedAttributeOnTrait\DeprTrait;
 use GenericInheritance\C;
 use HasTraitUse\Bar;
 use HasTraitUse\Baz;
@@ -316,6 +317,20 @@ class ClassReflectionTest extends PHPStanTestCase
 		$this->assertTrue($classReflection->is(PHPStanTestCase::class));
 		$this->assertTrue($classReflection->is(TestCase::class));
 		$this->assertFalse($classReflection->is(RuleTestCase::class));
+	}
+
+	public static function dataDeprecatedAttribute(): iterable
+	{
+		yield [\DeprecatedAttrOnClass\Foo::class, false];
+		yield [DeprTrait::class, true]; // @phpstan-ignore classConstant.deprecatedTrait
+	}
+
+	#[DataProvider('dataDeprecatedAttribute')]
+	public function testDeprecatedAttribute(string $className, bool $expected): void
+	{
+		$reflectionProvider = self::createReflectionProvider();
+		$classReflection = $reflectionProvider->getClass($className);
+		$this->assertSame($expected, $classReflection->isDeprecated());
 	}
 
 }
