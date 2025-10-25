@@ -534,6 +534,21 @@ class CallToFunctionParametersRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/bug-4514.php'], []);
 	}
 
+	#[RequiresPhp('>= 8.0')]
+	public function testBug13719(): void
+	{
+		$this->analyse([__DIR__ . '/data/bug-13719.php'], [
+			[
+				'Unknown parameter $greetings in call to function Bug13719\non_variadic.',
+				20,
+			],
+			[
+				'Unknown parameter $greetings in call to function Bug13719\implicit_variadic.',
+				27,
+			],
+		]);
+	}
+
 	public function testBug4530(): void
 	{
 		$this->analyse([__DIR__ . '/data/bug-4530.php'], []);
