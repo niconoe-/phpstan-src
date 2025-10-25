@@ -126,6 +126,7 @@ use PHPStan\Type\NonexistentParentClassType;
 use PHPStan\Type\NullType;
 use PHPStan\Type\ObjectShapeType;
 use PHPStan\Type\ObjectType;
+use PHPStan\Type\ObjectWithoutClassType;
 use PHPStan\Type\ParserNodeTypeToPHPStanType;
 use PHPStan\Type\StaticType;
 use PHPStan\Type\StringType;
@@ -1243,7 +1244,18 @@ final class MutatingScope implements Scope, NodeCallbackInvoker
 		}
 
 		if ($node instanceof Expr\Clone_) {
-			return $this->getType($node->expr);
+			$cloneType = TypeCombinator::intersect($this->getType($node->expr), new ObjectWithoutClassType());
+
+			return TypeTraverser::map($cloneType, static function (Type $type, callable $traverse): Type {
+				if ($type instanceof UnionType || $type instanceof IntersectionType) {
+					return $traverse($type);
+				}
+				if ($type instanceof ThisType) {
+					return new StaticType($type->getClassReflection(), $type->getSubtractedType());
+				}
+
+				return $type;
+			});
 		}
 
 		if ($node instanceof Node\Scalar\Int_) {
