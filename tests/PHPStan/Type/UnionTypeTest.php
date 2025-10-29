@@ -77,13 +77,15 @@ class UnionTypeTest extends PHPStanTestCase
 	}
 
 	#[DataProvider('dataIsCallable')]
-	public function testIsCallable(UnionType $type, TrinaryLogic $expectedResult): void
+	public function testIsCallable(Type $unionType, TrinaryLogic $expectedResult): void
 	{
-		$actualResult = $type->isCallable();
+		$this->assertInstanceOf(UnionType::class, $unionType);
+
+		$actualResult = $unionType->isCallable();
 		$this->assertSame(
 			$expectedResult->describe(),
 			$actualResult->describe(),
-			sprintf('%s -> isCallable()', $type->describe(VerbosityLevel::precise())),
+			sprintf('%s -> isCallable()', $unionType->describe(VerbosityLevel::precise())),
 		);
 	}
 
@@ -699,13 +701,15 @@ class UnionTypeTest extends PHPStanTestCase
 	}
 
 	#[DataProvider('dataIsScalar')]
-	public function testIsScalar(UnionType $type, TrinaryLogic $expectedResult): void
+	public function testIsScalar(Type $unionType, TrinaryLogic $expectedResult): void
 	{
-		$actualResult = $type->isScalar();
+		$this->assertInstanceOf(UnionType::class, $unionType);
+
+		$actualResult = $unionType->isScalar();
 		$this->assertSame(
 			$expectedResult->describe(),
 			$actualResult->describe(),
-			sprintf('%s -> isScalar()', $type->describe(VerbosityLevel::precise())),
+			sprintf('%s -> isScalar()', $unionType->describe(VerbosityLevel::precise())),
 		);
 	}
 
