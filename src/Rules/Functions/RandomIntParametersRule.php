@@ -14,7 +14,6 @@ use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\IntegerRangeType;
 use PHPStan\Type\VerbosityLevel;
-use function array_values;
 use function count;
 use function sprintf;
 
@@ -49,7 +48,7 @@ final class RandomIntParametersRule implements Rule
 			return [];
 		}
 
-		$args = array_values($node->getArgs());
+		$args = $node->getArgs();
 		if (count($args) < 2) {
 			return [];
 		}

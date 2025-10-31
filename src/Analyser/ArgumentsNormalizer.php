@@ -13,8 +13,10 @@ use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\Constant\ConstantArrayType;
+use function array_is_list;
 use function array_key_exists;
 use function array_keys;
+use function array_values;
 use function count;
 use function ksort;
 use function max;
@@ -182,8 +184,8 @@ final class ArgumentsNormalizer
 	}
 
 	/**
-	 * @param Arg[] $callArgs
-	 * @return ?array<int, Arg>
+	 * @param list<Arg> $callArgs
+	 * @return ?list<Arg>
 	 */
 	public static function reorderArgs(ParametersAcceptor $parametersAcceptor, array $callArgs): ?array
 	{
@@ -320,6 +322,10 @@ final class ArgumentsNormalizer
 
 		foreach ($appendArgs as $arg) {
 			$reorderedArgs[] = $arg;
+		}
+
+		if (!array_is_list($reorderedArgs)) {
+			$reorderedArgs = array_values($reorderedArgs);
 		}
 
 		return $reorderedArgs;
