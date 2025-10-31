@@ -10,34 +10,40 @@ use PHPStan\Type\DynamicFunctionReturnTypeExtension;
 use PHPStan\Type\NullType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
+use function count;
+use function in_array;
 
 #[AutowiredService]
-final class ArrayKeyFirstDynamicReturnTypeExtension implements DynamicFunctionReturnTypeExtension
+final class ArrayFirstLastDynamicReturnTypeExtension implements DynamicFunctionReturnTypeExtension
 {
 
 	public function isFunctionSupported(FunctionReflection $functionReflection): bool
 	{
-		return $functionReflection->getName() === 'array_key_first';
+		return in_array($functionReflection->getName(), ['array_first', 'array_last'], true);
 	}
 
 	public function getTypeFromFunctionCall(FunctionReflection $functionReflection, FuncCall $functionCall, Scope $scope): ?Type
 	{
-		if (!isset($functionCall->getArgs()[0])) {
+		$args = $functionCall->getArgs();
+
+		if (count($args) < 1) {
 			return null;
 		}
 
-		$argType = $scope->getType($functionCall->getArgs()[0]->value);
+		$argType = $scope->getType($args[0]->value);
 		$iterableAtLeastOnce = $argType->isIterableAtLeastOnce();
+
 		if ($iterableAtLeastOnce->no()) {
 			return new NullType();
 		}
 
-		$keyType = $argType->getIterableKeyType();
+		$valueType = $argType->getIterableValueType();
+
 		if ($iterableAtLeastOnce->yes()) {
-			return $keyType;
+			return $valueType;
 		}
 
-		return TypeCombinator::union($keyType, new NullType());
+		return TypeCombinator::union($valueType, new NullType());
 	}
 
 }
