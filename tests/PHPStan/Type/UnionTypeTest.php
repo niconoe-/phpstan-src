@@ -176,20 +176,22 @@ class UnionTypeTest extends PHPStanTestCase
 	 */
 	public static function dataIsSuperTypeOf(): Iterator
 	{
+		$int = new IntegerType();
+		$string = new StringType();
 		$unionTypeA = new UnionType([
-			new IntegerType(),
-			new StringType(),
+			$int,
+			$string,
 		]);
 
 		yield [
 			$unionTypeA,
-			$unionTypeA->getTypes()[0],
+			$int,
 			TrinaryLogic::createYes(),
 		];
 
 		yield [
 			$unionTypeA,
-			$unionTypeA->getTypes()[1],
+			$string,
 			TrinaryLogic::createYes(),
 		];
 
@@ -259,23 +261,25 @@ class UnionTypeTest extends PHPStanTestCase
 			TrinaryLogic::createNo(),
 		];
 
+		$intersectionTypeB = new IntersectionType([
+			new ObjectType('ArrayObject'),
+			new IterableType(new MixedType(), new ObjectType('DatePeriod')),
+		]);
+		$arrayTypeB = new ArrayType(new MixedType(), new ObjectType('DatePeriod'));
 		$unionTypeB = new UnionType([
-			new IntersectionType([
-				new ObjectType('ArrayObject'),
-				new IterableType(new MixedType(), new ObjectType('DatePeriod')),
-			]),
-			new ArrayType(new MixedType(), new ObjectType('DatePeriod')),
+			$intersectionTypeB,
+			$arrayTypeB,
 		]);
 
 		yield [
 			$unionTypeB,
-			$unionTypeB->getTypes()[0],
+			$intersectionTypeB,
 			TrinaryLogic::createYes(),
 		];
 
 		yield [
 			$unionTypeB,
-			$unionTypeB->getTypes()[1],
+			$arrayTypeB,
 			TrinaryLogic::createYes(),
 		];
 
@@ -473,9 +477,11 @@ class UnionTypeTest extends PHPStanTestCase
 	 */
 	public static function dataIsSubTypeOf(): Iterator
 	{
+		$int = new IntegerType();
+		$string = new StringType();
 		$unionTypeA = new UnionType([
-			new IntegerType(),
-			new StringType(),
+			$int,
+			$string,
 		]);
 
 		yield [
@@ -498,13 +504,13 @@ class UnionTypeTest extends PHPStanTestCase
 
 		yield [
 			$unionTypeA,
-			$unionTypeA->getTypes()[0],
+			$int,
 			TrinaryLogic::createMaybe(),
 		];
 
 		yield [
 			$unionTypeA,
-			$unionTypeA->getTypes()[1],
+			$string,
 			TrinaryLogic::createMaybe(),
 		];
 
@@ -562,13 +568,15 @@ class UnionTypeTest extends PHPStanTestCase
 			TrinaryLogic::createNo(),
 		];
 
+		$intersectionTypeB = new IntersectionType([
+			new ObjectType('ArrayObject'),
+			new IterableType(new MixedType(), new ObjectType('Item')),
+			new CallableType(),
+		]);
+		$arrayTypeB = new ArrayType(new MixedType(), new ObjectType('Item'));
 		$unionTypeB = new UnionType([
-			new IntersectionType([
-				new ObjectType('ArrayObject'),
-				new IterableType(new MixedType(), new ObjectType('Item')),
-				new CallableType(),
-			]),
-			new ArrayType(new MixedType(), new ObjectType('Item')),
+			$intersectionTypeB,
+			$arrayTypeB,
 		]);
 
 		yield [
@@ -591,13 +599,13 @@ class UnionTypeTest extends PHPStanTestCase
 
 		yield [
 			$unionTypeB,
-			$unionTypeB->getTypes()[0],
+			$intersectionTypeB,
 			TrinaryLogic::createMaybe(),
 		];
 
 		yield [
 			$unionTypeB,
-			$unionTypeB->getTypes()[1],
+			$arrayTypeB,
 			TrinaryLogic::createMaybe(),
 		];
 
