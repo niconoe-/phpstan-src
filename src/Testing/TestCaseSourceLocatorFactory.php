@@ -18,6 +18,7 @@ use PHPStan\Reflection\BetterReflection\SourceLocator\ComposerJsonAndInstalledJs
 use PHPStan\Reflection\BetterReflection\SourceLocator\FileNodesFetcher;
 use PHPStan\Reflection\BetterReflection\SourceLocator\OptimizedSingleFileSourceLocatorRepository;
 use PHPStan\Reflection\BetterReflection\SourceLocator\PhpVersionBlacklistSourceLocator;
+use PHPStan\Reflection\BetterReflection\SourceLocator\SkipPolyfillSourceLocator;
 use ReflectionClass;
 use function dirname;
 use function is_file;
@@ -84,7 +85,7 @@ final class TestCaseSourceLocatorFactory
 				$composerLocators[] = $composerSourceLocator;
 			}
 
-			self::$composerSourceLocatorsCache[$cacheKey] = $composerLocators;
+			self::$composerSourceLocatorsCache[$cacheKey] = [new SkipPolyfillSourceLocator(new AggregateSourceLocator($composerLocators), $this->phpVersion)];
 		}
 
 		$locators = self::$composerSourceLocatorsCache[$cacheKey] ?? [];
