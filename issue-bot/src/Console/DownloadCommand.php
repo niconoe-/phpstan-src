@@ -90,11 +90,6 @@ class DownloadCommand extends Command
 
 		$this->savePlaygroundCache(new PlaygroundCache($cachedResults));
 
-		$chunkSize = (int) ceil(count($hashes) / 20);
-		if ($chunkSize < 1) {
-			throw new Exception('Chunk size less than 1');
-		}
-
 		$matrix = [];
 		foreach ([70300, 70400, 80000, 80100, 80200, 80300, 80400, 80500] as $phpVersion) {
 			$phpVersionHashes = [];
@@ -128,7 +123,7 @@ class DownloadCommand extends Command
 			if (count($phpVersionHashes) === 0) {
 				continue;
 			}
-			$chunkSize = (int) ceil(count($phpVersionHashes) / 18);
+			$chunkSize = (int) ceil(count($phpVersionHashes) / 25);
 			if ($chunkSize < 1) {
 				throw new Exception('Chunk size less than 1');
 			}
