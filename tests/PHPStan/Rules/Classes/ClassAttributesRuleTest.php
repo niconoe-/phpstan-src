@@ -2,7 +2,6 @@
 
 namespace PHPStan\Rules\Classes;
 
-use PHPStan\Php\PhpVersion;
 use PHPStan\Rules\AttributesCheck;
 use PHPStan\Rules\ClassCaseSensitivityCheck;
 use PHPStan\Rules\ClassForbiddenNameCheck;
@@ -15,7 +14,6 @@ use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleLevelHelper;
 use PHPStan\Testing\RuleTestCase;
 use PHPUnit\Framework\Attributes\RequiresPhp;
-use const PHP_VERSION_ID;
 
 /**
  * @extends RuleTestCase<ClassAttributesRule>
@@ -187,6 +185,7 @@ class ClassAttributesRuleTest extends RuleTestCase
 		]);
 	}
 
+	#[RequiresPhp('>= 8.0')]
 	public function testDeprecatedAttribute(): void
 	{
 		$this->analyse([__DIR__ . '/data/deprecated-attr-on-class.php'], [
