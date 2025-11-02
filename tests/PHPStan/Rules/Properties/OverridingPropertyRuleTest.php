@@ -17,12 +17,15 @@ class OverridingPropertyRuleTest extends RuleTestCase
 
 	private bool $reportMaybes;
 
+	private bool $checkMissingOverridePropertyAttribute = false;
+
 	protected function getRule(): Rule
 	{
 		return new OverridingPropertyRule(
 			self::getContainer()->getByType(PhpVersion::class),
 			true,
 			$this->reportMaybes,
+			$this->checkMissingOverridePropertyAttribute,
 		);
 	}
 
@@ -281,6 +284,35 @@ class OverridingPropertyRuleTest extends RuleTestCase
 				23,
 			],
 		]);
+	}
+
+	#[RequiresPhp('>= 8.5')]
+	public function testOverrideAttribute(): void
+	{
+		$this->checkMissingOverridePropertyAttribute = true;
+		$this->reportMaybes = true;
+		$this->analyse([__DIR__ . '/data/property-override-attr.php'], [
+			[
+				'Property PropertyOverrideAttr\Bar::$bar has #[\Override] attribute but does not override any property.',
+				19,
+			],
+			[
+				'Property PropertyOverrideAttr\Baz::$bar has #[\Override] attribute but does not override any property.',
+				30,
+			],
+			[
+				'Property PropertyOverrideAttr\Lorem::$foo overrides property PropertyOverrideAttr\Foo::$foo but is missing the #[\Override] attribute.',
+				44,
+			],
+		]);
+	}
+
+	#[RequiresPhp('>= 8.5')]
+	public function testFixMissingOverrideAttribute(): void
+	{
+		$this->checkMissingOverridePropertyAttribute = true;
+		$this->reportMaybes = true;
+		$this->fix(__DIR__ . '/data/property-override-attr-missing.php', __DIR__ . '/data/property-override-attr-missing.php.fixed');
 	}
 
 }

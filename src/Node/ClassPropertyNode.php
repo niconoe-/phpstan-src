@@ -65,6 +65,11 @@ final class ClassPropertyNode extends NodeAbstract implements VirtualNode
 		return $this->isPromotedFromTrait;
 	}
 
+	public function getOriginalNode(): Node\Stmt\Property|Node\Param
+	{
+		return $this->originalNode;
+	}
+
 	public function getPhpDoc(): ?string
 	{
 		return $this->phpDoc;
@@ -185,6 +190,14 @@ final class ClassPropertyNode extends NodeAbstract implements VirtualNode
 	public function isReadable(): bool
 	{
 		return $this->classReflection->getNativeProperty($this->name)->isReadable();
+	}
+
+	/**
+	 * @return Node\AttributeGroup[]
+	 */
+	public function getAttrGroups(): array
+	{
+		return $this->originalNode->attrGroups;
 	}
 
 }

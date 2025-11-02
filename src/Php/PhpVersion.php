@@ -459,4 +459,9 @@ final class PhpVersion
 		return $this->versionId >= 80500;
 	}
 
+	public function supportsOverrideAttributeOnProperty(): bool
+	{
+		return $this->versionId >= 80500;
+	}
+
 }

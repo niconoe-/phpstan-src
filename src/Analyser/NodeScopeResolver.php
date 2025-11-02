@@ -1038,6 +1038,7 @@ final class NodeScopeResolver
 
 				$propStmt = clone $stmt;
 				$propStmt->setAttributes($prop->getAttributes());
+				$propStmt->setAttribute('originalPropertyStmt', $stmt);
 				$nodeCallback(
 					new ClassPropertyNode(
 						$propertyName,

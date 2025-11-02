@@ -3,6 +3,7 @@
 namespace PHPStan\Rules\Properties;
 
 use PhpParser\Node;
+use PhpParser\Node\Attribute;
 use PHPStan\Analyser\Scope;
 use PHPStan\DependencyInjection\AutowiredParameter;
 use PHPStan\DependencyInjection\RegisteredRule;
@@ -30,6 +31,8 @@ final class OverridingPropertyRule implements Rule
 		private bool $checkPhpDocMethodSignatures,
 		#[AutowiredParameter(ref: '%reportMaybesInPropertyPhpDocTypes%')]
 		private bool $reportMaybes,
+		#[AutowiredParameter]
+		private bool $checkMissingOverridePropertyAttribute,
 	)
 	{
 	}
@@ -44,10 +47,63 @@ final class OverridingPropertyRule implements Rule
 		$classReflection = $node->getClassReflection();
 		$prototype = $this->findPrototype($classReflection, $node->getName());
 		if ($prototype === null) {
+			if (
+				$this->phpVersion->supportsOverrideAttribute()
+				&& $this->hasOverrideAttribute($node->getAttrGroups())
+			) {
+				$originalNode = $node->getOriginalNode();
+				if ($originalNode instanceof Node\Stmt\Property) {
+					/** @var Node\Stmt\Property $originalNode */
+					$originalNode = $originalNode->getAttribute('originalPropertyStmt');
+				}
+
+				return [
+					RuleErrorBuilder::message(sprintf(
+						'Property %s::$%s has #[\Override] attribute but does not override any property.',
+						$node->getClassReflection()->getDisplayName(),
+						$node->getName(),
+					))
+						->nonIgnorable()
+						->identifier('property.override')
+						->fixNode($originalNode, function ($property) {
+							$property->attrGroups = $this->filterOverrideAttribute($property->attrGroups);
+							return $property;
+						})
+						->build(),
+				];
+			}
 			return [];
 		}
 
 		$errors = [];
+		if (
+			$this->phpVersion->supportsOverrideAttributeOnProperty()
+			&& $this->checkMissingOverridePropertyAttribute
+			&& !$scope->isInTrait()
+			&& !$this->hasOverrideAttribute($node->getAttrGroups())
+		) {
+			$originalNode = $node->getOriginalNode();
+			if ($originalNode instanceof Node\Stmt\Property) {
+				/** @var Node\Stmt\Property $originalNode */
+				$originalNode = $originalNode->getAttribute('originalPropertyStmt');
+			}
+			$errors[] = RuleErrorBuilder::message(sprintf(
+				'Property %s::$%s overrides property %s::$%s but is missing the #[\Override] attribute.',
+				$node->getClassReflection()->getDisplayName(),
+				$node->getName(),
+				$prototype->getDeclaringClass()->getDisplayName(),
+				$prototype->getName(),
+			))
+				->identifier('property.missingOverride')
+				->fixNode($originalNode, static function ($property) {
+					$property->attrGroups[] = new Node\AttributeGroup([
+						new Attribute(new Node\Name\FullyQualified('Override')),
+					]);
+
+					return $property;
+				})
+				->build();
+		}
 		if ($prototype->isStatic()) {
 			if (!$node->isStatic()) {
 				$errors[] = RuleErrorBuilder::message(sprintf(
@@ -354,6 +410,46 @@ final class OverridingPropertyRule implements Rule
 		}
 
 		return null;
+	}
+
+	/**
+	 * @param Node\AttributeGroup[] $attrGroups
+	 * @return Node\AttributeGroup[]
+	 */
+	private function filterOverrideAttribute(array $attrGroups): array
+	{
+		foreach ($attrGroups as $i => $attrGroup) {
+			foreach ($attrGroup->attrs as $j => $attr) {
+				if ($attr->name->toLowerString() !== 'override') {
+					continue;
+				}
+
+				unset($attrGroup->attrs[$j]);
+				if (count($attrGroup->attrs) !== 0) {
+					continue;
+				}
+
+				unset($attrGroups[$i]);
+			}
+		}
+
+		return $attrGroups;
+	}
+
+	/**
+	 * @param Node\AttributeGroup[] $attrGroups
+	 */
+	private function hasOverrideAttribute(array $attrGroups): bool
+	{
+		foreach ($attrGroups as $attrGroup) {
+			foreach ($attrGroup->attrs as $attr) {
+				if ($attr->name->toLowerString() === 'override') {
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 
 }

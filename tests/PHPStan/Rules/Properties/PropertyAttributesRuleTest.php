@@ -2,6 +2,7 @@
 
 namespace PHPStan\Rules\Properties;
 
+use PHPStan\Php\PhpVersion;
 use PHPStan\Rules\AttributesCheck;
 use PHPStan\Rules\ClassCaseSensitivityCheck;
 use PHPStan\Rules\ClassForbiddenNameCheck;
@@ -12,6 +13,8 @@ use PHPStan\Rules\PhpDoc\UnresolvableTypeHelper;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleLevelHelper;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\RequiresPhp;
+use const PHP_VERSION_ID;
 
 /**
  * @extends RuleTestCase<PropertyAttributesRule>
@@ -43,6 +46,7 @@ class PropertyAttributesRuleTest extends RuleTestCase
 				),
 				true,
 			),
+			new PhpVersion(PHP_VERSION_ID),
 		);
 	}
 
@@ -66,6 +70,27 @@ class PropertyAttributesRuleTest extends RuleTestCase
 			[
 				'Attribute class DeprecatedPropertyAttribute\DoSomethingTheOldWayWithDescription is deprecated: Use something else please',
 				19,
+			],
+		]);
+	}
+
+	#[RequiresPhp('>= 8.5')]
+	public function testOverrideAttributeAllowed(): void
+	{
+		$this->analyse([__DIR__ . '/data/override-attr-on-property.php'], []);
+	}
+
+	#[RequiresPhp('< 8.5')]
+	public function testOverrideAttributeNotAllowed(): void
+	{
+		$this->analyse([__DIR__ . '/data/override-attr-on-property.php'], [
+			[
+				'Attribute class Override can be used with properties only on PHP 8.5 and later.',
+				11,
+			],
+			[
+				'Attribute class Override can be used with properties only on PHP 8.5 and later.',
+				14,
 			],
 		]);
 	}
