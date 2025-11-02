@@ -963,4 +963,21 @@ class TypesAssignedToPropertiesRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/bug-13654.php'], []);
 	}
 
+	#[RequiresPhp('>= 8.5')]
+	public function testCloneWith(): void
+	{
+		$this->checkExplicitMixed = true;
+		$this->checkImplicitMixed = true;
+		$this->analyse([__DIR__ . '/data/types-assigned-to-property-clone-with.php'], [
+			[
+				'Property TypesAssignedToPropertyCloneWith\Foo::$i (int) does not accept string.',
+				21,
+			],
+			[
+				'Property TypesAssignedToPropertyCloneWith\Foo::$j (string) does not accept int.',
+				21,
+			],
+		]);
+	}
+
 }

@@ -2624,6 +2624,43 @@ final class NodeScopeResolver
 				$returnType = $parametersAcceptor->getReturnType();
 				$isAlwaysTerminating = $isAlwaysTerminating || $returnType instanceof NeverType && $returnType->isExplicit();
 			}
+
+			if (
+				$expr->name instanceof Name
+				&& $functionReflection !== null
+				&& $functionReflection->getName() === 'clone'
+				&& count($expr->getArgs()) === 2
+			) {
+				$clonePropertiesArgType = $scope->getType($expr->getArgs()[1]->value);
+				$cloneExpr = new TypeExpr($scope->getType(new Expr\Clone_($expr->getArgs()[0]->value)));
+				$clonePropertiesArgTypeConstantArrays = $clonePropertiesArgType->getConstantArrays();
+				foreach ($clonePropertiesArgTypeConstantArrays as $clonePropertiesArgTypeConstantArray) {
+					foreach ($clonePropertiesArgTypeConstantArray->getKeyTypes() as $i => $clonePropertyKeyType) {
+						$clonePropertyKeyTypeScalars = $clonePropertyKeyType->getConstantScalarValues();
+						$propertyAttributes = $expr->getAttributes();
+						$propertyAttributes['inCloneWith'] = true;
+						if (count($clonePropertyKeyTypeScalars) === 1) {
+							$this->processVirtualAssign(
+								$scope,
+								$stmt,
+								new PropertyFetch($cloneExpr, (string) $clonePropertyKeyTypeScalars[0], $propertyAttributes),
+								new TypeExpr($clonePropertiesArgTypeConstantArray->getValueTypes()[$i]),
+								$nodeCallback,
+							);
+							continue;
+						}
+
+						$this->processVirtualAssign(
+							$scope,
+							$stmt,
+							new PropertyFetch($cloneExpr, new TypeExpr($clonePropertyKeyType), $propertyAttributes),
+							new TypeExpr($clonePropertiesArgTypeConstantArray->getValueTypes()[$i]),
+							$nodeCallback,
+						);
+					}
+				}
+			}
+
 			$result = $this->processArgs($stmt, $functionReflection, null, $parametersAcceptor, $expr, $scope, $nodeCallback, $context);
 			$scope = $result->getScope();
 			$hasYield = $result->hasYield();

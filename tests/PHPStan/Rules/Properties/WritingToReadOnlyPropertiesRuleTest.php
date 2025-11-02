@@ -149,4 +149,16 @@ class WritingToReadOnlyPropertiesRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/bug-13530.php'], []);
 	}
 
+	#[RequiresPhp('>= 8.5')]
+	public function testCloneWith(): void
+	{
+		$this->checkThisOnly = false;
+		$this->analyse([__DIR__ . '/data/writing-to-readonly-properties-clone-with.php'], [
+			[
+				'Property WritingToReadonlyPropertiesCloneWith\Foo::$i is not writable.',
+				16,
+			],
+		]);
+	}
+
 }

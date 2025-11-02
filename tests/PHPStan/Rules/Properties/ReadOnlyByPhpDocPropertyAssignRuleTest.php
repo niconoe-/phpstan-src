@@ -185,4 +185,10 @@ class ReadOnlyByPhpDocPropertyAssignRuleTest extends RuleTestCase
 		]);
 	}
 
+	#[RequiresPhp('>= 8.5')]
+	public function testCloneWith(): void
+	{
+		$this->analyse([__DIR__ . '/data/readonly-phpdoc-property-assign-clone-with.php'], []);
+	}
+
 }

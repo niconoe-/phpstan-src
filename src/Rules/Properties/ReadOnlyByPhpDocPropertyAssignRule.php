@@ -47,6 +47,11 @@ final class ReadOnlyByPhpDocPropertyAssignRule implements Rule
 			return [];
 		}
 
+		$inCloneWith = (bool) $propertyFetch->getAttribute('inCloneWith', false);
+		if ($inCloneWith) {
+			return [];
+		}
+
 		$inFunction = $scope->getFunction();
 		if (
 			$inFunction instanceof PhpMethodFromParserNodeReflection

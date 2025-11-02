@@ -174,4 +174,10 @@ class ReadOnlyPropertyAssignRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/bug-12537.php'], []);
 	}
 
+	#[RequiresPhp('>= 8.5')]
+	public function testCloneWith(): void
+	{
+		$this->analyse([__DIR__ . '/data/readonly-property-assign-clone-with.php'], []);
+	}
+
 }

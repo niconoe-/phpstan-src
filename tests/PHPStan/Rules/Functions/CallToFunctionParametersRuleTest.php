@@ -2461,4 +2461,19 @@ class CallToFunctionParametersRuleTest extends RuleTestCase
 		]);
 	}
 
+	#[RequiresPhp('>= 8.5')]
+	public function testClone(): void
+	{
+		$this->analyse([__DIR__ . '/data/clone-function.php'], [
+			[
+				'Parameter #2 $withProperties of function clone expects array, int given.',
+				12,
+			],
+			[
+				'Function clone invoked with 3 parameters, 1-2 required.',
+				13,
+			],
+		]);
+	}
+
 }

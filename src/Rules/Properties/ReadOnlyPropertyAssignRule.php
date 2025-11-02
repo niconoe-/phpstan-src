@@ -46,6 +46,11 @@ final class ReadOnlyPropertyAssignRule implements Rule
 			return [];
 		}
 
+		$inCloneWith = (bool) $propertyFetch->getAttribute('inCloneWith', false);
+		if ($inCloneWith) {
+			return [];
+		}
+
 		$errors = [];
 		$reflections = $this->propertyReflectionFinder->findPropertyReflectionsFromNode($propertyFetch, $scope);
 		foreach ($reflections as $propertyReflection) {

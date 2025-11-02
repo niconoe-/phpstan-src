@@ -191,4 +191,31 @@ class AccessPropertiesInAssignRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/bug-13123.php'], []);
 	}
 
+	#[RequiresPhp('>= 8.5')]
+	public function testCloneWith(): void
+	{
+		$this->analyse([__DIR__ . '/data/clone-with.php'], [
+			[
+				'Access to private property AccessPropertiesInAssignCloneWith\Foo::$priv.',
+				26,
+			],
+			[
+				'Access to protected property AccessPropertiesInAssignCloneWith\Foo::$prot.',
+				26,
+			],
+			[
+				'Access to private property AccessPropertiesInAssignCloneWith\FooReadonly::$priv.',
+				56,
+			],
+			[
+				'Access to protected property AccessPropertiesInAssignCloneWith\FooReadonly::$prot.',
+				56,
+			],
+			[
+				'Assign to protected(set) property AccessPropertiesInAssignCloneWith\FooReadonly::$pub.',
+				56,
+			],
+		]);
+	}
+
 }

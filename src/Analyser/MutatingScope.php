@@ -91,6 +91,7 @@ use PHPStan\TrinaryLogic;
 use PHPStan\Type\Accessory\AccessoryArrayListType;
 use PHPStan\Type\Accessory\AccessoryLiteralStringType;
 use PHPStan\Type\Accessory\HasOffsetValueType;
+use PHPStan\Type\Accessory\HasPropertyType;
 use PHPStan\Type\Accessory\NonEmptyArrayType;
 use PHPStan\Type\Accessory\OversizedArrayType;
 use PHPStan\Type\ArrayType;
@@ -2525,6 +2526,30 @@ final class MutatingScope implements Scope, NodeCallbackInvoker
 			);
 			$normalizedNode = ArgumentsNormalizer::reorderFuncArguments($parametersAcceptor, $node);
 			if ($normalizedNode !== null) {
+				if ($functionReflection->getName() === 'clone' && count($normalizedNode->getArgs()) > 0) {
+					$cloneType = $this->getType(new Expr\Clone_($normalizedNode->getArgs()[0]->value));
+					if (count($normalizedNode->getArgs()) === 2) {
+						$propertiesType = $this->getType($normalizedNode->getArgs()[1]->value);
+						if ($propertiesType->isConstantArray()->yes()) {
+							$constantArrays = $propertiesType->getConstantArrays();
+							if (count($constantArrays) === 1) {
+								$accessories = [];
+								foreach ($constantArrays[0]->getKeyTypes() as $keyType) {
+									$constantKeyTypes = $keyType->getConstantScalarValues();
+									if (count($constantKeyTypes) !== 1) {
+										return $cloneType;
+									}
+									$accessories[] = new HasPropertyType((string) $constantKeyTypes[0]);
+								}
+								if (count($accessories) > 0 && count($accessories) <= 16) {
+									return TypeCombinator::intersect($cloneType, ...$accessories);
+								}
+							}
+						}
+					}
+
+					return $cloneType;
+				}
 				$resolvedType = $this->getDynamicFunctionReturnType($parametersAcceptor, $normalizedNode, $functionReflection);
 				if ($resolvedType !== null) {
 					return $resolvedType;
