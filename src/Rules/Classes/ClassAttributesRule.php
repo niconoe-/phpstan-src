@@ -32,24 +32,25 @@ final class ClassAttributesRule implements Rule
 
 	public function processNode(Node $node, Scope $scope): array
 	{
-		$classLikeNode = $node->getOriginalNode();
+		$classReflection = $node->getClassReflection();
 
+		if (count($classReflection->getNativeReflection()->getAttributes('Deprecated')) > 0) {
+			$typeName = strtolower($classReflection->getClassTypeDescription());
+			return [
+				RuleErrorBuilder::message(sprintf('Attribute class Deprecated cannot be used with %s %s.', $typeName, $classReflection->getDisplayName()))
+					->identifier(sprintf('%s.deprecatedAttribute', $typeName))
+					->nonIgnorable()
+					->build(),
+			];
+		}
+
+		$classLikeNode = $node->getOriginalNode();
 		$errors = $this->attributesCheck->check(
 			$scope,
 			$classLikeNode->attrGroups,
 			Attribute::TARGET_CLASS,
 			'class',
 		);
-
-		$classReflection = $node->getClassReflection();
-
-		if (count($classReflection->getNativeReflection()->getAttributes('Deprecated')) > 0) {
-			$typeName = strtolower($classReflection->getClassTypeDescription());
-			$errors[] = RuleErrorBuilder::message(sprintf('Attribute class Deprecated cannot be used with %s %s.', $typeName, $classReflection->getDisplayName()))
-				->identifier(sprintf('%s.deprecatedAttribute', $typeName))
-				->nonIgnorable()
-				->build();
-		}
 
 		if (
 			$classReflection->isReadOnly()
