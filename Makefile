@@ -118,6 +118,9 @@ lint:
 		--exclude tests/PHPStan/Rules/Methods/data/typehints-nodiscard.php \
 		--exclude tests/PHPStan/Rules/Cast/data/deprecated-cast.php \
 		--exclude tests/PHPStan/Rules/Classes/data/deprecated-attr-on-class.php \
+		--exclude tests/PHPStan/Rules/Properties/data/property-override-attr-missing.php \
+		--exclude tests/PHPStan/Rules/Properties/data/override-attr-on-property.php \
+		--exclude tests/PHPStan/Rules/Properties/data/property-override-attr.php \
 		src tests
 
 install-paratest:
