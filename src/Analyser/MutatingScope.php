@@ -84,7 +84,6 @@ use PHPStan\Reflection\Php\PhpFunctionFromParserNodeReflection;
 use PHPStan\Reflection\Php\PhpMethodFromParserNodeReflection;
 use PHPStan\Reflection\PropertyReflection;
 use PHPStan\Reflection\ReflectionProvider;
-use PHPStan\Reflection\TrivialParametersAcceptor;
 use PHPStan\Rules\Properties\PropertyReflectionFinder;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\TrinaryLogic;
@@ -237,7 +236,7 @@ final class MutatingScope implements Scope, NodeCallbackInvoker
 		private array $nativeExpressionTypes = [],
 		private array $conditionalExpressions = [],
 		private array $inClosureBindScopeClasses = [],
-		private ?ParametersAcceptor $anonymousFunctionReflection = null,
+		private ?ClosureType $anonymousFunctionReflection = null,
 		private bool $inFirstLevelStatement = true,
 		private array $currentlyAssignedExpressions = [],
 		private array $currentlyAllowedUndefinedExpressions = [],
@@ -754,7 +753,7 @@ final class MutatingScope implements Scope, NodeCallbackInvoker
 	}
 
 	/** @api */
-	public function getAnonymousFunctionReflection(): ?ParametersAcceptor
+	public function getAnonymousFunctionReflection(): ?ClosureType
 	{
 		return $this->anonymousFunctionReflection;
 	}
@@ -3900,7 +3899,7 @@ final class MutatingScope implements Scope, NodeCallbackInvoker
 			array_merge($this->getNativeConstantTypes(), $nativeTypes),
 			[],
 			$this->inClosureBindScopeClasses,
-			new TrivialParametersAcceptor(),
+			new ClosureType(),
 			true,
 			[],
 			[],
@@ -4027,7 +4026,7 @@ final class MutatingScope implements Scope, NodeCallbackInvoker
 			$arrowFunctionScope->nativeExpressionTypes,
 			$arrowFunctionScope->conditionalExpressions,
 			$arrowFunctionScope->inClosureBindScopeClasses,
-			new TrivialParametersAcceptor(),
+			new ClosureType(),
 			true,
 			[],
 			[],

@@ -16,9 +16,9 @@ use PHPStan\Reflection\FunctionReflection;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\NamespaceAnswerer;
 use PHPStan\Reflection\ParameterReflection;
-use PHPStan\Reflection\ParametersAcceptor;
 use PHPStan\Reflection\Php\PhpFunctionFromParserNodeReflection;
 use PHPStan\TrinaryLogic;
+use PHPStan\Type\ClosureType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeWithClassName;
 
@@ -98,7 +98,7 @@ interface Scope extends ClassMemberAccessAnswerer, NamespaceAnswerer
 	 */
 	public function isInAnonymousFunction(): bool;
 
-	public function getAnonymousFunctionReflection(): ?ParametersAcceptor;
+	public function getAnonymousFunctionReflection(): ?ClosureType;
 
 	public function getAnonymousFunctionReturnType(): ?Type;
 

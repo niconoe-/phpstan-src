@@ -4931,7 +4931,7 @@ final class NodeScopeResolver
 			$passedToType,
 		));
 		$arrowFunctionType = $arrowFunctionScope->getAnonymousFunctionReflection();
-		if (!$arrowFunctionType instanceof ClosureType) {
+		if ($arrowFunctionType === null) {
 			throw new ShouldNotHappenException();
 		}
 		$nodeCallback(new InArrowFunctionNode($arrowFunctionType, $expr), $arrowFunctionScope);

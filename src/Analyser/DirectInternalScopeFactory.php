@@ -10,10 +10,10 @@ use PHPStan\Parser\Parser;
 use PHPStan\Php\PhpVersion;
 use PHPStan\Reflection\AttributeReflectionFactory;
 use PHPStan\Reflection\InitializerExprTypeResolver;
-use PHPStan\Reflection\ParametersAcceptor;
 use PHPStan\Reflection\Php\PhpFunctionFromParserNodeReflection;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\Properties\PropertyReflectionFinder;
+use PHPStan\Type\ClosureType;
 
 final class DirectInternalScopeFactory implements InternalScopeFactory
 {
@@ -51,7 +51,7 @@ final class DirectInternalScopeFactory implements InternalScopeFactory
 		array $nativeExpressionTypes = [],
 		array $conditionalExpressions = [],
 		array $inClosureBindScopeClasses = [],
-		?ParametersAcceptor $anonymousFunctionReflection = null,
+		?ClosureType $anonymousFunctionReflection = null,
 		bool $inFirstLevelStatement = true,
 		array $currentlyAssignedExpressions = [],
 		array $currentlyAllowedUndefinedExpressions = [],

@@ -5,8 +5,8 @@ namespace PHPStan\Analyser;
 use PHPStan\Reflection\FunctionReflection;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParameterReflection;
-use PHPStan\Reflection\ParametersAcceptor;
 use PHPStan\Reflection\Php\PhpFunctionFromParserNodeReflection;
+use PHPStan\Type\ClosureType;
 
 interface InternalScopeFactory
 {
@@ -29,7 +29,7 @@ interface InternalScopeFactory
 		array $nativeExpressionTypes = [],
 		array $conditionalExpressions = [],
 		array $inClosureBindScopeClasses = [],
-		?ParametersAcceptor $anonymousFunctionReflection = null,
+		?ClosureType $anonymousFunctionReflection = null,
 		bool $inFirstLevelStatement = true,
 		array $currentlyAssignedExpressions = [],
 		array $currentlyAllowedUndefinedExpressions = [],

@@ -11,10 +11,10 @@ use PHPStan\Node\Printer\ExprPrinter;
 use PHPStan\Php\PhpVersion;
 use PHPStan\Reflection\AttributeReflectionFactory;
 use PHPStan\Reflection\InitializerExprTypeResolver;
-use PHPStan\Reflection\ParametersAcceptor;
 use PHPStan\Reflection\Php\PhpFunctionFromParserNodeReflection;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\Properties\PropertyReflectionFinder;
+use PHPStan\Type\ClosureType;
 
 #[GenerateFactory(interface: InternalScopeFactoryFactory::class, resultType: LazyInternalScopeFactory::class)]
 final class LazyInternalScopeFactory implements InternalScopeFactory
@@ -43,7 +43,7 @@ final class LazyInternalScopeFactory implements InternalScopeFactory
 		array $nativeExpressionTypes = [],
 		array $conditionalExpressions = [],
 		array $inClosureBindScopeClasses = [],
-		?ParametersAcceptor $anonymousFunctionReflection = null,
+		?ClosureType $anonymousFunctionReflection = null,
 		bool $inFirstLevelStatement = true,
 		array $currentlyAssignedExpressions = [],
 		array $currentlyAllowedUndefinedExpressions = [],
