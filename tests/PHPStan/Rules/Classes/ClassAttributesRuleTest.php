@@ -51,7 +51,6 @@ class ClassAttributesRuleTest extends RuleTestCase
 				),
 				true,
 			),
-			new PhpVersion(PHP_VERSION_ID),
 		);
 	}
 
