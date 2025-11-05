@@ -2438,7 +2438,7 @@ final class InitializerExprTypeResolver
 		return new ObjectType($originalClass);
 	}
 
-	private function resolveTypeByNameWithLateStaticBinding(Name $class, Type $classType, MethodReflection $methodReflectionCandidate): TypeWithClassName
+	private function resolveTypeByNameWithLateStaticBinding(Name $class, Type $classType, MethodReflection $methodReflectionCandidate): Type
 	{
 		if (
 			$classType instanceof StaticType
