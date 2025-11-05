@@ -148,6 +148,31 @@ class AttributeReflectionTest extends PHPStanTestCase
 					],
 				],
 			];
+
+			$barClosureInAttribute = $reflectionProvider->getClass('ClosureInAttribute\\Bar');
+			$barClosureInAttributeMethod = $barClosureInAttribute->getNativeMethod('doBar');
+			yield [
+				$barClosureInAttributeMethod->getOnlyVariant()->getParameters()[0]->getAttributes(),
+				[
+					[
+						'ClosureInAttribute\\AttrWithCallback',
+						[
+							'callback' => 'Closure(int): void',
+						],
+					],
+				],
+			];
+			yield [
+				$barClosureInAttributeMethod->getOnlyVariant()->getParameters()[1]->getAttributes(),
+				[
+					[
+						'ClosureInAttribute\\AttrWithCallback',
+						[
+							'callback' => 'Closure(int): void',
+						],
+					],
+				],
+			];
 		}
 
 		yield [

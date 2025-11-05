@@ -52,11 +52,9 @@ use PHPStan\Parser\Parser;
 use PHPStan\Php\PhpVersion;
 use PHPStan\Php\PhpVersionFactory;
 use PHPStan\Php\PhpVersions;
-use PHPStan\PhpDoc\Tag\TemplateTag;
 use PHPStan\Reflection\Assertions;
 use PHPStan\Reflection\AttributeReflection;
 use PHPStan\Reflection\AttributeReflectionFactory;
-use PHPStan\Reflection\Callables\CallableParametersAcceptor;
 use PHPStan\Reflection\Callables\SimpleImpurePoint;
 use PHPStan\Reflection\Callables\SimpleThrowPoint;
 use PHPStan\Reflection\ClassConstantReflection;
@@ -64,7 +62,6 @@ use PHPStan\Reflection\ClassMemberReflection;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\Dummy\DummyConstructorReflection;
 use PHPStan\Reflection\ExtendedMethodReflection;
-use PHPStan\Reflection\ExtendedParametersAcceptor;
 use PHPStan\Reflection\ExtendedPropertyReflection;
 use PHPStan\Reflection\FunctionReflection;
 use PHPStan\Reflection\InitializerExprContext;
@@ -1276,30 +1273,18 @@ final class MutatingScope implements Scope, NodeCallbackInvoker
 		} elseif ($node instanceof Node\Scalar\Float_) {
 			return $this->initializerExprTypeResolver->getType($node, InitializerExprContext::fromScope($this));
 		} elseif ($node instanceof Expr\CallLike && $node->isFirstClassCallable()) {
-			if ($node instanceof FuncCall) {
-				if ($node->name instanceof Name) {
-					if ($this->reflectionProvider->hasFunction($node->name, $this)) {
-						$function = $this->reflectionProvider->getFunction($node->name, $this);
-						return $this->createFirstClassCallable(
-							$function,
-							$function->getVariants(),
-						);
-					}
-
-					return new ObjectType(Closure::class);
-				}
-
+			if ($node instanceof FuncCall && $node->name instanceof Expr) {
 				$callableType = $this->getType($node->name);
 				if (!$callableType->isCallable()->yes()) {
 					return new ObjectType(Closure::class);
 				}
 
-				return $this->createFirstClassCallable(
+				return $this->initializerExprTypeResolver->createFirstClassCallable(
 					null,
 					$callableType->getCallableParametersAcceptors($this),
+					$this->nativeTypesPromoted,
 				);
 			}
-
 			if ($node instanceof MethodCall) {
 				if (!$node->name instanceof Node\Identifier) {
 					return new ObjectType(Closure::class);
@@ -1311,39 +1296,14 @@ final class MutatingScope implements Scope, NodeCallbackInvoker
 					return new ObjectType(Closure::class);
 				}
 
-				return $this->createFirstClassCallable(
+				return $this->initializerExprTypeResolver->createFirstClassCallable(
 					$method,
 					$method->getVariants(),
+					$this->nativeTypesPromoted,
 				);
 			}
 
-			if ($node instanceof Expr\StaticCall) {
-				if (!$node->class instanceof Name) {
-					return new ObjectType(Closure::class);
-				}
-
-				if (!$node->name instanceof Node\Identifier) {
-					return new ObjectType(Closure::class);
-				}
-
-				$classType = $this->resolveTypeByNameWithLateStaticBinding($node->class, $node->name);
-				$methodName = $node->name->toString();
-				if (!$classType->hasMethod($methodName)->yes()) {
-					return new ObjectType(Closure::class);
-				}
-
-				$method = $classType->getMethod($methodName, $this);
-				return $this->createFirstClassCallable(
-					$method,
-					$method->getVariants(),
-				);
-			}
-
-			if ($node instanceof New_) {
-				return new ErrorType();
-			}
-
-			throw new ShouldNotHappenException();
+			return $this->initializerExprTypeResolver->getFirstClassCallableType($node, InitializerExprContext::fromScope($this), $this->nativeTypesPromoted);
 		} elseif ($node instanceof Expr\Closure || $node instanceof Expr\ArrowFunction) {
 			$parameters = [];
 			$isVariadic = false;
@@ -2741,91 +2701,6 @@ final class MutatingScope implements Scope, NodeCallbackInvoker
 		}
 
 		return null;
-	}
-
-	/**
-	 * @param ParametersAcceptor[] $variants
-	 */
-	private function createFirstClassCallable(
-		FunctionReflection|ExtendedMethodReflection|null $function,
-		array $variants,
-	): Type
-	{
-		$closureTypes = [];
-
-		foreach ($variants as $variant) {
-			$returnType = $variant->getReturnType();
-			if ($variant instanceof ExtendedParametersAcceptor) {
-				$returnType = $this->nativeTypesPromoted ? $variant->getNativeReturnType() : $returnType;
-			}
-
-			$templateTags = [];
-			foreach ($variant->getTemplateTypeMap()->getTypes() as $templateType) {
-				if (!$templateType instanceof TemplateType) {
-					continue;
-				}
-				$templateTags[$templateType->getName()] = new TemplateTag(
-					$templateType->getName(),
-					$templateType->getBound(),
-					$templateType->getDefault(),
-					$templateType->getVariance(),
-				);
-			}
-
-			$throwPoints = [];
-			$impurePoints = [];
-			$acceptsNamedArguments = TrinaryLogic::createYes();
-			$mustUseReturnValue = TrinaryLogic::createMaybe();
-			if ($variant instanceof CallableParametersAcceptor) {
-				$throwPoints = $variant->getThrowPoints();
-				$impurePoints = $variant->getImpurePoints();
-				$acceptsNamedArguments = $variant->acceptsNamedArguments();
-				$mustUseReturnValue = $variant->mustUseReturnValue();
-			} elseif ($function !== null) {
-				$returnTypeForThrow = $variant->getReturnType();
-				$throwType = $function->getThrowType();
-				if ($throwType === null) {
-					if ($returnTypeForThrow instanceof NeverType && $returnTypeForThrow->isExplicit()) {
-						$throwType = new ObjectType(Throwable::class);
-					}
-				}
-
-				if ($throwType !== null) {
-					if (!$throwType->isVoid()->yes()) {
-						$throwPoints[] = SimpleThrowPoint::createExplicit($throwType, true);
-					}
-				} else {
-					if (!(new ObjectType(Throwable::class))->isSuperTypeOf($returnTypeForThrow)->yes()) {
-						$throwPoints[] = SimpleThrowPoint::createImplicit();
-					}
-				}
-
-				$impurePoint = SimpleImpurePoint::createFromVariant($function, $variant);
-				if ($impurePoint !== null) {
-					$impurePoints[] = $impurePoint;
-				}
-
-				$acceptsNamedArguments = $function->acceptsNamedArguments();
-				$mustUseReturnValue = $function->mustUseReturnValue();
-			}
-
-			$parameters = $variant->getParameters();
-			$closureTypes[] = new ClosureType(
-				$parameters,
-				$returnType,
-				$variant->isVariadic(),
-				$variant->getTemplateTypeMap(),
-				$variant->getResolvedTemplateTypeMap(),
-				$variant instanceof ExtendedParametersAcceptor ? $variant->getCallSiteVarianceMap() : TemplateTypeVarianceMap::createEmpty(),
-				$templateTags,
-				$throwPoints,
-				$impurePoints,
-				acceptsNamedArguments: $acceptsNamedArguments,
-				mustUseReturnValue: $mustUseReturnValue,
-			);
-		}
-
-		return TypeCombinator::union(...$closureTypes);
 	}
 
 	/** @api */

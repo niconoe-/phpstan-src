@@ -2,6 +2,7 @@
 
 namespace PHPStan\Reflection;
 
+use Closure;
 use Nette\Utils\Strings;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
@@ -12,6 +13,8 @@ use PhpParser\Node\Expr\Cast\Double;
 use PhpParser\Node\Expr\Cast\Object_;
 use PhpParser\Node\Expr\ClassConstFetch;
 use PhpParser\Node\Expr\ConstFetch;
+use PhpParser\Node\Expr\FuncCall;
+use PhpParser\Node\Expr\New_;
 use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
@@ -29,8 +32,13 @@ use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\DependencyInjection\Type\OperatorTypeSpecifyingExtensionRegistryProvider;
 use PHPStan\Node\Expr\TypeExpr;
 use PHPStan\Php\PhpVersion;
+use PHPStan\PhpDoc\Tag\TemplateTag;
+use PHPStan\Reflection\Callables\CallableParametersAcceptor;
+use PHPStan\Reflection\Callables\SimpleImpurePoint;
+use PHPStan\Reflection\Callables\SimpleThrowPoint;
 use PHPStan\Reflection\ReflectionProvider\ReflectionProviderProvider;
 use PHPStan\ShouldNotHappenException;
+use PHPStan\TrinaryLogic;
 use PHPStan\Type\Accessory\AccessoryArrayListType;
 use PHPStan\Type\Accessory\AccessoryLiteralStringType;
 use PHPStan\Type\Accessory\AccessoryLowercaseStringType;
@@ -44,6 +52,7 @@ use PHPStan\Type\ArrayType;
 use PHPStan\Type\BenevolentUnionType;
 use PHPStan\Type\BooleanType;
 use PHPStan\Type\ClassStringType;
+use PHPStan\Type\ClosureType;
 use PHPStan\Type\Constant\ConstantArrayType;
 use PHPStan\Type\Constant\ConstantArrayTypeBuilder;
 use PHPStan\Type\Constant\ConstantBooleanType;
@@ -59,6 +68,7 @@ use PHPStan\Type\FloatType;
 use PHPStan\Type\GeneralizePrecision;
 use PHPStan\Type\Generic\GenericClassStringType;
 use PHPStan\Type\Generic\TemplateType;
+use PHPStan\Type\Generic\TemplateTypeVarianceMap;
 use PHPStan\Type\IntegerRangeType;
 use PHPStan\Type\IntegerType;
 use PHPStan\Type\IntersectionType;
@@ -80,6 +90,7 @@ use PHPStan\Type\TypeUtils;
 use PHPStan\Type\TypeWithClassName;
 use PHPStan\Type\UnionType;
 use stdClass;
+use Throwable;
 use function array_key_exists;
 use function array_keys;
 use function array_map;
@@ -186,6 +197,9 @@ final class InitializerExprTypeResolver
 		}
 		if ($expr instanceof Expr\Cast) {
 			return $this->getCastType($expr, fn (Expr $expr): Type => $this->getType($expr, $context));
+		}
+		if ($expr instanceof Expr\CallLike && $expr->isFirstClassCallable()) {
+			return $this->getFirstClassCallableType($expr, $context, false);
 		}
 		if ($expr instanceof Expr\ArrayDimFetch && $expr->dim !== null) {
 			$var = $this->getType($expr->var, $context);
@@ -667,6 +681,150 @@ final class InitializerExprTypeResolver
 		}
 
 		return new MixedType();
+	}
+
+	public function getFirstClassCallableType(Expr\CallLike $expr, InitializerExprContext $context, bool $nativeTypesPromoted): Type
+	{
+		if ($expr instanceof FuncCall) {
+			if ($expr->name instanceof Name) {
+				if ($this->getReflectionProvider()->hasFunction($expr->name, $context)) {
+					$function = $this->getReflectionProvider()->getFunction($expr->name, $context);
+					return $this->createFirstClassCallable(
+						$function,
+						$function->getVariants(),
+						$nativeTypesPromoted,
+					);
+				}
+
+				return new ObjectType(Closure::class);
+			}
+		}
+
+		if ($expr instanceof Expr\StaticCall) {
+			if (!$expr->class instanceof Name) {
+				return new ObjectType(Closure::class);
+			}
+
+			if (!$expr->name instanceof Identifier) {
+				return new ObjectType(Closure::class);
+			}
+
+			$classReflection = null;
+			if ($context->getClassName() !== null && $this->getReflectionProvider()->hasClass($context->getClassName())) {
+				$classReflection = $this->getReflectionProvider()->getClass($context->getClassName());
+			}
+
+			$classType = $this->resolveTypeByName($expr->class, $classReflection);
+			$methodName = $expr->name->toString();
+			if (!$classType->hasMethod($methodName)->yes()) {
+				return new ObjectType(Closure::class);
+			}
+
+			$method = $classType->getMethod($methodName, new OutOfClassScope());
+			$classType = $this->resolveTypeByNameWithLateStaticBinding($expr->class, $classType, $method);
+			if (!$classType->hasMethod($methodName)->yes()) {
+				return new ObjectType(Closure::class);
+			}
+			$method = $classType->getMethod($methodName, new OutOfClassScope());
+
+			return $this->createFirstClassCallable(
+				$method,
+				$method->getVariants(),
+				$nativeTypesPromoted,
+			);
+		}
+
+		if ($expr instanceof New_) {
+			return new ErrorType();
+		}
+
+		throw new ShouldNotHappenException();
+	}
+
+	/**
+	 * @param ParametersAcceptor[] $variants
+	 */
+	public function createFirstClassCallable(
+		FunctionReflection|ExtendedMethodReflection|null $function,
+		array $variants,
+		bool $nativeTypesPromoted,
+	): Type
+	{
+		$closureTypes = [];
+
+		foreach ($variants as $variant) {
+			$returnType = $variant->getReturnType();
+			if ($variant instanceof ExtendedParametersAcceptor) {
+				$returnType = $nativeTypesPromoted ? $variant->getNativeReturnType() : $returnType;
+			}
+
+			$templateTags = [];
+			foreach ($variant->getTemplateTypeMap()->getTypes() as $templateType) {
+				if (!$templateType instanceof TemplateType) {
+					continue;
+				}
+				$templateTags[$templateType->getName()] = new TemplateTag(
+					$templateType->getName(),
+					$templateType->getBound(),
+					$templateType->getDefault(),
+					$templateType->getVariance(),
+				);
+			}
+
+			$throwPoints = [];
+			$impurePoints = [];
+			$acceptsNamedArguments = TrinaryLogic::createYes();
+			$mustUseReturnValue = TrinaryLogic::createMaybe();
+			if ($variant instanceof CallableParametersAcceptor) {
+				$throwPoints = $variant->getThrowPoints();
+				$impurePoints = $variant->getImpurePoints();
+				$acceptsNamedArguments = $variant->acceptsNamedArguments();
+				$mustUseReturnValue = $variant->mustUseReturnValue();
+			} elseif ($function !== null) {
+				$returnTypeForThrow = $variant->getReturnType();
+				$throwType = $function->getThrowType();
+				if ($throwType === null) {
+					if ($returnTypeForThrow instanceof NeverType && $returnTypeForThrow->isExplicit()) {
+						$throwType = new ObjectType(Throwable::class);
+					}
+				}
+
+				if ($throwType !== null) {
+					if (!$throwType->isVoid()->yes()) {
+						$throwPoints[] = SimpleThrowPoint::createExplicit($throwType, true);
+					}
+				} else {
+					if (!(new ObjectType(Throwable::class))->isSuperTypeOf($returnTypeForThrow)->yes()) {
+						$throwPoints[] = SimpleThrowPoint::createImplicit();
+					}
+				}
+
+				$impurePoint = SimpleImpurePoint::createFromVariant($function, $variant);
+				if ($impurePoint !== null) {
+					$impurePoints[] = $impurePoint;
+				}
+
+				$acceptsNamedArguments = $function->acceptsNamedArguments();
+				$mustUseReturnValue = $function->mustUseReturnValue();
+			}
+
+			$parameters = $variant->getParameters();
+			$closureTypes[] = new ClosureType(
+				$parameters,
+				$returnType,
+				$variant->isVariadic(),
+				$variant->getTemplateTypeMap(),
+				$variant->getResolvedTemplateTypeMap(),
+				$variant instanceof ExtendedParametersAcceptor ? $variant->getCallSiteVarianceMap() : TemplateTypeVarianceMap::createEmpty(),
+				$templateTags,
+				$throwPoints,
+				$impurePoints,
+				acceptsNamedArguments: $acceptsNamedArguments,
+				mustUseReturnValue: $mustUseReturnValue,
+			);
+		}
+
+		return TypeCombinator::union(...$closureTypes);
 	}
 
 	/**
@@ -2278,6 +2436,20 @@ final class InitializerExprTypeResolver
 		}
 
 		return new ObjectType($originalClass);
+	}
+
+	private function resolveTypeByNameWithLateStaticBinding(Name $class, Type $classType, MethodReflection $methodReflectionCandidate): TypeWithClassName
+	{
+		if (
+			$classType instanceof StaticType
+			&& !in_array($class->toLowerString(), ['self', 'static', 'parent'], true)
+		) {
+			if ($methodReflectionCandidate->isStatic()) {
+				$classType = $classType->getStaticObjectType();
+			}
+		}
+
+		return $classType;
 	}
 
 	/**
