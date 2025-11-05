@@ -5,6 +5,7 @@ namespace PHPStan\Reflection;
 use Closure;
 use Nette\Utils\Strings;
 use PhpParser\Node\Arg;
+use PhpParser\Node\ComplexType;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\BinaryOp;
 use PhpParser\Node\Expr\Cast\Array_;
@@ -16,8 +17,10 @@ use PhpParser\Node\Expr\ConstFetch;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\New_;
 use PhpParser\Node\Expr\PropertyFetch;
+use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
+use PhpParser\Node\Param;
 use PhpParser\Node\Scalar\Float_;
 use PhpParser\Node\Scalar\Int_;
 use PhpParser\Node\Scalar\MagicConst;
@@ -36,6 +39,7 @@ use PHPStan\PhpDoc\Tag\TemplateTag;
 use PHPStan\Reflection\Callables\CallableParametersAcceptor;
 use PHPStan\Reflection\Callables\SimpleImpurePoint;
 use PHPStan\Reflection\Callables\SimpleThrowPoint;
+use PHPStan\Reflection\Native\NativeParameterReflection;
 use PHPStan\Reflection\ReflectionProvider\ReflectionProviderProvider;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\TrinaryLogic;
@@ -68,16 +72,19 @@ use PHPStan\Type\FloatType;
 use PHPStan\Type\GeneralizePrecision;
 use PHPStan\Type\Generic\GenericClassStringType;
 use PHPStan\Type\Generic\TemplateType;
+use PHPStan\Type\Generic\TemplateTypeMap;
 use PHPStan\Type\Generic\TemplateTypeVarianceMap;
 use PHPStan\Type\IntegerRangeType;
 use PHPStan\Type\IntegerType;
 use PHPStan\Type\IntersectionType;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\NeverType;
+use PHPStan\Type\NonexistentParentClassType;
 use PHPStan\Type\NullType;
 use PHPStan\Type\ObjectShapeType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\ObjectWithoutClassType;
+use PHPStan\Type\ParserNodeTypeToPHPStanType;
 use PHPStan\Type\StaticType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\ThisType;
@@ -106,6 +113,7 @@ use function is_finite;
 use function is_float;
 use function is_int;
 use function is_numeric;
+use function is_string;
 use function max;
 use function min;
 use function sprintf;
@@ -200,6 +208,56 @@ final class InitializerExprTypeResolver
 		}
 		if ($expr instanceof Expr\CallLike && $expr->isFirstClassCallable()) {
 			return $this->getFirstClassCallableType($expr, $context, false);
+		}
+		if ($expr instanceof Expr\Closure && $expr->static) {
+			$parameters = [];
+			$isVariadic = false;
+			$firstOptionalParameterIndex = null;
+			foreach ($expr->params as $i => $param) {
+				$isOptionalCandidate = $param->default !== null || $param->variadic;
+
+				if ($isOptionalCandidate) {
+					if ($firstOptionalParameterIndex === null) {
+						$firstOptionalParameterIndex = $i;
+					}
+				} else {
+					$firstOptionalParameterIndex = null;
+				}
+			}
+
+			foreach ($expr->params as $i => $param) {
+				if ($param->variadic) {
+					$isVariadic = true;
+				}
+				if (!$param->var instanceof Variable || !is_string($param->var->name)) {
+					throw new ShouldNotHappenException();
+				}
+				$parameters[] = new NativeParameterReflection(
+					$param->var->name,
+					$firstOptionalParameterIndex !== null && $i >= $firstOptionalParameterIndex,
+					$this->getFunctionType($param->type, $this->isParameterValueNullable($param), false, $context),
+					$param->byRef
+						? PassedByReference::createCreatesNewVariable()
+						: PassedByReference::createNo(),
+					$param->variadic,
+					$param->default !== null ? $this->getType($param->default, $context) : null,
+				);
+			}
+
+			$returnType = new MixedType(false);
+			if ($expr->returnType !== null) {
+				$returnType = $this->getFunctionType($expr->returnType, false, false, $context);
+			}
+
+			return new ClosureType(
+				$parameters,
+				$returnType,
+				$isVariadic,
+				TemplateTypeMap::createEmpty(),
+				TemplateTypeMap::createEmpty(),
+				TemplateTypeVarianceMap::createEmpty(),
+				acceptsNamedArguments: TrinaryLogic::createYes(),
+			);
 		}
 		if ($expr instanceof Expr\ArrayDimFetch && $expr->dim !== null) {
 			$var = $this->getType($expr->var, $context);
@@ -681,6 +739,67 @@ final class InitializerExprTypeResolver
 		}
 
 		return new MixedType();
+	}
+
+	/**
+	 * @param Name|Identifier|ComplexType|null $type
+	 */
+	public function getFunctionType($type, bool $isNullable, bool $isVariadic, InitializerExprContext $context): Type
+	{
+		if ($isNullable) {
+			return TypeCombinator::addNull(
+				$this->getFunctionType($type, false, $isVariadic, $context),
+			);
+		}
+		if ($isVariadic) {
+			if (!$this->phpVersion->supportsNamedArguments()) {
+				return new ArrayType(new UnionType([new IntegerType(), new StringType()]), $this->getFunctionType(
+					$type,
+					false,
+					false,
+					$context,
+				));
+			}
+
+			return TypeCombinator::intersect(new ArrayType(new IntegerType(), $this->getFunctionType(
+				$type,
+				false,
+				false,
+				$context,
+			)), new AccessoryArrayListType());
+		}
+
+		if ($type instanceof Name) {
+			$className = (string) $type;
+			$lowercasedClassName = strtolower($className);
+			if ($lowercasedClassName === 'parent') {
+				$classReflection = null;
+				if ($context->getClassName() !== null && $this->getReflectionProvider()->hasClass($context->getClassName())) {
+					$classReflection = $this->getReflectionProvider()->getClass($context->getClassName());
+				}
+				if ($classReflection !== null && $classReflection->getParentClass() !== null) {
+					return new ObjectType($classReflection->getParentClass()->getName());
+				}
+
+				return new NonexistentParentClassType();
+			}
+		}
+
+		$classReflection = null;
+		if ($context->getClassName() !== null && $this->getReflectionProvider()->hasClass($context->getClassName())) {
+			$classReflection = $this->getReflectionProvider()->getClass($context->getClassName());
+		}
+
+		return ParserNodeTypeToPHPStanType::resolve($type, $classReflection);
+	}
+
+	private function isParameterValueNullable(Param $parameter): bool
+	{
+		if ($parameter->default instanceof ConstFetch) {
+			return strtolower((string) $parameter->default->name) === 'null';
+		}
+
+		return false;
 	}
 
 	public function getFirstClassCallableType(Expr\CallLike $expr, InitializerExprContext $context, bool $nativeTypesPromoted): Type

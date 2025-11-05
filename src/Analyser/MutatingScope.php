@@ -119,7 +119,6 @@ use PHPStan\Type\NonexistentParentClassType;
 use PHPStan\Type\NullType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\ObjectWithoutClassType;
-use PHPStan\Type\ParserNodeTypeToPHPStanType;
 use PHPStan\Type\StaticType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\ThisType;
@@ -3878,40 +3877,7 @@ final class MutatingScope implements Scope, NodeCallbackInvoker
 	 */
 	public function getFunctionType($type, bool $isNullable, bool $isVariadic): Type
 	{
-		if ($isNullable) {
-			return TypeCombinator::addNull(
-				$this->getFunctionType($type, false, $isVariadic),
-			);
-		}
-		if ($isVariadic) {
-			if (!$this->getPhpVersion()->supportsNamedArguments()->no()) {
-				return new ArrayType(new UnionType([new IntegerType(), new StringType()]), $this->getFunctionType(
-					$type,
-					false,
-					false,
-				));
-			}
-
-			return TypeCombinator::intersect(new ArrayType(new IntegerType(), $this->getFunctionType(
-				$type,
-				false,
-				false,
-			)), new AccessoryArrayListType());
-		}
-
-		if ($type instanceof Name) {
-			$className = (string) $type;
-			$lowercasedClassName = strtolower($className);
-			if ($lowercasedClassName === 'parent') {
-				if ($this->isInClass() && $this->getClassReflection()->getParentClass() !== null) {
-					return new ObjectType($this->getClassReflection()->getParentClass()->getName());
-				}
-
-				return new NonexistentParentClassType();
-			}
-		}
-
-		return ParserNodeTypeToPHPStanType::resolve($type, $this->isInClass() ? $this->getClassReflection() : null);
+		return $this->initializerExprTypeResolver->getFunctionType($type, $isNullable, $isVariadic, InitializerExprContext::fromScope($this));
 	}
 
 	private static function intersectButNotNever(Type $nativeType, Type $inferredType): Type

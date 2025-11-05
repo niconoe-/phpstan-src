@@ -5058,6 +5058,25 @@ final class NodeScopeResolver
 	{
 		foreach ($attrGroups as $attrGroup) {
 			foreach ($attrGroup->attrs as $attr) {
+				$className = $scope->resolveName($attr->name);
+				if ($this->reflectionProvider->hasClass($className)) {
+					$classReflection = $this->reflectionProvider->getClass($className);
+					if ($classReflection->hasConstructor()) {
+						$constructorReflection = $classReflection->getConstructor();
+						$parametersAcceptor = ParametersAcceptorSelector::selectFromArgs(
+							$scope,
+							$attr->args,
+							$constructorReflection->getVariants(),
+							$constructorReflection->getNamedArgumentsVariants(),
+						);
+						$expr = new New_($attr->name, $attr->args);
+						$expr = ArgumentsNormalizer::reorderNewArguments($parametersAcceptor, $expr) ?? $expr;
+						$this->processArgs($stmt, $constructorReflection, null, $parametersAcceptor, $expr, $scope, $nodeCallback, ExpressionContext::createDeep());
+						$nodeCallback($attr, $scope);
+						continue;
+					}
+				}
+
 				foreach ($attr->args as $arg) {
 					$this->processExprNode($stmt, $arg->value, $scope, $nodeCallback, ExpressionContext::createDeep());
 					$nodeCallback($arg, $scope);

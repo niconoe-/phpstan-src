@@ -173,6 +173,75 @@ class AttributeReflectionTest extends PHPStanTestCase
 					],
 				],
 			];
+			yield [
+				$barClosureInAttributeMethod->getOnlyVariant()->getParameters()[2]->getAttributes(),
+				[
+					[
+						'ClosureInAttribute\\AttrWithCallback',
+						[
+							'callback' => 'Closure(int): mixed',
+						],
+					],
+				],
+			];
+			yield [
+				$barClosureInAttributeMethod->getOnlyVariant()->getParameters()[3]->getAttributes(),
+				[
+					[
+						'ClosureInAttribute\\AttrWithCallback',
+						[
+							'callback' => 'Closure(int): mixed',
+						],
+					],
+				],
+			];
+			yield [
+				$barClosureInAttributeMethod->getOnlyVariant()->getParameters()[4]->getAttributes(),
+				[
+					[
+						'ClosureInAttribute\\AttrWithCallback',
+						[
+							'callback' => 'Closure(int): string',
+						],
+					],
+				],
+			];
+
+			$bazClosureInAttribute = $reflectionProvider->getClass('ClosureInAttribute\\Baz');
+			$bazClosureInAttributeMethod = $bazClosureInAttribute->getNativeMethod('doBaz');
+			yield [
+				$bazClosureInAttributeMethod->getOnlyVariant()->getParameters()[0]->getAttributes(),
+				[
+					[
+						'ClosureInAttribute\\AttrWithCallback2',
+						[
+							'callback' => 'Closure(mixed): mixed',
+						],
+					],
+				],
+			];
+			yield [
+				$bazClosureInAttributeMethod->getOnlyVariant()->getParameters()[1]->getAttributes(),
+				[
+					[
+						'ClosureInAttribute\\AttrWithCallback2',
+						[
+							'callback' => 'Closure(int=): mixed',
+						],
+					],
+				],
+			];
+			yield [
+				$bazClosureInAttributeMethod->getOnlyVariant()->getParameters()[2]->getAttributes(),
+				[
+					[
+						'ClosureInAttribute\\AttrWithCallback2',
+						[
+							'callback' => 'Closure(int ...): mixed',
+						],
+					],
+				],
+			];
 		}
 
 		yield [
