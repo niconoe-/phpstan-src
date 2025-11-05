@@ -6,6 +6,10 @@ use Nette\Utils\Strings;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\BinaryOp;
+use PhpParser\Node\Expr\Cast\Array_;
+use PhpParser\Node\Expr\Cast\Bool_;
+use PhpParser\Node\Expr\Cast\Double;
+use PhpParser\Node\Expr\Cast\Object_;
 use PhpParser\Node\Expr\ClassConstFetch;
 use PhpParser\Node\Expr\ConstFetch;
 use PhpParser\Node\Expr\PropertyFetch;
@@ -61,6 +65,7 @@ use PHPStan\Type\IntersectionType;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\NeverType;
 use PHPStan\Type\NullType;
+use PHPStan\Type\ObjectShapeType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\ObjectWithoutClassType;
 use PHPStan\Type\StaticType;
@@ -74,8 +79,10 @@ use PHPStan\Type\TypeTraverser;
 use PHPStan\Type\TypeUtils;
 use PHPStan\Type\TypeWithClassName;
 use PHPStan\Type\UnionType;
+use stdClass;
 use function array_key_exists;
 use function array_keys;
+use function array_map;
 use function array_merge;
 use function assert;
 use function ceil;
@@ -176,6 +183,9 @@ final class InitializerExprTypeResolver
 		}
 		if ($expr instanceof Expr\Array_) {
 			return $this->getArrayType($expr, fn (Expr $expr): Type => $this->getType($expr, $context));
+		}
+		if ($expr instanceof Expr\Cast) {
+			return $this->getCastType($expr, fn (Expr $expr): Type => $this->getType($expr, $context));
 		}
 		if ($expr instanceof Expr\ArrayDimFetch && $expr->dim !== null) {
 			$var = $this->getType($expr->var, $context);
@@ -597,6 +607,66 @@ final class InitializerExprTypeResolver
 		}
 
 		return $arrayType;
+	}
+
+	/**
+	 * @param callable(Expr): Type $getTypeCallback
+	 */
+	public function getCastType(Expr\Cast $expr, callable $getTypeCallback): Type
+	{
+		if ($expr instanceof \PhpParser\Node\Expr\Cast\Int_) {
+			return $getTypeCallback($expr->expr)->toInteger();
+		}
+		if ($expr instanceof Bool_) {
+			return $getTypeCallback($expr->expr)->toBoolean();
+		}
+		if ($expr instanceof Double) {
+			return $getTypeCallback($expr->expr)->toFloat();
+		}
+		if ($expr instanceof \PhpParser\Node\Expr\Cast\String_) {
+			return $getTypeCallback($expr->expr)->toString();
+		}
+		if ($expr instanceof Array_) {
+			return $getTypeCallback($expr->expr)->toArray();
+		}
+		if ($expr instanceof Object_) {
+			$castToObject = static function (Type $type): Type {
+				$constantArrays = $type->getConstantArrays();
+				if (count($constantArrays) > 0) {
+					$objects = [];
+					foreach ($constantArrays as $constantArray) {
+						$properties = [];
+						$optionalProperties = [];
+						foreach ($constantArray->getKeyTypes() as $i => $keyType) {
+							$valueType = $constantArray->getValueTypes()[$i];
+							$optional = $constantArray->isOptionalKey($i);
+							if ($optional) {
+								$optionalProperties[] = $keyType->getValue();
+							}
+							$properties[$keyType->getValue()] = $valueType;
+						}
+
+						$objects[] = TypeCombinator::intersect(new ObjectShapeType($properties, $optionalProperties), new ObjectType(stdClass::class));
+					}
+
+					return TypeCombinator::union(...$objects);
+				}
+				if ($type->isObject()->yes()) {
+					return $type;
+				}
+
+				return new ObjectType('stdClass');
+			};
+
+			$exprType = $getTypeCallback($expr->expr);
+			if ($exprType instanceof UnionType) {
+				return TypeCombinator::union(...array_map($castToObject, $exprType->getTypes()));
+			}
+
+			return $castToObject($exprType);
+		}
+
+		return new MixedType();
 	}
 
 	/**

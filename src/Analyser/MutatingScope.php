@@ -11,10 +11,6 @@ use PhpParser\Node\ComplexType;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\BinaryOp;
-use PhpParser\Node\Expr\Cast\Bool_;
-use PhpParser\Node\Expr\Cast\Double;
-use PhpParser\Node\Expr\Cast\Int_;
-use PhpParser\Node\Expr\Cast\Object_;
 use PhpParser\Node\Expr\Cast\Unset_;
 use PhpParser\Node\Expr\ConstFetch;
 use PhpParser\Node\Expr\FuncCall;
@@ -124,7 +120,6 @@ use PHPStan\Type\NeverType;
 use PHPStan\Type\NonAcceptingNeverType;
 use PHPStan\Type\NonexistentParentClassType;
 use PHPStan\Type\NullType;
-use PHPStan\Type\ObjectShapeType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\ObjectWithoutClassType;
 use PHPStan\Type\ParserNodeTypeToPHPStanType;
@@ -139,7 +134,6 @@ use PHPStan\Type\TypeWithClassName;
 use PHPStan\Type\UnionType;
 use PHPStan\Type\VerbosityLevel;
 use PHPStan\Type\VoidType;
-use stdClass;
 use Throwable;
 use ValueError;
 use function abs;
@@ -1765,55 +1759,12 @@ final class MutatingScope implements Scope, NodeCallbackInvoker
 
 		} elseif ($node instanceof Array_) {
 			return $this->initializerExprTypeResolver->getArrayType($node, fn (Expr $expr): Type => $this->getType($expr));
-		} elseif ($node instanceof Int_) {
-			return $this->getType($node->expr)->toInteger();
-		} elseif ($node instanceof Bool_) {
-			return $this->getType($node->expr)->toBoolean();
-		} elseif ($node instanceof Double) {
-			return $this->getType($node->expr)->toFloat();
-		} elseif ($node instanceof Node\Expr\Cast\String_) {
-			return $this->getType($node->expr)->toString();
-		} elseif ($node instanceof Node\Expr\Cast\Array_) {
-			return $this->getType($node->expr)->toArray();
-		} elseif ($node instanceof Node\Scalar\MagicConst) {
-			return $this->initializerExprTypeResolver->getType($node, InitializerExprContext::fromScope($this));
-		} elseif ($node instanceof Object_) {
-			$castToObject = static function (Type $type): Type {
-				$constantArrays = $type->getConstantArrays();
-				if (count($constantArrays) > 0) {
-					$objects = [];
-					foreach ($constantArrays as $constantArray) {
-						$properties = [];
-						$optionalProperties = [];
-						foreach ($constantArray->getKeyTypes() as $i => $keyType) {
-							$valueType = $constantArray->getValueTypes()[$i];
-							$optional = $constantArray->isOptionalKey($i);
-							if ($optional) {
-								$optionalProperties[] = $keyType->getValue();
-							}
-							$properties[$keyType->getValue()] = $valueType;
-						}
-
-						$objects[] = TypeCombinator::intersect(new ObjectShapeType($properties, $optionalProperties), new ObjectType(stdClass::class));
-					}
-
-					return TypeCombinator::union(...$objects);
-				}
-				if ($type->isObject()->yes()) {
-					return $type;
-				}
-
-				return new ObjectType('stdClass');
-			};
-
-			$exprType = $this->getType($node->expr);
-			if ($exprType instanceof UnionType) {
-				return TypeCombinator::union(...array_map($castToObject, $exprType->getTypes()));
-			}
-
-			return $castToObject($exprType);
 		} elseif ($node instanceof Unset_) {
 			return new NullType();
+		} elseif ($node instanceof Expr\Cast) {
+			return $this->initializerExprTypeResolver->getCastType($node, fn (Expr $expr): Type => $this->getType($expr));
+		} elseif ($node instanceof Node\Scalar\MagicConst) {
+			return $this->initializerExprTypeResolver->getType($node, InitializerExprContext::fromScope($this));
 		} elseif ($node instanceof Expr\PostInc || $node instanceof Expr\PostDec) {
 			return $this->getType($node->var);
 		} elseif ($node instanceof Expr\PreInc || $node instanceof Expr\PreDec) {
