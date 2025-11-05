@@ -3885,8 +3885,14 @@ final class MutatingScope implements Scope, NodeCallbackInvoker
 					false,
 				));
 			}
+
+			return TypeCombinator::intersect(new ArrayType(new IntegerType(), $this->getFunctionType(
+				$type,
+				$isNullable,
+				false,
+			)), new AccessoryArrayListType());
 		}
-		return $this->initializerExprTypeResolver->getFunctionType($type, $isNullable, $isVariadic, InitializerExprContext::fromScope($this));
+		return $this->initializerExprTypeResolver->getFunctionType($type, $isNullable, false, InitializerExprContext::fromScope($this));
 	}
 
 	private static function intersectButNotNever(Type $nativeType, Type $inferredType): Type
