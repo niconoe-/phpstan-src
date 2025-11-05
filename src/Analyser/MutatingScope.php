@@ -3877,6 +3877,15 @@ final class MutatingScope implements Scope, NodeCallbackInvoker
 	 */
 	public function getFunctionType($type, bool $isNullable, bool $isVariadic): Type
 	{
+		if ($isVariadic) {
+			if (!$this->getPhpVersion()->supportsNamedArguments()->no()) {
+				return new ArrayType(new UnionType([new IntegerType(), new StringType()]), $this->getFunctionType(
+					$type,
+					$isNullable,
+					false,
+				));
+			}
+		}
 		return $this->initializerExprTypeResolver->getFunctionType($type, $isNullable, $isVariadic, InitializerExprContext::fromScope($this));
 	}
 
