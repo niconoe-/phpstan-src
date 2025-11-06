@@ -469,4 +469,14 @@ final class PhpVersion
 		return $this->versionId >= 80500;
 	}
 
+	public function deprecatesDecOnNonNumericString(): bool
+	{
+		return $this->versionId >= 80300;
+	}
+
+	public function deprecatesIncOnNonNumericString(): bool
+	{
+		return $this->versionId >= 80500;
+	}
+
 }

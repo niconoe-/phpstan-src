@@ -5,14 +5,17 @@ namespace PHPStan\Rules\Operators;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\DependencyInjection\RegisteredRule;
+use PHPStan\Php\PhpVersion;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Rules\RuleLevelHelper;
 use PHPStan\ShouldNotHappenException;
+use PHPStan\Type\Accessory\AccessoryNumericStringType;
 use PHPStan\Type\BooleanType;
 use PHPStan\Type\ErrorType;
 use PHPStan\Type\FloatType;
 use PHPStan\Type\IntegerType;
+use PHPStan\Type\IntersectionType;
 use PHPStan\Type\NullType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
@@ -31,6 +34,7 @@ final class InvalidIncDecOperationRule implements Rule
 
 	public function __construct(
 		private RuleLevelHelper $ruleLevelHelper,
+		private PhpVersion $phpVersion,
 	)
 	{
 	}
@@ -87,7 +91,28 @@ final class InvalidIncDecOperationRule implements Rule
 			];
 		}
 
-		$allowedTypes = new UnionType([new BooleanType(), new FloatType(), new IntegerType(), new StringType(), new NullType(), new ObjectType('SimpleXMLElement')]);
+		$string = new StringType();
+		$deprecatedString = false;
+		if (
+			(
+				$this->phpVersion->deprecatesDecOnNonNumericString()
+				&& (
+					$node instanceof Node\Expr\PreDec
+					|| $node instanceof Node\Expr\PostDec
+				)
+			) || (
+				$this->phpVersion->deprecatesIncOnNonNumericString()
+				&& (
+					$node instanceof Node\Expr\PreInc
+					|| $node instanceof Node\Expr\PostInc
+				)
+			)
+		) {
+			$string = new IntersectionType([$string, new AccessoryNumericStringType()]);
+			$deprecatedString = true;
+		}
+
+		$allowedTypes = new UnionType([new BooleanType(), new FloatType(), new IntegerType(), $string, new NullType(), new ObjectType('SimpleXMLElement')]);
 		$varType = $this->ruleLevelHelper->findTypeToCheck(
 			$scope,
 			$node->var,
@@ -99,15 +124,24 @@ final class InvalidIncDecOperationRule implements Rule
 			return [];
 		}
 
-		return [
-			RuleErrorBuilder::message(sprintf(
-				'Cannot use %s on %s.',
+		$errorBuilder = RuleErrorBuilder::message(sprintf(
+			'Cannot use %s on %s.',
+			$operatorString,
+			$varType->describe(VerbosityLevel::value()),
+		))
+			->line($node->var->getStartLine())
+			->identifier(sprintf('%s.type', $nodeType));
+
+		if (!$varType->isString()->no() && $deprecatedString) {
+			$errorBuilder->tip(sprintf(
+				'Operator %s is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use %s().',
 				$operatorString,
-				$varType->describe(VerbosityLevel::value()),
-			))
-				->line($node->var->getStartLine())
-				->identifier(sprintf('%s.type', $nodeType))
-				->build(),
+				$node instanceof Node\Expr\PreDec || $node instanceof Node\Expr\PostDec ? 'str_decrement' : 'str_increment',
+			));
+		}
+
+		return [
+			$errorBuilder->build(),
 		];
 	}
 

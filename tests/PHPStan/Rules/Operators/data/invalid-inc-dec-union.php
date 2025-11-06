@@ -4,7 +4,7 @@ namespace InvalidIncDecUnion;
 
 /**
  * @param __benevolent<scalar|null|array|object> $benevolentUnion
- * @param string|int|float|bool|null $okUnion
+ * @param numeric-string|int|float|bool|null $okUnion
  * @param scalar|null|array|object $union
  * @param __benevolent<array|object> $badBenevolentUnion
  */

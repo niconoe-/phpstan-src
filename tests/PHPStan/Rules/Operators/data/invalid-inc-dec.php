@@ -4,7 +4,7 @@ namespace InvalidIncDec;
 
 function ($a, int $i, ?float $j, string $str, \stdClass $std, \SimpleXMLElement $simpleXMLElement) {
 	$a++;
-
+	if (!is_numeric($str)) return;
 	$b = [1];
 	$b[0]++;
 

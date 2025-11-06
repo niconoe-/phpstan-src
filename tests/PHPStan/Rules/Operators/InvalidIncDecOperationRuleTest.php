@@ -2,10 +2,12 @@
 
 namespace PHPStan\Rules\Operators;
 
+use PHPStan\Php\PhpVersion;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleLevelHelper;
 use PHPStan\Testing\RuleTestCase;
 use PHPUnit\Framework\Attributes\RequiresPhp;
+use const PHP_VERSION_ID;
 
 /**
  * @extends RuleTestCase<InvalidIncDecOperationRule>
@@ -21,6 +23,7 @@ class InvalidIncDecOperationRuleTest extends RuleTestCase
 	{
 		return new InvalidIncDecOperationRule(
 			new RuleLevelHelper(self::createReflectionProvider(), true, false, true, $this->checkExplicitMixed, $this->checkImplicitMixed, false, true),
+			new PhpVersion(PHP_VERSION_ID),
 		);
 	}
 
@@ -129,10 +132,12 @@ class InvalidIncDecOperationRuleTest extends RuleTestCase
 			[
 				'Cannot use ++ on array|bool|float|int|object|string|null.',
 				24,
+				'Operator ++ is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_increment().',
 			],
 			[
 				'Cannot use -- on array|bool|float|int|object|string|null.',
 				26,
+				'Operator -- is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_decrement().',
 			],
 			[
 				'Cannot use ++ on (array|object).',
@@ -143,6 +148,48 @@ class InvalidIncDecOperationRuleTest extends RuleTestCase
 				31,
 			],
 		]);
+	}
+
+	public function testDecNonNumericString(): void
+	{
+		$errors = [];
+		if (PHP_VERSION_ID >= 80300) {
+			$errors = [
+				[
+					'Cannot use -- on \'a\'.',
+					21,
+					'Operator -- is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_decrement().',
+				],
+				[
+					'Cannot use -- on string.',
+					23,
+					'Operator -- is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_decrement().',
+				],
+			];
+		}
+
+		$this->analyse([__DIR__ . '/data/dec-non-numeric-string.php'], $errors);
+	}
+
+	public function testIncNonNumericString(): void
+	{
+		$errors = [];
+		if (PHP_VERSION_ID >= 80500) {
+			$errors = [
+				[
+					'Cannot use ++ on \'a\'.',
+					21,
+					'Operator ++ is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_increment().',
+				],
+				[
+					'Cannot use ++ on string.',
+					23,
+					'Operator ++ is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_increment().',
+				],
+			];
+		}
+
+		$this->analyse([__DIR__ . '/data/inc-non-numeric-string.php'], $errors);
 	}
 
 }
