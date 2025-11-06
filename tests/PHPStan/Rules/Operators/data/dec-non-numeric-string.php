@@ -24,4 +24,20 @@ class Foo
 		$t--;
 	}
 
+	public function doBar(bool $b): void
+	{
+		$null = null;
+		$null--;
+
+		$b++;
+	}
+
+	public function doBaz(bool $b): void
+	{
+		$null = null;
+		$null++;
+
+		$b--;
+	}
+
 }

@@ -20,6 +20,7 @@ use PHPStan\Type\NullType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
+use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\UnionType;
 use PHPStan\Type\VerbosityLevel;
 use function get_class;
@@ -112,7 +113,27 @@ final class InvalidIncDecOperationRule implements Rule
 			$deprecatedString = true;
 		}
 
-		$allowedTypes = new UnionType([new BooleanType(), new FloatType(), new IntegerType(), $string, new NullType(), new ObjectType('SimpleXMLElement')]);
+		$allowedTypes = [new FloatType(), new IntegerType(), $string, new ObjectType('SimpleXMLElement')];
+		$deprecatedNull = false;
+		if (
+			!$this->phpVersion->deprecatesDecOnNonNumericString()
+			|| $node instanceof Node\Expr\PreInc
+			|| $node instanceof Node\Expr\PostInc
+		) {
+			$allowedTypes[] = new NullType();
+		} else {
+			$deprecatedNull = true;
+		}
+
+		$deprecatedBool = false;
+		if (!$this->phpVersion->deprecatesDecOnNonNumericString()) {
+			$allowedTypes[] = new BooleanType();
+		} else {
+			$deprecatedBool = true;
+		}
+
+		$allowedTypes = new UnionType($allowedTypes);
+
 		$varType = $this->ruleLevelHelper->findTypeToCheck(
 			$scope,
 			$node->var,
@@ -133,11 +154,18 @@ final class InvalidIncDecOperationRule implements Rule
 			->identifier(sprintf('%s.type', $nodeType));
 
 		if (!$varType->isString()->no() && $deprecatedString) {
-			$errorBuilder->tip(sprintf(
+			$errorBuilder->addTip(sprintf(
 				'Operator %s is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use %s().',
 				$operatorString,
 				$node instanceof Node\Expr\PreDec || $node instanceof Node\Expr\PostDec ? 'str_decrement' : 'str_increment',
 			));
+		}
+		if (!$varType->isNull()->no() && $deprecatedNull) {
+			$errorBuilder->addTip(sprintf('Operator %s is deprecated for null.', $operatorString));
+		}
+
+		if (!$varType->isBoolean()->no() && $deprecatedBool) {
+			$errorBuilder->addTip(sprintf('Operator %s is deprecated for %s.', $operatorString, TypeCombinator::intersect($varType, new BooleanType())->describe(VerbosityLevel::value())));
 		}
 
 		return [
