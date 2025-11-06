@@ -46,19 +46,6 @@ final class PropertyInClassRule implements Rule
 			];
 		}
 
-		if (!$this->phpVersion->supportsPropertyHooks()) {
-			if ($node->hasHooks()) {
-				return [
-					RuleErrorBuilder::message('Property hooks are supported only on PHP 8.4 and later.')
-						->nonIgnorable()
-						->identifier('property.hooksNotSupported')
-						->build(),
-				];
-			}
-
-			return [];
-		}
-
 		if ($node->isAbstract()) {
 			if (!$node->hasHooks()) {
 				return [
@@ -202,6 +189,19 @@ final class PropertyInClassRule implements Rule
 						->build(),
 				];
 			}
+		}
+
+		if (!$this->phpVersion->supportsPropertyHooks()) {
+			if ($node->hasHooks()) {
+				return [
+					RuleErrorBuilder::message('Property hooks are supported only on PHP 8.4 and later.')
+						->nonIgnorable()
+						->identifier('property.hooksNotSupported')
+						->build(),
+				];
+			}
+
+			return [];
 		}
 
 		return [];
