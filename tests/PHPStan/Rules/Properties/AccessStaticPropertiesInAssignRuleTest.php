@@ -2,12 +2,15 @@
 
 namespace PHPStan\Rules\Properties;
 
+use PHPStan\Php\PhpVersion;
 use PHPStan\Rules\ClassCaseSensitivityCheck;
 use PHPStan\Rules\ClassForbiddenNameCheck;
 use PHPStan\Rules\ClassNameCheck;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleLevelHelper;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\RequiresPhp;
+use const PHP_VERSION_ID;
 
 /**
  * @extends RuleTestCase<AccessStaticPropertiesInAssignRule>
@@ -28,6 +31,7 @@ class AccessStaticPropertiesInAssignRuleTest extends RuleTestCase
 					$reflectionProvider,
 					self::getContainer(),
 				),
+				new PhpVersion(PHP_VERSION_ID),
 				true,
 			),
 		);
@@ -63,6 +67,25 @@ class AccessStaticPropertiesInAssignRuleTest extends RuleTestCase
 			[
 				'Access to an undefined static property PropertiesFromArrayIntoStaticObject\Foo::$noop.',
 				29,
+			],
+		]);
+	}
+
+	#[RequiresPhp('>= 8.5')]
+	public function testAsymmetricVisibility(): void
+	{
+		$this->analyse([__DIR__ . '/data/static-properties-asymmetric-visibility.php'], [
+			[
+				'Access to private(set) property $foo of class StaticPropertiesAsymmetricVisibility\Foo.',
+				25,
+			],
+			[
+				'Access to private(set) property $foo of class StaticPropertiesAsymmetricVisibility\Foo.',
+				32,
+			],
+			[
+				'Access to protected(set) property $bar of class StaticPropertiesAsymmetricVisibility\Foo.',
+				33,
 			],
 		]);
 	}

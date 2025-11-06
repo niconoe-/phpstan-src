@@ -96,6 +96,21 @@ final class ClassPropertyNode extends NodeAbstract implements VirtualNode
 		return (bool) ($this->flags & Modifiers::PRIVATE);
 	}
 
+	public function isPrivateSet(): bool
+	{
+		return (bool) ($this->flags & Modifiers::PRIVATE_SET);
+	}
+
+	public function isProtectedSet(): bool
+	{
+		return (bool) ($this->flags & Modifiers::PROTECTED_SET);
+	}
+
+	public function isPublicSet(): bool
+	{
+		return (bool) ($this->flags & Modifiers::PUBLIC_SET);
+	}
+
 	public function isFinal(): bool
 	{
 		return (bool) ($this->flags & Modifiers::FINAL);

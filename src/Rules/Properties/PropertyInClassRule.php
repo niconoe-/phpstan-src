@@ -176,6 +176,21 @@ final class PropertyInClassRule implements Rule
 						->build(),
 				];
 			}
+			if (
+				!$this->phpVersion->supportsAsymmetricVisibilityForStaticProperties()
+				&& (
+					$node->isPrivateSet()
+					|| $node->isProtectedSet()
+					|| $node->isPublicSet()
+				)
+			) {
+				return [
+					RuleErrorBuilder::message('Asymmetric visibility for static properties is supported only on PHP 8.5 and later.')
+						->nonIgnorable()
+						->identifier('property.staticAsymmetricVisibility')
+						->build(),
+				];
+			}
 		}
 
 		if ($node->isVirtual()) {

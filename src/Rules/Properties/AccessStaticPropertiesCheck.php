@@ -10,6 +10,7 @@ use PHPStan\Analyser\Scope;
 use PHPStan\DependencyInjection\AutowiredParameter;
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Internal\SprintfHelper;
+use PHPStan\Php\PhpVersion;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\ClassNameCheck;
 use PHPStan\Rules\ClassNameNodePair;
@@ -40,6 +41,7 @@ final class AccessStaticPropertiesCheck
 		private ReflectionProvider $reflectionProvider,
 		private RuleLevelHelper $ruleLevelHelper,
 		private ClassNameCheck $classCheck,
+		private PhpVersion $phpVersion,
 		#[AutowiredParameter(ref: '%tips.discoveringSymbols%')]
 		private bool $discoveringSymbolsTip,
 	)
@@ -49,7 +51,7 @@ final class AccessStaticPropertiesCheck
 	/**
 	 * @return list<IdentifierRuleError>
 	 */
-	public function check(StaticPropertyFetch $node, Scope $scope): array
+	public function check(StaticPropertyFetch $node, Scope $scope, bool $write): array
 	{
 		if ($node->name instanceof Node\VarLikeIdentifier) {
 			$names = [$node->name->name];
@@ -59,7 +61,7 @@ final class AccessStaticPropertiesCheck
 
 		$errors = [];
 		foreach ($names as $name) {
-			$errors = array_merge($errors, $this->processSingleProperty($scope, $node, $name));
+			$errors = array_merge($errors, $this->processSingleProperty($scope, $node, $name, $write));
 		}
 
 		return $errors;
@@ -68,7 +70,7 @@ final class AccessStaticPropertiesCheck
 	/**
 	 * @return list<IdentifierRuleError>
 	 */
-	private function processSingleProperty(Scope $scope, StaticPropertyFetch $node, string $name): array
+	private function processSingleProperty(Scope $scope, StaticPropertyFetch $node, string $name, bool $write): array
 	{
 		$messages = [];
 		if ($node->class instanceof Name) {
@@ -198,7 +200,11 @@ final class AccessStaticPropertiesCheck
 
 				while ($parentClassReflection !== null) {
 					if ($parentClassReflection->hasStaticProperty($name)) {
-						if ($scope->canReadProperty($parentClassReflection->getStaticProperty($name))) {
+						if ($write) {
+							if ($scope->canWriteProperty($parentClassReflection->getStaticProperty($name))) {
+								return [];
+							}
+						} elseif ($scope->canReadProperty($parentClassReflection->getStaticProperty($name))) {
 							return [];
 						}
 						return [
@@ -241,7 +247,19 @@ final class AccessStaticPropertiesCheck
 		}
 
 		$property = $classType->getStaticProperty($name, $scope);
-		if (!$scope->canReadProperty($property)) {
+		if ($write) {
+			if ($scope->canWriteProperty($property)) {
+				return $messages;
+			}
+		} elseif ($scope->canReadProperty($property)) {
+			return $messages;
+		}
+
+		if (
+			!$this->phpVersion->supportsAsymmetricVisibilityForStaticProperties()
+			|| !$write
+			|| (!$property->isPrivateSet() && !$property->isProtectedSet())
+		) {
 			return array_merge($messages, [
 				RuleErrorBuilder::message(sprintf(
 					'Access to %s property $%s of class %s.',
@@ -252,7 +270,14 @@ final class AccessStaticPropertiesCheck
 			]);
 		}
 
-		return $messages;
+		return array_merge($messages, [
+			RuleErrorBuilder::message(sprintf(
+				'Access to %s property $%s of class %s.',
+				$property->isPrivateSet() ? 'private(set)' : 'protected(set)',
+				$name,
+				$property->getDeclaringClass()->getDisplayName(),
+			))->identifier(sprintf('assign.staticProperty%s', $property->isPrivateSet() ? 'PrivateSet' : 'ProtectedSet'))->build(),
+		]);
 	}
 
 }

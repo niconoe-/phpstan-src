@@ -26,7 +26,7 @@ final class AccessStaticPropertiesRule implements Rule
 
 	public function processNode(Node $node, Scope $scope): array
 	{
-		return $this->check->check($node, $scope);
+		return $this->check->check($node, $scope, false);
 	}
 
 }

@@ -34,7 +34,7 @@ final class AccessStaticPropertiesInAssignRule implements Rule
 			return [];
 		}
 
-		return $this->check->check($node->getPropertyFetch(), $scope);
+		return $this->check->check($node->getPropertyFetch(), $scope, true);
 	}
 
 }

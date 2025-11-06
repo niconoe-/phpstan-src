@@ -371,6 +371,11 @@ final class PhpVersion
 		return $this->versionId >= 80400;
 	}
 
+	public function supportsAsymmetricVisibilityForStaticProperties(): bool
+	{
+		return $this->versionId >= 80500;
+	}
+
 	public function supportsLazyObjects(): bool
 	{
 		return $this->versionId >= 80400;

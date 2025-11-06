@@ -281,4 +281,27 @@ class PropertyInClassRuleTest extends RuleTestCase
 		]);
 	}
 
+	public function testAsymmetricVisibilityForStaticProperties(): void
+	{
+		$errors = [];
+		if (PHP_VERSION_ID < 80500) {
+			$errors = [
+				[
+					'Asymmetric visibility for static properties is supported only on PHP 8.5 and later.',
+					8,
+				],
+				[
+					'Asymmetric visibility for static properties is supported only on PHP 8.5 and later.',
+					10,
+				],
+				[
+					'Asymmetric visibility for static properties is supported only on PHP 8.5 and later.',
+					12,
+				],
+			];
+		}
+
+		$this->analyse([__DIR__ . '/data/static-properties-asymmetric-visibility-support.php'], $errors);
+	}
+
 }
