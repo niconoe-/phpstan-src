@@ -7,7 +7,6 @@ use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleLevelHelper;
 use PHPStan\Testing\RuleTestCase;
 use PHPUnit\Framework\Attributes\RequiresPhp;
-use const PHP_EOL;
 use const PHP_VERSION_ID;
 
 /**
@@ -154,7 +153,7 @@ class InvalidIncDecOperationRuleTest extends RuleTestCase
 				'Cannot use ++ on array|bool|float|int|object|string|null.',
 				24,
 				PHP_VERSION_ID >= 80500 ?
-					'• Operator ++ is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_increment().' . PHP_EOL .
+					'• Operator ++ is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_increment().' . "\n" .
 					'• Operator ++ is deprecated for bool.'
 					: (PHP_VERSION_ID >= 80300 ? 'Operator ++ is deprecated for bool.' : null),
 			],
@@ -162,8 +161,8 @@ class InvalidIncDecOperationRuleTest extends RuleTestCase
 				'Cannot use -- on array|bool|float|int|object|string|null.',
 				26,
 				PHP_VERSION_ID >= 80300 ?
-					'• Operator -- is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_decrement().' . PHP_EOL .
-					'• Operator -- is deprecated for null.' . PHP_EOL .
+					'• Operator -- is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_decrement().' . "\n" .
+					'• Operator -- is deprecated for null.' . "\n" .
 					'• Operator -- is deprecated for bool.'
 					: null,
 			],

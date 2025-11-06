@@ -11,7 +11,7 @@ class Foo
 	 */
 	public function doFoo(
 		string $s,
-		string $t,
+		string $t
 	): void
 	{
 		$a = '1';
