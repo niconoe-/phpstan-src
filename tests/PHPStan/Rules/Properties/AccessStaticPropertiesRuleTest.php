@@ -19,15 +19,17 @@ class AccessStaticPropertiesRuleTest extends RuleTestCase
 	{
 		$reflectionProvider = self::createReflectionProvider();
 		return new AccessStaticPropertiesRule(
-			$reflectionProvider,
-			new RuleLevelHelper($reflectionProvider, true, false, true, false, false, false, true),
-			new ClassNameCheck(
-				new ClassCaseSensitivityCheck($reflectionProvider, true),
-				new ClassForbiddenNameCheck(self::getContainer()),
+			new AccessStaticPropertiesCheck(
 				$reflectionProvider,
-				self::getContainer(),
+				new RuleLevelHelper($reflectionProvider, true, false, true, false, false, false, true),
+				new ClassNameCheck(
+					new ClassCaseSensitivityCheck($reflectionProvider, true),
+					new ClassForbiddenNameCheck(self::getContainer()),
+					$reflectionProvider,
+					self::getContainer(),
+				),
+				true,
 			),
-			true,
 		);
 	}
 

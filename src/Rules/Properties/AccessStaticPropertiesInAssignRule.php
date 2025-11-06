@@ -15,7 +15,7 @@ use PHPStan\Rules\Rule;
 final class AccessStaticPropertiesInAssignRule implements Rule
 {
 
-	public function __construct(private AccessStaticPropertiesRule $accessStaticPropertiesRule)
+	public function __construct(private AccessStaticPropertiesCheck $check)
 	{
 	}
 
@@ -34,7 +34,7 @@ final class AccessStaticPropertiesInAssignRule implements Rule
 			return [];
 		}
 
-		return $this->accessStaticPropertiesRule->processNode($node->getPropertyFetch(), $scope);
+		return $this->check->check($node->getPropertyFetch(), $scope);
 	}
 
 }
