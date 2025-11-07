@@ -287,6 +287,12 @@ class AnalyserIntegrationTest extends PHPStanTestCase
 		$this->assertSame('Constant SOME_UNKNOWN_CONST not found.', $errors[0]->getMessage());
 	}
 
+	public function testBug13685(): void
+	{
+		$errors = $this->runAnalyse(__DIR__ . '/data/bug-13685.php');
+		$this->assertNoErrors($errors);
+	}
+
 	public function testBug3798(): void
 	{
 		$errors = $this->runAnalyse(__DIR__ . '/data/bug-3798.php');
