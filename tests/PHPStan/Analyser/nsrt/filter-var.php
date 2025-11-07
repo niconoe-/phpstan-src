@@ -169,4 +169,15 @@ class FilterVar
 		assertType("''", filter_var(null));
 	}
 
+	public function randomFlag($mixed, bool $bool) {
+
+		assertType('int|false|null', filter_var($mixed, FILTER_VALIDATE_INT, [
+			'flags' => $bool ? FILTER_NULL_ON_FAILURE : FILTER_FLAG_NONE,
+		]));
+
+		assertType('bool|null', filter_var($mixed, FILTER_VALIDATE_BOOLEAN, [
+			'flags' => $bool ? FILTER_NULL_ON_FAILURE : FILTER_FLAG_NONE,
+		]));
+	}
+
 }

@@ -191,7 +191,7 @@ final class FilterFunctionReturnTypeHelper
 		}
 
 		if ($exactType === null || $hasOptions->maybe() || (!$inputType->equals($type) && $inputType->isSuperTypeOf($type)->yes())) {
-			if ($defaultType->isSuperTypeOf($type)->no()) {
+			if (!$defaultType->isSuperTypeOf($type)->yes()) {
 				$type = TypeCombinator::union($type, $defaultType);
 			}
 		}
@@ -495,11 +495,17 @@ final class FilterFunctionReturnTypeHelper
 		}
 
 		$type = $this->getFlagsValue($flagsType);
-		if (!$type instanceof ConstantIntegerType) {
+		$scalarValues = $type->getConstantScalarValues();
+		if ($scalarValues === []) {
 			return TrinaryLogic::createMaybe();
 		}
 
-		return TrinaryLogic::createFromBoolean(($type->getValue() & $flag) === $flag);
+		return TrinaryLogic::lazyExtremeIdentity(
+			$scalarValues,
+			static fn (bool|string|int|float|null $scalar): TrinaryLogic => TrinaryLogic::createFromBoolean(
+				(((int) $scalar) & $flag) === $flag,
+			),
+		);
 	}
 
 	private function getFlagsValue(Type $exprType): Type
