@@ -5,6 +5,7 @@ namespace PHPStan\Rules\Traits;
 use PHPStan\Reflection\InitializerExprTypeResolver;
 use PHPStan\Rules\Rule as TRule;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 
 /**
  * @extends RuleTestCase<ConflictingTraitConstantsRule>
@@ -76,6 +77,12 @@ class ConflictingTraitConstantsRuleTest extends RuleTestCase
 				39,
 			],
 		]);
+	}
+
+	#[RequiresPhp('>= 8.3')]
+	public function testBug13119(): void
+	{
+		$this->analyse([__DIR__ . '/data/bug-13119.php'], []);
 	}
 
 }

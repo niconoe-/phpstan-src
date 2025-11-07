@@ -44,23 +44,63 @@ final class ConflictingTraitConstantsRule implements Rule
 		}
 
 		$classReflection = $scope->getClassReflection();
-		$traitConstants = [];
+		$recursiveTraitConstants = [];
 		foreach ($classReflection->getTraits(true) as $trait) {
 			foreach ($trait->getNativeReflection()->getReflectionConstants() as $constant) {
-				$traitConstants[] = $constant;
+				$recursiveTraitConstants[] = $constant;
 			}
 		}
 
 		$errors = [];
 		foreach ($node->consts as $const) {
-			foreach ($traitConstants as $traitConstant) {
-				if ($traitConstant->getName() !== $const->name->toString()) {
+			foreach ($recursiveTraitConstants as $recursiveTraitConstant) {
+				if ($recursiveTraitConstant->getName() !== $const->name->toString()) {
 					continue;
 				}
 
-				foreach ($this->processSingleConstant($classReflection, $traitConstant, $node, $const->value) as $error) {
+				foreach ($this->processSingleConstant($classReflection, $recursiveTraitConstant, $node) as $error) {
 					$errors[] = $error;
 				}
+			}
+		}
+
+		$immediateTraitConstants = [];
+		foreach ($classReflection->getTraits() as $trait) {
+			foreach ($trait->getNativeReflection()->getReflectionConstants() as $constant) {
+				$immediateTraitConstants[] = $constant;
+			}
+		}
+
+		foreach ($node->consts as $const) {
+			foreach ($immediateTraitConstants as $immediateTraitConstant) {
+				if ($immediateTraitConstant->getName() !== $const->name->toString()) {
+					continue;
+				}
+
+				$classConstantValueType = $this->initializerExprTypeResolver->getType($const->value, InitializerExprContext::fromClassReflection($classReflection));
+				$traitConstantValueType = $this->initializerExprTypeResolver->getType(
+					$immediateTraitConstant->getValueExpression(),
+					InitializerExprContext::fromClass(
+						$immediateTraitConstant->getDeclaringClass()->getName(),
+						$immediateTraitConstant->getDeclaringClass()->getFileName() !== false ? $immediateTraitConstant->getDeclaringClass()->getFileName() : null,
+					),
+				);
+				if ($classConstantValueType->equals($traitConstantValueType)) {
+					continue;
+				}
+
+				$errors[] = RuleErrorBuilder::message(sprintf(
+					'Constant %s::%s with value %s overriding constant %s::%s with different value %s should have the same value.',
+					$classReflection->getDisplayName(),
+					$immediateTraitConstant->getName(),
+					$classConstantValueType->describe(VerbosityLevel::value()),
+					$immediateTraitConstant->getDeclaringClass()->getName(),
+					$immediateTraitConstant->getName(),
+					$traitConstantValueType->describe(VerbosityLevel::value()),
+				))
+					->nonIgnorable()
+					->identifier('classConstant.value')
+					->build();
 			}
 		}
 
@@ -70,7 +110,7 @@ final class ConflictingTraitConstantsRule implements Rule
 	/**
 	 * @return list<IdentifierRuleError>
 	 */
-	private function processSingleConstant(ClassReflection $classReflection, ReflectionClassConstant $traitConstant, Node\Stmt\ClassConst $classConst, Node\Expr $valueExpr): array
+	private function processSingleConstant(ClassReflection $classReflection, ReflectionClassConstant $traitConstant, Node\Stmt\ClassConst $classConst): array
 	{
 		$errors = [];
 		if ($traitConstant->isPublic()) {
@@ -223,29 +263,6 @@ final class ConflictingTraitConstantsRule implements Rule
 					->identifier('classConstant.nativeType')
 					->build();
 			}
-		}
-
-		$classConstantValueType = $this->initializerExprTypeResolver->getType($valueExpr, InitializerExprContext::fromClassReflection($classReflection));
-		$traitConstantValueType = $this->initializerExprTypeResolver->getType(
-			$traitConstant->getValueExpression(),
-			InitializerExprContext::fromClass(
-				$traitDeclaringClass->getName(),
-				$traitDeclaringClass->getFileName() !== false ? $traitDeclaringClass->getFileName() : null,
-			),
-		);
-		if (!$classConstantValueType->equals($traitConstantValueType)) {
-			$errors[] = RuleErrorBuilder::message(sprintf(
-				'Constant %s::%s with value %s overriding constant %s::%s with different value %s should have the same value.',
-				$classReflection->getDisplayName(),
-				$traitConstant->getName(),
-				$classConstantValueType->describe(VerbosityLevel::value()),
-				$traitConstant->getDeclaringClass()->getName(),
-				$traitConstant->getName(),
-				$traitConstantValueType->describe(VerbosityLevel::value()),
-			))
-				->nonIgnorable()
-				->identifier('classConstant.value')
-				->build();
 		}
 
 		return $errors;
