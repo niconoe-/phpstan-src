@@ -3,10 +3,26 @@
 namespace OverwrittenArrays;
 
 use function PHPStan\Testing\assertType;
-use function rad2deg;
 
 class Foo
 {
+
+	/** @var array<string> */
+	private array $a;
+
+	public function doFooProp1(): void
+	{
+		foreach ($this->a as $k => $v) {
+			if (rand(0, 1)) {
+				$this->a[$k] = 2;
+				continue;
+			}
+
+			$this->a[$k] = 1;
+		}
+
+		assertType('array<1|2>', $this->a);
+	}
 
 	/**
 	 * @param array<int, string> $a

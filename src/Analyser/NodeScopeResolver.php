@@ -1284,7 +1284,7 @@ final class NodeScopeResolver
 				&& $stmt->keyVar !== null
 				&& $exprType->isArray()->yes()
 				&& $exprType->isConstantArray()->no()
-				&& !$hasExpr->no()
+				&& (!$hasExpr->no() || !$stmt->expr instanceof Variable)
 			) {
 				$arrayExprDimFetch = new ArrayDimFetch($stmt->expr, $stmt->keyVar);
 				$arrayDimFetchLoopTypes = [];
@@ -1331,6 +1331,12 @@ final class NodeScopeResolver
 							$newExprType,
 							$newExprNativeType,
 							$hasExpr,
+						);
+					} else {
+						$finalScope = $finalScope->assignExpression(
+							$stmt->expr,
+							$newExprType,
+							$newExprNativeType,
 						);
 					}
 				}
