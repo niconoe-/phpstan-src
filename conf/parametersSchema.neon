@@ -24,7 +24,8 @@ parametersSchema:
 		check: structure([
 			missingCheckedExceptionInThrows: bool(),
 			tooWideThrowType: bool(),
-			throwTypeCovariance: bool()
+			throwTypeCovariance: bool(),
+			tooWideImplicitThrowType: bool()
 		])
 	])
 	featureToggles: structure([
@@ -43,7 +44,6 @@ parametersSchema:
 		reportNestedTooWideType: bool()
 		assignToByRefForeachExpr: bool()
 		curlSetOptArrayTypes: bool()
-		tooWideImplicitThrows: bool()
 	])
 	fileExtensions: listOf(string())
 	checkAdvancedIsset: bool()

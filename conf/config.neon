@@ -22,6 +22,7 @@ parameters:
 		check:
 			missingCheckedExceptionInThrows: false
 			tooWideThrowType: true
+			tooWideImplicitThrowType: false
 			throwTypeCovariance: false
 	featureToggles:
 		bleedingEdge: false
@@ -40,7 +41,6 @@ parameters:
 		reportNestedTooWideType: false
 		assignToByRefForeachExpr: false
 		curlSetOptArrayTypes: false
-		tooWideImplicitThrows: false
 	fileExtensions:
 		- php
 	checkAdvancedIsset: false

@@ -15,4 +15,3 @@ parameters:
 		reportNestedTooWideType: true
 		assignToByRefForeachExpr: true
 		curlSetOptArrayTypes: true
-		tooWideImplicitThrows: true
