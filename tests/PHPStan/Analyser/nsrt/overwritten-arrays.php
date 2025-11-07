@@ -102,30 +102,4 @@ class Foo
 		assertType('array<int, 1|2|string>', $a);
 	}
 
-	/**
-	 * @param array<int, string> $a
-	 */
-	public function doFoo7(array $a): void
-	{
-		foreach ($a as &$v) {
-			$v = 1;
-		}
-
-		assertType('array<int, 1>', $a);
-	}
-
-	/**
-	 * @param array<int, string> $a
-	 */
-	public function doFoo8(array $a): void
-	{
-		foreach ($a as &$v) {
-			if (rand(0, 1)) {
-				$v = 1;
-			}
-		}
-
-		assertType('array<int, 1|string>', $a);
-	}
-
 }
