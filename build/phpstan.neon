@@ -147,7 +147,3 @@ services:
 		class: PHPStan\Build\ContainerDynamicReturnTypeExtension
 		tags:
 			- phpstan.broker.dynamicMethodReturnTypeExtension
-	-
-		class: PHPStan\Build\IgnoreGeneratorNodeScopeResolverUsageProvider
-		tags:
-			- shipmonk.deadCode.memberUsageProvider

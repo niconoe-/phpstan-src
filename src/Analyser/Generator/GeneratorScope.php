@@ -11,6 +11,7 @@ use PhpParser\Node\Param;
 use PHPStan\Analyser\NodeCallbackInvoker;
 use PHPStan\Analyser\Scope;
 use PHPStan\Php\PhpVersions;
+use PHPStan\Reflection\Assertions;
 use PHPStan\Reflection\ClassConstantReflection;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ExtendedMethodReflection;
@@ -21,6 +22,7 @@ use PHPStan\Reflection\PropertyReflection;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\ClosureType;
+use PHPStan\Type\Generic\TemplateTypeMap;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeWithClassName;
 
@@ -45,6 +47,55 @@ final class GeneratorScope implements Scope, NodeCallbackInvoker
 		$expressionTypes[$exprString] = $type;
 
 		return new self($expressionTypes);
+	}
+
+	public function enterNamespace(string $namespaceName): self
+	{
+		// TODO: Implement enterNamespace() method.
+		throw new ShouldNotHappenException('Not implemented yet');
+	}
+
+	public function enterClass(ClassReflection $classReflection): self
+	{
+		// TODO: Implement enterClass() method.
+		throw new ShouldNotHappenException('Not implemented yet');
+	}
+
+	/**
+	 * @param Type[] $phpDocParameterTypes
+	 * @param Type[] $parameterOutTypes
+	 * @param array<string, bool> $immediatelyInvokedCallableParameters
+	 * @param array<string, Type> $phpDocClosureThisTypeParameters
+	 */
+	public function enterClassMethod(
+		Node\Stmt\ClassMethod $classMethod,
+		TemplateTypeMap $templateTypeMap,
+		array $phpDocParameterTypes,
+		?Type $phpDocReturnType,
+		?Type $throwType,
+		?string $deprecatedDescription,
+		bool $isDeprecated,
+		bool $isInternal,
+		bool $isFinal,
+		?bool $isPure = null,
+		bool $acceptsNamedArguments = true,
+		?Assertions $asserts = null,
+		?Type $selfOutType = null,
+		?string $phpDocComment = null,
+		array $parameterOutTypes = [],
+		array $immediatelyInvokedCallableParameters = [],
+		array $phpDocClosureThisTypeParameters = [],
+		bool $isConstructor = false,
+	): self
+	{
+		// TODO: Implement enterClassMethod() method.
+		throw new ShouldNotHappenException('Not implemented yet');
+	}
+
+	public function generalizeWith(self $otherScope): self
+	{
+		// TODO: Implement generalizeWith() method.
+		throw new ShouldNotHappenException('Not implemented yet');
 	}
 
 	public function isInClass(): bool
@@ -98,13 +149,13 @@ final class GeneratorScope implements Scope, NodeCallbackInvoker
 	public function getFile(): string
 	{
 		// TODO: Implement getFile() method.
-		throw new ShouldNotHappenException('Not implemented yet');
+		return 'foo.php';
 	}
 
 	public function getFileDescription(): string
 	{
 		// TODO: Implement getFileDescription() method.
-		throw new ShouldNotHappenException('Not implemented yet');
+		return 'foo.php';
 	}
 
 	public function isDeclareStrictTypes(): bool
@@ -116,7 +167,7 @@ final class GeneratorScope implements Scope, NodeCallbackInvoker
 	public function isInTrait(): bool
 	{
 		// TODO: Implement isInTrait() method.
-		throw new ShouldNotHappenException('Not implemented yet');
+		return false;
 	}
 
 	public function getTraitReflection(): ?ClassReflection
@@ -200,7 +251,7 @@ final class GeneratorScope implements Scope, NodeCallbackInvoker
 	public function getMethodReflection(Type $typeWithMethod, string $methodName): ?ExtendedMethodReflection
 	{
 		// TODO: Implement getMethodReflection() method.
-		throw new ShouldNotHappenException('Not implemented yet');
+		return null;
 	}
 
 	public function getConstantReflection(Type $typeWithConstant, string $constantName): ?ClassConstantReflection

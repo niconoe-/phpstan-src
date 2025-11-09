@@ -7019,6 +7019,9 @@ final class NodeScopeResolver
 					}
 
 					$scope = $this->scopeFactory->create(ScopeContext::create($fileName))->enterClass($declaringClass);
+					if (!$scope instanceof MutatingScope) {
+						throw new ShouldNotHappenException();
+					}
 					$this->processStmtNode($stmt, $scope, $nodeCallback, StatementContext::createTopLevel());
 				}
 				return;

@@ -531,6 +531,7 @@ class StatementResultTest extends PHPStanTestCase
 			->assignVariable('x', new IntegerType(), new IntegerType(), TrinaryLogic::createYes())
 			->assignVariable('cond', new MixedType(), new MixedType(), TrinaryLogic::createYes())
 			->assignVariable('arr', new ArrayType(new MixedType(), new MixedType()), new ArrayType(new MixedType(), new MixedType()), TrinaryLogic::createYes());
+		$this->assertInstanceOf(MutatingScope::class, $scope);
 		$result = $nodeScopeResolver->processStmtNodes(
 			new Stmt\Namespace_(stmts: $stmts),
 			$stmts,

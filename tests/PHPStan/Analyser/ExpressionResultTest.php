@@ -203,6 +203,7 @@ class ExpressionResultTest extends PHPStanTestCase
 		$scope = $scopeFactory->create(ScopeContext::create('test.php'))
 			->assignVariable('x', new IntegerType(), new IntegerType(), TrinaryLogic::createYes())
 			->assignVariable('arr', new ArrayType(new MixedType(), new MixedType()), new ArrayType(new MixedType(), new MixedType()), TrinaryLogic::createYes());
+		$this->assertInstanceOf(MutatingScope::class, $scope);
 
 		$result = $nodeScopeResolver->processExprNode(
 			$stmt,

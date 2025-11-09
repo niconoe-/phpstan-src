@@ -87,7 +87,25 @@ final class GeneratorNodeScopeResolver
 	): void
 	{
 		$storage = new NodeScopeResolverRunStorage();
+		$this->processStmtNodes(
+			$storage,
+			$stmts,
+			$scope,
+			$nodeCallback,
+		);
+	}
 
+	/**
+	 * @param array<Node\Stmt> $stmts
+	 * @param callable(Node, Scope): void $nodeCallback
+	 */
+	private function processStmtNodes(
+		NodeScopeResolverRunStorage $storage,
+		array $stmts,
+		GeneratorScope $scope,
+		callable $nodeCallback,
+	): StmtAnalysisResult
+	{
 		$stack = [];
 
 		$gen = $this->analyzeStmts($stmts, $scope);
@@ -126,10 +144,29 @@ final class GeneratorNodeScopeResolver
 			}
 
 			$result = $gen->getReturn();
-
 			if (count($stack) === 0) {
+				foreach ($storage->pendingFibers as $pending) {
+					$request = $pending['request'];
+					$exprAnalysisResult = $this->lookupExprAnalysisResult($storage, $request->expr);
+
+					if ($exprAnalysisResult !== null) {
+						throw new ShouldNotHappenException('Pending fibers with an empty stack should be about synthetic nodes');
+					}
+
+					$this->processStmtNodes(
+						$storage,
+						[new Stmt\Expression($request->expr)],
+						$request->scope,
+						static function () {
+						},
+					);
+				}
+
 				if (count($storage->pendingFibers) === 0) {
-					return;
+					if (!$result instanceof StmtAnalysisResult) {
+						throw new ShouldNotHappenException('Top node should be Stmt');
+					}
+					return $result;
 				}
 
 				throw new ShouldNotHappenException(sprintf('Cannot finish analysis, pending fibers about: %s', implode(', ', array_map(static fn (array $fiber) => get_class($fiber['request']->expr), $storage->pendingFibers))));

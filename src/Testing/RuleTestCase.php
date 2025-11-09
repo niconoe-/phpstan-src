@@ -7,6 +7,7 @@ use PHPStan\Analyser\Analyser;
 use PHPStan\Analyser\AnalyserResultFinalizer;
 use PHPStan\Analyser\Error;
 use PHPStan\Analyser\FileAnalyser;
+use PHPStan\Analyser\Generator\GeneratorNodeScopeResolver;
 use PHPStan\Analyser\IgnoreErrorExtensionProvider;
 use PHPStan\Analyser\InternalError;
 use PHPStan\Analyser\LocalIgnoresProcessor;
@@ -79,48 +80,54 @@ abstract class RuleTestCase extends PHPStanTestCase
 		return self::getContainer()->getService('typeSpecifier');
 	}
 
+	protected function createNodeScopeResolver(): NodeScopeResolver|GeneratorNodeScopeResolver
+	{
+		$readWritePropertiesExtensions = $this->getReadWritePropertiesExtensions();
+		$reflectionProvider = $this->createReflectionProvider();
+		$typeSpecifier = $this->getTypeSpecifier();
+
+		return new NodeScopeResolver(
+			$reflectionProvider,
+			self::getContainer()->getByType(InitializerExprTypeResolver::class),
+			self::getReflector(),
+			self::getClassReflectionExtensionRegistryProvider(),
+			self::getContainer()->getByType(ParameterOutTypeExtensionProvider::class),
+			$this->getParser(),
+			self::getContainer()->getByType(FileTypeMapper::class),
+			self::getContainer()->getByType(StubPhpDocProvider::class),
+			self::getContainer()->getByType(PhpVersion::class),
+			self::getContainer()->getByType(SignatureMapProvider::class),
+			self::getContainer()->getByType(DeprecationProvider::class),
+			self::getContainer()->getByType(AttributeReflectionFactory::class),
+			self::getContainer()->getByType(PhpDocInheritanceResolver::class),
+			self::getContainer()->getByType(FileHelper::class),
+			$typeSpecifier,
+			self::getContainer()->getByType(DynamicThrowTypeExtensionProvider::class),
+			$readWritePropertiesExtensions !== [] ? new DirectReadWritePropertiesExtensionProvider($readWritePropertiesExtensions) : self::getContainer()->getByType(ReadWritePropertiesExtensionProvider::class),
+			self::getContainer()->getByType(ParameterClosureThisExtensionProvider::class),
+			self::getContainer()->getByType(ParameterClosureTypeExtensionProvider::class),
+			static::createScopeFactory(),
+			$this->shouldPolluteScopeWithLoopInitialAssignments(),
+			$this->shouldPolluteScopeWithAlwaysIterableForeach(),
+			self::getContainer()->getParameter('polluteScopeWithBlock'),
+			[],
+			[],
+			self::getContainer()->getParameter('universalObjectCratesClasses'),
+			self::getContainer()->getParameter('exceptions')['implicitThrows'],
+			$this->shouldTreatPhpDocTypesAsCertain(),
+			$this->shouldNarrowMethodScopeFromConstructor(),
+		);
+	}
+
 	private function getAnalyser(DirectRuleRegistry $ruleRegistry): Analyser
 	{
 		if ($this->analyser === null) {
 			$collectorRegistry = new CollectorRegistry($this->getCollectors());
 
-			$reflectionProvider = $this->createReflectionProvider();
-			$typeSpecifier = $this->getTypeSpecifier();
+			$nodeScopeResolver = $this->createNodeScopeResolver();
 
-			$readWritePropertiesExtensions = $this->getReadWritePropertiesExtensions();
-			$nodeScopeResolver = new NodeScopeResolver(
-				$reflectionProvider,
-				self::getContainer()->getByType(InitializerExprTypeResolver::class),
-				self::getReflector(),
-				self::getClassReflectionExtensionRegistryProvider(),
-				self::getContainer()->getByType(ParameterOutTypeExtensionProvider::class),
-				$this->getParser(),
-				self::getContainer()->getByType(FileTypeMapper::class),
-				self::getContainer()->getByType(StubPhpDocProvider::class),
-				self::getContainer()->getByType(PhpVersion::class),
-				self::getContainer()->getByType(SignatureMapProvider::class),
-				self::getContainer()->getByType(DeprecationProvider::class),
-				self::getContainer()->getByType(AttributeReflectionFactory::class),
-				self::getContainer()->getByType(PhpDocInheritanceResolver::class),
-				self::getContainer()->getByType(FileHelper::class),
-				$typeSpecifier,
-				self::getContainer()->getByType(DynamicThrowTypeExtensionProvider::class),
-				$readWritePropertiesExtensions !== [] ? new DirectReadWritePropertiesExtensionProvider($readWritePropertiesExtensions) : self::getContainer()->getByType(ReadWritePropertiesExtensionProvider::class),
-				self::getContainer()->getByType(ParameterClosureThisExtensionProvider::class),
-				self::getContainer()->getByType(ParameterClosureTypeExtensionProvider::class),
-				self::createScopeFactory($reflectionProvider, $typeSpecifier),
-				$this->shouldPolluteScopeWithLoopInitialAssignments(),
-				$this->shouldPolluteScopeWithAlwaysIterableForeach(),
-				self::getContainer()->getParameter('polluteScopeWithBlock'),
-				[],
-				[],
-				self::getContainer()->getParameter('universalObjectCratesClasses'),
-				self::getContainer()->getParameter('exceptions')['implicitThrows'],
-				$this->shouldTreatPhpDocTypesAsCertain(),
-				$this->shouldNarrowMethodScopeFromConstructor(),
-			);
 			$fileAnalyser = new FileAnalyser(
-				$this->createScopeFactory($reflectionProvider, $typeSpecifier),
+				static::createScopeFactory(),
 				$nodeScopeResolver,
 				$this->getParser(),
 				self::getContainer()->getByType(DependencyResolver::class),
@@ -267,7 +274,7 @@ abstract class RuleTestCase extends PHPStanTestCase
 			$ruleRegistry,
 			new IgnoreErrorExtensionProvider(self::getContainer()),
 			self::getContainer()->getByType(RuleErrorTransformer::class),
-			$this->createScopeFactory($reflectionProvider, $this->getTypeSpecifier()),
+			static::createScopeFactory(),
 			new LocalIgnoresProcessor(),
 			true,
 		);

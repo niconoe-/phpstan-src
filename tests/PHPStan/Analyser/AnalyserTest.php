@@ -770,10 +770,7 @@ class AnalyserTest extends PHPStanTestCase
 			new DirectRuleRegistry([]),
 			new IgnoreErrorExtensionProvider(new NetteContainer(new Container([]))),
 			self::getContainer()->getByType(RuleErrorTransformer::class),
-			$this->createScopeFactory(
-				self::createReflectionProvider(),
-				self::getContainer()->getService('typeSpecifier'),
-			),
+			static::createScopeFactory(),
 			new LocalIgnoresProcessor(),
 			$reportUnmatchedIgnoredErrors,
 		);
@@ -826,7 +823,7 @@ class AnalyserTest extends PHPStanTestCase
 			self::getContainer()->getByType(ReadWritePropertiesExtensionProvider::class),
 			self::getContainer()->getByType(ParameterClosureThisExtensionProvider::class),
 			self::getContainer()->getByType(ParameterClosureTypeExtensionProvider::class),
-			self::createScopeFactory($reflectionProvider, $typeSpecifier),
+			static::createScopeFactory(),
 			false,
 			true,
 			true,
@@ -839,7 +836,7 @@ class AnalyserTest extends PHPStanTestCase
 		);
 		$lexer = new Lexer();
 		$fileAnalyser = new FileAnalyser(
-			$this->createScopeFactory($reflectionProvider, $typeSpecifier),
+			static::createScopeFactory(),
 			$nodeScopeResolver,
 			new RichParser(
 				new Php7($lexer),
