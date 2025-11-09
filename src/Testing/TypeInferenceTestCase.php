@@ -5,6 +5,9 @@ namespace PHPStan\Testing;
 use PhpParser\Node;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Name;
+use PHPStan\Analyser\Generator\GeneratorNodeScopeResolver;
+use PHPStan\Analyser\Generator\GeneratorScope;
+use PHPStan\Analyser\MutatingScope;
 use PHPStan\Analyser\NodeScopeResolver;
 use PHPStan\Analyser\Scope;
 use PHPStan\Analyser\ScopeContext;
@@ -53,20 +56,12 @@ use const PHP_VERSION;
 abstract class TypeInferenceTestCase extends PHPStanTestCase
 {
 
-	/**
-	 * @param callable(Node , Scope ): void $callback
-	 * @param string[] $dynamicConstantNames
-	 */
-	public static function processFile(
-		string $file,
-		callable $callback,
-		array $dynamicConstantNames = [],
-	): void
+	protected static function createNodeScopeResolver(): NodeScopeResolver|GeneratorNodeScopeResolver
 	{
 		$reflectionProvider = self::createReflectionProvider();
 		$typeSpecifier = self::getContainer()->getService('typeSpecifier');
-		$fileHelper = self::getContainer()->getByType(FileHelper::class);
-		$resolver = new NodeScopeResolver(
+
+		return new NodeScopeResolver(
 			$reflectionProvider,
 			self::getContainer()->getByType(InitializerExprTypeResolver::class),
 			self::getReflector(),
@@ -97,14 +92,39 @@ abstract class TypeInferenceTestCase extends PHPStanTestCase
 			self::getContainer()->getParameter('treatPhpDocTypesAsCertain'),
 			true,
 		);
-		$resolver->setAnalysedFiles(array_map(static fn (string $file): string => $fileHelper->normalizePath($file), array_merge([$file], static::getAdditionalAnalysedFiles())));
+	}
 
+	/**
+	 * @param string[] $dynamicConstantNames
+	 */
+	protected static function createScope(
+		string $file,
+		array $dynamicConstantNames = [],
+	): MutatingScope|GeneratorScope
+	{
+		$reflectionProvider = self::createReflectionProvider();
+		$typeSpecifier = self::getContainer()->getService('typeSpecifier');
 		$scopeFactory = self::createScopeFactory($reflectionProvider, $typeSpecifier, $dynamicConstantNames);
-		$scope = $scopeFactory->create(ScopeContext::create($file));
+		return $scopeFactory->create(ScopeContext::create($file));
+	}
+
+	/**
+	 * @param callable(Node , Scope ): void $callback
+	 * @param string[] $dynamicConstantNames
+	 */
+	public static function processFile(
+		string $file,
+		callable $callback,
+		array $dynamicConstantNames = [],
+	): void
+	{
+		$fileHelper = self::getContainer()->getByType(FileHelper::class);
+		$resolver = static::createNodeScopeResolver();
+		$resolver->setAnalysedFiles(array_map(static fn (string $file): string => $fileHelper->normalizePath($file), array_merge([$file], static::getAdditionalAnalysedFiles())));
 
 		$resolver->processNodes(
 			self::getParser()->parseFile($file),
-			$scope,
+			static::createScope($file, $dynamicConstantNames),
 			$callback,
 		);
 	}
