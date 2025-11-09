@@ -243,8 +243,6 @@ final class GeneratorNodeScopeResolver
 		}
 
 		if ($expr instanceof Expr\New_ && $expr->class instanceof Node\Name) {
-			yield new NodeCallbackRequest($expr->class, $scope);
-
 			$result = new ExprAnalysisResult(new ObjectType($expr->class->toString()), $scope);
 			$this->storeExprAnalysisResult($storage, $expr, $result);
 			return $result;
