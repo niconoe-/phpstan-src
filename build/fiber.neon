@@ -1,6 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#class Fiber#'
+			message: '#Fiber#'
 			identifier: class.notFound
 			path: ../src/Analyser/Generator/*
