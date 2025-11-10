@@ -86,9 +86,11 @@ final class GeneratorNodeScopeResolver
 		callable $nodeCallback,
 	): void
 	{
-		$storage = new NodeScopeResolverRunStorage();
+		$pendingFibersStorage = new PendingFibersStorage();
+		$exprAnalysisResultStorage = new ExprAnalysisResultStorage();
 		$this->processStmtNodes(
-			$storage,
+			$pendingFibersStorage,
+			$exprAnalysisResultStorage,
 			$stmts,
 			$scope,
 			$nodeCallback,
@@ -100,7 +102,8 @@ final class GeneratorNodeScopeResolver
 	 * @param callable(Node, Scope): void $nodeCallback
 	 */
 	private function processStmtNodes(
-		NodeScopeResolverRunStorage $storage,
+		PendingFibersStorage $fibersStorage,
+		ExprAnalysisResultStorage $exprAnalysisResultStorage,
 		array $stmts,
 		GeneratorScope $scope,
 		callable $nodeCallback,
@@ -113,14 +116,15 @@ final class GeneratorNodeScopeResolver
 
 		// Trampoline loop
 		while (true) {
-			$this->processPendingFibers($storage);
+			$this->processPendingFibers($fibersStorage, $exprAnalysisResultStorage);
 
 			if ($gen->valid()) {
 				$yielded = $gen->current();
 
 				if ($yielded instanceof NodeCallbackRequest) {
 					$this->invokeNodeCallback(
-						$storage,
+						$fibersStorage,
+						$exprAnalysisResultStorage,
 						$yielded->node,
 						$yielded->scope,
 						$nodeCallback,
@@ -130,7 +134,7 @@ final class GeneratorNodeScopeResolver
 					continue;
 				} elseif ($yielded instanceof ExprAnalysisRequest) {
 					$stack[] = $gen;
-					$gen = $this->analyzeExpr($storage, $yielded->expr, $yielded->scope);
+					$gen = $this->analyzeExpr($exprAnalysisResultStorage, $yielded->expr, $yielded->scope);
 					$gen->current();
 					continue;
 				} elseif ($yielded instanceof StmtAnalysisRequest) {
@@ -145,16 +149,17 @@ final class GeneratorNodeScopeResolver
 
 			$result = $gen->getReturn();
 			if (count($stack) === 0) {
-				foreach ($storage->pendingFibers as $pending) {
+				foreach ($fibersStorage->pendingFibers as $pending) {
 					$request = $pending['request'];
-					$exprAnalysisResult = $this->lookupExprAnalysisResult($storage, $request->expr);
+					$exprAnalysisResult = $exprAnalysisResultStorage->lookupExprAnalysisResult($request->expr);
 
 					if ($exprAnalysisResult !== null) {
 						throw new ShouldNotHappenException('Pending fibers with an empty stack should be about synthetic nodes');
 					}
 
 					$this->processStmtNodes(
-						$storage,
+						$fibersStorage,
+						$exprAnalysisResultStorage,
 						[new Stmt\Expression($request->expr)],
 						$request->scope,
 						static function () {
@@ -162,14 +167,14 @@ final class GeneratorNodeScopeResolver
 					);
 				}
 
-				if (count($storage->pendingFibers) === 0) {
+				if (count($fibersStorage->pendingFibers) === 0) {
 					if (!$result instanceof StmtAnalysisResult) {
 						throw new ShouldNotHappenException('Top node should be Stmt');
 					}
 					return $result;
 				}
 
-				throw new ShouldNotHappenException(sprintf('Cannot finish analysis, pending fibers about: %s', implode(', ', array_map(static fn (array $fiber) => get_class($fiber['request']->expr), $storage->pendingFibers))));
+				throw new ShouldNotHappenException(sprintf('Cannot finish analysis, pending fibers about: %s', implode(', ', array_map(static fn (array $fiber) => get_class($fiber['request']->expr), $fibersStorage->pendingFibers))));
 			}
 
 			$gen = array_pop($stack);
@@ -258,7 +263,7 @@ final class GeneratorNodeScopeResolver
 	/**
 	 * @return Generator<int, ExprAnalysisRequest|NodeCallbackRequest, ExprAnalysisResult, ExprAnalysisResult>
 	 */
-	private function analyzeExpr(NodeScopeResolverRunStorage $storage, Expr $expr, GeneratorScope $scope): Generator
+	private function analyzeExpr(ExprAnalysisResultStorage $storage, Expr $expr, GeneratorScope $scope): Generator
 	{
 		yield new NodeCallbackRequest($expr, $scope);
 
@@ -269,19 +274,19 @@ final class GeneratorNodeScopeResolver
 		) {
 			$variableName = $expr->var->name;
 			$exprResult = yield new ExprAnalysisRequest($expr->expr, $scope);
-			$this->storeExprAnalysisResult($storage, $expr->expr, $exprResult);
+			$storage->storeExprAnalysisResult($expr->expr, $exprResult);
 
 			$varResult = yield new ExprAnalysisRequest($expr->var, $scope);
-			$this->storeExprAnalysisResult($storage, $expr->var, $varResult);
+			$storage->storeExprAnalysisResult($expr->var, $varResult);
 
 			$assignResult = new ExprAnalysisResult($exprResult->type, $varResult->scope->assignVariable($variableName, $exprResult->type));
-			$this->storeExprAnalysisResult($storage, $expr, $assignResult);
+			$storage->storeExprAnalysisResult($expr, $assignResult);
 			return $assignResult;
 		}
 
 		if ($expr instanceof Expr\New_ && $expr->class instanceof Node\Name) {
 			$result = new ExprAnalysisResult(new ObjectType($expr->class->toString()), $scope);
-			$this->storeExprAnalysisResult($storage, $expr, $result);
+			$storage->storeExprAnalysisResult($expr, $result);
 			return $result;
 		}
 
@@ -289,42 +294,42 @@ final class GeneratorNodeScopeResolver
 			$exprTypeFromScope = $scope->expressionTypes['$' . $expr->name] ?? null;
 			if ($exprTypeFromScope !== null) {
 				$result = new ExprAnalysisResult($exprTypeFromScope, $scope);
-				$this->storeExprAnalysisResult($storage, $expr, $result);
+				$storage->storeExprAnalysisResult($expr, $result);
 				return $result;
 			}
-			return $this->lookupExprAnalysisResult($storage, $expr) ?? new ExprAnalysisResult(new ErrorType(), $scope);
+			return $storage->lookupExprAnalysisResult($expr) ?? new ExprAnalysisResult(new ErrorType(), $scope);
 		}
 
 		if ($expr instanceof Node\Scalar\Int_) {
 			$result = new ExprAnalysisResult(new ConstantIntegerType($expr->value), $scope);
-			$this->storeExprAnalysisResult($storage, $expr, $result);
+			$storage->storeExprAnalysisResult($expr, $result);
 			return $result;
 		}
 
 		if ($expr instanceof Node\Scalar\String_) {
 			$result = new ExprAnalysisResult(new ConstantStringType($expr->value), $scope);
-			$this->storeExprAnalysisResult($storage, $expr, $result);
+			$storage->storeExprAnalysisResult($expr, $result);
 			return $result;
 		}
 
 		if ($expr instanceof Node\Expr\Cast\Int_) {
 			$exprResult = yield new ExprAnalysisRequest($expr->expr, $scope);
-			$this->storeExprAnalysisResult($storage, $expr->expr, $exprResult);
+			$storage->storeExprAnalysisResult($expr->expr, $exprResult);
 			$result = new ExprAnalysisResult($exprResult->type->toInteger(), $scope);
-			$this->storeExprAnalysisResult($storage, $expr, $result);
+			$storage->storeExprAnalysisResult($expr, $result);
 			return $result;
 		}
 
 		if ($expr instanceof MethodCall && $expr->name instanceof Node\Identifier) {
 			$varResult = yield new ExprAnalysisRequest($expr->var, $scope);
 
-			$this->storeExprAnalysisResult($storage, $expr->var, $varResult);
+			$storage->storeExprAnalysisResult($expr->var, $varResult);
 			$currentScope = $varResult->scope;
 			$argTypes = [];
 
 			foreach ($expr->getArgs() as $arg) {
 				$argResult = yield new ExprAnalysisRequest($arg->value, $currentScope);
-				$this->storeExprAnalysisResult($storage, $arg->value, $argResult);
+				$storage->storeExprAnalysisResult($arg->value, $argResult);
 				$argTypes[] = $argResult->type;
 				$currentScope = $argResult->scope;
 			}
@@ -332,7 +337,7 @@ final class GeneratorNodeScopeResolver
 			if ($varResult->type->hasMethod($expr->name->toString())->yes()) {
 				$method = $varResult->type->getMethod($expr->name->toString(), $scope);
 				$result = new ExprAnalysisResult($method->getOnlyVariant()->getReturnType(), $scope);
-				$this->storeExprAnalysisResult($storage, $expr, $result);
+				$storage->storeExprAnalysisResult($expr, $result);
 				return $result;
 			}
 		}
@@ -341,14 +346,14 @@ final class GeneratorNodeScopeResolver
 			yield from $this->analyzeStmts($expr->stmts, $scope); // @phpstan-ignore generator.valueType, generator.sendType
 
 			$result = new ExprAnalysisResult(new ClosureType(), $scope);
-			$this->storeExprAnalysisResult($storage, $expr, $result);
+			$storage->storeExprAnalysisResult($expr, $result);
 			return $result;
 		}
 
 		if ($expr instanceof Expr\FuncCall) {
 			if ($expr->name instanceof Expr) {
 				$nameResult = yield new ExprAnalysisRequest($expr->name, $scope);
-				$this->storeExprAnalysisResult($storage, $expr->name, $nameResult);
+				$storage->storeExprAnalysisResult($expr->name, $nameResult);
 				$scope = $nameResult->scope;
 			}
 
@@ -356,7 +361,7 @@ final class GeneratorNodeScopeResolver
 
 			foreach ($expr->getArgs() as $arg) {
 				$argResult = yield new ExprAnalysisRequest($arg->value, $scope);
-				$this->storeExprAnalysisResult($storage, $arg->value, $argResult);
+				$storage->storeExprAnalysisResult($arg->value, $argResult);
 				$argTypes[] = $argResult->type;
 				$scope = $argResult->scope;
 			}
@@ -365,7 +370,7 @@ final class GeneratorNodeScopeResolver
 				if ($this->reflectionProvider->hasFunction($expr->name, $scope)) {
 					$function = $this->reflectionProvider->getFunction($expr->name, $scope);
 					$result = new ExprAnalysisResult($function->getOnlyVariant()->getReturnType(), $scope);
-					$this->storeExprAnalysisResult($storage, $expr, $result);
+					$storage->storeExprAnalysisResult($expr, $result);
 					return $result;
 				}
 			}
@@ -378,7 +383,7 @@ final class GeneratorNodeScopeResolver
 			&& $expr->name->toLowerString() === 'class'
 		) {
 			$result = new ExprAnalysisResult(new ConstantStringType($expr->class->toString()), $scope);
-			$this->storeExprAnalysisResult($storage, $expr, $result);
+			$storage->storeExprAnalysisResult($expr, $result);
 			return $result;
 		}
 
@@ -388,23 +393,34 @@ final class GeneratorNodeScopeResolver
 	/**
 	 * @param callable(Node, Scope): void $nodeCallback
 	 */
-	private function invokeNodeCallback(NodeScopeResolverRunStorage $storage, Node $node, Scope $scope, callable $nodeCallback): void
+	private function invokeNodeCallback(
+		PendingFibersStorage $fibersStorage,
+		ExprAnalysisResultStorage $exprAnalysisResultStorage,
+		Node $node,
+		Scope $scope,
+		callable $nodeCallback,
+	): void
 	{
 		$fiber = new Fiber(static function () use ($node, $scope, $nodeCallback) {
 			$nodeCallback($node, $scope);
 		});
 		$request = $fiber->start();
-		$this->runFiber($storage, $fiber, $request);
+		$this->runFiber($fibersStorage, $exprAnalysisResultStorage, $fiber, $request);
 	}
 
 	/**
 	 * @param Fiber<mixed, ExprAnalysisResult, null, ExprAnalysisRequest> $fiber
 	 */
-	private function runFiber(NodeScopeResolverRunStorage $storage, Fiber $fiber, ?ExprAnalysisRequest $request): void
+	private function runFiber(
+		PendingFibersStorage $fibersStorage,
+		ExprAnalysisResultStorage $exprAnalysisResultStorage,
+		Fiber $fiber,
+		?ExprAnalysisRequest $request,
+	): void
 	{
 		while (!$fiber->isTerminated()) {
 			if ($request instanceof ExprAnalysisRequest) {
-				$result = $this->lookupExprAnalysisResult($storage, $request->expr);
+				$result = $exprAnalysisResultStorage->lookupExprAnalysisResult($request->expr);
 
 				if ($result !== null) {
 					// Result ready - continue the loop to resume
@@ -413,7 +429,7 @@ final class GeneratorNodeScopeResolver
 				}
 
 				// Park the fiber - can't make progress yet
-				$storage->pendingFibers[] = [
+				$fibersStorage->pendingFibers[] = [
 					'fiber' => $fiber,
 					'request' => $request,
 				];
@@ -432,32 +448,22 @@ final class GeneratorNodeScopeResolver
 		}
 	}
 
-	private function processPendingFibers(NodeScopeResolverRunStorage $storage): void
+	private function processPendingFibers(PendingFibersStorage $fibersStorage, ExprAnalysisResultStorage $exprAnalysisResultStorage): void
 	{
-		foreach ($storage->pendingFibers as $key => $pending) {
+		foreach ($fibersStorage->pendingFibers as $key => $pending) {
 			$request = $pending['request'];
-			$exprAnalysisResult = $this->lookupExprAnalysisResult($storage, $request->expr);
+			$exprAnalysisResult = $exprAnalysisResultStorage->lookupExprAnalysisResult($request->expr);
 
 			if ($exprAnalysisResult === null) {
 				continue;
 			}
 
-			unset($storage->pendingFibers[$key]);
+			unset($fibersStorage->pendingFibers[$key]);
 
 			$fiber = $pending['fiber'];
 			$request = $fiber->resume($exprAnalysisResult);
-			$this->runFiber($storage, $fiber, $request);
+			$this->runFiber($fibersStorage, $exprAnalysisResultStorage, $fiber, $request);
 		}
-	}
-
-	private function storeExprAnalysisResult(NodeScopeResolverRunStorage $storage, Expr $expr, ExprAnalysisResult $result): void
-	{
-		$storage->expressionAnalysisResults[$expr] = $result;
-	}
-
-	private function lookupExprAnalysisResult(NodeScopeResolverRunStorage $storage, Expr $expr): ?ExprAnalysisResult
-	{
-		return $storage->expressionAnalysisResults[$expr] ?? null;
 	}
 
 }
