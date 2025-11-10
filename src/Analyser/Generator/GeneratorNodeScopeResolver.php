@@ -6,24 +6,17 @@ use Fiber;
 use Generator;
 use PhpParser\Node;
 use PhpParser\Node\Expr;
-use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Stmt;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\Container;
 use PHPStan\NeverException;
-use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\ShouldNotHappenException;
-use PHPStan\Type\ClosureType;
-use PHPStan\Type\Constant\ConstantIntegerType;
-use PHPStan\Type\Constant\ConstantStringType;
-use PHPStan\Type\ErrorType;
-use PHPStan\Type\ObjectType;
 use function array_map;
 use function array_pop;
 use function count;
 use function get_class;
 use function get_debug_type;
 use function implode;
-use function is_string;
 use function sprintf;
 
 /**
@@ -65,7 +58,9 @@ use function sprintf;
 final class GeneratorNodeScopeResolver
 {
 
-	public function __construct(private ReflectionProvider $reflectionProvider)
+	public function __construct(
+		private Container $container,
+	)
 	{
 	}
 
@@ -197,64 +192,24 @@ final class GeneratorNodeScopeResolver
 	}
 
 	/**
-	 * @return Generator<int, NodeCallbackRequest|ExprAnalysisRequest, ExprAnalysisResult, StmtAnalysisResult>
+	 * @return Generator<int, ExprAnalysisRequest|StmtAnalysisRequest|NodeCallbackRequest, ExprAnalysisResult|StmtAnalysisResult, StmtAnalysisResult>
 	 */
 	private function analyzeStmt(Stmt $stmt, GeneratorScope $scope): Generator
 	{
 		yield new NodeCallbackRequest($stmt, $scope);
 
-		if ($stmt instanceof Stmt\Namespace_) {
-			/*if ($stmt->name !== null) {
-				$scope = $scope->enterNamespace($stmt->name->toString());
-			}*/
-
-			yield from $this->analyzeStmts($stmt->stmts, $scope); // @phpstan-ignore generator.valueType, generator.sendType
-
-			return new StmtAnalysisResult($scope);
-		}
-
-		if ($stmt instanceof Stmt\Use_) {
-			foreach ($stmt->uses as $useItem) {
-				yield new NodeCallbackRequest($useItem, $scope);
+		/**
+		 * @var StmtHandler<Stmt> $stmtHandler
+		 */
+		foreach ($this->container->getServicesByTag(StmtHandler::HANDLER_TAG) as $stmtHandler) {
+			if (!$stmtHandler->supports($stmt)) {
+				continue;
 			}
 
-			return new StmtAnalysisResult($scope);
-		}
+			$gen = $stmtHandler->analyseStmt($stmt, $scope);
+			yield from $gen;
 
-		if ($stmt instanceof Stmt\Class_ && $stmt->name !== null) {
-			//$scope = $scope->enterClass();
-			yield from $this->analyzeStmts($stmt->stmts, $scope); // @phpstan-ignore generator.valueType, generator.sendType
-
-			return new StmtAnalysisResult($scope);
-		}
-
-		if ($stmt instanceof Stmt\ClassMethod) {
-			//$scope = $scope->enterClassMethod();
-
-			if ($stmt->stmts !== null) {
-				yield from $this->analyzeStmts($stmt->stmts, $scope); // @phpstan-ignore generator.valueType, generator.sendType
-			}
-
-			return new StmtAnalysisResult($scope);
-		}
-
-		if ($stmt instanceof Stmt\Expression) {
-			$result = yield new ExprAnalysisRequest($stmt->expr, $scope);
-
-			return new StmtAnalysisResult($result->scope);
-		}
-
-		if ($stmt instanceof Stmt\Return_) {
-			if ($stmt->expr !== null) {
-				$result = yield new ExprAnalysisRequest($stmt->expr, $scope);
-
-				return new StmtAnalysisResult($result->scope);
-			}
-			return new StmtAnalysisResult($scope);
-		}
-
-		if ($stmt instanceof Stmt\Nop) {
-			return new StmtAnalysisResult($scope);
+			return $gen->getReturn();
 		}
 
 		throw new ShouldNotHappenException('Unhandled stmt: ' . get_class($stmt));
@@ -267,124 +222,21 @@ final class GeneratorNodeScopeResolver
 	{
 		yield new NodeCallbackRequest($expr, $scope);
 
-		if (
-			$expr instanceof Expr\Assign
-			&& $expr->var instanceof Expr\Variable
-			&& is_string($expr->var->name)
-		) {
-			$variableName = $expr->var->name;
-			$exprResult = yield new ExprAnalysisRequest($expr->expr, $scope);
-			$storage->storeExprAnalysisResult($expr->expr, $exprResult);
-
-			$varResult = yield new ExprAnalysisRequest($expr->var, $scope);
-			$storage->storeExprAnalysisResult($expr->var, $varResult);
-
-			$assignResult = new ExprAnalysisResult($exprResult->type, $varResult->scope->assignVariable($variableName, $exprResult->type));
-			$storage->storeExprAnalysisResult($expr, $assignResult);
-			return $assignResult;
-		}
-
-		if ($expr instanceof Expr\New_ && $expr->class instanceof Node\Name) {
-			$result = new ExprAnalysisResult(new ObjectType($expr->class->toString()), $scope);
-			$storage->storeExprAnalysisResult($expr, $result);
-			return $result;
-		}
-
-		if ($expr instanceof Expr\Variable && is_string($expr->name)) {
-			$exprTypeFromScope = $scope->expressionTypes['$' . $expr->name] ?? null;
-			if ($exprTypeFromScope !== null) {
-				$result = new ExprAnalysisResult($exprTypeFromScope, $scope);
-				$storage->storeExprAnalysisResult($expr, $result);
-				return $result;
-			}
-			return $storage->lookupExprAnalysisResult($expr) ?? new ExprAnalysisResult(new ErrorType(), $scope);
-		}
-
-		if ($expr instanceof Node\Scalar\Int_) {
-			$result = new ExprAnalysisResult(new ConstantIntegerType($expr->value), $scope);
-			$storage->storeExprAnalysisResult($expr, $result);
-			return $result;
-		}
-
-		if ($expr instanceof Node\Scalar\String_) {
-			$result = new ExprAnalysisResult(new ConstantStringType($expr->value), $scope);
-			$storage->storeExprAnalysisResult($expr, $result);
-			return $result;
-		}
-
-		if ($expr instanceof Node\Expr\Cast\Int_) {
-			$exprResult = yield new ExprAnalysisRequest($expr->expr, $scope);
-			$storage->storeExprAnalysisResult($expr->expr, $exprResult);
-			$result = new ExprAnalysisResult($exprResult->type->toInteger(), $scope);
-			$storage->storeExprAnalysisResult($expr, $result);
-			return $result;
-		}
-
-		if ($expr instanceof MethodCall && $expr->name instanceof Node\Identifier) {
-			$varResult = yield new ExprAnalysisRequest($expr->var, $scope);
-
-			$storage->storeExprAnalysisResult($expr->var, $varResult);
-			$currentScope = $varResult->scope;
-			$argTypes = [];
-
-			foreach ($expr->getArgs() as $arg) {
-				$argResult = yield new ExprAnalysisRequest($arg->value, $currentScope);
-				$storage->storeExprAnalysisResult($arg->value, $argResult);
-				$argTypes[] = $argResult->type;
-				$currentScope = $argResult->scope;
+		/**
+		 * @var ExprHandler<Expr> $exprHandler
+		 */
+		foreach ($this->container->getServicesByTag(ExprHandler::HANDLER_TAG) as $exprHandler) {
+			if (!$exprHandler->supports($expr)) {
+				continue;
 			}
 
-			if ($varResult->type->hasMethod($expr->name->toString())->yes()) {
-				$method = $varResult->type->getMethod($expr->name->toString(), $scope);
-				$result = new ExprAnalysisResult($method->getOnlyVariant()->getReturnType(), $scope);
-				$storage->storeExprAnalysisResult($expr, $result);
-				return $result;
-			}
-		}
+			$gen = $exprHandler->analyseExpr($expr, $scope);
+			yield from $gen;
 
-		if ($expr instanceof Expr\Closure) {
-			yield from $this->analyzeStmts($expr->stmts, $scope); // @phpstan-ignore generator.valueType, generator.sendType
+			$exprAnalysisResult = $gen->getReturn();
+			$storage->storeExprAnalysisResult($expr, $exprAnalysisResult);
 
-			$result = new ExprAnalysisResult(new ClosureType(), $scope);
-			$storage->storeExprAnalysisResult($expr, $result);
-			return $result;
-		}
-
-		if ($expr instanceof Expr\FuncCall) {
-			if ($expr->name instanceof Expr) {
-				$nameResult = yield new ExprAnalysisRequest($expr->name, $scope);
-				$storage->storeExprAnalysisResult($expr->name, $nameResult);
-				$scope = $nameResult->scope;
-			}
-
-			$argTypes = [];
-
-			foreach ($expr->getArgs() as $arg) {
-				$argResult = yield new ExprAnalysisRequest($arg->value, $scope);
-				$storage->storeExprAnalysisResult($arg->value, $argResult);
-				$argTypes[] = $argResult->type;
-				$scope = $argResult->scope;
-			}
-
-			if ($expr->name instanceof Node\Name) {
-				if ($this->reflectionProvider->hasFunction($expr->name, $scope)) {
-					$function = $this->reflectionProvider->getFunction($expr->name, $scope);
-					$result = new ExprAnalysisResult($function->getOnlyVariant()->getReturnType(), $scope);
-					$storage->storeExprAnalysisResult($expr, $result);
-					return $result;
-				}
-			}
-		}
-
-		if (
-			$expr instanceof Expr\ClassConstFetch
-			&& $expr->class instanceof Node\Name
-			&& $expr->name instanceof Node\Identifier
-			&& $expr->name->toLowerString() === 'class'
-		) {
-			$result = new ExprAnalysisResult(new ConstantStringType($expr->class->toString()), $scope);
-			$storage->storeExprAnalysisResult($expr, $result);
-			return $result;
+			return $exprAnalysisResult;
 		}
 
 		throw new ShouldNotHappenException('Unhandled expr: ' . get_class($expr));

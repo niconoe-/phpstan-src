@@ -1,0 +1,31 @@
+<?php declare(strict_types = 1);
+
+namespace PHPStan\Analyser\Generator\StmtHandler;
+
+use Generator;
+use PhpParser\Node\Stmt;
+use PhpParser\Node\Stmt\Nop;
+use PHPStan\Analyser\Generator\GeneratorScope;
+use PHPStan\Analyser\Generator\StmtAnalysisResult;
+use PHPStan\Analyser\Generator\StmtHandler;
+use PHPStan\DependencyInjection\AutowiredService;
+
+/**
+ * @implements StmtHandler<Nop>
+ */
+#[AutowiredService]
+final class NopHandler implements StmtHandler
+{
+
+	public function supports(Stmt $stmt): bool
+	{
+		return $stmt instanceof Nop;
+	}
+
+	public function analyseStmt(Stmt $stmt, GeneratorScope $scope): Generator
+	{
+		yield from [];
+		return new StmtAnalysisResult($scope);
+	}
+
+}

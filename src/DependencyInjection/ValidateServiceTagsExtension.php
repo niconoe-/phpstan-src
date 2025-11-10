@@ -5,6 +5,8 @@ namespace PHPStan\DependencyInjection;
 use Nette\DI\CompilerExtension;
 use Override;
 use PhpParser\NodeVisitor;
+use PHPStan\Analyser\Generator\ExprHandler;
+use PHPStan\Analyser\Generator\StmtHandler;
 use PHPStan\Analyser\IgnoreErrorExtension;
 use PHPStan\Analyser\ResultCache\ResultCacheMetaExtension;
 use PHPStan\Analyser\TypeSpecifierFactory;
@@ -117,6 +119,8 @@ final class ValidateServiceTagsExtension extends CompilerExtension
 		Collector::class => CollectorRegistryFactory::COLLECTOR_TAG,
 		DiagnoseExtension::class => DiagnoseExtension::EXTENSION_TAG,
 		IgnoreErrorExtension::class => IgnoreErrorExtension::EXTENSION_TAG,
+		ExprHandler::class => ExprHandler::HANDLER_TAG,
+		StmtHandler::class => StmtHandler::HANDLER_TAG,
 	];
 
 	/**

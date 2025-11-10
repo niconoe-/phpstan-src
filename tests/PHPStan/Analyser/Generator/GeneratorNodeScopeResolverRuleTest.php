@@ -109,7 +109,7 @@ class GeneratorNodeScopeResolverRuleTest extends RuleTestCase
 
 	protected function createNodeScopeResolver(): GeneratorNodeScopeResolver
 	{
-		return new GeneratorNodeScopeResolver(self::createReflectionProvider());
+		return new GeneratorNodeScopeResolver(self::getContainer());
 	}
 
 	/**

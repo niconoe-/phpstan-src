@@ -30,7 +30,7 @@ class GeneratorNodeScopeResolverTest extends TypeInferenceTestCase
 
 	protected static function createNodeScopeResolver(): GeneratorNodeScopeResolver
 	{
-		return new GeneratorNodeScopeResolver(self::createReflectionProvider());
+		return new GeneratorNodeScopeResolver(self::getContainer());
 	}
 
 	/**

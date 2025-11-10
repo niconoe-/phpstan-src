@@ -1,0 +1,37 @@
+<?php declare(strict_types = 1);
+
+namespace PHPStan\Analyser\Generator\ExprHandler;
+
+use Generator;
+use PhpParser\Node\Expr;
+use PhpParser\Node\Expr\Closure;
+use PHPStan\Analyser\Generator\ExprAnalysisResult;
+use PHPStan\Analyser\Generator\ExprHandler;
+use PHPStan\Analyser\Generator\GeneratorScope;
+use PHPStan\Analyser\Generator\StmtAnalysisRequest;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\Type\ClosureType;
+
+/**
+ * @implements ExprHandler<Closure>
+ */
+#[AutowiredService]
+final class ClosureHandler implements ExprHandler
+{
+
+	public function supports(Expr $expr): bool
+	{
+		return $expr instanceof Closure;
+	}
+
+	public function analyseExpr(Expr $expr, GeneratorScope $scope): Generator
+	{
+		foreach ($expr->stmts as $stmt) {
+			$result = yield new StmtAnalysisRequest($stmt, $scope); // @phpstan-ignore generator.valueType
+			$scope = $result->scope;
+		}
+
+		return new ExprAnalysisResult(new ClosureType(), $scope);
+	}
+
+}
