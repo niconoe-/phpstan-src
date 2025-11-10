@@ -8,9 +8,9 @@ use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\Enum_;
 use PhpParser\Node\Stmt\Interface_;
 use PHPStan\Analyser\Generator\GeneratorScope;
-use PHPStan\Analyser\Generator\StmtAnalysisRequest;
 use PHPStan\Analyser\Generator\StmtAnalysisResult;
 use PHPStan\Analyser\Generator\StmtHandler;
+use PHPStan\Analyser\Generator\StmtsAnalysisRequest;
 use PHPStan\DependencyInjection\AutowiredService;
 
 /**
@@ -28,10 +28,8 @@ final class ClassLikeHandler implements StmtHandler
 	public function analyseStmt(Stmt $stmt, GeneratorScope $scope): Generator
 	{
 		//$scope = $scope->enterClass();
-		foreach ($stmt->stmts as $innerStmt) {
-			$result = yield new StmtAnalysisRequest($innerStmt, $scope);
-			$scope = $result->scope;
-		}
+		$result = yield new StmtsAnalysisRequest($stmt->stmts, $scope);
+		$scope = $result->scope;
 
 		return new StmtAnalysisResult($scope);
 	}

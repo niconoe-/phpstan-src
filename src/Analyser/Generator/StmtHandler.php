@@ -20,7 +20,7 @@ interface StmtHandler
 
 	/**
 	 * @param T $stmt
-	 * @return Generator<int, ExprAnalysisRequest|StmtAnalysisRequest|NodeCallbackRequest, ExprAnalysisResult|StmtAnalysisResult, StmtAnalysisResult>
+	 * @return Generator<int, ExprAnalysisRequest|StmtAnalysisRequest|StmtsAnalysisRequest|NodeCallbackRequest, ExprAnalysisResult|StmtAnalysisResult, StmtAnalysisResult>
 	 */
 	public function analyseStmt(Stmt $stmt, GeneratorScope $scope): Generator;
 

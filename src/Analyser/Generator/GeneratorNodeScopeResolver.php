@@ -137,6 +137,11 @@ final class GeneratorNodeScopeResolver
 					$gen = $this->analyzeStmt($yielded->stmt, $yielded->scope);
 					$gen->current();
 					continue;
+				} elseif ($yielded instanceof StmtsAnalysisRequest) {
+					$stack[] = $gen;
+					$gen = $this->analyzeStmts($yielded->stmts, $yielded->scope);
+					$gen->current();
+					continue;
 				} else { // phpcs:ignore
 					throw new NeverException($yielded);
 				}
@@ -192,7 +197,7 @@ final class GeneratorNodeScopeResolver
 	}
 
 	/**
-	 * @return Generator<int, ExprAnalysisRequest|StmtAnalysisRequest|NodeCallbackRequest, ExprAnalysisResult|StmtAnalysisResult, StmtAnalysisResult>
+	 * @return Generator<int, ExprAnalysisRequest|StmtAnalysisRequest|StmtsAnalysisRequest|NodeCallbackRequest, ExprAnalysisResult|StmtAnalysisResult, StmtAnalysisResult>
 	 */
 	private function analyzeStmt(Stmt $stmt, GeneratorScope $scope): Generator
 	{
