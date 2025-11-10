@@ -33,17 +33,6 @@ class GeneratorNodeScopeResolverTest extends TypeInferenceTestCase
 		return new GeneratorNodeScopeResolver(self::getContainer());
 	}
 
-	/**
-	 * @param string[] $dynamicConstantNames
-	 */
-	protected static function createScope(
-		string $file,
-		array $dynamicConstantNames = [],
-	): GeneratorScope
-	{
-		return new GeneratorScope([]);
-	}
-
 	public static function getAdditionalConfigFiles(): array
 	{
 		return [

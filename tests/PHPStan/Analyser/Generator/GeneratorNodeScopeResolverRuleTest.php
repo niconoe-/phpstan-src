@@ -4,7 +4,6 @@ namespace PHPStan\Analyser\Generator;
 
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
-use PHPStan\Analyser\ScopeFactory;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
@@ -110,15 +109,6 @@ class GeneratorNodeScopeResolverRuleTest extends RuleTestCase
 	protected function createNodeScopeResolver(): GeneratorNodeScopeResolver
 	{
 		return new GeneratorNodeScopeResolver(self::getContainer());
-	}
-
-	/**
-	 * @param string[] $dynamicConstantNames
-	 */
-	public static function createScopeFactory(array $dynamicConstantNames = []): ScopeFactory
-	{
-		$parent = parent::createScopeFactory($dynamicConstantNames);
-		return new ScopeFactory($parent->getInternalScopeFactoryFactory(), true);
 	}
 
 }

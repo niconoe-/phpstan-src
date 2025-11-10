@@ -6,7 +6,7 @@ use PhpParser\Node;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Name;
 use PHPStan\Analyser\Generator\GeneratorNodeScopeResolver;
-use PHPStan\Analyser\Generator\GeneratorScope;
+use PHPStan\Analyser\Generator\GeneratorScopeFactory;
 use PHPStan\Analyser\MutatingScope;
 use PHPStan\Analyser\NodeScopeResolver;
 use PHPStan\Analyser\Scope;
@@ -100,7 +100,7 @@ abstract class TypeInferenceTestCase extends PHPStanTestCase
 	protected static function createScope(
 		string $file,
 		array $dynamicConstantNames = [],
-	): MutatingScope|GeneratorScope
+	): MutatingScope
 	{
 		$scopeFactory = self::createScopeFactory($dynamicConstantNames);
 		return $scopeFactory->create(ScopeContext::create($file));
@@ -122,7 +122,7 @@ abstract class TypeInferenceTestCase extends PHPStanTestCase
 
 		$resolver->processNodes(
 			self::getParser()->parseFile($file),
-			static::createScope($file, $dynamicConstantNames),
+			$resolver instanceof NodeScopeResolver ? self::createScope($file, $dynamicConstantNames) : self::getContainer()->getByType(GeneratorScopeFactory::class)->create(ScopeContext::create($file)),
 			$callback,
 		);
 	}

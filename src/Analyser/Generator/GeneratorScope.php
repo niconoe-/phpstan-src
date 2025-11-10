@@ -3,13 +3,14 @@
 namespace PHPStan\Analyser\Generator;
 
 use Fiber;
-use NoDiscard;
 use PhpParser\Node;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Name;
 use PhpParser\Node\Param;
+use PHPStan\Analyser\ExpressionTypeHolder;
 use PHPStan\Analyser\NodeCallbackInvoker;
 use PHPStan\Analyser\Scope;
+use PHPStan\Analyser\ScopeContext;
 use PHPStan\Php\PhpVersions;
 use PHPStan\Reflection\Assertions;
 use PHPStan\Reflection\ClassConstantReflection;
@@ -30,23 +31,27 @@ final class GeneratorScope implements Scope, NodeCallbackInvoker
 {
 
 	/**
-	 * @param array<string, Type> $expressionTypes
+	 * @param array<string, ExpressionTypeHolder> $expressionTypes
 	 */
 	public function __construct(
+		private InternalGeneratorScopeFactory $scopeFactory,
+		private ScopeContext $context,
 		public array $expressionTypes,
 	)
 	{
 	}
 
-	#[NoDiscard]
 	public function assignVariable(string $variableName, Type $type): self
 	{
 		$exprString = '$' . $variableName;
 
 		$expressionTypes = $this->expressionTypes;
-		$expressionTypes[$exprString] = $type;
+		$expressionTypes[$exprString] = ExpressionTypeHolder::createYes(new Expr\Variable($variableName), $type);
 
-		return new self($expressionTypes);
+		return $this->scopeFactory->create(
+			$this->context,
+			$expressionTypes,
+		);
 	}
 
 	public function enterNamespace(string $namespaceName): self

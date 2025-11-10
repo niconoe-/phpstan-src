@@ -8,6 +8,7 @@ use PHPStan\Analyser\AnalyserResultFinalizer;
 use PHPStan\Analyser\Error;
 use PHPStan\Analyser\FileAnalyser;
 use PHPStan\Analyser\Generator\GeneratorNodeScopeResolver;
+use PHPStan\Analyser\Generator\GeneratorScopeFactory;
 use PHPStan\Analyser\IgnoreErrorExtensionProvider;
 use PHPStan\Analyser\InternalError;
 use PHPStan\Analyser\LocalIgnoresProcessor;
@@ -106,7 +107,7 @@ abstract class RuleTestCase extends PHPStanTestCase
 			$readWritePropertiesExtensions !== [] ? new DirectReadWritePropertiesExtensionProvider($readWritePropertiesExtensions) : self::getContainer()->getByType(ReadWritePropertiesExtensionProvider::class),
 			self::getContainer()->getByType(ParameterClosureThisExtensionProvider::class),
 			self::getContainer()->getByType(ParameterClosureTypeExtensionProvider::class),
-			static::createScopeFactory(),
+			self::createScopeFactory(),
 			$this->shouldPolluteScopeWithLoopInitialAssignments(),
 			$this->shouldPolluteScopeWithAlwaysIterableForeach(),
 			self::getContainer()->getParameter('polluteScopeWithBlock'),
@@ -127,7 +128,8 @@ abstract class RuleTestCase extends PHPStanTestCase
 			$nodeScopeResolver = $this->createNodeScopeResolver();
 
 			$fileAnalyser = new FileAnalyser(
-				static::createScopeFactory(),
+				self::createScopeFactory(),
+				self::getContainer()->getByType(GeneratorScopeFactory::class),
 				$nodeScopeResolver,
 				$this->getParser(),
 				self::getContainer()->getByType(DependencyResolver::class),
@@ -274,7 +276,7 @@ abstract class RuleTestCase extends PHPStanTestCase
 			$ruleRegistry,
 			new IgnoreErrorExtensionProvider(self::getContainer()),
 			self::getContainer()->getByType(RuleErrorTransformer::class),
-			static::createScopeFactory(),
+			self::createScopeFactory(),
 			new LocalIgnoresProcessor(),
 			true,
 		);

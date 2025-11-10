@@ -6,6 +6,7 @@ use Nette\DI\Container;
 use PhpParser\Lexer;
 use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\Parser\Php7;
+use PHPStan\Analyser\Generator\GeneratorScopeFactory;
 use PHPStan\Analyser\Ignore\IgnoredErrorHelper;
 use PHPStan\Analyser\Ignore\IgnoreLexer;
 use PHPStan\Collectors\Registry as CollectorRegistry;
@@ -770,7 +771,7 @@ class AnalyserTest extends PHPStanTestCase
 			new DirectRuleRegistry([]),
 			new IgnoreErrorExtensionProvider(new NetteContainer(new Container([]))),
 			self::getContainer()->getByType(RuleErrorTransformer::class),
-			static::createScopeFactory(),
+			self::createScopeFactory(),
 			new LocalIgnoresProcessor(),
 			$reportUnmatchedIgnoredErrors,
 		);
@@ -823,7 +824,7 @@ class AnalyserTest extends PHPStanTestCase
 			self::getContainer()->getByType(ReadWritePropertiesExtensionProvider::class),
 			self::getContainer()->getByType(ParameterClosureThisExtensionProvider::class),
 			self::getContainer()->getByType(ParameterClosureTypeExtensionProvider::class),
-			static::createScopeFactory(),
+			self::createScopeFactory(),
 			false,
 			true,
 			true,
@@ -836,7 +837,8 @@ class AnalyserTest extends PHPStanTestCase
 		);
 		$lexer = new Lexer();
 		$fileAnalyser = new FileAnalyser(
-			static::createScopeFactory(),
+			self::createScopeFactory(),
+			self::getContainer()->getByType(GeneratorScopeFactory::class),
 			$nodeScopeResolver,
 			new RichParser(
 				new Php7($lexer),
