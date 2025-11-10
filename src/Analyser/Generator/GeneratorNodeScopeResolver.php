@@ -106,7 +106,7 @@ final class GeneratorNodeScopeResolver
 	{
 		$stack = [];
 
-		$gen = $this->analyzeStmts($stmts, $scope);
+		$gen = $this->analyseStmts($stmts, $scope);
 		$gen->current();
 
 		// Trampoline loop
@@ -129,17 +129,17 @@ final class GeneratorNodeScopeResolver
 					continue;
 				} elseif ($yielded instanceof ExprAnalysisRequest) {
 					$stack[] = $gen;
-					$gen = $this->analyzeExpr($exprAnalysisResultStorage, $yielded->expr, $yielded->scope);
+					$gen = $this->analyseExpr($exprAnalysisResultStorage, $yielded->expr, $yielded->scope);
 					$gen->current();
 					continue;
 				} elseif ($yielded instanceof StmtAnalysisRequest) {
 					$stack[] = $gen;
-					$gen = $this->analyzeStmt($yielded->stmt, $yielded->scope);
+					$gen = $this->analyseStmt($yielded->stmt, $yielded->scope);
 					$gen->current();
 					continue;
 				} elseif ($yielded instanceof StmtsAnalysisRequest) {
 					$stack[] = $gen;
-					$gen = $this->analyzeStmts($yielded->stmts, $yielded->scope);
+					$gen = $this->analyseStmts($yielded->stmts, $yielded->scope);
 					$gen->current();
 					continue;
 				} else { // phpcs:ignore
@@ -186,7 +186,7 @@ final class GeneratorNodeScopeResolver
 	 * @param array<Stmt> $stmts
 	 * @return Generator<int, StmtAnalysisRequest, StmtAnalysisResult, StmtAnalysisResult>
 	 */
-	private function analyzeStmts(array $stmts, GeneratorScope $scope): Generator
+	private function analyseStmts(array $stmts, GeneratorScope $scope): Generator
 	{
 		foreach ($stmts as $stmt) {
 			$result = yield new StmtAnalysisRequest($stmt, $scope);
@@ -199,7 +199,7 @@ final class GeneratorNodeScopeResolver
 	/**
 	 * @return Generator<int, ExprAnalysisRequest|StmtAnalysisRequest|StmtsAnalysisRequest|NodeCallbackRequest, ExprAnalysisResult|StmtAnalysisResult, StmtAnalysisResult>
 	 */
-	private function analyzeStmt(Stmt $stmt, GeneratorScope $scope): Generator
+	private function analyseStmt(Stmt $stmt, GeneratorScope $scope): Generator
 	{
 		yield new NodeCallbackRequest($stmt, $scope);
 
@@ -223,7 +223,7 @@ final class GeneratorNodeScopeResolver
 	/**
 	 * @return Generator<int, ExprAnalysisRequest|NodeCallbackRequest, ExprAnalysisResult, ExprAnalysisResult>
 	 */
-	private function analyzeExpr(ExprAnalysisResultStorage $storage, Expr $expr, GeneratorScope $scope): Generator
+	private function analyseExpr(ExprAnalysisResultStorage $storage, Expr $expr, GeneratorScope $scope): Generator
 	{
 		yield new NodeCallbackRequest($expr, $scope);
 
