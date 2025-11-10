@@ -9,6 +9,7 @@ use PHPStan\Analyser\Generator\GeneratorScope;
 use PHPStan\Analyser\Generator\NodeCallbackRequest;
 use PHPStan\Analyser\Generator\StmtAnalysisResult;
 use PHPStan\Analyser\Generator\StmtHandler;
+use PHPStan\Analyser\StatementContext;
 use PHPStan\DependencyInjection\AutowiredService;
 
 /**
@@ -23,13 +24,20 @@ final class UseHandler implements StmtHandler
 		return $stmt instanceof Use_;
 	}
 
-	public function analyseStmt(Stmt $stmt, GeneratorScope $scope): Generator
+	public function analyseStmt(Stmt $stmt, GeneratorScope $scope, StatementContext $context): Generator
 	{
 		foreach ($stmt->uses as $useItem) {
 			yield new NodeCallbackRequest($useItem, $scope);
 		}
 
-		return new StmtAnalysisResult($scope);
+		return new StmtAnalysisResult(
+			$scope,
+			hasYield: false,
+			isAlwaysTerminating: false,
+			throwPoints: [],
+			impurePoints: [],
+			exitPoints: [],
+		);
 	}
 
 }

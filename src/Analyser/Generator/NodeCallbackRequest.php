@@ -9,8 +9,8 @@ final class NodeCallbackRequest
 {
 
 	public function __construct(
-		public Node $node,
-		public Scope $scope,
+		public readonly Node $node,
+		public readonly Scope $scope,
 	)
 	{
 	}

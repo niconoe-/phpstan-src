@@ -9,6 +9,7 @@ use PHPStan\Analyser\Generator\GeneratorScope;
 use PHPStan\Analyser\Generator\StmtAnalysisResult;
 use PHPStan\Analyser\Generator\StmtHandler;
 use PHPStan\Analyser\Generator\StmtsAnalysisRequest;
+use PHPStan\Analyser\StatementContext;
 use PHPStan\DependencyInjection\AutowiredService;
 
 /**
@@ -23,16 +24,22 @@ final class NamespaceHandler implements StmtHandler
 		return $stmt instanceof Namespace_;
 	}
 
-	public function analyseStmt(Stmt $stmt, GeneratorScope $scope): Generator
+	public function analyseStmt(Stmt $stmt, GeneratorScope $scope, StatementContext $context): Generator
 	{
 		/*if ($stmt->name !== null) {
 			$scope = $scope->enterNamespace($stmt->name->toString());
 		}*/
 
-		$result = yield new StmtsAnalysisRequest($stmt->stmts, $scope);
-		$scope = $result->scope;
+		$result = yield new StmtsAnalysisRequest($stmt->stmts, $scope, $context);
 
-		return new StmtAnalysisResult($scope);
+		return new StmtAnalysisResult(
+			$result->scope,
+			hasYield: false,
+			isAlwaysTerminating: false,
+			exitPoints: [],
+			throwPoints: [],
+			impurePoints: [],
+		);
 	}
 
 }

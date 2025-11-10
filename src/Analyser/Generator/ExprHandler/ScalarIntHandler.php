@@ -5,6 +5,8 @@ namespace PHPStan\Analyser\Generator\ExprHandler;
 use Generator;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Scalar\Int_;
+use PhpParser\Node\Stmt;
+use PHPStan\Analyser\ExpressionContext;
 use PHPStan\Analyser\Generator\ExprAnalysisResult;
 use PHPStan\Analyser\Generator\ExprHandler;
 use PHPStan\Analyser\Generator\GeneratorScope;
@@ -23,10 +25,17 @@ final class ScalarIntHandler implements ExprHandler
 		return $expr instanceof Int_;
 	}
 
-	public function analyseExpr(Expr $expr, GeneratorScope $scope): Generator
+	public function analyseExpr(Stmt $stmt, Expr $expr, GeneratorScope $scope, ExpressionContext $context): Generator
 	{
 		yield from [];
-		return new ExprAnalysisResult(new ConstantIntegerType($expr->value), $scope);
+		return new ExprAnalysisResult(
+			new ConstantIntegerType($expr->value),
+			$scope,
+			hasYield: false,
+			isAlwaysTerminating: false,
+			throwPoints: [],
+			impurePoints: [],
+		);
 	}
 
 }

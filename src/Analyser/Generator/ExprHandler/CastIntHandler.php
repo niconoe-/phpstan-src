@@ -5,6 +5,8 @@ namespace PHPStan\Analyser\Generator\ExprHandler;
 use Generator;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Cast\Int_;
+use PhpParser\Node\Stmt;
+use PHPStan\Analyser\ExpressionContext;
 use PHPStan\Analyser\Generator\ExprAnalysisRequest;
 use PHPStan\Analyser\Generator\ExprAnalysisResult;
 use PHPStan\Analyser\Generator\ExprHandler;
@@ -23,11 +25,18 @@ final class CastIntHandler implements ExprHandler
 		return $expr instanceof Int_;
 	}
 
-	public function analyseExpr(Expr $expr, GeneratorScope $scope): Generator
+	public function analyseExpr(Stmt $stmt, Expr $expr, GeneratorScope $scope, ExpressionContext $context): Generator
 	{
-		$exprResult = yield new ExprAnalysisRequest($expr->expr, $scope);
+		$exprResult = yield new ExprAnalysisRequest($stmt, $expr->expr, $scope, $context->enterDeep());
 
-		return new ExprAnalysisResult($exprResult->type->toInteger(), $scope);
+		return new ExprAnalysisResult(
+			$exprResult->type->toInteger(),
+			$scope,
+			hasYield: false,
+			isAlwaysTerminating: false,
+			throwPoints: [],
+			impurePoints: [],
+		);
 	}
 
 }

@@ -1,24 +1,23 @@
 <?php declare(strict_types = 1);
 
-namespace PHPStan\Analyser;
+namespace PHPStan\Analyser\Generator;
 
 use PhpParser\Node;
+use PHPStan\Analyser\ThrowPoint;
+use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 use Throwable;
 
-/**
- * @api
- */
-final class ThrowPoint
+final class InternalThrowPoint
 {
 
 	/**
 	 * @param Node\Expr|Node\Stmt $node
 	 */
 	private function __construct(
-		private Scope $scope,
+		private GeneratorScope $scope,
 		private Type $type,
 		private Node $node,
 		private bool $explicit,
@@ -27,10 +26,19 @@ final class ThrowPoint
 	{
 	}
 
+	public function toPublic(): ThrowPoint
+	{
+		if ($this->explicit) {
+			return ThrowPoint::createExplicit($this->scope, $this->type, $this->node, $this->canContainAnyThrowable);
+		}
+
+		return ThrowPoint::createImplicit($this->scope, $this->node);
+	}
+
 	/**
 	 * @param Node\Expr|Node\Stmt $node
 	 */
-	public static function createExplicit(Scope $scope, Type $type, Node $node, bool $canContainAnyThrowable): self
+	public static function createExplicit(GeneratorScope $scope, Type $type, Node $node, bool $canContainAnyThrowable): self
 	{
 		return new self($scope, $type, $node, true, $canContainAnyThrowable);
 	}
@@ -38,12 +46,22 @@ final class ThrowPoint
 	/**
 	 * @param Node\Expr|Node\Stmt $node
 	 */
-	public static function createImplicit(Scope $scope, Node $node): self
+	public static function createImplicit(GeneratorScope $scope, Node $node): self
 	{
 		return new self($scope, new ObjectType(Throwable::class), $node, false, true);
 	}
 
-	public function getScope(): Scope
+	public static function createFromPublic(ThrowPoint $throwPoint): self
+	{
+		$scope = $throwPoint->getScope();
+		if (!$scope instanceof GeneratorScope) {
+			throw new ShouldNotHappenException();
+		}
+
+		return new self($scope, $throwPoint->getType(), $throwPoint->getNode(), $throwPoint->isExplicit(), $throwPoint->canContainAnyThrowable());
+	}
+
+	public function getScope(): GeneratorScope
 	{
 		return $this->scope;
 	}

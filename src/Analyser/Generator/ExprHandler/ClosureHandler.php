@@ -5,10 +5,13 @@ namespace PHPStan\Analyser\Generator\ExprHandler;
 use Generator;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Closure;
+use PhpParser\Node\Stmt;
+use PHPStan\Analyser\ExpressionContext;
 use PHPStan\Analyser\Generator\ExprAnalysisResult;
 use PHPStan\Analyser\Generator\ExprHandler;
 use PHPStan\Analyser\Generator\GeneratorScope;
 use PHPStan\Analyser\Generator\StmtsAnalysisRequest;
+use PHPStan\Analyser\StatementContext;
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Type\ClosureType;
 
@@ -24,12 +27,19 @@ final class ClosureHandler implements ExprHandler
 		return $expr instanceof Closure;
 	}
 
-	public function analyseExpr(Expr $expr, GeneratorScope $scope): Generator
+	public function analyseExpr(Stmt $stmt, Expr $expr, GeneratorScope $scope, ExpressionContext $context): Generator
 	{
-		$result = yield new StmtsAnalysisRequest($expr->stmts, $scope); // @phpstan-ignore generator.valueType
+		$result = yield new StmtsAnalysisRequest($expr->stmts, $scope, StatementContext::createTopLevel()); // @phpstan-ignore generator.valueType
 		$scope = $result->scope;
 
-		return new ExprAnalysisResult(new ClosureType(), $scope);
+		return new ExprAnalysisResult(
+			new ClosureType(),
+			$scope,
+			hasYield: $result->hasYield,
+			isAlwaysTerminating: $result->isAlwaysTerminating,
+			throwPoints: $result->throwPoints,
+			impurePoints: $result->impurePoints,
+		);
 	}
 
 }

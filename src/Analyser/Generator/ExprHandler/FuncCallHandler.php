@@ -6,6 +6,8 @@ use Generator;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Name;
+use PhpParser\Node\Stmt;
+use PHPStan\Analyser\ExpressionContext;
 use PHPStan\Analyser\Generator\ExprAnalysisRequest;
 use PHPStan\Analyser\Generator\ExprAnalysisResult;
 use PHPStan\Analyser\Generator\ExprHandler;
@@ -13,6 +15,7 @@ use PHPStan\Analyser\Generator\GeneratorScope;
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\ShouldNotHappenException;
+use function array_merge;
 
 /**
  * @implements ExprHandler<FuncCall>
@@ -30,25 +33,44 @@ final class FuncCallHandler implements ExprHandler
 		return $expr instanceof FuncCall;
 	}
 
-	public function analyseExpr(Expr $expr, GeneratorScope $scope): Generator
+	public function analyseExpr(Stmt $stmt, Expr $expr, GeneratorScope $scope, ExpressionContext $context): Generator
 	{
+		$throwPoints = [];
+		$impurePoints = [];
+		$isAlwaysTerminating = false;
+		$hasYield = false;
 		if ($expr->name instanceof Expr) {
-			$nameResult = yield new ExprAnalysisRequest($expr->name, $scope);
+			$nameResult = yield new ExprAnalysisRequest($stmt, $expr->name, $scope, $context->enterDeep());
 			$scope = $nameResult->scope;
+			$throwPoints = $nameResult->throwPoints;
+			$impurePoints = $nameResult->impurePoints;
+			$isAlwaysTerminating = $nameResult->isAlwaysTerminating;
+			$hasYield = $nameResult->hasYield;
 		}
 
 		$argTypes = [];
 
 		foreach ($expr->getArgs() as $arg) {
-			$argResult = yield new ExprAnalysisRequest($arg->value, $scope);
+			$argResult = yield new ExprAnalysisRequest($stmt, $arg->value, $scope, $context->enterDeep());
 			$argTypes[] = $argResult->type;
 			$scope = $argResult->scope;
+			$throwPoints = array_merge($throwPoints, $argResult->throwPoints);
+			$impurePoints = array_merge($impurePoints, $argResult->impurePoints);
+			$isAlwaysTerminating = $isAlwaysTerminating || $argResult->isAlwaysTerminating;
+			$hasYield = $hasYield || $argResult->hasYield;
 		}
 
 		if ($expr->name instanceof Name) {
 			if ($this->reflectionProvider->hasFunction($expr->name, $scope)) {
 				$function = $this->reflectionProvider->getFunction($expr->name, $scope);
-				return new ExprAnalysisResult($function->getOnlyVariant()->getReturnType(), $scope);
+				return new ExprAnalysisResult(
+					$function->getOnlyVariant()->getReturnType(),
+					$scope,
+					hasYield: $hasYield,
+					isAlwaysTerminating: $isAlwaysTerminating,
+					throwPoints: $throwPoints,
+					impurePoints: $impurePoints,
+				);
 			}
 		}
 

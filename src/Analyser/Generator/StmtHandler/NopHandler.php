@@ -8,6 +8,7 @@ use PhpParser\Node\Stmt\Nop;
 use PHPStan\Analyser\Generator\GeneratorScope;
 use PHPStan\Analyser\Generator\StmtAnalysisResult;
 use PHPStan\Analyser\Generator\StmtHandler;
+use PHPStan\Analyser\StatementContext;
 use PHPStan\DependencyInjection\AutowiredService;
 
 /**
@@ -22,10 +23,17 @@ final class NopHandler implements StmtHandler
 		return $stmt instanceof Nop;
 	}
 
-	public function analyseStmt(Stmt $stmt, GeneratorScope $scope): Generator
+	public function analyseStmt(Stmt $stmt, GeneratorScope $scope, StatementContext $context): Generator
 	{
 		yield from [];
-		return new StmtAnalysisResult($scope);
+		return new StmtAnalysisResult(
+			$scope,
+			hasYield: false,
+			isAlwaysTerminating: false,
+			throwPoints: [],
+			impurePoints: [],
+			exitPoints: [],
+		);
 	}
 
 }

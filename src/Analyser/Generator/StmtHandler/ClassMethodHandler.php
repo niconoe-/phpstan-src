@@ -9,6 +9,7 @@ use PHPStan\Analyser\Generator\GeneratorScope;
 use PHPStan\Analyser\Generator\StmtAnalysisResult;
 use PHPStan\Analyser\Generator\StmtHandler;
 use PHPStan\Analyser\Generator\StmtsAnalysisRequest;
+use PHPStan\Analyser\StatementContext;
 use PHPStan\DependencyInjection\AutowiredService;
 
 /**
@@ -23,18 +24,22 @@ final class ClassMethodHandler implements StmtHandler
 		return $stmt instanceof ClassMethod;
 	}
 
-	public function analyseStmt(Stmt $stmt, GeneratorScope $scope): Generator
+	public function analyseStmt(Stmt $stmt, GeneratorScope $scope, StatementContext $context): Generator
 	{
 		//$scope = $scope->enterClassMethod();
 
 		if ($stmt->stmts === null) {
-			return new StmtAnalysisResult($scope);
+			return new StmtAnalysisResult(
+				$scope,
+				hasYield: false,
+				isAlwaysTerminating: false,
+				exitPoints: [],
+				throwPoints: [],
+				impurePoints: [],
+			);
 		}
 
-		$result = yield new StmtsAnalysisRequest($stmt->stmts, $scope);
-		$scope = $result->scope;
-
-		return new StmtAnalysisResult($scope);
+		return yield new StmtsAnalysisRequest($stmt->stmts, $scope, StatementContext::createTopLevel());
 	}
 
 }

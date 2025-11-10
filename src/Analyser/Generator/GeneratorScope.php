@@ -7,6 +7,7 @@ use PhpParser\Node;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Name;
 use PhpParser\Node\Param;
+use PHPStan\Analyser\ExpressionContext;
 use PHPStan\Analyser\ExpressionTypeHolder;
 use PHPStan\Analyser\NodeCallbackInvoker;
 use PHPStan\Analyser\Scope;
@@ -313,7 +314,7 @@ final class GeneratorScope implements Scope, NodeCallbackInvoker
 	/** @api */
 	public function getType(Expr $node): Type
 	{
-		return Fiber::suspend(new ExprAnalysisRequest($node, $this))->type;
+		return Fiber::suspend(new ExprAnalysisRequest(new Node\Stmt\Expression($node), $node, $this, ExpressionContext::createTopLevel()))->type;
 	}
 
 	public function getNativeType(Expr $expr): Type

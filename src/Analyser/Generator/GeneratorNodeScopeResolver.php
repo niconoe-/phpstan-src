@@ -7,11 +7,14 @@ use Generator;
 use PhpParser\Node;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Stmt;
+use PHPStan\Analyser\ExpressionContext;
 use PHPStan\Analyser\Scope;
+use PHPStan\Analyser\StatementContext;
 use PHPStan\DependencyInjection\Container;
 use PHPStan\NeverException;
 use PHPStan\ShouldNotHappenException;
 use function array_map;
+use function array_merge;
 use function array_pop;
 use function count;
 use function get_class;
@@ -89,6 +92,7 @@ final class GeneratorNodeScopeResolver
 			$stmts,
 			$scope,
 			$nodeCallback,
+			StatementContext::createTopLevel(),
 		);
 	}
 
@@ -102,11 +106,12 @@ final class GeneratorNodeScopeResolver
 		array $stmts,
 		GeneratorScope $scope,
 		callable $nodeCallback,
+		StatementContext $context,
 	): StmtAnalysisResult
 	{
 		$stack = [];
 
-		$gen = $this->analyseStmts($stmts, $scope, null);
+		$gen = $this->analyseStmts($stmts, $scope, $context, null);
 		$gen->current();
 
 		// Trampoline loop
@@ -143,17 +148,17 @@ final class GeneratorNodeScopeResolver
 					continue;
 				} elseif ($yielded instanceof ExprAnalysisRequest) {
 					$stack[] = $gen;
-					$gen = $this->analyseExpr($exprAnalysisResultStorage, $yielded->expr, $yielded->scope, $yielded->alternativeNodeCallback);
+					$gen = $this->analyseExpr($exprAnalysisResultStorage, $yielded->stmt, $yielded->expr, $yielded->scope, $yielded->context, $yielded->alternativeNodeCallback);
 					$gen->current();
 					continue;
 				} elseif ($yielded instanceof StmtAnalysisRequest) {
 					$stack[] = $gen;
-					$gen = $this->analyseStmt($yielded->stmt, $yielded->scope, $yielded->alternativeNodeCallback);
+					$gen = $this->analyseStmt($yielded->stmt, $yielded->scope, $yielded->context, $yielded->alternativeNodeCallback);
 					$gen->current();
 					continue;
 				} elseif ($yielded instanceof StmtsAnalysisRequest) {
 					$stack[] = $gen;
-					$gen = $this->analyseStmts($yielded->stmts, $yielded->scope, $yielded->alternativeNodeCallback);
+					$gen = $this->analyseStmts($yielded->stmts, $yielded->scope, $yielded->context, $yielded->alternativeNodeCallback);
 					$gen->current();
 					continue;
 				} else { // phpcs:ignore
@@ -178,6 +183,7 @@ final class GeneratorNodeScopeResolver
 						$request->scope,
 						static function () {
 						},
+						StatementContext::createTopLevel(),
 					);
 				}
 
@@ -202,21 +208,39 @@ final class GeneratorNodeScopeResolver
 	 *
 	 * @return Generator<int, StmtAnalysisRequest, StmtAnalysisResult, StmtAnalysisResult>
 	 */
-	private function analyseStmts(array $stmts, GeneratorScope $scope, ?callable $alternativeNodeCallback): Generator
+	private function analyseStmts(array $stmts, GeneratorScope $scope, StatementContext $context, ?callable $alternativeNodeCallback): Generator
 	{
+		$exitPoints = [];
+		$throwPoints = [];
+		$impurePoints = [];
+		$alreadyTerminated = false;
+		$hasYield = false;
+
 		foreach ($stmts as $stmt) {
-			$result = yield new StmtAnalysisRequest($stmt, $scope, $alternativeNodeCallback);
+			$result = yield new StmtAnalysisRequest($stmt, $scope, $context, $alternativeNodeCallback);
 			$scope = $result->scope;
+			$hasYield = $hasYield || $result->hasYield;
+			$exitPoints = array_merge($exitPoints, $result->exitPoints);
+			$throwPoints = array_merge($throwPoints, $result->throwPoints);
+			$impurePoints = array_merge($impurePoints, $result->impurePoints);
+			$alreadyTerminated = $alreadyTerminated || $result->isAlwaysTerminating;
 		}
 
-		return new StmtAnalysisResult($scope);
+		return new StmtAnalysisResult(
+			$scope,
+			hasYield: $hasYield,
+			isAlwaysTerminating: $alreadyTerminated,
+			exitPoints: $exitPoints,
+			throwPoints: $throwPoints,
+			impurePoints: $impurePoints,
+		);
 	}
 
 	/**
 	 * @param (callable(Node, Scope, callable(Node, Scope): void): void)|null $alternativeNodeCallback
 	 * @return Generator<int, ExprAnalysisRequest|StmtAnalysisRequest|StmtsAnalysisRequest|NodeCallbackRequest|AlternativeNodeCallbackRequest, ExprAnalysisResult|StmtAnalysisResult, StmtAnalysisResult>
 	 */
-	private function analyseStmt(Stmt $stmt, GeneratorScope $scope, ?callable $alternativeNodeCallback): Generator
+	private function analyseStmt(Stmt $stmt, GeneratorScope $scope, StatementContext $context, ?callable $alternativeNodeCallback): Generator
 	{
 		if ($alternativeNodeCallback === null) {
 			yield new NodeCallbackRequest($stmt, $scope);
@@ -232,7 +256,7 @@ final class GeneratorNodeScopeResolver
 				continue;
 			}
 
-			$gen = $stmtHandler->analyseStmt($stmt, $scope);
+			$gen = $stmtHandler->analyseStmt($stmt, $scope, $context);
 			yield from $gen;
 
 			return $gen->getReturn();
@@ -245,7 +269,7 @@ final class GeneratorNodeScopeResolver
 	 * @param (callable(Node, Scope, callable(Node, Scope): void): void)|null $alternativeNodeCallback
 	 * @return Generator<int, ExprAnalysisRequest|NodeCallbackRequest|AlternativeNodeCallbackRequest, ExprAnalysisResult, ExprAnalysisResult>
 	 */
-	private function analyseExpr(ExprAnalysisResultStorage $storage, Expr $expr, GeneratorScope $scope, ?callable $alternativeNodeCallback): Generator
+	private function analyseExpr(ExprAnalysisResultStorage $storage, Stmt $stmt, Expr $expr, GeneratorScope $scope, ExpressionContext $context, ?callable $alternativeNodeCallback): Generator
 	{
 		if ($alternativeNodeCallback === null) {
 			yield new NodeCallbackRequest($expr, $scope);
@@ -261,7 +285,7 @@ final class GeneratorNodeScopeResolver
 				continue;
 			}
 
-			$gen = $exprHandler->analyseExpr($expr, $scope);
+			$gen = $exprHandler->analyseExpr($stmt, $expr, $scope, $context);
 			yield from $gen;
 
 			$exprAnalysisResult = $gen->getReturn();

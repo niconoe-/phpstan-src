@@ -4,6 +4,7 @@ namespace PHPStan\Analyser\Generator;
 
 use Generator;
 use PhpParser\Node\Stmt;
+use PHPStan\Analyser\StatementContext;
 
 /**
  * @template T of Stmt
@@ -22,6 +23,6 @@ interface StmtHandler
 	 * @param T $stmt
 	 * @return Generator<int, ExprAnalysisRequest|StmtAnalysisRequest|StmtsAnalysisRequest|NodeCallbackRequest, ExprAnalysisResult|StmtAnalysisResult, StmtAnalysisResult>
 	 */
-	public function analyseStmt(Stmt $stmt, GeneratorScope $scope): Generator;
+	public function analyseStmt(Stmt $stmt, GeneratorScope $scope, StatementContext $context): Generator;
 
 }

@@ -5,10 +5,12 @@ namespace PHPStan\Analyser\Generator\StmtHandler;
 use Generator;
 use PhpParser\Node\Stmt;
 use PhpParser\Node\Stmt\Expression;
+use PHPStan\Analyser\ExpressionContext;
 use PHPStan\Analyser\Generator\ExprAnalysisRequest;
 use PHPStan\Analyser\Generator\GeneratorScope;
 use PHPStan\Analyser\Generator\StmtAnalysisResult;
 use PHPStan\Analyser\Generator\StmtHandler;
+use PHPStan\Analyser\StatementContext;
 use PHPStan\DependencyInjection\AutowiredService;
 
 /**
@@ -23,11 +25,18 @@ final class ExpressionHandler implements StmtHandler
 		return $stmt instanceof Expression;
 	}
 
-	public function analyseStmt(Stmt $stmt, GeneratorScope $scope): Generator
+	public function analyseStmt(Stmt $stmt, GeneratorScope $scope, StatementContext $context): Generator
 	{
-		$result = yield new ExprAnalysisRequest($stmt->expr, $scope);
+		$result = yield new ExprAnalysisRequest($stmt, $stmt->expr, $scope, ExpressionContext::createTopLevel());
 
-		return new StmtAnalysisResult($result->scope);
+		return new StmtAnalysisResult(
+			$result->scope,
+			hasYield: $result->hasYield,
+			isAlwaysTerminating: $result->isAlwaysTerminating,
+			exitPoints: [],
+			throwPoints: $result->throwPoints,
+			impurePoints: $result->impurePoints,
+		);
 	}
 
 }

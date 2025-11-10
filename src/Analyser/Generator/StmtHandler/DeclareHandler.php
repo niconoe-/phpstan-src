@@ -6,12 +6,14 @@ use Generator;
 use PhpParser\Node\Scalar\Int_;
 use PhpParser\Node\Stmt;
 use PhpParser\Node\Stmt\Declare_;
+use PHPStan\Analyser\ExpressionContext;
 use PHPStan\Analyser\Generator\ExprAnalysisRequest;
 use PHPStan\Analyser\Generator\GeneratorScope;
 use PHPStan\Analyser\Generator\NodeCallbackRequest;
 use PHPStan\Analyser\Generator\StmtAnalysisResult;
 use PHPStan\Analyser\Generator\StmtHandler;
 use PHPStan\Analyser\Generator\StmtsAnalysisRequest;
+use PHPStan\Analyser\StatementContext;
 use PHPStan\DependencyInjection\AutowiredService;
 
 /**
@@ -26,11 +28,11 @@ final class DeclareHandler implements StmtHandler
 		return $stmt instanceof Declare_;
 	}
 
-	public function analyseStmt(Stmt $stmt, GeneratorScope $scope): Generator
+	public function analyseStmt(Stmt $stmt, GeneratorScope $scope, StatementContext $context): Generator
 	{
 		foreach ($stmt->declares as $declare) {
 			yield new NodeCallbackRequest($declare, $scope);
-			yield new ExprAnalysisRequest($declare->value, $scope);
+			yield new ExprAnalysisRequest($stmt, $declare->value, $scope, ExpressionContext::createDeep());
 			if (
 				$declare->key->name !== 'strict_types'
 				|| !($declare->value instanceof Int_)
@@ -43,12 +45,22 @@ final class DeclareHandler implements StmtHandler
 		}
 
 		if ($stmt->stmts !== null) {
-			/** @var StmtAnalysisResult */
-			return yield new StmtsAnalysisRequest($stmt->stmts, $scope);
+			return yield new StmtsAnalysisRequest(
+				$stmt->stmts,
+				$scope,
+				$context,
+			);
 
 		}
 
-		return new StmtAnalysisResult($scope);
+		return new StmtAnalysisResult(
+			$scope,
+			hasYield: false,
+			isAlwaysTerminating: false,
+			exitPoints: [],
+			throwPoints: [],
+			impurePoints: [],
+		);
 	}
 
 }

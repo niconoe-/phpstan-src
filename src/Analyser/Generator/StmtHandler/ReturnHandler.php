@@ -5,10 +5,13 @@ namespace PHPStan\Analyser\Generator\StmtHandler;
 use Generator;
 use PhpParser\Node\Stmt;
 use PhpParser\Node\Stmt\Return_;
+use PHPStan\Analyser\ExpressionContext;
 use PHPStan\Analyser\Generator\ExprAnalysisRequest;
 use PHPStan\Analyser\Generator\GeneratorScope;
+use PHPStan\Analyser\Generator\InternalStatementExitPoint;
 use PHPStan\Analyser\Generator\StmtAnalysisResult;
 use PHPStan\Analyser\Generator\StmtHandler;
+use PHPStan\Analyser\StatementContext;
 use PHPStan\DependencyInjection\AutowiredService;
 
 /**
@@ -23,15 +26,33 @@ final class ReturnHandler implements StmtHandler
 		return $stmt instanceof Return_;
 	}
 
-	public function analyseStmt(Stmt $stmt, GeneratorScope $scope): Generator
+	public function analyseStmt(Stmt $stmt, GeneratorScope $scope, StatementContext $context): Generator
 	{
 		if ($stmt->expr !== null) {
-			$result = yield new ExprAnalysisRequest($stmt->expr, $scope);
+			$result = yield new ExprAnalysisRequest($stmt, $stmt->expr, $scope, ExpressionContext::createDeep());
 
-			return new StmtAnalysisResult($result->scope);
+			return new StmtAnalysisResult(
+				$result->scope,
+				hasYield: $result->hasYield,
+				isAlwaysTerminating: true,
+				exitPoints: [
+					new InternalStatementExitPoint($stmt, $scope),
+				],
+				throwPoints: $result->throwPoints,
+				impurePoints: [],
+			);
 		}
 
-		return new StmtAnalysisResult($scope);
+		return new StmtAnalysisResult(
+			$scope,
+			hasYield: false,
+			isAlwaysTerminating: true,
+			exitPoints: [
+				new InternalStatementExitPoint($stmt, $scope),
+			],
+			throwPoints: [],
+			impurePoints: [],
+		);
 	}
 
 }
