@@ -31,9 +31,9 @@ final class VariableHandler implements ExprHandler
 			throw new ShouldNotHappenException('Not implemented');
 		}
 
-		$exprTypeFromScope = $scope->expressionTypes['$' . $expr->name] ?? null;
+		$exprTypeFromScope = $scope->getExpressionType($expr);
 		if ($exprTypeFromScope !== null) {
-			return new ExprAnalysisResult($exprTypeFromScope->getType(), $scope);
+			return new ExprAnalysisResult($exprTypeFromScope, $scope);
 		}
 
 		yield from [];

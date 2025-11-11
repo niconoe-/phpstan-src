@@ -11,8 +11,8 @@ use PHPStan\Analyser\ExpressionTypeHolder;
 use PHPStan\Analyser\NodeCallbackInvoker;
 use PHPStan\Analyser\Scope;
 use PHPStan\Analyser\ScopeContext;
+use PHPStan\Node\Printer\ExprPrinter;
 use PHPStan\Php\PhpVersions;
-use PHPStan\Reflection\Assertions;
 use PHPStan\Reflection\ClassConstantReflection;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ExtendedMethodReflection;
@@ -23,22 +23,54 @@ use PHPStan\Reflection\PropertyReflection;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\ClosureType;
-use PHPStan\Type\Generic\TemplateTypeMap;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeWithClassName;
+use function array_key_exists;
 
 final class GeneratorScope implements Scope, NodeCallbackInvoker
 {
 
+	/** @var non-empty-string|null */
+	private ?string $namespace;
+
 	/**
 	 * @param array<string, ExpressionTypeHolder> $expressionTypes
+	 * @param array<string, ExpressionTypeHolder> $nativeExpressionTypes
 	 */
 	public function __construct(
 		private InternalGeneratorScopeFactory $scopeFactory,
+		private ExprPrinter $exprPrinter,
 		private ScopeContext $context,
-		public array $expressionTypes,
+		private bool $declareStrictTypes = false,
+		private PhpFunctionFromParserNodeReflection|null $function = null,
+		?string $namespace = null,
+		private array $expressionTypes = [],
+		private array $nativeExpressionTypes = [],
 	)
 	{
+		if ($namespace === '') {
+			$namespace = null;
+		}
+
+		$this->namespace = $namespace;
+	}
+
+	/**
+	 * This method is meant to be called for expressions for which the type
+	 * should be stored in Scope itself.
+	 *
+	 * This is meant to be used only by handlers in PHPStan\Analyser\Generator namespace.
+	 *
+	 * All other code should use `getType()` method.
+	 */
+	public function getExpressionType(Expr $expr): ?Type
+	{
+		$exprString = $this->exprPrinter->printExpr($expr);
+		if (array_key_exists($exprString, $this->expressionTypes)) {
+			return $this->expressionTypes[$exprString]->getType();
+		}
+
+		return null;
 	}
 
 	public function assignVariable(string $variableName, Type $type): self
@@ -50,57 +82,22 @@ final class GeneratorScope implements Scope, NodeCallbackInvoker
 
 		return $this->scopeFactory->create(
 			$this->context,
+			$this->declareStrictTypes,
+			$this->function,
+			$this->namespace,
 			$expressionTypes,
 		);
 	}
 
+	/** @api */
 	public function enterNamespace(string $namespaceName): self
 	{
-		// TODO: Implement enterNamespace() method.
-		throw new ShouldNotHappenException('Not implemented yet');
-	}
-
-	public function enterClass(ClassReflection $classReflection): self
-	{
-		// TODO: Implement enterClass() method.
-		throw new ShouldNotHappenException('Not implemented yet');
-	}
-
-	/**
-	 * @param Type[] $phpDocParameterTypes
-	 * @param Type[] $parameterOutTypes
-	 * @param array<string, bool> $immediatelyInvokedCallableParameters
-	 * @param array<string, Type> $phpDocClosureThisTypeParameters
-	 */
-	public function enterClassMethod(
-		Node\Stmt\ClassMethod $classMethod,
-		TemplateTypeMap $templateTypeMap,
-		array $phpDocParameterTypes,
-		?Type $phpDocReturnType,
-		?Type $throwType,
-		?string $deprecatedDescription,
-		bool $isDeprecated,
-		bool $isInternal,
-		bool $isFinal,
-		?bool $isPure = null,
-		bool $acceptsNamedArguments = true,
-		?Assertions $asserts = null,
-		?Type $selfOutType = null,
-		?string $phpDocComment = null,
-		array $parameterOutTypes = [],
-		array $immediatelyInvokedCallableParameters = [],
-		array $phpDocClosureThisTypeParameters = [],
-		bool $isConstructor = false,
-	): self
-	{
-		// TODO: Implement enterClassMethod() method.
-		throw new ShouldNotHappenException('Not implemented yet');
-	}
-
-	public function generalizeWith(self $otherScope): self
-	{
-		// TODO: Implement generalizeWith() method.
-		throw new ShouldNotHappenException('Not implemented yet');
+		return $this->scopeFactory->create(
+			$this->context->beginFile(),
+			$this->isDeclareStrictTypes(),
+			null,
+			$namespaceName,
+		);
 	}
 
 	public function isInClass(): bool
@@ -145,10 +142,10 @@ final class GeneratorScope implements Scope, NodeCallbackInvoker
 		throw new ShouldNotHappenException('Not implemented yet');
 	}
 
+	/** @api */
 	public function getNamespace(): ?string
 	{
-		// TODO: Implement getNamespace() method.
-		return null;
+		return $this->namespace;
 	}
 
 	public function getFile(): string
@@ -163,10 +160,22 @@ final class GeneratorScope implements Scope, NodeCallbackInvoker
 		return 'foo.php';
 	}
 
+	/** @api */
 	public function isDeclareStrictTypes(): bool
 	{
-		// TODO: Implement isDeclareStrictTypes() method.
-		throw new ShouldNotHappenException('Not implemented yet');
+		return $this->declareStrictTypes;
+	}
+
+	public function enterDeclareStrictTypes(): self
+	{
+		return $this->scopeFactory->create(
+			$this->context,
+			true,
+			null,
+			null,
+			$this->expressionTypes,
+			$this->nativeExpressionTypes,
+		);
 	}
 
 	public function isInTrait(): bool
@@ -301,6 +310,7 @@ final class GeneratorScope implements Scope, NodeCallbackInvoker
 		throw new ShouldNotHappenException('Not implemented yet');
 	}
 
+	/** @api */
 	public function getType(Expr $node): Type
 	{
 		return Fiber::suspend(new ExprAnalysisRequest($node, $this))->type;
