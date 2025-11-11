@@ -81,7 +81,7 @@ abstract class TypeInferenceTestCase extends PHPStanTestCase
 			self::getContainer()->getByType(ReadWritePropertiesExtensionProvider::class),
 			self::getContainer()->getByType(ParameterClosureThisExtensionProvider::class),
 			self::getContainer()->getByType(ParameterClosureTypeExtensionProvider::class),
-			self::createScopeFactory(),
+			self::createScopeFactory($reflectionProvider, $typeSpecifier),
 			self::getContainer()->getParameter('polluteScopeWithLoopInitialAssignments'),
 			self::getContainer()->getParameter('polluteScopeWithAlwaysIterableForeach'),
 			self::getContainer()->getParameter('polluteScopeWithBlock'),
@@ -102,7 +102,7 @@ abstract class TypeInferenceTestCase extends PHPStanTestCase
 		array $dynamicConstantNames = [],
 	): MutatingScope
 	{
-		$scopeFactory = self::createScopeFactory($dynamicConstantNames);
+		$scopeFactory = self::createScopeFactory(self::createReflectionProvider(), self::getContainer()->getService('typeSpecifier'), $dynamicConstantNames);
 		return $scopeFactory->create(ScopeContext::create($file));
 	}
 

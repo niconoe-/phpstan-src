@@ -107,7 +107,7 @@ abstract class RuleTestCase extends PHPStanTestCase
 			$readWritePropertiesExtensions !== [] ? new DirectReadWritePropertiesExtensionProvider($readWritePropertiesExtensions) : self::getContainer()->getByType(ReadWritePropertiesExtensionProvider::class),
 			self::getContainer()->getByType(ParameterClosureThisExtensionProvider::class),
 			self::getContainer()->getByType(ParameterClosureTypeExtensionProvider::class),
-			self::createScopeFactory(),
+			self::createScopeFactory($reflectionProvider, $typeSpecifier),
 			$this->shouldPolluteScopeWithLoopInitialAssignments(),
 			$this->shouldPolluteScopeWithAlwaysIterableForeach(),
 			self::getContainer()->getParameter('polluteScopeWithBlock'),
@@ -128,7 +128,10 @@ abstract class RuleTestCase extends PHPStanTestCase
 			$nodeScopeResolver = $this->createNodeScopeResolver();
 
 			$fileAnalyser = new FileAnalyser(
-				self::createScopeFactory(),
+				self::createScopeFactory(
+					$this->createReflectionProvider(),
+					$this->getTypeSpecifier(),
+				),
 				self::getContainer()->getByType(GeneratorScopeFactory::class),
 				$nodeScopeResolver,
 				$this->getParser(),
@@ -276,7 +279,7 @@ abstract class RuleTestCase extends PHPStanTestCase
 			$ruleRegistry,
 			new IgnoreErrorExtensionProvider(self::getContainer()),
 			self::getContainer()->getByType(RuleErrorTransformer::class),
-			self::createScopeFactory(),
+			self::createScopeFactory($reflectionProvider, self::getContainer()->getService('typeSpecifier')),
 			new LocalIgnoresProcessor(),
 			true,
 		);

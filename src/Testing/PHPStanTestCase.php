@@ -8,6 +8,7 @@ use PHPStan\Analyser\Error;
 use PHPStan\Analyser\NodeScopeResolver;
 use PHPStan\Analyser\RicherScopeGetTypeHelper;
 use PHPStan\Analyser\ScopeFactory;
+use PHPStan\Analyser\TypeSpecifier;
 use PHPStan\BetterReflection\Reflector\Reflector;
 use PHPStan\DependencyInjection\Container;
 use PHPStan\DependencyInjection\ContainerFactory;
@@ -129,7 +130,7 @@ abstract class PHPStanTestCase extends TestCase
 	/**
 	 * @param string[] $dynamicConstantNames
 	 */
-	public static function createScopeFactory(array $dynamicConstantNames = []): ScopeFactory
+	public static function createScopeFactory(ReflectionProvider $reflectionProvider, TypeSpecifier $typeSpecifier, array $dynamicConstantNames = []): ScopeFactory
 	{
 		$container = self::getContainer();
 
@@ -137,8 +138,6 @@ abstract class PHPStanTestCase extends TestCase
 			$dynamicConstantNames = $container->getParameter('dynamicConstantNames');
 		}
 
-		$reflectionProvider = self::createReflectionProvider();
-		$typeSpecifier = self::getContainer()->getService('typeSpecifier');
 		$reflectionProviderProvider = new DirectReflectionProviderProvider($reflectionProvider);
 		$composerPhpVersionFactory = $container->getByType(ComposerPhpVersionFactory::class);
 		$constantResolver = new ConstantResolver($reflectionProviderProvider, $dynamicConstantNames, null, $composerPhpVersionFactory, $container);

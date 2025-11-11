@@ -64,7 +64,7 @@ class TypeSpecifierTest extends PHPStanTestCase
 		$reflectionProvider = self::createReflectionProvider();
 		$this->printer = new Printer();
 		$this->typeSpecifier = self::getContainer()->getService('typeSpecifier');
-		$this->scope = self::createScopeFactory()->create(ScopeContext::create(''));
+		$this->scope = self::createScopeFactory($reflectionProvider, $this->typeSpecifier)->create(ScopeContext::create(''));
 		$this->scope = $this->scope->enterClass($reflectionProvider->getClass('DateTime'));
 		$this->scope = $this->scope->assignVariable('bar', new ObjectType('Bar'), new ObjectType('Bar'), TrinaryLogic::createYes());
 		$this->scope = $this->scope->assignVariable('stringOrNull', new UnionType([new StringType(), new NullType()]), new UnionType([new StringType(), new NullType()]), TrinaryLogic::createYes());
