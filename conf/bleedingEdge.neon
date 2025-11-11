@@ -12,6 +12,6 @@ parameters:
 		checkExtensionsForComparisonOperators: true
 		reportTooWideBool: true
 		rawMessageInBaseline: true
-		reportNestedTooWideType: true
+		reportNestedTooWideType: false # tmp
 		assignToByRefForeachExpr: true
 		curlSetOptArrayTypes: true
