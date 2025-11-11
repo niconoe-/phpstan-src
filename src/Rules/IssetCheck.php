@@ -10,6 +10,7 @@ use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Node\Expr\PropertyInitializationExpr;
 use PHPStan\Rules\Properties\PropertyDescriptor;
 use PHPStan\Rules\Properties\PropertyReflectionFinder;
+use PHPStan\Type\NeverType;
 use PHPStan\Type\Type;
 use PHPStan\Type\VerbosityLevel;
 use function is_string;
@@ -54,7 +55,7 @@ final class IssetCheck
 					}
 
 					$type = $this->treatPhpDocTypesAsCertain ? $scope->getType($expr) : $scope->getNativeType($expr);
-					if ($type->isNever()->no()) {
+					if (!$type instanceof NeverType) {
 						return $this->generateError(
 							$type,
 							sprintf('Variable $%s %s always exists and', $expr->name, $operatorDescription),

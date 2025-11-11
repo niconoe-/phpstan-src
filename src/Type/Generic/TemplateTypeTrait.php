@@ -10,6 +10,7 @@ use PHPStan\Type\ErrorType;
 use PHPStan\Type\IntersectionType;
 use PHPStan\Type\IsSuperTypeOfResult;
 use PHPStan\Type\MixedType;
+use PHPStan\Type\NeverType;
 use PHPStan\Type\RecursionGuard;
 use PHPStan\Type\SubtractableType;
 use PHPStan\Type\Type;
@@ -219,7 +220,7 @@ trait TemplateTypeTrait
 			return $type->isSubTypeOf($this);
 		}
 
-		if (!$type->isNever()->no()) {
+		if ($type instanceof NeverType) {
 			return IsSuperTypeOfResult::createYes();
 		}
 

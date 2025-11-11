@@ -21,6 +21,7 @@ use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Rules\Properties\ReadWritePropertiesExtensionProvider;
 use PHPStan\TrinaryLogic;
+use PHPStan\Type\NeverType;
 use PHPStan\Type\TypeUtils;
 use function array_diff_key;
 use function array_key_exists;
@@ -275,7 +276,7 @@ final class ClassPropertiesNode extends NodeAbstract implements VirtualNode
 				if ($statementResult->isAlwaysTerminating()) {
 					if ($endNode instanceof Node\Stmt\Expression) {
 						$exprType = $statementResult->getScope()->getType($endNode->expr);
-						if ($exprType->isExplicitNever()->yes()) {
+						if ($exprType instanceof NeverType && $exprType->isExplicit()) {
 							continue;
 						}
 					}

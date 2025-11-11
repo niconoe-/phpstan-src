@@ -9,6 +9,7 @@ use PHPStan\Node\NoopExpressionNode;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
+use PHPStan\Type\NeverType;
 use function count;
 use function sprintf;
 
@@ -62,7 +63,7 @@ final class CallToConstructorStatementWithoutSideEffectsRule implements Rule
 		}
 
 		$methodResult = $scope->getType($instantiation);
-		if ($methodResult->isExplicitNever()->yes()) {
+		if ($methodResult instanceof NeverType && $methodResult->isExplicit()) {
 			return [];
 		}
 

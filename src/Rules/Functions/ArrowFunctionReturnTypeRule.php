@@ -10,6 +10,7 @@ use PHPStan\Node\InArrowFunctionNode;
 use PHPStan\Rules\FunctionReturnTypeCheck;
 use PHPStan\Rules\Rule;
 use PHPStan\ShouldNotHappenException;
+use PHPStan\Type\NeverType;
 use PHPStan\Type\ObjectType;
 
 /**
@@ -45,8 +46,10 @@ final class ArrowFunctionReturnTypeRule implements Rule
 
 		$exprType = $scope->getType($originalNode->expr);
 		if (
-			$returnType->isExplicitNever()->yes()
-			&& $exprType->isExplicitNever()->yes()
+			$returnType instanceof NeverType
+			&& $returnType->isExplicit()
+			&& $exprType instanceof NeverType
+			&& $exprType->isExplicit()
 		) {
 			return [];
 		}

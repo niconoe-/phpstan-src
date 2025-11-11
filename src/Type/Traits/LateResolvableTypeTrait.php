@@ -16,6 +16,7 @@ use PHPStan\Type\CompoundType;
 use PHPStan\Type\Generic\TemplateTypeMap;
 use PHPStan\Type\IsSuperTypeOfResult;
 use PHPStan\Type\LateResolvableType;
+use PHPStan\Type\NeverType;
 use PHPStan\Type\Type;
 
 trait LateResolvableTypeTrait
@@ -60,7 +61,7 @@ trait LateResolvableTypeTrait
 
 	private function isSuperTypeOfDefault(Type $type): IsSuperTypeOfResult
 	{
-		if (!$type->isNever()->no()) {
+		if ($type instanceof NeverType) {
 			return IsSuperTypeOfResult::createYes();
 		}
 

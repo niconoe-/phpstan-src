@@ -7,6 +7,7 @@ use PHPStan\Analyser\Scope;
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicStaticMethodThrowTypeExtension;
+use PHPStan\Type\NeverType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 use SimpleXMLElement;
@@ -50,7 +51,7 @@ final class SimpleXMLElementConstructorThrowTypeExtension implements DynamicStat
 			libxml_use_internal_errors($internalErrorsOld);
 		}
 
-		if ($valueType->isNever()->no()) {
+		if (!$valueType instanceof NeverType) {
 			return $methodReflection->getThrowType();
 		}
 

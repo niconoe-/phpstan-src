@@ -9,6 +9,7 @@ use PHPStan\Reflection\FunctionReflection;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\Generic\TemplateTypeMap;
 use PHPStan\Type\Generic\TemplateTypeVarianceMap;
+use PHPStan\Type\NeverType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 use Throwable;
@@ -96,7 +97,7 @@ final class FunctionCallableVariant implements CallableParametersAcceptor, Exten
 		$returnType = $this->variant->getReturnType();
 		$throwType = $this->function->getThrowType();
 		if ($throwType === null) {
-			if ($returnType->isExplicitNever()->yes()) {
+			if ($returnType instanceof NeverType && $returnType->isExplicit()) {
 				$throwType = new ObjectType(Throwable::class);
 			}
 		}

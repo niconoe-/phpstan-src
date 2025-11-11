@@ -11,6 +11,7 @@ use PHPStan\Parser\TryCatchTypeVisitor;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\Constant\ConstantBooleanType;
+use PHPStan\Type\NeverType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\UnionType;
@@ -130,7 +131,7 @@ final class MatchExpressionRule implements Rule
 				$remainingType = $cases[0];
 			}
 			if (
-				$remainingType->isNever()->no()
+				!$remainingType instanceof NeverType
 				&& !$this->isUnhandledMatchErrorCaught($node)
 				&& !$this->hasUnhandledMatchErrorThrowsTag($scope)
 			) {

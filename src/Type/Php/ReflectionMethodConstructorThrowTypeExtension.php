@@ -10,6 +10,7 @@ use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\DynamicStaticMethodThrowTypeExtension;
 use PHPStan\Type\Generic\GenericClassStringType;
+use PHPStan\Type\NeverType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\TypeUtils;
@@ -61,7 +62,7 @@ final class ReflectionMethodConstructorThrowTypeExtension implements DynamicStat
 			$valueType = TypeCombinator::remove($valueType, $type);
 		}
 
-		if ($valueType->isNever()->no()) {
+		if (!$valueType instanceof NeverType) {
 			return $methodReflection->getThrowType();
 		}
 
@@ -70,7 +71,7 @@ final class ReflectionMethodConstructorThrowTypeExtension implements DynamicStat
 			$propertyType = TypeCombinator::remove($propertyType, $constantPropertyString);
 		}
 
-		if ($propertyType->isNever()->no()) {
+		if (!$propertyType instanceof NeverType) {
 			return $methodReflection->getThrowType();
 		}
 

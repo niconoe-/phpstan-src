@@ -23,7 +23,7 @@ final class ExponentiateHelper
 			return TypeCombinator::union(...$results);
 		}
 
-		if (!$exponent->isNever()->no()) {
+		if ($exponent instanceof NeverType) {
 			return new NeverType();
 		}
 

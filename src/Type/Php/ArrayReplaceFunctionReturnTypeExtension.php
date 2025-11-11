@@ -15,6 +15,7 @@ use PHPStan\Type\Constant\ConstantArrayTypeBuilder;
 use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\DynamicFunctionReturnTypeExtension;
+use PHPStan\Type\NeverType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 use function array_keys;
@@ -117,7 +118,7 @@ final class ArrayReplaceFunctionReturnTypeExtension implements DynamicFunctionRe
 		}
 
 		$keyType = TypeCombinator::union(...$keyTypes);
-		if (!$keyType->isNever()->no()) {
+		if ($keyType instanceof NeverType) {
 			return new ConstantArrayType([], []);
 		}
 

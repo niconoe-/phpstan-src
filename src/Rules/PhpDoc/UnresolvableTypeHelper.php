@@ -4,6 +4,7 @@ namespace PHPStan\Rules\PhpDoc;
 
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Type\ErrorType;
+use PHPStan\Type\NeverType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeTraverser;
 
@@ -19,7 +20,7 @@ final class UnresolvableTypeHelper
 				$containsUnresolvable = true;
 				return $type;
 			}
-			if ($type->isNever()->yes() && $type->isExplicitNever()->no()) {
+			if ($type instanceof NeverType && !$type->isExplicit()) {
 				$containsUnresolvable = true;
 				return $type;
 			}

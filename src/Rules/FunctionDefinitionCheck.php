@@ -31,6 +31,7 @@ use PHPStan\Rules\PhpDoc\UnresolvableTypeHelper;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\ConditionalTypeForParameter;
 use PHPStan\Type\Generic\TemplateType;
+use PHPStan\Type\NeverType;
 use PHPStan\Type\NonexistentParentClassType;
 use PHPStan\Type\ParserNodeTypeToPHPStanType;
 use PHPStan\Type\Type;
@@ -501,7 +502,7 @@ final class FunctionDefinitionCheck
 			$returnType = $parametersAcceptor->getReturnType();
 			if (
 				$returnType->isVoid()->yes()
-				|| ($returnType->isExplicitNever()->yes())
+				|| ($returnType instanceof NeverType && $returnType->isExplicit())
 			) {
 				$errors[] = RuleErrorBuilder::message(sprintf($noDiscardReturnTypeMessage, $returnType->describe(VerbosityLevel::typeOnly())))
 					->line($returnTypeNode->getStartLine())

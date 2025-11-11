@@ -86,7 +86,7 @@ final class TypehintHelper
 		}
 
 		if ($phpDocType !== null && !$phpDocType instanceof ErrorType) {
-			if ($phpDocType->isExplicitNever()->yes()) {
+			if ($phpDocType instanceof NeverType && $phpDocType->isExplicit()) {
 				return $phpDocType;
 			}
 			if (
@@ -122,7 +122,7 @@ final class TypehintHelper
 			if (
 				($type->isCallable()->yes() && $phpDocType->isCallable()->yes())
 				|| (
-					(!$phpDocType->isNever()->yes() || ($type instanceof MixedType && !$type->isExplicitMixed()))
+					(!$phpDocType instanceof NeverType || ($type instanceof MixedType && !$type->isExplicitMixed()))
 					&& $type->isSuperTypeOf(TemplateTypeHelper::resolveToBounds($phpDocType))->yes()
 				)
 			) {

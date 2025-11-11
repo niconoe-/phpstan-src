@@ -10,6 +10,7 @@ use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Php\PhpVersion;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicMethodThrowTypeExtension;
+use PHPStan\Type\NeverType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
@@ -53,7 +54,7 @@ final class DateTimeModifyMethodThrowTypeExtension implements DynamicMethodThrow
 			$valueType = TypeCombinator::remove($valueType, $constantString);
 		}
 
-		if ($valueType->isNever()->no()) {
+		if (!$valueType instanceof NeverType) {
 			return $this->exceptionType();
 		}
 

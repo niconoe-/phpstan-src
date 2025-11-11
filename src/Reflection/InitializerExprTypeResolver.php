@@ -903,7 +903,7 @@ final class InitializerExprTypeResolver
 				$returnTypeForThrow = $variant->getReturnType();
 				$throwType = $function->getThrowType();
 				if ($throwType === null) {
-					if ($returnTypeForThrow->isExplicitNever()->yes()) {
+					if ($returnTypeForThrow instanceof NeverType && $returnTypeForThrow->isExplicit()) {
 						$throwType = new ObjectType(Throwable::class);
 					}
 				}
@@ -954,7 +954,7 @@ final class InitializerExprTypeResolver
 		$leftType = $getTypeCallback($left);
 		$rightType = $getTypeCallback($right);
 
-		if ($leftType->isNever()->yes() || $rightType->isNever()->yes()) {
+		if ($leftType instanceof NeverType || $rightType instanceof NeverType) {
 			return $this->getNeverType($leftType, $rightType);
 		}
 
@@ -1023,7 +1023,7 @@ final class InitializerExprTypeResolver
 		$leftType = $getTypeCallback($left);
 		$rightType = $getTypeCallback($right);
 
-		if ($leftType->isNever()->yes() || $rightType->isNever()->yes()) {
+		if ($leftType instanceof NeverType || $rightType instanceof NeverType) {
 			return $this->getNeverType($leftType, $rightType);
 		}
 
@@ -1082,7 +1082,7 @@ final class InitializerExprTypeResolver
 		$leftType = $getTypeCallback($left);
 		$rightType = $getTypeCallback($right);
 
-		if ($leftType->isNever()->yes() || $rightType->isNever()->yes()) {
+		if ($leftType instanceof NeverType || $rightType instanceof NeverType) {
 			return $this->getNeverType($leftType, $rightType);
 		}
 
@@ -1141,7 +1141,7 @@ final class InitializerExprTypeResolver
 		$callbackLeftType = $getTypeCallback($left);
 		$callbackRightType = $getTypeCallback($right);
 
-		if ($callbackLeftType->isNever()->yes() || $callbackRightType->isNever()->yes()) {
+		if ($callbackLeftType instanceof NeverType || $callbackRightType instanceof NeverType) {
 			return $this->getNeverType($callbackLeftType, $callbackRightType);
 		}
 
@@ -1228,7 +1228,7 @@ final class InitializerExprTypeResolver
 		$leftType = $getTypeCallback($left);
 		$rightType = $getTypeCallback($right);
 
-		if ($leftType->isNever()->yes() || $rightType->isNever()->yes()) {
+		if ($leftType instanceof NeverType || $rightType instanceof NeverType) {
 			return $this->getNeverType($leftType, $rightType);
 		}
 
@@ -1337,7 +1337,7 @@ final class InitializerExprTypeResolver
 		$leftType = $getTypeCallback($left);
 		$rightType = $getTypeCallback($right);
 
-		if ($leftType->isNever()->yes() || $rightType->isNever()->yes()) {
+		if ($leftType instanceof NeverType || $rightType instanceof NeverType) {
 			return $this->getNeverType($leftType, $rightType);
 		}
 
@@ -1645,7 +1645,7 @@ final class InitializerExprTypeResolver
 		$leftType = $getTypeCallback($left);
 		$rightType = $getTypeCallback($right);
 
-		if ($leftType->isNever()->yes() || $rightType->isNever()->yes()) {
+		if ($leftType instanceof NeverType || $rightType instanceof NeverType) {
 			return $this->getNeverType($leftType, $rightType);
 		}
 
@@ -1704,7 +1704,7 @@ final class InitializerExprTypeResolver
 		$leftType = $getTypeCallback($left);
 		$rightType = $getTypeCallback($right);
 
-		if ($leftType->isNever()->yes() || $rightType->isNever()->yes()) {
+		if ($leftType instanceof NeverType || $rightType instanceof NeverType) {
 			return $this->getNeverType($leftType, $rightType);
 		}
 
@@ -1787,7 +1787,7 @@ final class InitializerExprTypeResolver
 	 */
 	public function resolveIdenticalType(Type $leftType, Type $rightType): TypeResult
 	{
-		if ($leftType->isNever()->yes() || $rightType->isNever()->yes()) {
+		if ($leftType instanceof NeverType || $rightType instanceof NeverType) {
 			return new TypeResult(new ConstantBooleanType(false), []);
 		}
 
@@ -1969,7 +1969,7 @@ final class InitializerExprTypeResolver
 		if ($leftNumberType instanceof ErrorType || $rightNumberType instanceof ErrorType) {
 			return new ErrorType();
 		}
-		if ($leftNumberType->isNever()->yes() || $rightNumberType->isNever()->yes()) {
+		if ($leftNumberType instanceof NeverType || $rightNumberType instanceof NeverType) {
 			return $this->getNeverType($leftNumberType, $rightNumberType);
 		}
 
@@ -2587,10 +2587,10 @@ final class InitializerExprTypeResolver
 	private function getNeverType(Type $leftType, Type $rightType): Type
 	{
 		// make sure we don't lose the explicit flag in the process
-		if ($leftType->isExplicitNever()->yes()) {
+		if ($leftType instanceof NeverType && $leftType->isExplicit()) {
 			return $leftType;
 		}
-		if ($rightType->isExplicitNever()->yes()) {
+		if ($rightType instanceof NeverType && $rightType->isExplicit()) {
 			return $rightType;
 		}
 		return new NeverType();

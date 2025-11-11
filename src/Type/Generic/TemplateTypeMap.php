@@ -2,6 +2,7 @@
 
 namespace PHPStan\Type\Generic;
 
+use PHPStan\Type\NeverType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\TypeTraverser;
@@ -34,7 +35,7 @@ final class TemplateTypeMap
 		foreach ($this->lowerBoundTypes as $name => $type) {
 			if (isset($lowerBoundTypes[$name])) {
 				$intersection = TypeCombinator::intersect($lowerBoundTypes[$name], $type);
-				if (!$intersection->isNever()->no()) {
+				if ($intersection instanceof NeverType) {
 					continue;
 				}
 				$lowerBoundTypes[$name] = $intersection;
@@ -130,7 +131,7 @@ final class TemplateTypeMap
 		foreach ($other->lowerBoundTypes as $name => $type) {
 			if (isset($resultLowerBoundTypes[$name])) {
 				$intersection = TypeCombinator::intersect($resultLowerBoundTypes[$name], $type);
-				if (!$intersection->isNever()->no()) {
+				if ($intersection instanceof NeverType) {
 					continue;
 				}
 				$resultLowerBoundTypes[$name] = $intersection;
@@ -158,7 +159,7 @@ final class TemplateTypeMap
 		foreach ($other->lowerBoundTypes as $name => $type) {
 			if (isset($resultLowerBoundTypes[$name])) {
 				$intersection = TypeCombinator::intersect($resultLowerBoundTypes[$name], $type);
-				if (!$intersection->isNever()->no()) {
+				if ($intersection instanceof NeverType) {
 					continue;
 				}
 				$resultLowerBoundTypes[$name] = $intersection;

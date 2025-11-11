@@ -8,6 +8,7 @@ use PhpParser\Node\Expr;
 use PHPStan\Analyser\Scope;
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Type\ErrorType;
+use PHPStan\Type\NeverType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeUtils;
 use PHPStan\Type\VerbosityLevel;
@@ -38,7 +39,7 @@ final class FunctionReturnTypeCheck
 	{
 		$returnType = TypeUtils::resolveLateResolvableTypes($returnType);
 
-		if ($returnType->isExplicitNever()->yes()) {
+		if ($returnType instanceof NeverType && $returnType->isExplicit()) {
 			return [
 				RuleErrorBuilder::message($neverMessage)
 					->line($returnNode->getStartLine())

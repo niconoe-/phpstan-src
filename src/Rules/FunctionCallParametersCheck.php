@@ -21,6 +21,7 @@ use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\ErrorType;
 use PHPStan\Type\Generic\TemplateType;
 use PHPStan\Type\IntegerRangeType;
+use PHPStan\Type\NeverType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\TypeTraverser;
@@ -502,8 +503,8 @@ final class FunctionCallParametersCheck
 					if (
 						!($type instanceof ErrorType)
 						&& (
-							$type->isNever()->no()
-							|| $type->isExplicitNever()->yes()
+							!$type instanceof NeverType
+							|| $type->isExplicit()
 						)
 					) {
 						continue;

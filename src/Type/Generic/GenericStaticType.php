@@ -9,6 +9,7 @@ use PHPStan\Reflection\ClassReflection;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\CompoundType;
 use PHPStan\Type\IsSuperTypeOfResult;
+use PHPStan\Type\NeverType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StaticType;
 use PHPStan\Type\Type;
@@ -228,7 +229,7 @@ class GenericStaticType extends StaticType
 			$classReflection = $this->getClassReflection();
 			if ($classReflection->getAllowedSubTypes() !== null) {
 				$objectType = $this->getStaticObjectType()->changeSubtractedType($subtractedType);
-				if (!$objectType->isNever()->no()) {
+				if ($objectType instanceof NeverType) {
 					return $objectType;
 				}
 
