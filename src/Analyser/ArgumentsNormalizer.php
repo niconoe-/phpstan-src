@@ -184,7 +184,7 @@ final class ArgumentsNormalizer
 	}
 
 	/**
-	 * @param list<Arg> $callArgs
+	 * @param Arg[] $callArgs
 	 * @return ?list<Arg>
 	 */
 	public static function reorderArgs(ParametersAcceptor $parametersAcceptor, array $callArgs): ?array
@@ -203,7 +203,7 @@ final class ArgumentsNormalizer
 			}
 		}
 		if (!$hasNamedArgs) {
-			return $callArgs;
+			return array_values($callArgs);
 		}
 
 		$hasVariadic = false;
