@@ -634,16 +634,6 @@ class CallableType implements CompoundType, CallableParametersAcceptor
 		return TrinaryLogic::createMaybe();
 	}
 
-	public function isNever(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
-	public function isExplicitNever(): TrinaryLogic
-	{
-		return TrinaryLogic::createNo();
-	}
-
 	public function looseCompare(Type $type, PhpVersion $phpVersion): BooleanType
 	{
 		return new BooleanType();
