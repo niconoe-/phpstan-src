@@ -8,7 +8,7 @@ final class ProcessClosureResult
 {
 
 	/**
-	 * @param ThrowPoint[] $throwPoints
+	 * @param InternalThrowPoint[] $throwPoints
 	 * @param ImpurePoint[] $impurePoints
 	 * @param InvalidateExprNode[] $invalidateExpressions
 	 */
@@ -28,7 +28,7 @@ final class ProcessClosureResult
 	}
 
 	/**
-	 * @return ThrowPoint[]
+	 * @return InternalThrowPoint[]
 	 */
 	public function getThrowPoints(): array
 	{

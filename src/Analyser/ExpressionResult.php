@@ -16,7 +16,7 @@ final class ExpressionResult
 	private ?MutatingScope $falseyScope = null;
 
 	/**
-	 * @param ThrowPoint[] $throwPoints
+	 * @param InternalThrowPoint[] $throwPoints
 	 * @param ImpurePoint[] $impurePoints
 	 * @param (callable(): MutatingScope)|null $truthyScopeCallback
 	 * @param (callable(): MutatingScope)|null $falseyScopeCallback
@@ -46,7 +46,7 @@ final class ExpressionResult
 	}
 
 	/**
-	 * @return ThrowPoint[]
+	 * @return InternalThrowPoint[]
 	 */
 	public function getThrowPoints(): array
 	{

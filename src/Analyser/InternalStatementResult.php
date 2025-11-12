@@ -4,21 +4,19 @@ namespace PHPStan\Analyser;
 
 use PhpParser\Node\Scalar\Int_;
 use PhpParser\Node\Stmt;
+use function array_map;
 
-/**
- * @api
- */
-final class StatementResult
+final class InternalStatementResult
 {
 
 	/**
 	 * @param StatementExitPoint[] $exitPoints
-	 * @param ThrowPoint[] $throwPoints
+	 * @param InternalThrowPoint[] $throwPoints
 	 * @param ImpurePoint[] $impurePoints
-	 * @param EndStatementResult[] $endStatements
+	 * @param InternalEndStatementResult[] $endStatements
 	 */
 	public function __construct(
-		private Scope $scope,
+		private MutatingScope $scope,
 		private bool $hasYield,
 		private bool $isAlwaysTerminating,
 		private array $exitPoints,
@@ -29,7 +27,20 @@ final class StatementResult
 	{
 	}
 
-	public function getScope(): Scope
+	public function toPublic(): StatementResult
+	{
+		return new StatementResult(
+			$this->scope,
+			$this->hasYield,
+			$this->isAlwaysTerminating,
+			$this->exitPoints,
+			array_map(static fn ($throwPoint) => $throwPoint->toPublic(), $this->throwPoints),
+			$this->impurePoints,
+			array_map(static fn ($endStatement) => $endStatement->toPublic(), $this->endStatements),
+		);
+	}
+
+	public function getScope(): MutatingScope
 	{
 		return $this->scope;
 	}
@@ -154,7 +165,7 @@ final class StatementResult
 	}
 
 	/**
-	 * @return ThrowPoint[]
+	 * @return InternalThrowPoint[]
 	 */
 	public function getThrowPoints(): array
 	{
@@ -183,7 +194,7 @@ final class StatementResult
 	 * For nested ifs, end statements try to contain the last non-control flow
 	 * statement like Return_ or Throw_, instead of If_, TryCatch, or Foreach_.
 	 *
-	 * @return EndStatementResult[]
+	 * @return InternalEndStatementResult[]
 	 */
 	public function getEndStatements(): array
 	{

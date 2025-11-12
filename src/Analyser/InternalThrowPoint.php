@@ -3,28 +3,35 @@
 namespace PHPStan\Analyser;
 
 use PhpParser\Node;
+use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 use Throwable;
 
-/**
- * @api
- */
-final class ThrowPoint
+final class InternalThrowPoint
 {
 
 	/**
 	 * @param Node\Expr|Node\Stmt $node
 	 */
 	private function __construct(
-		private Scope $scope,
+		private MutatingScope $scope,
 		private Type $type,
 		private Node $node,
 		private bool $explicit,
 		private bool $canContainAnyThrowable,
 	)
 	{
+	}
+
+	public function toPublic(): ThrowPoint
+	{
+		if ($this->explicit) {
+			return ThrowPoint::createExplicit($this->scope, $this->type, $this->node, $this->canContainAnyThrowable);
+		}
+
+		return ThrowPoint::createImplicit($this->scope, $this->node);
 	}
 
 	/**
@@ -43,7 +50,17 @@ final class ThrowPoint
 		return new self($scope, new ObjectType(Throwable::class), $node, false, true);
 	}
 
-	public function getScope(): Scope
+	public static function createFromPublic(ThrowPoint $throwPoint): self
+	{
+		$scope = $throwPoint->getScope();
+		if (!$scope instanceof MutatingScope) {
+			throw new ShouldNotHappenException();
+		}
+
+		return new self($scope, $throwPoint->getType(), $throwPoint->getNode(), $throwPoint->isExplicit(), $throwPoint->canContainAnyThrowable());
+	}
+
+	public function getScope(): MutatingScope
 	{
 		return $this->scope;
 	}

@@ -1430,7 +1430,7 @@ final class MutatingScope implements Scope, NodeCallbackInvoker
 					},
 					ExpressionContext::createDeep(),
 				);
-				$throwPoints = $arrowFunctionExprResult->getThrowPoints();
+				$throwPoints = array_map(static fn ($throwPoint) => $throwPoint->toPublic(), $arrowFunctionExprResult->getThrowPoints());
 				$impurePoints = array_merge($arrowFunctionImpurePoints, $arrowFunctionExprResult->getImpurePoints());
 				$usedVariables = [];
 			} else {
