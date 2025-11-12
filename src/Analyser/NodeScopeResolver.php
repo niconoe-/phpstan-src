@@ -895,7 +895,7 @@ final class NodeScopeResolver
 			}
 
 			return new InternalStatementResult($scope, $hasYield, true, [
-				new StatementExitPoint($stmt, $scope),
+				new InternalStatementExitPoint($stmt, $scope),
 			], $overridingThrowPoints ?? $throwPoints, $impurePoints);
 		} elseif ($stmt instanceof Continue_ || $stmt instanceof Break_) {
 			if ($stmt->num !== null) {
@@ -911,7 +911,7 @@ final class NodeScopeResolver
 			}
 
 			return new InternalStatementResult($scope, $hasYield, true, [
-				new StatementExitPoint($stmt, $scope),
+				new InternalStatementExitPoint($stmt, $scope),
 			], $overridingThrowPoints ?? $throwPoints, $impurePoints);
 		} elseif ($stmt instanceof Node\Stmt\Expression) {
 			if ($stmt->expr instanceof Expr\Throw_) {
@@ -958,7 +958,7 @@ final class NodeScopeResolver
 
 			if ($earlyTerminationExpr !== null) {
 				return new InternalStatementResult($scope, $hasYield, true, [
-					new StatementExitPoint($stmt, $scope),
+					new InternalStatementExitPoint($stmt, $scope),
 				], $overridingThrowPoints ?? $throwPoints, $impurePoints);
 			}
 			return new InternalStatementResult($scope, $hasYield, $isAlwaysTerminating, [], $overridingThrowPoints ?? $throwPoints, $impurePoints);
@@ -1466,7 +1466,7 @@ final class NodeScopeResolver
 			}
 
 			$isIterableAtLeastOnce = $beforeCondBooleanType->isTrue()->yes();
-			$nodeCallback(new BreaklessWhileLoopNode($stmt, $finalScopeResult->getExitPoints()), $bodyScopeMaybeRan);
+			$nodeCallback(new BreaklessWhileLoopNode($stmt, $finalScopeResult->toPublic()->getExitPoints()), $bodyScopeMaybeRan);
 
 			if ($alwaysIterates) {
 				$isAlwaysTerminating = count($finalScopeResult->getExitPointsByType(Break_::class)) === 0;
@@ -1543,7 +1543,7 @@ final class NodeScopeResolver
 			$condBooleanType = ($this->treatPhpDocTypesAsCertain ? $bodyScope->getType($stmt->cond) : $bodyScope->getNativeType($stmt->cond))->toBoolean();
 			$alwaysIterates = $condBooleanType->isTrue()->yes() && $context->isTopLevel();
 
-			$nodeCallback(new DoWhileLoopConditionNode($stmt->cond, $bodyScopeResult->getExitPoints()), $bodyScope);
+			$nodeCallback(new DoWhileLoopConditionNode($stmt->cond, $bodyScopeResult->toPublic()->getExitPoints()), $bodyScope);
 
 			if ($alwaysIterates) {
 				$alwaysTerminating = count($bodyScopeResult->getExitPointsByType(Break_::class)) === 0;
@@ -1801,7 +1801,7 @@ final class NodeScopeResolver
 				$finallyScope = null;
 			}
 			foreach ($branchScopeResult->getExitPoints() as $exitPoint) {
-				$finallyExitPoints[] = $exitPoint;
+				$finallyExitPoints[] = $exitPoint->toPublic();
 				if ($exitPoint->getStatement() instanceof Node\Stmt\Expression && $exitPoint->getStatement()->expr instanceof Expr\Throw_) {
 					continue;
 				}
@@ -1954,7 +1954,7 @@ final class NodeScopeResolver
 					$finallyScope = $finallyScope->mergeWith($catchScopeForFinally);
 				}
 				foreach ($catchScopeResult->getExitPoints() as $exitPoint) {
-					$finallyExitPoints[] = $exitPoint;
+					$finallyExitPoints[] = $exitPoint->toPublic();
 					if ($exitPoint->getStatement() instanceof Node\Stmt\Expression && $exitPoint->getStatement()->expr instanceof Expr\Throw_) {
 						continue;
 					}
@@ -1994,7 +1994,7 @@ final class NodeScopeResolver
 				$finalScope = $finallyResult->isAlwaysTerminating() ? $finalScope : $finalScope->processFinallyScope($finallyScope, $originalFinallyScope);
 				if (count($finallyResult->getExitPoints()) > 0) {
 					$nodeCallback(new FinallyExitPointsNode(
-						$finallyResult->getExitPoints(),
+						$finallyResult->toPublic()->getExitPoints(),
 						$finallyExitPoints,
 					), $scope);
 				}

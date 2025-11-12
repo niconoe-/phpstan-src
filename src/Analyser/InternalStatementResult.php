@@ -10,7 +10,7 @@ final class InternalStatementResult
 {
 
 	/**
-	 * @param StatementExitPoint[] $exitPoints
+	 * @param InternalStatementExitPoint[] $exitPoints
 	 * @param InternalThrowPoint[] $throwPoints
 	 * @param ImpurePoint[] $impurePoints
 	 * @param InternalEndStatementResult[] $endStatements
@@ -33,7 +33,7 @@ final class InternalStatementResult
 			$this->scope,
 			$this->hasYield,
 			$this->isAlwaysTerminating,
-			$this->exitPoints,
+			array_map(static fn ($exitPoint) => $exitPoint->toPublic(), $this->exitPoints),
 			array_map(static fn ($throwPoint) => $throwPoint->toPublic(), $this->throwPoints),
 			$this->impurePoints,
 			array_map(static fn ($endStatement) => $endStatement->toPublic(), $this->endStatements),
@@ -83,7 +83,7 @@ final class InternalStatementResult
 	}
 
 	/**
-	 * @return StatementExitPoint[]
+	 * @return InternalStatementExitPoint[]
 	 */
 	public function getExitPoints(): array
 	{
@@ -92,7 +92,7 @@ final class InternalStatementResult
 
 	/**
 	 * @param class-string<Stmt\Continue_>|class-string<Stmt\Break_> $stmtClass
-	 * @return list<StatementExitPoint>
+	 * @return list<InternalStatementExitPoint>
 	 */
 	public function getExitPointsByType(string $stmtClass): array
 	{
@@ -126,7 +126,7 @@ final class InternalStatementResult
 	}
 
 	/**
-	 * @return list<StatementExitPoint>
+	 * @return list<InternalStatementExitPoint>
 	 */
 	public function getExitPointsForOuterLoop(): array
 	{
@@ -158,7 +158,7 @@ final class InternalStatementResult
 				$newStatement = new Stmt\Break_($newNode);
 			}
 
-			$exitPoints[] = new StatementExitPoint($newStatement, $exitPoint->getScope());
+			$exitPoints[] = new InternalStatementExitPoint($newStatement, $exitPoint->getScope());
 		}
 
 		return $exitPoints;
