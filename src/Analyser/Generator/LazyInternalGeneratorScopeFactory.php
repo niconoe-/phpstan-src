@@ -2,18 +2,31 @@
 
 namespace PHPStan\Analyser\Generator;
 
+use PHPStan\Analyser\ConstantResolver;
+use PHPStan\Analyser\Scope;
 use PHPStan\Analyser\ScopeContext;
+use PHPStan\Analyser\TypeSpecifier;
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\DependencyInjection\Container;
 use PHPStan\Node\Printer\ExprPrinter;
+use PHPStan\Php\PhpVersion;
+use PHPStan\Reflection\AttributeReflectionFactory;
+use PHPStan\Reflection\InitializerExprTypeResolver;
 use PHPStan\Reflection\Php\PhpFunctionFromParserNodeReflection;
+use PHPStan\Reflection\ReflectionProvider;
+use PHPStan\Rules\Properties\PropertyReflectionFinder;
+use PHPStan\Type\ClosureType;
 
 #[AutowiredService(as: InternalGeneratorScopeFactory::class)]
 final class LazyInternalGeneratorScopeFactory implements InternalGeneratorScopeFactory
 {
 
+	/** @var int|array{min: int, max: int}|null */
+	private int|array|null $phpVersion;
+
 	public function __construct(private Container $container)
 	{
+		$this->phpVersion = $this->container->getParameter('phpVersion');
 	}
 
 	public function create(
@@ -23,17 +36,46 @@ final class LazyInternalGeneratorScopeFactory implements InternalGeneratorScopeF
 		?string $namespace = null,
 		array $expressionTypes = [],
 		array $nativeExpressionTypes = [],
+		array $conditionalExpressions = [],
+		array $inClosureBindScopeClasses = [],
+		?ClosureType $anonymousFunctionReflection = null,
+		bool $inFirstLevelStatement = true,
+		array $currentlyAssignedExpressions = [],
+		array $currentlyAllowedUndefinedExpressions = [],
+		array $inFunctionCallsStack = [],
+		bool $afterExtractCall = false,
+		?Scope $parentScope = null,
+		bool $nativeTypesPromoted = false,
 	): GeneratorScope
 	{
 		return new GeneratorScope(
 			$this,
+			$this->container->getByType(ReflectionProvider::class),
+			$this->container->getByType(InitializerExprTypeResolver::class),
+			$this->container->getByType(TypeSpecifier::class),
 			$this->container->getByType(ExprPrinter::class),
+			$this->container->getByType(PropertyReflectionFinder::class),
+			$this->container->getService('currentPhpVersionSimpleParser'),
+			$this->container->getByType(ConstantResolver::class),
 			$context,
+			$this->container->getByType(PhpVersion::class),
+			$this->container->getByType(AttributeReflectionFactory::class),
+			$this->phpVersion,
 			$declareStrictTypes,
 			$function,
 			$namespace,
 			$expressionTypes,
 			$nativeExpressionTypes,
+			$conditionalExpressions,
+			$inClosureBindScopeClasses,
+			$anonymousFunctionReflection,
+			$inFirstLevelStatement,
+			$currentlyAssignedExpressions,
+			$currentlyAllowedUndefinedExpressions,
+			$inFunctionCallsStack,
+			$afterExtractCall,
+			$parentScope,
+			$nativeTypesPromoted,
 		);
 	}
 

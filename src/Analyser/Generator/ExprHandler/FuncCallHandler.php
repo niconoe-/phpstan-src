@@ -13,6 +13,7 @@ use PHPStan\Analyser\Generator\ExprAnalysisResult;
 use PHPStan\Analyser\Generator\ExprAnalysisResultStorage;
 use PHPStan\Analyser\Generator\ExprHandler;
 use PHPStan\Analyser\Generator\GeneratorScope;
+use PHPStan\Analyser\SpecifiedTypes;
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\ShouldNotHappenException;
@@ -66,11 +67,14 @@ final class FuncCallHandler implements ExprHandler
 				$function = $this->reflectionProvider->getFunction($expr->name, $scope);
 				return new ExprAnalysisResult(
 					$function->getOnlyVariant()->getReturnType(),
+					$function->getOnlyVariant()->getNativeReturnType(),
 					$scope,
 					hasYield: $hasYield,
 					isAlwaysTerminating: $isAlwaysTerminating,
 					throwPoints: $throwPoints,
 					impurePoints: $impurePoints,
+					specifiedTruthyTypes: new SpecifiedTypes(),
+					specifiedFalseyTypes: new SpecifiedTypes(),
 				);
 			}
 		}

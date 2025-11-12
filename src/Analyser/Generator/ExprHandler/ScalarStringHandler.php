@@ -11,6 +11,7 @@ use PHPStan\Analyser\Generator\ExprAnalysisResult;
 use PHPStan\Analyser\Generator\ExprAnalysisResultStorage;
 use PHPStan\Analyser\Generator\ExprHandler;
 use PHPStan\Analyser\Generator\GeneratorScope;
+use PHPStan\Analyser\SpecifiedTypes;
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Type\Constant\ConstantStringType;
 
@@ -29,13 +30,17 @@ final class ScalarStringHandler implements ExprHandler
 	public function analyseExpr(Stmt $stmt, Expr $expr, GeneratorScope $scope, ExprAnalysisResultStorage $storage, ExpressionContext $context): Generator
 	{
 		yield from [];
+		$type = new ConstantStringType($expr->value);
 		return new ExprAnalysisResult(
-			new ConstantStringType($expr->value),
+			$type,
+			$type,
 			$scope,
 			hasYield: false,
 			isAlwaysTerminating: false,
 			throwPoints: [],
 			impurePoints: [],
+			specifiedTruthyTypes: new SpecifiedTypes(),
+			specifiedFalseyTypes: new SpecifiedTypes(),
 		);
 	}
 

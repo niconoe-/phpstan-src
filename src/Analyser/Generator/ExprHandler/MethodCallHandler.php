@@ -13,6 +13,7 @@ use PHPStan\Analyser\Generator\ExprAnalysisResult;
 use PHPStan\Analyser\Generator\ExprAnalysisResultStorage;
 use PHPStan\Analyser\Generator\ExprHandler;
 use PHPStan\Analyser\Generator\GeneratorScope;
+use PHPStan\Analyser\SpecifiedTypes;
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\ShouldNotHappenException;
 use function array_merge;
@@ -57,11 +58,14 @@ final class MethodCallHandler implements ExprHandler
 			$method = $varResult->type->getMethod($expr->name->toString(), $scope);
 			return new ExprAnalysisResult(
 				$method->getOnlyVariant()->getReturnType(),
+				$method->getOnlyVariant()->getNativeReturnType(),
 				$scope,
 				hasYield: $hasYield,
 				isAlwaysTerminating: $isAlwaysTerminating,
 				throwPoints: $throwPoints,
 				impurePoints: $impurePoints,
+				specifiedTruthyTypes: new SpecifiedTypes(),
+				specifiedFalseyTypes: new SpecifiedTypes(),
 			);
 		}
 

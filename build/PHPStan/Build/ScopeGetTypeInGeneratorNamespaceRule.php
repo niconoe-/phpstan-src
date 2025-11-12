@@ -53,6 +53,11 @@ final class ScopeGetTypeInGeneratorNamespaceRule implements Rule
 			}
 		}
 
+		$inFunction = $scope->getFunction();
+		if ($inFunction !== null && $inFunction->isDeprecated()->yes()) {
+			return [];
+		}
+
 		$methodReflection = $scope->getMethodReflection($calledOnType, $node->name->toString());
 		if ($methodReflection === null) {
 			return [];

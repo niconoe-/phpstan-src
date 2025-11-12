@@ -12,6 +12,7 @@ use PHPStan\Analyser\Generator\ExprAnalysisResultStorage;
 use PHPStan\Analyser\Generator\ExprHandler;
 use PHPStan\Analyser\Generator\GeneratorScope;
 use PHPStan\Analyser\Generator\StmtsAnalysisRequest;
+use PHPStan\Analyser\SpecifiedTypes;
 use PHPStan\Analyser\StatementContext;
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Type\ClosureType;
@@ -35,11 +36,14 @@ final class ClosureHandler implements ExprHandler
 
 		return new ExprAnalysisResult(
 			new ClosureType(),
+			new ClosureType(),
 			$scope,
 			hasYield: $result->hasYield,
 			isAlwaysTerminating: $result->isAlwaysTerminating,
 			throwPoints: $result->throwPoints,
 			impurePoints: $result->impurePoints,
+			specifiedTruthyTypes: new SpecifiedTypes(),
+			specifiedFalseyTypes: new SpecifiedTypes(),
 		);
 	}
 
