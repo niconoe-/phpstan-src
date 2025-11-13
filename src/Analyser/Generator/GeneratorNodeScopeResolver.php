@@ -12,6 +12,7 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Analyser\StatementContext;
 use PHPStan\DependencyInjection\Container;
 use PHPStan\NeverException;
+use PHPStan\Node\Printer\ExprPrinter;
 use PHPStan\ShouldNotHappenException;
 use function array_map;
 use function array_merge;
@@ -62,6 +63,7 @@ final class GeneratorNodeScopeResolver
 {
 
 	public function __construct(
+		private ExprPrinter $exprPrinter,
 		private Container $container,
 	)
 	{
@@ -271,6 +273,10 @@ final class GeneratorNodeScopeResolver
 	 */
 	private function analyseExpr(ExprAnalysisResultStorage $storage, Stmt $stmt, Expr $expr, GeneratorScope $scope, ExpressionContext $context, ?callable $alternativeNodeCallback): Generator
 	{
+		if ($storage->lookupExprAnalysisResult($expr) !== null) {
+			throw new ShouldNotHappenException(sprintf('Expr %s on line %d has already been analysed', $this->exprPrinter->printExpr($expr), $expr->getStartLine()));
+		}
+
 		if ($alternativeNodeCallback === null) {
 			yield new NodeCallbackRequest($expr, $scope);
 		} else {

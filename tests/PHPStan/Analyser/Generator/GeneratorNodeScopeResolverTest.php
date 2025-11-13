@@ -2,6 +2,7 @@
 
 namespace PHPStan\Analyser\Generator;
 
+use PHPStan\Node\Printer\ExprPrinter;
 use PHPStan\Testing\TypeInferenceTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresPhp;
@@ -30,7 +31,10 @@ class GeneratorNodeScopeResolverTest extends TypeInferenceTestCase
 
 	protected static function createNodeScopeResolver(): GeneratorNodeScopeResolver
 	{
-		return new GeneratorNodeScopeResolver(self::getContainer());
+		return new GeneratorNodeScopeResolver(
+			self::getContainer()->getByType(ExprPrinter::class),
+			self::getContainer(),
+		);
 	}
 
 	public static function getAdditionalConfigFiles(): array

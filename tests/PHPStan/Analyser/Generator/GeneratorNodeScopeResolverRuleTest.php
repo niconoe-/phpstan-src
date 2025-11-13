@@ -4,6 +4,7 @@ namespace PHPStan\Analyser\Generator;
 
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
+use PHPStan\Node\Printer\ExprPrinter;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
@@ -108,7 +109,10 @@ class GeneratorNodeScopeResolverRuleTest extends RuleTestCase
 
 	protected function createNodeScopeResolver(): GeneratorNodeScopeResolver
 	{
-		return new GeneratorNodeScopeResolver(self::getContainer());
+		return new GeneratorNodeScopeResolver(
+			self::getContainer()->getByType(ExprPrinter::class),
+			self::getContainer(),
+		);
 	}
 
 }
