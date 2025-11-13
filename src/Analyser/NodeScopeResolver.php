@@ -6318,6 +6318,13 @@ final class NodeScopeResolver
 					$nativeValueToWrite,
 				);
 			}
+		} else {
+			$result = $processExprCallback($scope);
+			$hasYield = $result->hasYield();
+			$throwPoints = $result->getThrowPoints();
+			$impurePoints = $result->getImpurePoints();
+			$isAlwaysTerminating = $result->isAlwaysTerminating();
+			$scope = $result->getScope();
 		}
 
 		return new ExpressionResult($scope, $hasYield, $isAlwaysTerminating, $throwPoints, $impurePoints);
