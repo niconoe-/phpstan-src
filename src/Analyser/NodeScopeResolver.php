@@ -5916,8 +5916,6 @@ final class NodeScopeResolver
 
 			$valueToWrite = $scope->getType($assignedExpr);
 			$nativeValueToWrite = $scope->getNativeType($assignedExpr);
-			$originalValueToWrite = $valueToWrite;
-			$originalNativeValueToWrite = $nativeValueToWrite;
 			$scopeBeforeAssignEval = $scope;
 
 			// 3. eval assigned expr
@@ -5988,21 +5986,6 @@ final class NodeScopeResolver
 						$valueToWrite,
 						$nativeValueToWrite,
 					);
-				}
-
-				if ($originalVar->dim instanceof Variable || $originalVar->dim instanceof Node\Scalar) {
-					$currentVarType = $scope->getType($originalVar);
-					$currentVarNativeType = $scope->getNativeType($originalVar);
-					if (
-						!$originalValueToWrite->isSuperTypeOf($currentVarType)->yes()
-						|| !$originalNativeValueToWrite->isSuperTypeOf($currentVarNativeType)->yes()
-					) {
-						$scope = $scope->assignExpression(
-							$originalVar,
-							$originalValueToWrite,
-							$originalNativeValueToWrite,
-						);
-					}
 				}
 			} else {
 				if ($var instanceof Variable) {
