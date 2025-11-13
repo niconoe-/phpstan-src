@@ -9,6 +9,7 @@ use PhpParser\Node\Name;
 use PhpParser\Node\Stmt;
 use PHPStan\Analyser\ExpressionContext;
 use PHPStan\Analyser\Generator\ExprAnalysisResult;
+use PHPStan\Analyser\Generator\ExprAnalysisResultStorage;
 use PHPStan\Analyser\Generator\ExprHandler;
 use PHPStan\Analyser\Generator\GeneratorScope;
 use PHPStan\DependencyInjection\AutowiredService;
@@ -27,7 +28,7 @@ final class NewHandler implements ExprHandler
 		return $expr instanceof New_;
 	}
 
-	public function analyseExpr(Stmt $stmt, Expr $expr, GeneratorScope $scope, ExpressionContext $context): Generator
+	public function analyseExpr(Stmt $stmt, Expr $expr, GeneratorScope $scope, ExprAnalysisResultStorage $storage, ExpressionContext $context): Generator
 	{
 		if (!$expr->class instanceof Name) {
 			throw new ShouldNotHappenException('Not implemented');

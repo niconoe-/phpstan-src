@@ -10,6 +10,7 @@ use PhpParser\Node\Stmt;
 use PHPStan\Analyser\ExpressionContext;
 use PHPStan\Analyser\Generator\ExprAnalysisRequest;
 use PHPStan\Analyser\Generator\ExprAnalysisResult;
+use PHPStan\Analyser\Generator\ExprAnalysisResultStorage;
 use PHPStan\Analyser\Generator\ExprHandler;
 use PHPStan\Analyser\Generator\GeneratorScope;
 use PHPStan\DependencyInjection\AutowiredService;
@@ -28,7 +29,7 @@ final class MethodCallHandler implements ExprHandler
 		return $expr instanceof MethodCall;
 	}
 
-	public function analyseExpr(Stmt $stmt, Expr $expr, GeneratorScope $scope, ExpressionContext $context): Generator
+	public function analyseExpr(Stmt $stmt, Expr $expr, GeneratorScope $scope, ExprAnalysisResultStorage $storage, ExpressionContext $context): Generator
 	{
 		if (!$expr->name instanceof Identifier) {
 			throw new ShouldNotHappenException('Not implemented');

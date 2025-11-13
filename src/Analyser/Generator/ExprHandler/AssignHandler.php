@@ -9,6 +9,7 @@ use PhpParser\Node\Stmt;
 use PHPStan\Analyser\ExpressionContext;
 use PHPStan\Analyser\Generator\ExprAnalysisRequest;
 use PHPStan\Analyser\Generator\ExprAnalysisResult;
+use PHPStan\Analyser\Generator\ExprAnalysisResultStorage;
 use PHPStan\Analyser\Generator\ExprHandler;
 use PHPStan\Analyser\Generator\GeneratorScope;
 use PHPStan\DependencyInjection\AutowiredService;
@@ -28,7 +29,7 @@ final class AssignHandler implements ExprHandler
 		return $expr instanceof Assign;
 	}
 
-	public function analyseExpr(Stmt $stmt, Expr $expr, GeneratorScope $scope, ExpressionContext $context): Generator
+	public function analyseExpr(Stmt $stmt, Expr $expr, GeneratorScope $scope, ExprAnalysisResultStorage $storage, ExpressionContext $context): Generator
 	{
 		if (!$expr->var instanceof Expr\Variable || !is_string($expr->var->name)) {
 			throw new ShouldNotHappenException('Not implemented');
