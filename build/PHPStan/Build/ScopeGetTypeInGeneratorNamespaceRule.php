@@ -7,8 +7,10 @@ use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
+use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\ObjectType;
 use PHPUnit\Framework\TestCase;
+use function in_array;
 use function sprintf;
 use function str_starts_with;
 
@@ -39,7 +41,7 @@ final class ScopeGetTypeInGeneratorNamespaceRule implements Rule
 			return [];
 		}
 
-		if ($node->name->toLowerString() !== 'gettype') {
+		if (!in_array($node->name->toLowerString(), ['gettype', 'getnativetype'], true)) {
 			return [];
 		}
 
@@ -56,9 +58,15 @@ final class ScopeGetTypeInGeneratorNamespaceRule implements Rule
 			}
 		}
 
+		$methodReflection = $scope->getMethodReflection($calledOnType, $node->name->toString());
+		if ($methodReflection === null) {
+			throw new ShouldNotHappenException();
+		}
+
 		return [
 			RuleErrorBuilder::message(sprintf(
-				'Scope::getType() cannot be called in %s namespace.',
+				'Scope::%s() cannot be called in %s namespace.',
+				$methodReflection->getName(),
 				$invalidNamespace,
 			))
 				->identifier('phpstan.scopeGetType')

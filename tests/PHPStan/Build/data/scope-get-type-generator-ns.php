@@ -46,6 +46,7 @@ namespace PHPStan\Analyser\Generator\ExprHandler {
 		public function doBar(GeneratorScope $scope): void
 		{
 			$scope->getType();
+			$scope->getNativeType();
 		}
 
 	}
