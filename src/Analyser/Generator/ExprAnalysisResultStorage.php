@@ -21,7 +21,7 @@ final class ExprAnalysisResultStorage
 		$this->expressionAnalysisResults[$expr] = $result;
 	}
 
-	public function lookupExprAnalysisResult(Expr $expr): ?ExprAnalysisResult
+	public function findExprAnalysisResult(Expr $expr): ?ExprAnalysisResult
 	{
 		return $this->expressionAnalysisResults[$expr] ?? null;
 	}

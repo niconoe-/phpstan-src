@@ -172,7 +172,7 @@ final class GeneratorNodeScopeResolver
 			if (count($stack) === 0) {
 				foreach ($fibersStorage->pendingFibers as $pending) {
 					$request = $pending['request'];
-					$exprAnalysisResult = $exprAnalysisResultStorage->lookupExprAnalysisResult($request->expr);
+					$exprAnalysisResult = $exprAnalysisResultStorage->findExprAnalysisResult($request->expr);
 
 					if ($exprAnalysisResult !== null) {
 						throw new ShouldNotHappenException('Pending fibers with an empty stack should be about synthetic nodes');
@@ -273,7 +273,7 @@ final class GeneratorNodeScopeResolver
 	 */
 	private function analyseExpr(ExprAnalysisResultStorage $storage, Stmt $stmt, Expr $expr, GeneratorScope $scope, ExpressionContext $context, ?callable $alternativeNodeCallback): Generator
 	{
-		if ($storage->lookupExprAnalysisResult($expr) !== null) {
+		if ($storage->findExprAnalysisResult($expr) !== null) {
 			throw new ShouldNotHappenException(sprintf('Expr %s on line %d has already been analysed', $this->exprPrinter->printExpr($expr), $expr->getStartLine()));
 		}
 
@@ -333,7 +333,7 @@ final class GeneratorNodeScopeResolver
 	{
 		while (!$fiber->isTerminated()) {
 			if ($request instanceof ExprAnalysisRequest) {
-				$result = $exprAnalysisResultStorage->lookupExprAnalysisResult($request->expr);
+				$result = $exprAnalysisResultStorage->findExprAnalysisResult($request->expr);
 
 				if ($result !== null) {
 					// Result ready - continue the loop to resume
@@ -365,7 +365,7 @@ final class GeneratorNodeScopeResolver
 	{
 		foreach ($fibersStorage->pendingFibers as $key => $pending) {
 			$request = $pending['request'];
-			$exprAnalysisResult = $exprAnalysisResultStorage->lookupExprAnalysisResult($request->expr);
+			$exprAnalysisResult = $exprAnalysisResultStorage->findExprAnalysisResult($request->expr);
 
 			if ($exprAnalysisResult === null) {
 				continue;
