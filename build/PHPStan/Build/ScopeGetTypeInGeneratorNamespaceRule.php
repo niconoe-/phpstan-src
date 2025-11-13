@@ -70,7 +70,7 @@ final class ScopeGetTypeInGeneratorNamespaceRule implements Rule
 				$invalidNamespace,
 			))
 				->identifier('phpstan.scopeGetType')
-				->tip('Use new ExprAnalysisRequest instead.')
+				->tip('Use yield new ExprAnalysisRequest or query the ExprAnalysisResultStorage instead.')
 				->build(),
 		];
 	}
