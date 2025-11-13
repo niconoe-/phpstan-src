@@ -17,6 +17,7 @@ class FooTestYield
 		assertType(StmtAnalysisResult::class, yield new StmtAnalysisRequest());
 		assertType(StmtAnalysisResult::class, yield new StmtsAnalysisRequest());
 		assertType('null', yield new NodeCallbackRequest());
+		assertType('null', yield new AlternativeNodeCallbackRequest());
 	}
 
 }
