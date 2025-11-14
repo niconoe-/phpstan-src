@@ -11,10 +11,11 @@ use PHPStan\Analyser\ExpressionContext;
 use PHPStan\Analyser\Generator\ExprAnalysisRequest;
 use PHPStan\Analyser\Generator\ExprAnalysisResult;
 use PHPStan\Analyser\Generator\ExprHandler;
+use PHPStan\Analyser\Generator\GeneratorNodeScopeResolver;
 use PHPStan\Analyser\Generator\GeneratorScope;
 use PHPStan\Analyser\Generator\NodeCallbackRequest;
+use PHPStan\Analyser\Generator\NodeHandler\ParamHandler;
 use PHPStan\Analyser\Generator\TypeExprRequest;
-use PHPStan\Analyser\Generator\TypeExprResult;
 use PHPStan\Analyser\ImpurePoint;
 use PHPStan\Analyser\Scope;
 use PHPStan\Analyser\SpecifiedTypes;
@@ -32,6 +33,8 @@ use function array_merge;
 
 /**
  * @implements ExprHandler<ArrowFunction>
+ * @phpstan-import-type GeneratorTValueType from GeneratorNodeScopeResolver
+ * @phpstan-import-type GeneratorTSendType from GeneratorNodeScopeResolver
  */
 #[AutowiredService]
 final class ArrowFunctionHandler implements ExprHandler
@@ -39,6 +42,7 @@ final class ArrowFunctionHandler implements ExprHandler
 
 	public function __construct(
 		private ClosureHelper $closureHelper,
+		private ParamHandler $paramHandler,
 	)
 	{
 	}
@@ -75,7 +79,7 @@ final class ArrowFunctionHandler implements ExprHandler
 
 	/**
 	 * @param (callable(Node, Scope, callable(Node, Scope): void): void)|null $alternativeNodeCallback
-	 * @return Generator<int, ExprAnalysisRequest|TypeExprRequest|NodeCallbackRequest, ExprAnalysisResult|TypeExprResult, ExprAnalysisResult>
+	 * @return Generator<int, GeneratorTValueType, GeneratorTSendType, ExprAnalysisResult>
 	 */
 	public function processArrowFunctionNode(
 		Stmt $stmt,
@@ -84,9 +88,9 @@ final class ArrowFunctionHandler implements ExprHandler
 		?callable $alternativeNodeCallback,
 	): Generator
 	{
-		/*foreach ($expr->params as $param) {
-			$this->processParamNode($stmt, $param, $scope, $nodeCallback);
-		}*/
+		foreach ($expr->params as $param) {
+			yield from $this->paramHandler->processParam($stmt, $param, $scope, $alternativeNodeCallback);
+		}
 		if ($expr->returnType !== null) {
 			yield new NodeCallbackRequest($expr->returnType, $scope, $alternativeNodeCallback);
 		}
@@ -115,7 +119,7 @@ final class ArrowFunctionHandler implements ExprHandler
 	}
 
 	/**
-	 * @return Generator<int, ExprAnalysisRequest|TypeExprRequest, ExprAnalysisResult|TypeExprResult, array{GeneratorScope, ExprAnalysisResult}>
+	 * @return Generator<int, GeneratorTValueType, GeneratorTSendType, array{GeneratorScope, ExprAnalysisResult}>
 	 */
 	private function getArrowFunctionScope(Stmt $stmt, GeneratorScope $scope, ArrowFunction $node): Generator
 	{
@@ -124,6 +128,7 @@ final class ArrowFunctionHandler implements ExprHandler
 		$callableParameters = $callableParametersGen->getReturn();
 
 		$arrowScopeGen = $scope->enterArrowFunctionWithoutReflection($node, $callableParameters);
+
 		yield from $arrowScopeGen;
 		$arrowScope = $arrowScopeGen->getReturn();
 		$arrowFunctionImpurePoints = [];

@@ -6,12 +6,10 @@ use Generator;
 use PhpParser\Node\Expr\ArrowFunction;
 use PhpParser\Node\Expr\Closure;
 use PhpParser\Node\Expr\Variable;
-use PHPStan\Analyser\Generator\ExprAnalysisRequest;
-use PHPStan\Analyser\Generator\ExprAnalysisResult;
+use PHPStan\Analyser\Generator\GeneratorNodeScopeResolver;
 use PHPStan\Analyser\Generator\GeneratorScope;
 use PHPStan\Analyser\Generator\InternalThrowPoint;
 use PHPStan\Analyser\Generator\TypeExprRequest;
-use PHPStan\Analyser\Generator\TypeExprResult;
 use PHPStan\Analyser\ImpurePoint;
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Node\InvalidateExprNode;
@@ -37,6 +35,10 @@ use function array_map;
 use function count;
 use function is_string;
 
+/**
+ * @phpstan-import-type GeneratorTValueType from GeneratorNodeScopeResolver
+ * @phpstan-import-type GeneratorTSendType from GeneratorNodeScopeResolver
+ */
 #[AutowiredService]
 final class ClosureHelper
 {
@@ -139,7 +141,7 @@ final class ClosureHelper
 	}
 
 	/**
-	 * @return Generator<int, ExprAnalysisRequest|TypeExprRequest, ExprAnalysisResult|TypeExprResult, ParameterReflection[]|null>
+	 * @return Generator<int, GeneratorTValueType, GeneratorTSendType, ParameterReflection[]|null>
 	 */
 	public function createCallableParameters(ArrowFunction|Closure $node, GeneratorScope $scope): Generator
 	{

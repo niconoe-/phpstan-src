@@ -73,7 +73,7 @@ final class ScopeGetTypeInGeneratorNamespaceRule implements Rule
 			return [
 				RuleErrorBuilder::message($message)
 					->identifier('phpstan.scopeGetType')
-					->tip('Use yield new ExprAnalysisRequest or query the ExprAnalysisResultStorage instead.')
+					->tip('Use yield new TypeExprRequest instead.')
 					->build(),
 			];
 		}

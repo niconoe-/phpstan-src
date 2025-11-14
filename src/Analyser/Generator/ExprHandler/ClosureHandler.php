@@ -11,12 +11,13 @@ use PHPStan\Analyser\ExpressionContext;
 use PHPStan\Analyser\Generator\ExprAnalysisRequest;
 use PHPStan\Analyser\Generator\ExprAnalysisResult;
 use PHPStan\Analyser\Generator\ExprHandler;
+use PHPStan\Analyser\Generator\GeneratorNodeScopeResolver;
 use PHPStan\Analyser\Generator\GeneratorScope;
 use PHPStan\Analyser\Generator\NodeCallbackRequest;
+use PHPStan\Analyser\Generator\NodeHandler\ParamHandler;
 use PHPStan\Analyser\Generator\StmtAnalysisResult;
 use PHPStan\Analyser\Generator\StmtsAnalysisRequest;
 use PHPStan\Analyser\Generator\TypeExprRequest;
-use PHPStan\Analyser\Generator\TypeExprResult;
 use PHPStan\Analyser\ImpurePoint;
 use PHPStan\Analyser\Scope;
 use PHPStan\Analyser\SpecifiedTypes;
@@ -44,6 +45,8 @@ use function is_string;
 
 /**
  * @implements ExprHandler<Closure>
+ * @phpstan-import-type GeneratorTValueType from GeneratorNodeScopeResolver
+ * @phpstan-import-type GeneratorTSendType from GeneratorNodeScopeResolver
  */
 #[AutowiredService]
 final class ClosureHandler implements ExprHandler
@@ -51,6 +54,7 @@ final class ClosureHandler implements ExprHandler
 
 	public function __construct(
 		private ClosureHelper $closureHelper,
+		private ParamHandler $paramHandler,
 	)
 	{
 	}
@@ -93,8 +97,7 @@ final class ClosureHandler implements ExprHandler
 
 	/**
 	 * @param (callable(Node, Scope, callable(Node, Scope): void): void)|null $alternativeNodeCallback
-	 * @return Generator<int, ExprAnalysisRequest|TypeExprRequest|NodeCallbackRequest, ExprAnalysisResult
-	 * |TypeExprResult, array{ExprAnalysisResult, GeneratorScope}>
+	 * @return Generator<int, GeneratorTValueType, GeneratorTSendType, array{ExprAnalysisResult, GeneratorScope}>
 	 */
 	public function processClosureNode(
 		Stmt $stmt,
@@ -104,9 +107,9 @@ final class ClosureHandler implements ExprHandler
 		?callable $alternativeNodeCallback,
 	): Generator
 	{
-		/*foreach ($expr->params as $param) {
-			$this->processParamNode($stmt, $param, $scope, $nodeCallback);
-		}*/
+		foreach ($expr->params as $param) {
+			yield from $this->paramHandler->processParam($stmt, $param, $scope, $alternativeNodeCallback);
+		}
 
 		$byRefUses = [];
 
@@ -236,7 +239,6 @@ final class ClosureHandler implements ExprHandler
 		};
 
 		if (count($byRefUses) === 0) {
-			// @phpstan-ignore generator.valueType
 			$closureStatementResult = yield new StmtsAnalysisRequest($expr->stmts, $closureScope, StatementContext::createTopLevel(), $closureStmtsCallback);
 		} else {
 			// todo
@@ -295,6 +297,7 @@ final class ClosureHandler implements ExprHandler
 	 * @param array<Expr\Yield_|Expr\YieldFrom> $closureYieldStatements
 	 * @param ImpurePoint[] $closureImpurePoints
 	 * @param InvalidateExprNode[] $invalidateExpressions
+	 * @return Generator<int, GeneratorTValueType, GeneratorTSendType, array{ExprAnalysisResult, GeneratorScope}>
 	 */
 	private function processClosureStatementResult(
 		Closure $expr,
@@ -429,6 +432,7 @@ final class ClosureHandler implements ExprHandler
 
 	/**
 	 * @param callable(Node, Scope, callable(Node, Scope): void): void $closureStmtsCallback
+	 * @return Generator<int, GeneratorTValueType, GeneratorTSendType, StmtAnalysisResult>
 	 */
 	private function processClosureNodeAndStabilizeScope(
 		Closure $expr,

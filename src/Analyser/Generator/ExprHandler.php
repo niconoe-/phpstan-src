@@ -11,6 +11,8 @@ use PHPStan\Analyser\Scope;
 
 /**
  * @template T of Expr
+ * @phpstan-import-type GeneratorTValueType from GeneratorNodeScopeResolver
+ * @phpstan-import-type GeneratorTSendType from GeneratorNodeScopeResolver
  */
 interface ExprHandler
 {
@@ -25,7 +27,7 @@ interface ExprHandler
 	/**
 	 * @param T $expr
 	 * @param (callable(Node, Scope, callable(Node, Scope): void): void)|null $alternativeNodeCallback
-	 * @return Generator<int, ExprAnalysisRequest|NodeCallbackRequest|TypeExprRequest, ExprAnalysisResult|TypeExprResult, ExprAnalysisResult>
+	 * @return Generator<int, GeneratorTValueType, GeneratorTSendType, ExprAnalysisResult>
 	 */
 	public function analyseExpr(
 		Stmt $stmt,

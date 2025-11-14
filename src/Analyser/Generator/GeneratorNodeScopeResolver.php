@@ -8,6 +8,7 @@ use PhpParser\Node;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Stmt;
 use PHPStan\Analyser\ExpressionContext;
+use PHPStan\Analyser\Generator\NodeHandler\AttrGroupsHandler;
 use PHPStan\Analyser\Scope;
 use PHPStan\Analyser\StatementContext;
 use PHPStan\DependencyInjection\Container;
@@ -60,6 +61,9 @@ use function sprintf;
  * - Synthetic/virtual expressions (e.g., a rule constructing `new MethodCall(...)` to query
  *   a hypothetical method call) are analyzed on-demand when requested, with the Fiber
  *   suspending until analysis completes
+ *
+ * @phpstan-type GeneratorTValueType = ExprAnalysisRequest|StmtAnalysisRequest|StmtsAnalysisRequest|NodeCallbackRequest|AttrGroupsAnalysisRequest|TypeExprRequest
+ * @phpstan-type GeneratorTSendType = ExprAnalysisResult|StmtAnalysisResult|TypeExprResult|null
  */
 final class GeneratorNodeScopeResolver
 {
@@ -232,6 +236,16 @@ final class GeneratorNodeScopeResolver
 					);
 					$gen->generator->current();
 					continue;
+				} elseif ($yielded instanceof AttrGroupsAnalysisRequest) {
+					$stack[] = $gen;
+					$gen = new IdentifiedGeneratorInStack(
+						$this->analyseAttrGroups($yielded->stmt, $yielded->attrGroups, $yielded->scope, $yielded->alternativeNodeCallback),
+						$yielded->stmt,
+						$yielded->originFile,
+						$yielded->originLine,
+					);
+					$gen->generator->current();
+					continue;
 				} else { // phpcs:ignore
 					throw new NeverException($yielded);
 				}
@@ -278,7 +292,7 @@ final class GeneratorNodeScopeResolver
 	 * @param array<Stmt> $stmts
 	 * @param (callable(Node, Scope, callable(Node, Scope): void): void)|null $alternativeNodeCallback
 	 *
-	 * @return Generator<int, StmtAnalysisRequest, StmtAnalysisResult, StmtAnalysisResult>
+	 * @return Generator<int, GeneratorTValueType, GeneratorTSendType, StmtAnalysisResult>
 	 */
 	private function analyseStmts(array $stmts, GeneratorScope $scope, StatementContext $context, ?callable $alternativeNodeCallback): Generator
 	{
@@ -310,7 +324,7 @@ final class GeneratorNodeScopeResolver
 
 	/**
 	 * @param (callable(Node, Scope, callable(Node, Scope): void): void)|null $alternativeNodeCallback
-	 * @return Generator<int, ExprAnalysisRequest|StmtAnalysisRequest|StmtsAnalysisRequest|NodeCallbackRequest, ExprAnalysisResult|StmtAnalysisResult, StmtAnalysisResult>
+	 * @return Generator<int, GeneratorTValueType, GeneratorTSendType, StmtAnalysisResult>
 	 */
 	private function analyseStmt(Stmt $stmt, GeneratorScope $scope, StatementContext $context, ?callable $alternativeNodeCallback): Generator
 	{
@@ -334,8 +348,20 @@ final class GeneratorNodeScopeResolver
 	}
 
 	/**
+	 * @param Node\AttributeGroup[] $attrGroups
 	 * @param (callable(Node, Scope, callable(Node, Scope): void): void)|null $alternativeNodeCallback
-	 * @return Generator<int, TypeExprRequest|ExprAnalysisRequest|NodeCallbackRequest, ExprAnalysisResult, TypeExprResult|ExprAnalysisResult>
+	 * @return Generator<int, GeneratorTValueType, GeneratorTSendType, void>
+	 */
+	private function analyseAttrGroups(Stmt $stmt, array $attrGroups, GeneratorScope $scope, ?callable $alternativeNodeCallback): Generator
+	{
+		/** @var AttrGroupsHandler $handler */
+		$handler = $this->container->getByType(AttrGroupsHandler::class);
+		yield from $handler->processAttributeGroups($stmt, $attrGroups, $scope, $alternativeNodeCallback);
+	}
+
+	/**
+	 * @param (callable(Node, Scope, callable(Node, Scope): void): void)|null $alternativeNodeCallback
+	 * @return Generator<int, GeneratorTValueType, GeneratorTSendType, ExprAnalysisResult>
 	 */
 	private function analyseExpr(ExprAnalysisResultStorage $storage, Stmt $stmt, Expr $expr, GeneratorScope $scope, ExpressionContext $context, ?callable $alternativeNodeCallback): Generator
 	{
@@ -348,7 +374,7 @@ final class GeneratorNodeScopeResolver
 			throw new ShouldNotHappenException(sprintf('Expr %s on line %d has already been analysed', $this->exprPrinter->printExpr($expr), $expr->getStartLine()));
 		}
 
-		yield new NodeCallbackRequest($expr, $scope, $alternativeNodeCallback);
+		yield new NodeCallbackRequest($expr, $context->isDeep() ? $scope->exitFirstLevelStatements() : $scope, $alternativeNodeCallback);
 
 		/**
 		 * @var ExprHandler<Expr> $exprHandler
@@ -371,7 +397,7 @@ final class GeneratorNodeScopeResolver
 	}
 
 	/**
-	 * @return Generator<int, TypeExprRequest, TypeExprResult, TypeExprResult>
+	 * @return Generator<int, GeneratorTValueType, GeneratorTSendType, TypeExprResult>
 	 */
 	private function analyseExprForType(ExprAnalysisResultStorage $storage, Expr $expr): Generator
 	{

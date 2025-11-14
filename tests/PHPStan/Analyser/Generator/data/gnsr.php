@@ -12,6 +12,12 @@ class Foo
 		return 'foo';
 	}
 
+	public function doImplicitArrayCreation(): void
+	{
+		$a['bla'] = 1;
+		assertType('array{bla: 1}', $a);
+	}
+
 }
 
 function (): void {

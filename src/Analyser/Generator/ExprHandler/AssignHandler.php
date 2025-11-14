@@ -22,15 +22,16 @@ use PhpParser\Node\Stmt;
 use PHPStan\Analyser\ConditionalExpressionHolder;
 use PHPStan\Analyser\ExpressionContext;
 use PHPStan\Analyser\ExpressionTypeHolder;
+use PHPStan\Analyser\Generator\AssignHelper;
 use PHPStan\Analyser\Generator\ExprAnalysisRequest;
 use PHPStan\Analyser\Generator\ExprAnalysisResult;
 use PHPStan\Analyser\Generator\ExprHandler;
+use PHPStan\Analyser\Generator\GeneratorNodeScopeResolver;
 use PHPStan\Analyser\Generator\GeneratorScope;
 use PHPStan\Analyser\Generator\InternalThrowPoint;
 use PHPStan\Analyser\Generator\NodeCallbackRequest;
 use PHPStan\Analyser\Generator\NoopNodeCallback;
 use PHPStan\Analyser\Generator\TypeExprRequest;
-use PHPStan\Analyser\Generator\TypeExprResult;
 use PHPStan\Analyser\ImpurePoint;
 use PHPStan\Analyser\Scope;
 use PHPStan\Analyser\SpecifiedTypes;
@@ -78,6 +79,8 @@ use function is_string;
 
 /**
  * @implements ExprHandler<Assign|Expr\AssignRef>
+ * @phpstan-import-type GeneratorTValueType from GeneratorNodeScopeResolver
+ * @phpstan-import-type GeneratorTSendType from GeneratorNodeScopeResolver
  */
 #[AutowiredService]
 final class AssignHandler implements ExprHandler
@@ -86,6 +89,7 @@ final class AssignHandler implements ExprHandler
 	public function __construct(
 		private PhpVersion $phpVersion,
 		private FileTypeMapper $fileTypeMapper,
+		private AssignHelper $assignHelper,
 		#[AutowiredParameter(ref: '%exceptions.implicitThrows%')]
 		private readonly bool $implicitThrows,
 	)
@@ -226,7 +230,7 @@ final class AssignHandler implements ExprHandler
 
 	/**
 	 * @param array<int, string> $variableNames
-	 * @return Generator<int, ExprAnalysisRequest|TypeExprRequest, ExprAnalysisResult|TypeExprResult, GeneratorScope>
+	 * @return Generator<int, GeneratorTValueType, GeneratorTSendType, GeneratorScope>
 	 */
 	private function processVarAnnotation(GeneratorScope $scope, array $variableNames, Node\Stmt $node, bool &$changed = false): Generator
 	{
@@ -278,7 +282,7 @@ final class AssignHandler implements ExprHandler
 
 	/**
 	 * @param (callable(Node, Scope, callable(Node, Scope): void): void)|null $alternativeNodeCallback
-	 * @return Generator<int, ExprAnalysisRequest|NodeCallbackRequest|TypeExprRequest, ExprAnalysisResult|TypeExprResult, GeneratorScope>
+	 * @return Generator<int, GeneratorTValueType, GeneratorTSendType, GeneratorScope>
 	 */
 	private function processStmtVarAnnotation(GeneratorScope $scope, Node\Stmt $stmt, ?Expr $defaultExpr, ?callable $alternativeNodeCallback): Generator
 	{
@@ -366,10 +370,10 @@ final class AssignHandler implements ExprHandler
 
 	/**
 	 * @param (callable(Node, Scope, callable(Node, Scope): void): void)|null $alternativeNodeCallback
-	 * @param Closure(GeneratorScope $scope): Generator<int, ExprAnalysisRequest|NodeCallbackRequest|TypeExprRequest, ExprAnalysisResult|TypeExprResult, ExprAnalysisResult> $processExprCallback
-	 * @return Generator<int, ExprAnalysisRequest|NodeCallbackRequest|TypeExprRequest, ExprAnalysisResult|TypeExprResult, ExprAnalysisResult>
+	 * @param Closure(GeneratorScope $scope): Generator<int, GeneratorTValueType, GeneratorTSendType, ExprAnalysisResult> $processExprCallback
+	 * @return Generator<int, GeneratorTValueType, GeneratorTSendType, ExprAnalysisResult>
 	 */
-	private function processAssignVar(
+	public function processAssignVar(
 		GeneratorScope $scope,
 		Node\Stmt $stmt,
 		Expr $var,
@@ -911,7 +915,7 @@ final class AssignHandler implements ExprHandler
 				if ($enterExpressionAssign) {
 					$itemScope = $itemScope->enterExpressionAssign($arrayItem->value);
 				}
-				$itemScope = $this->lookForSetAllowedUndefinedExpressions($itemScope, $arrayItem->value);
+				$itemScope = $this->assignHelper->lookForSetAllowedUndefinedExpressions($itemScope, $arrayItem->value);
 				yield new NodeCallbackRequest($arrayItem, $itemScope, $alternativeNodeCallback);
 				if ($arrayItem->key !== null) {
 					$keyResult = yield new ExprAnalysisRequest($stmt, $arrayItem->key, $itemScope, $context->enterDeep(), $alternativeNodeCallback);
@@ -1101,7 +1105,7 @@ final class AssignHandler implements ExprHandler
 
 	/**
 	 * @param array<string, ConditionalExpressionHolder[]> $conditionalExpressions
-	 * @return Generator<int, ExprAnalysisRequest|TypeExprRequest, ExprAnalysisResult|TypeExprResult, array<string, ConditionalExpressionHolder[]>>
+	 * @return Generator<int, GeneratorTValueType, GeneratorTSendType, array<string, ConditionalExpressionHolder[]>>
 	 */
 	private function processSureTypesForConditionalExpressionsAfterAssign(string $variableName, array $conditionalExpressions, SpecifiedTypes $specifiedTypes, Type $variableType): Generator
 	{
@@ -1135,7 +1139,7 @@ final class AssignHandler implements ExprHandler
 
 	/**
 	 * @param array<string, ConditionalExpressionHolder[]> $conditionalExpressions
-	 * @return Generator<int, ExprAnalysisRequest|TypeExprRequest, ExprAnalysisResult|TypeExprResult, array<string, ConditionalExpressionHolder[]>>
+	 * @return Generator<int, GeneratorTValueType, GeneratorTSendType, array<string, ConditionalExpressionHolder[]>>
 	 */
 	private function processSureNotTypesForConditionalExpressionsAfterAssign(string $variableName, array $conditionalExpressions, SpecifiedTypes $specifiedTypes, Type $variableType): Generator
 	{
@@ -1165,39 +1169,6 @@ final class AssignHandler implements ExprHandler
 		}
 
 		return $conditionalExpressions;
-	}
-
-	private function lookForSetAllowedUndefinedExpressions(GeneratorScope $scope, Expr $expr): GeneratorScope
-	{
-		return $this->lookForExpressionCallback($scope, $expr, static fn (GeneratorScope $scope, Expr $expr): GeneratorScope => $scope->setAllowedUndefinedExpression($expr));
-	}
-
-	/**
-	 * @param Closure(GeneratorScope $scope, Expr $expr): GeneratorScope $callback
-	 */
-	private function lookForExpressionCallback(GeneratorScope $scope, Expr $expr, Closure $callback): GeneratorScope
-	{
-		if (!$expr instanceof ArrayDimFetch || $expr->dim !== null) {
-			$scope = $callback($scope, $expr);
-		}
-
-		if ($expr instanceof ArrayDimFetch) {
-			$scope = $this->lookForExpressionCallback($scope, $expr->var, $callback);
-		} elseif ($expr instanceof PropertyFetch || $expr instanceof Expr\NullsafePropertyFetch) {
-			$scope = $this->lookForExpressionCallback($scope, $expr->var, $callback);
-		} elseif ($expr instanceof StaticPropertyFetch && $expr->class instanceof Expr) {
-			$scope = $this->lookForExpressionCallback($scope, $expr->class, $callback);
-		} elseif ($expr instanceof List_) {
-			foreach ($expr->items as $item) {
-				if ($item === null) {
-					continue;
-				}
-
-				$scope = $this->lookForExpressionCallback($scope, $item->value, $callback);
-			}
-		}
-
-		return $scope;
 	}
 
 	private function unwrapAssign(Expr $expr): Expr
@@ -1234,7 +1205,7 @@ final class AssignHandler implements ExprHandler
 	 * @param list<ArrayDimFetch> $dimFetchStack
 	 * @param list<array{Type|null, ArrayDimFetch}> $offsetTypes
 	 *
-	 * @return Generator<int, ExprAnalysisRequest|TypeExprRequest, ExprAnalysisResult|TypeExprResult, array{Type, list<array{Expr, Type}>}>
+	 * @return Generator<int, GeneratorTValueType, GeneratorTSendType, array{Type, list<array{Expr, Type}>}>
 	 */
 	private function produceArrayDimFetchAssignValueToWrite(array $dimFetchStack, array $offsetTypes, Type $offsetValueType, Type $valueToWrite, GeneratorScope $scope, bool $native): Generator
 	{

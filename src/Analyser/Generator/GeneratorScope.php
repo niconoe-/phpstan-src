@@ -129,6 +129,10 @@ use function usort;
 use const PHP_INT_MAX;
 use const PHP_INT_MIN;
 
+/**
+ * @phpstan-import-type GeneratorTValueType from GeneratorNodeScopeResolver
+ * @phpstan-import-type GeneratorTSendType from GeneratorNodeScopeResolver
+ */
 #[GenerateFactory(interface: InternalGeneratorScopeFactory::class)]
 final class GeneratorScope implements Scope, NodeCallbackInvoker
 {
@@ -233,7 +237,7 @@ final class GeneratorScope implements Scope, NodeCallbackInvoker
 	}
 
 	/**
-	 * @return Generator<int, ExprAnalysisRequest|TypeExprRequest, ExprAnalysisResult|TypeExprResult, GeneratorScope>
+	 * @return Generator<int, GeneratorTValueType, GeneratorTSendType, GeneratorScope>
 	 */
 	public function assignVariable(string $variableName, Type $type, Type $nativeType, TrinaryLogic $certainty): Generator
 	{
@@ -302,7 +306,7 @@ final class GeneratorScope implements Scope, NodeCallbackInvoker
 	}
 
 	/**
-	 * @return Generator<int, ExprAnalysisRequest|TypeExprRequest, ExprAnalysisResult|TypeExprResult, GeneratorScope>
+	 * @return Generator<int, GeneratorTValueType, GeneratorTSendType, GeneratorScope>
 	 */
 	public function assignExpression(Expr $expr, Type $type, Type $nativeType): Generator
 	{
@@ -322,7 +326,7 @@ final class GeneratorScope implements Scope, NodeCallbackInvoker
 	}
 
 	/**
-	 * @return Generator<int, ExprAnalysisRequest|TypeExprRequest, ExprAnalysisResult|TypeExprResult, GeneratorScope>
+	 * @return Generator<int, GeneratorTValueType, GeneratorTSendType, GeneratorScope>
 	 */
 	private function specifyExpressionType(Expr $expr, Type $type, Type $nativeType, TrinaryLogic $certainty): Generator
 	{
@@ -1617,7 +1621,7 @@ final class GeneratorScope implements Scope, NodeCallbackInvoker
 
 	/**
 	 * @param ParameterReflection[]|null $callableParameters
-	 * @return Generator<int, ExprAnalysisRequest|TypeExprRequest, ExprAnalysisResult|TypeExprResult, GeneratorScope>
+	 * @return Generator<int, GeneratorTValueType, GeneratorTSendType, GeneratorScope>
 	 */
 	public function enterArrowFunctionWithoutReflection(Expr\ArrowFunction $arrowFunction, ?array $callableParameters): Generator
 	{

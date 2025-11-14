@@ -10,6 +10,8 @@ use PHPStan\Analyser\StatementContext;
 
 /**
  * @template T of Stmt
+ * @phpstan-import-type GeneratorTValueType from GeneratorNodeScopeResolver
+ * @phpstan-import-type GeneratorTSendType from GeneratorNodeScopeResolver
  */
 interface StmtHandler
 {
@@ -24,7 +26,7 @@ interface StmtHandler
 	/**
 	 * @param T $stmt
 	 * @param (callable(Node, Scope, callable(Node, Scope): void): void)|null $alternativeNodeCallback
-	 * @return Generator<int, ExprAnalysisRequest|StmtAnalysisRequest|StmtsAnalysisRequest|NodeCallbackRequest, ExprAnalysisResult|StmtAnalysisResult, StmtAnalysisResult>
+	 * @return Generator<int, GeneratorTValueType, GeneratorTSendType, StmtAnalysisResult>
 	 */
 	public function analyseStmt(
 		Stmt $stmt,
