@@ -39,6 +39,22 @@ class ScopeGetTypeInGeneratorNamespaceRuleTest extends RuleTestCase
 				49,
 				'Use yield new ExprAnalysisRequest or query the ExprAnalysisResultStorage instead.',
 			],
+			[
+				'Scope::filterByTruthyValue() cannot be called in PHPStan\Analyser\Generator namespace.',
+				59,
+			],
+			[
+				'Scope::filterByFalseyValue() cannot be called in PHPStan\Analyser\Generator namespace.',
+				60,
+			],
+			[
+				'Scope::filterByTruthyValue() cannot be called in PHPStan\Analyser\Generator namespace.',
+				65,
+			],
+			[
+				'Scope::filterByFalseyValue() cannot be called in PHPStan\Analyser\Generator namespace.',
+				66,
+			],
 		]);
 	}
 

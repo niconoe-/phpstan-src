@@ -50,4 +50,21 @@ namespace PHPStan\Analyser\Generator\ExprHandler {
 		}
 
 	}
+
+	class Bar
+	{
+
+		public function doFoo(Scope $scope): void
+		{
+			$scope->filterByTruthyValue();
+			$scope->filterByFalseyValue();
+		}
+
+		public function doBar(GeneratorScope $scope): void
+		{
+			$scope->filterByTruthyValue();
+			$scope->filterByFalseyValue();
+		}
+
+	}
 }

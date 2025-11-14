@@ -7,7 +7,6 @@ use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
-use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\ObjectType;
 use PHPUnit\Framework\TestCase;
 use function in_array;
@@ -41,10 +40,6 @@ final class ScopeGetTypeInGeneratorNamespaceRule implements Rule
 			return [];
 		}
 
-		if (!in_array($node->name->toLowerString(), ['gettype', 'getnativetype'], true)) {
-			return [];
-		}
-
 		$scopeType = new ObjectType(Scope::class);
 		$calledOnType =  $scope->getType($node->var);
 		if (!$scopeType->isSuperTypeOf($calledOnType)->yes()) {
@@ -60,19 +55,33 @@ final class ScopeGetTypeInGeneratorNamespaceRule implements Rule
 
 		$methodReflection = $scope->getMethodReflection($calledOnType, $node->name->toString());
 		if ($methodReflection === null) {
-			throw new ShouldNotHappenException();
+			return [];
 		}
 
-		return [
-			RuleErrorBuilder::message(sprintf(
-				'Scope::%s() cannot be called in %s namespace.',
-				$methodReflection->getName(),
-				$invalidNamespace,
-			))
-				->identifier('phpstan.scopeGetType')
-				->tip('Use yield new ExprAnalysisRequest or query the ExprAnalysisResultStorage instead.')
-				->build(),
-		];
+		$message = sprintf(
+			'Scope::%s() cannot be called in %s namespace.',
+			$methodReflection->getName(),
+			$invalidNamespace,
+		);
+
+		if (in_array($methodReflection->getName(), ['getType', 'getNativeType'], true)) {
+			return [
+				RuleErrorBuilder::message($message)
+					->identifier('phpstan.scopeGetType')
+					->tip('Use yield new ExprAnalysisRequest or query the ExprAnalysisResultStorage instead.')
+					->build(),
+			];
+		}
+
+		if (in_array($methodReflection->getName(), ['filterByTruthyValue', 'filterByFalseyValue'], true)) {
+			return [
+				RuleErrorBuilder::message($message)
+					->identifier('phpstan.scopeFilter')
+					->build(),
+			];
+		}
+
+		return [];
 	}
 
 }
