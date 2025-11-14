@@ -20,3 +20,10 @@ function (): void {
 	assertType('string|null', $foo->doFoo());
 	assertType($a = '1', (int) $a);
 };
+
+function (): void {
+	assertType('array{foo: \'bar\'}', ['foo' => 'bar']);
+	$a = [];
+	assertType('array{}', $a);
+
+};
