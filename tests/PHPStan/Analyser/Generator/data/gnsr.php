@@ -27,3 +27,8 @@ function (): void {
 	assertType('array{}', $a);
 
 };
+
+function (): void {
+	$a['bla'] = 1;
+	//assertType('array{bla: 1}', $a);
+};

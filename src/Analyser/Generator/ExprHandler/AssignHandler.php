@@ -29,6 +29,8 @@ use PHPStan\Analyser\Generator\ExprHandler;
 use PHPStan\Analyser\Generator\GeneratorScope;
 use PHPStan\Analyser\Generator\InternalThrowPoint;
 use PHPStan\Analyser\Generator\NodeCallbackRequest;
+use PHPStan\Analyser\Generator\TypeExprRequest;
+use PHPStan\Analyser\Generator\TypeExprResult;
 use PHPStan\Analyser\ImpurePoint;
 use PHPStan\Analyser\Scope;
 use PHPStan\Analyser\SpecifiedTypes;
@@ -218,7 +220,7 @@ final class AssignHandler implements ExprHandler
 
 	/**
 	 * @param array<int, string> $variableNames
-	 * @return Generator<int, ExprAnalysisRequest, ExprAnalysisResult, GeneratorScope>
+	 * @return Generator<int, ExprAnalysisRequest|TypeExprRequest, ExprAnalysisResult|TypeExprResult, GeneratorScope>
 	 */
 	private function processVarAnnotation(GeneratorScope $scope, array $variableNames, Node\Stmt $node, bool &$changed = false): Generator
 	{
@@ -269,7 +271,7 @@ final class AssignHandler implements ExprHandler
 	}
 
 	/**
-	 * @return Generator<int, ExprAnalysisRequest|NodeCallbackRequest, ExprAnalysisResult, GeneratorScope>
+	 * @return Generator<int, ExprAnalysisRequest|NodeCallbackRequest|TypeExprRequest, ExprAnalysisResult|TypeExprResult, GeneratorScope>
 	 */
 	private function processStmtVarAnnotation(GeneratorScope $scope, Node\Stmt $stmt, ?Expr $defaultExpr): Generator
 	{
@@ -328,6 +330,7 @@ final class AssignHandler implements ExprHandler
 					yield new NodeCallbackRequest(new VarTagChangedExpressionTypeNode($varTag, $variableNode), $scope);
 				}
 
+				// todo NoopExprAnalysisRequest
 				$variableNodeResult = yield new ExprAnalysisRequest($stmt, $variableNode, $scope, ExpressionContext::createDeep(), static function () {
 				});
 
@@ -357,8 +360,8 @@ final class AssignHandler implements ExprHandler
 	}
 
 	/**
-	 * @param Closure(GeneratorScope $scope): Generator<int, ExprAnalysisRequest|NodeCallbackRequest, ExprAnalysisResult, ExprAnalysisResult> $processExprCallback
-	 * @return Generator<int, ExprAnalysisRequest|NodeCallbackRequest, ExprAnalysisResult, ExprAnalysisResult>
+	 * @param Closure(GeneratorScope $scope): Generator<int, ExprAnalysisRequest|NodeCallbackRequest|TypeExprRequest, ExprAnalysisResult|TypeExprResult, ExprAnalysisResult> $processExprCallback
+	 * @return Generator<int, ExprAnalysisRequest|NodeCallbackRequest|TypeExprRequest, ExprAnalysisResult|TypeExprResult, ExprAnalysisResult>
 	 */
 	private function processAssignVar(
 		GeneratorScope $scope,
@@ -627,6 +630,7 @@ final class AssignHandler implements ExprHandler
 			}
 
 			if (!$varType->isArray()->yes() && !(new ObjectType(ArrayAccess::class))->isSuperTypeOf($varType)->no()) {
+				// todo NoopExprAnalysisRequest
 				$throwPoints = array_merge($throwPoints, (yield new ExprAnalysisRequest(
 					$stmt,
 					new MethodCall($var, 'offsetSet'),
@@ -744,6 +748,7 @@ final class AssignHandler implements ExprHandler
 				$scope = $assignExprGen->getReturn();
 				// simulate dynamic property assign by __set to get throw points
 				if (!$propertyHolderType->hasMethod('__set')->no()) {
+					// todo NoopExprAnalysisRequest
 					$throwPoints = array_merge($throwPoints, (yield new ExprAnalysisRequest(
 						$stmt,
 						new MethodCall($var->var, '__set'),
@@ -971,8 +976,7 @@ final class AssignHandler implements ExprHandler
 			$offsetNativeTypes = [];
 			foreach (array_reverse($dimFetchStack) as $dimFetch) {
 				$dimExpr = $dimFetch->getDim();
-				$dimExprResult = yield new ExprAnalysisRequest($stmt, $dimExpr, $scope, $context->enterDeep(), static function (): void {
-				});
+				$dimExprResult = yield new TypeExprRequest($dimExpr);
 				$offsetTypes[] = [$dimExprResult->type, $dimFetch];
 				$offsetNativeTypes[] = [$dimExprResult->nativeType, $dimFetch];
 			}
@@ -1178,7 +1182,7 @@ final class AssignHandler implements ExprHandler
 	/**
 	 * @param list<ArrayDimFetch> $dimFetchStack
 	 */
-	private function isImplicitArrayCreation(array $dimFetchStack, Scope $scope): TrinaryLogic
+	private function isImplicitArrayCreation(array $dimFetchStack, GeneratorScope $scope): TrinaryLogic
 	{
 		if (count($dimFetchStack) === 0) {
 			return TrinaryLogic::createNo();
@@ -1202,7 +1206,7 @@ final class AssignHandler implements ExprHandler
 	 *
 	 * @return array{Type, list<array{Expr, Type}>}
 	 */
-	private function produceArrayDimFetchAssignValueToWrite(array $dimFetchStack, array $offsetTypes, Type $offsetValueType, Type $valueToWrite, Scope $scope, ExprAnalysisResultStorage $storage, bool $native): array
+	private function produceArrayDimFetchAssignValueToWrite(array $dimFetchStack, array $offsetTypes, Type $offsetValueType, Type $valueToWrite, GeneratorScope $scope, ExprAnalysisResultStorage $storage, bool $native): array
 	{
 		$originalValueToWrite = $valueToWrite;
 

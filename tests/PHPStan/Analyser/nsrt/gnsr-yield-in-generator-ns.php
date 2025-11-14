@@ -14,6 +14,7 @@ class FooTestYield
 	public function doFoo(): Generator
 	{
 		assertType(ExprAnalysisResult::class, yield new ExprAnalysisRequest());
+		assertType(TypeExprResult::class, yield new TypeExprRequest());
 		assertType(StmtAnalysisResult::class, yield new StmtAnalysisRequest());
 		assertType(StmtAnalysisResult::class, yield new StmtsAnalysisRequest());
 		assertType('null', yield new NodeCallbackRequest());

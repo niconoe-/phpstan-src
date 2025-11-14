@@ -228,7 +228,7 @@ final class GeneratorScope implements Scope, NodeCallbackInvoker
 	}
 
 	/**
-	 * @return Generator<int, ExprAnalysisRequest, ExprAnalysisResult, GeneratorScope>
+	 * @return Generator<int, ExprAnalysisRequest|TypeExprRequest, ExprAnalysisResult|TypeExprResult, GeneratorScope>
 	 */
 	public function assignVariable(string $variableName, Type $type, Type $nativeType, TrinaryLogic $certainty): Generator
 	{
@@ -297,7 +297,7 @@ final class GeneratorScope implements Scope, NodeCallbackInvoker
 	}
 
 	/**
-	 * @return Generator<int, ExprAnalysisRequest, ExprAnalysisResult, GeneratorScope>
+	 * @return Generator<int, ExprAnalysisRequest|TypeExprRequest, ExprAnalysisResult|TypeExprResult, GeneratorScope>
 	 */
 	public function assignExpression(Expr $expr, Type $type, Type $nativeType): Generator
 	{
@@ -317,7 +317,7 @@ final class GeneratorScope implements Scope, NodeCallbackInvoker
 	}
 
 	/**
-	 * @return Generator<int, ExprAnalysisRequest, ExprAnalysisResult, GeneratorScope>
+	 * @return Generator<int, ExprAnalysisRequest|TypeExprRequest, ExprAnalysisResult|TypeExprResult, GeneratorScope>
 	 */
 	private function specifyExpressionType(Expr $expr, Type $type, Type $nativeType, TrinaryLogic $certainty): Generator
 	{
@@ -348,23 +348,9 @@ final class GeneratorScope implements Scope, NodeCallbackInvoker
 			&& !$expr->dim instanceof Expr\PostDec
 			&& !$expr->dim instanceof Expr\PostInc
 		) {
-			$dimType = (yield new ExprAnalysisRequest(
-				new Node\Stmt\Expression($expr->dim),
-				$expr->dim,
-				$this,
-				ExpressionContext::createTopLevel(),
-				static function () {
-				},
-			))->type->toArrayKey();
+			$dimType = (yield new TypeExprRequest($expr->dim))->type->toArrayKey();
 			if ($dimType->isInteger()->yes() || $dimType->isString()->yes()) {
-				$exprVarResult = yield new ExprAnalysisRequest(
-					new Node\Stmt\Expression($expr->var),
-					$expr->var,
-					$this,
-					ExpressionContext::createTopLevel(),
-					static function () {
-					},
-				);
+				$exprVarResult = yield new TypeExprRequest($expr->var);
 				$exprVarType = $exprVarResult->type;
 				if (!$exprVarType instanceof MixedType && !$exprVarType->isArray()->no()) {
 					$types = [

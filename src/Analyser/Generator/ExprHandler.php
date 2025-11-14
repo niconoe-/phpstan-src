@@ -22,7 +22,7 @@ interface ExprHandler
 
 	/**
 	 * @param T $expr
-	 * @return Generator<int, ExprAnalysisRequest|NodeCallbackRequest, ExprAnalysisResult, ExprAnalysisResult>
+	 * @return Generator<int, ExprAnalysisRequest|AlternativeNodeCallbackRequest|NodeCallbackRequest|TypeExprRequest, ExprAnalysisResult|TypeExprResult, ExprAnalysisResult>
 	 */
 	public function analyseExpr(Stmt $stmt, Expr $expr, GeneratorScope $scope, ExprAnalysisResultStorage $storage, ExpressionContext $context): Generator;
 

@@ -211,6 +211,16 @@ final class GeneratorNodeScopeResolver
 					);
 					$gen->generator->current();
 					continue;
+				} elseif ($yielded instanceof TypeExprRequest) {
+					$stack[] = $gen;
+					$gen = new IdentifiedGeneratorInStack(
+						$this->analyseExprForType($exprAnalysisResultStorage, $yielded->expr),
+						$yielded->expr,
+						$yielded->originFile,
+						$yielded->originLine,
+					);
+					$gen->generator->current();
+					continue;
 				} elseif ($yielded instanceof StmtAnalysisRequest) {
 					$stack[] = $gen;
 					$gen = new IdentifiedGeneratorInStack(
@@ -246,6 +256,7 @@ final class GeneratorNodeScopeResolver
 						throw new ShouldNotHappenException('Pending fibers with an empty stack should be about synthetic nodes');
 					}
 
+					// todo NoopExprAnalysisRequest
 					$this->processStmtNodes(
 						$fibersStorage,
 						$exprAnalysisResultStorage,
@@ -337,7 +348,7 @@ final class GeneratorNodeScopeResolver
 
 	/**
 	 * @param (callable(Node, Scope, callable(Node, Scope): void): void)|null $alternativeNodeCallback
-	 * @return Generator<int, ExprAnalysisRequest|NodeCallbackRequest|AlternativeNodeCallbackRequest, ExprAnalysisResult, ExprAnalysisResult>
+	 * @return Generator<int, TypeExprRequest|ExprAnalysisRequest|NodeCallbackRequest|AlternativeNodeCallbackRequest, ExprAnalysisResult, TypeExprResult|ExprAnalysisResult>
 	 */
 	private function analyseExpr(ExprAnalysisResultStorage $storage, Stmt $stmt, Expr $expr, GeneratorScope $scope, ExpressionContext $context, ?callable $alternativeNodeCallback): Generator
 	{
@@ -369,6 +380,20 @@ final class GeneratorNodeScopeResolver
 		}
 
 		throw new ShouldNotHappenException('Unhandled expr: ' . get_class($expr));
+	}
+
+	/**
+	 * @return Generator<int, TypeExprRequest, TypeExprResult, TypeExprResult>
+	 */
+	private function analyseExprForType(ExprAnalysisResultStorage $storage, Expr $expr): Generator
+	{
+		$result = $storage->findExprAnalysisResult($expr);
+		if ($result !== null) {
+			yield from [];
+			return new TypeExprResult($result->type, $result->nativeType);
+		}
+
+		throw new ShouldNotHappenException('Not yet implemented - park expr request for type until later when it has been analysed');
 	}
 
 	/**
