@@ -14,6 +14,7 @@ use PHPStan\DependencyInjection\Container;
 use PHPStan\NeverException;
 use PHPStan\Node\Printer\ExprPrinter;
 use PHPStan\ShouldNotHappenException;
+use Throwable;
 use function array_map;
 use function array_merge;
 use function array_pop;
@@ -21,6 +22,7 @@ use function count;
 use function get_class;
 use function get_debug_type;
 use function implode;
+use function is_array;
 use function sprintf;
 
 /**
@@ -111,17 +113,68 @@ final class GeneratorNodeScopeResolver
 		StatementContext $context,
 	): StmtAnalysisResult
 	{
+		$gen = new IdentifiedGeneratorInStack($this->analyseStmts($stmts, $scope, $context, null), $stmts, null, null);
+		$gen->generator->current();
+
 		$stack = [];
 
-		$gen = $this->analyseStmts($stmts, $scope, $context, null);
-		$gen->current();
+		try {
+			return $this->runTrampoline(
+				$fibersStorage,
+				$exprAnalysisResultStorage,
+				$gen,
+				$nodeCallback,
+				$stack,
+			);
+		} catch (Throwable $e) {
+			$stackTrace = [];
+			foreach (array_merge($stack, [$gen]) as $identifiedGenerator) {
+				if ($identifiedGenerator->file === null && $identifiedGenerator->line === null) {
+					continue;
+				}
+				if (is_array($identifiedGenerator->node)) {
+					$stackTrace[] = sprintf(
+						"Stmts\n    -> %s on line %d",
+						$identifiedGenerator->file,
+						$identifiedGenerator->line,
+					);
+					continue;
+				}
 
-		// Trampoline loop
+				$stackTrace[] = sprintf(
+					"%s:%d\n    -> %s on line %d",
+					$identifiedGenerator->file,
+					$identifiedGenerator->line,
+					get_class($identifiedGenerator->node),
+					$identifiedGenerator->node->getStartLine(),
+				);
+			}
+
+			throw new TrampolineException(sprintf(
+				"Error ocurred in GNSR trampoline: %s\n\nAST processor stack trace:\n%s",
+				$e->getMessage(),
+				implode("\n", $stackTrace),
+			), previous: $e);
+		}
+	}
+
+	/**
+	 * @param callable(Node, Scope): void $nodeCallback
+	 * @param list<IdentifiedGeneratorInStack> $stack
+	 */
+	private function runTrampoline(
+		PendingFibersStorage $fibersStorage,
+		ExprAnalysisResultStorage $exprAnalysisResultStorage,
+		IdentifiedGeneratorInStack &$gen,
+		callable $nodeCallback,
+		array &$stack,
+	): StmtAnalysisResult
+	{
 		while (true) {
 			$this->processPendingFibers($fibersStorage, $exprAnalysisResultStorage);
 
-			if ($gen->valid()) {
-				$yielded = $gen->current();
+			if ($gen->generator->valid()) {
+				$yielded = $gen->generator->current();
 
 				if ($yielded instanceof NodeCallbackRequest) {
 					$this->invokeNodeCallback(
@@ -132,7 +185,7 @@ final class GeneratorNodeScopeResolver
 						$nodeCallback,
 					);
 
-					$gen->next();
+					$gen->generator->next();
 					continue;
 				} elseif ($yielded instanceof AlternativeNodeCallbackRequest) {
 					$alternativeNodeCallback = $yielded->nodeCallback;
@@ -146,29 +199,44 @@ final class GeneratorNodeScopeResolver
 						},
 					);
 
-					$gen->next();
+					$gen->generator->next();
 					continue;
 				} elseif ($yielded instanceof ExprAnalysisRequest) {
 					$stack[] = $gen;
-					$gen = $this->analyseExpr($exprAnalysisResultStorage, $yielded->stmt, $yielded->expr, $yielded->scope, $yielded->context, $yielded->alternativeNodeCallback);
-					$gen->current();
+					$gen = new IdentifiedGeneratorInStack(
+						$this->analyseExpr($exprAnalysisResultStorage, $yielded->stmt, $yielded->expr, $yielded->scope, $yielded->context, $yielded->alternativeNodeCallback),
+						$yielded->expr,
+						$yielded->originFile,
+						$yielded->originLine,
+					);
+					$gen->generator->current();
 					continue;
 				} elseif ($yielded instanceof StmtAnalysisRequest) {
 					$stack[] = $gen;
-					$gen = $this->analyseStmt($yielded->stmt, $yielded->scope, $yielded->context, $yielded->alternativeNodeCallback);
-					$gen->current();
+					$gen = new IdentifiedGeneratorInStack(
+						$this->analyseStmt($yielded->stmt, $yielded->scope, $yielded->context, $yielded->alternativeNodeCallback),
+						$yielded->stmt,
+						$yielded->originFile,
+						$yielded->originLine,
+					);
+					$gen->generator->current();
 					continue;
 				} elseif ($yielded instanceof StmtsAnalysisRequest) {
 					$stack[] = $gen;
-					$gen = $this->analyseStmts($yielded->stmts, $yielded->scope, $yielded->context, $yielded->alternativeNodeCallback);
-					$gen->current();
+					$gen = new IdentifiedGeneratorInStack(
+						$this->analyseStmts($yielded->stmts, $yielded->scope, $yielded->context, $yielded->alternativeNodeCallback),
+						$yielded->stmts,
+						$yielded->originFile,
+						$yielded->originLine,
+					);
+					$gen->generator->current();
 					continue;
 				} else { // phpcs:ignore
 					throw new NeverException($yielded);
 				}
 			}
 
-			$result = $gen->getReturn();
+			$result = $gen->generator->getReturn();
 			if (count($stack) === 0) {
 				foreach ($fibersStorage->pendingFibers as $pending) {
 					$request = $pending['request'];
@@ -200,7 +268,7 @@ final class GeneratorNodeScopeResolver
 			}
 
 			$gen = array_pop($stack);
-			$gen->send($result);
+			$gen->generator->send($result);
 		}
 	}
 

@@ -68,6 +68,7 @@ parameters:
 			- 'PHPStan\Reflection\MissingStaticAccessorInstanceException'
 			- 'LogicException'
 			- 'Error'
+			- 'PHPStan\Analyser\Generator\TrampolineException'
 		check:
 			missingCheckedExceptionInThrows: true
 			tooWideThrowType: true
