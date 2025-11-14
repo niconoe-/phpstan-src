@@ -2582,8 +2582,7 @@ final class NodeScopeResolver
 					if ($expr->var instanceof Variable && is_string($expr->var->name)) {
 						$context = $context->enterRightSideAssign(
 							$expr->var->name,
-							$scope->getType($expr->expr),
-							$scope->getNativeType($expr->expr),
+							$expr->expr,
 						);
 					}
 
@@ -4828,13 +4827,12 @@ final class NodeScopeResolver
 				$useScope = $useScope->enterExpressionAssign($use->var);
 
 				$inAssignRightSideVariableName = $context->getInAssignRightSideVariableName();
-				$inAssignRightSideType = $context->getInAssignRightSideType();
-				$inAssignRightSideNativeType = $context->getInAssignRightSideNativeType();
+				$inAssignRightSideExpr = $context->getInAssignRightSideExpr();
 				if (
 					$inAssignRightSideVariableName === $use->var->name
-					&& $inAssignRightSideType !== null
-					&& $inAssignRightSideNativeType !== null
+					&& $inAssignRightSideExpr !== null
 				) {
+					$inAssignRightSideType = $scope->getType($inAssignRightSideExpr);
 					if ($inAssignRightSideType instanceof ClosureType) {
 						$variableType = $inAssignRightSideType;
 					} else {
@@ -4845,6 +4843,7 @@ final class NodeScopeResolver
 							$variableType = TypeCombinator::union($scope->getVariableType($inAssignRightSideVariableName), $inAssignRightSideType);
 						}
 					}
+					$inAssignRightSideNativeType = $scope->getNativeType($inAssignRightSideExpr);
 					if ($inAssignRightSideNativeType instanceof ClosureType) {
 						$variableNativeType = $inAssignRightSideNativeType;
 					} else {

@@ -2,7 +2,7 @@
 
 namespace PHPStan\Analyser;
 
-use PHPStan\Type\Type;
+use PhpParser\Node\Expr;
 
 final class ExpressionContext
 {
@@ -10,20 +10,19 @@ final class ExpressionContext
 	private function __construct(
 		private bool $isDeep,
 		private ?string $inAssignRightSideVariableName,
-		private ?Type $inAssignRightSideType,
-		private ?Type $inAssignRightSideNativeType,
+		private ?Expr $inAssignRightSideExpr,
 	)
 	{
 	}
 
 	public static function createTopLevel(): self
 	{
-		return new self(false, null, null, null);
+		return new self(false, null, null);
 	}
 
 	public static function createDeep(): self
 	{
-		return new self(true, null, null, null);
+		return new self(true, null, null);
 	}
 
 	public function enterDeep(): self
@@ -32,7 +31,7 @@ final class ExpressionContext
 			return $this;
 		}
 
-		return new self(true, $this->inAssignRightSideVariableName, $this->inAssignRightSideType, $this->inAssignRightSideNativeType);
+		return new self(true, $this->inAssignRightSideVariableName, $this->inAssignRightSideExpr);
 	}
 
 	public function isDeep(): bool
@@ -40,9 +39,9 @@ final class ExpressionContext
 		return $this->isDeep;
 	}
 
-	public function enterRightSideAssign(string $variableName, Type $type, Type $nativeType): self
+	public function enterRightSideAssign(string $variableName, Expr $expr): self
 	{
-		return new self($this->isDeep, $variableName, $type, $nativeType);
+		return new self($this->isDeep, $variableName, $expr);
 	}
 
 	public function getInAssignRightSideVariableName(): ?string
@@ -50,14 +49,9 @@ final class ExpressionContext
 		return $this->inAssignRightSideVariableName;
 	}
 
-	public function getInAssignRightSideType(): ?Type
+	public function getInAssignRightSideExpr(): ?Expr
 	{
-		return $this->inAssignRightSideType;
-	}
-
-	public function getInAssignRightSideNativeType(): ?Type
-	{
-		return $this->inAssignRightSideNativeType;
+		return $this->inAssignRightSideExpr;
 	}
 
 }
