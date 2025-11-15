@@ -13,6 +13,7 @@ use PHPStan\BetterReflection\Reflection\Adapter\ReflectionClass;
 use PHPStan\BetterReflection\Reflection\Adapter\ReflectionEnum;
 use PHPStan\BetterReflection\Reflection\Adapter\ReflectionEnumBackedCase;
 use PHPStan\BetterReflection\Reflection\Adapter\ReflectionMethod;
+use PHPStan\DependencyInjection\GenerateFactory;
 use PHPStan\DependencyInjection\Reflection\ClassReflectionExtensionRegistryProvider;
 use PHPStan\Php\PhpVersion;
 use PHPStan\PhpDoc\PhpDocInheritanceResolver;
@@ -73,6 +74,7 @@ use function strtolower;
 /**
  * @api
  */
+#[GenerateFactory(interface: ClassReflectionFactory::class)]
 final class ClassReflection
 {
 
@@ -160,10 +162,8 @@ final class ClassReflection
 	/** @var array<string, bool> */
 	private array $hasStaticPropertyCache = [];
 
-	/**
-	 * @param string[] $universalObjectCratesClasses
-	 */
 	public function __construct(
+		private ClassReflectionFactory $classReflectionFactory,
 		private ReflectionProvider $reflectionProvider,
 		private InitializerExprTypeResolver $initializerExprTypeResolver,
 		private FileTypeMapper $fileTypeMapper,
@@ -179,7 +179,6 @@ final class ClassReflection
 		private ?string $anonymousFilename,
 		private ?TemplateTypeMap $resolvedTemplateTypeMap,
 		private ?ResolvedPhpDocBlock $stubPhpDocBlock,
-		private array $universalObjectCratesClasses,
 		private ?string $extraCacheKey = null,
 		private ?TemplateTypeVarianceMap $resolvedCallSiteVarianceMap = null,
 		private ?bool $finalByKeywordOverride = null,
@@ -1778,23 +1777,12 @@ final class ClassReflection
 	 */
 	public function withTypes(array $types): self
 	{
-		return new self(
-			$this->reflectionProvider,
-			$this->initializerExprTypeResolver,
-			$this->fileTypeMapper,
-			$this->stubPhpDocProvider,
-			$this->phpDocInheritanceResolver,
-			$this->phpVersion,
-			$this->signatureMapProvider,
-			$this->deprecationProvider,
-			$this->attributeReflectionFactory,
-			$this->classReflectionExtensionRegistryProvider,
+		return $this->classReflectionFactory->create(
 			$this->displayName,
 			$this->reflection,
 			$this->anonymousFilename,
 			$this->typeMapFromList($types),
 			$this->stubPhpDocBlock,
-			$this->universalObjectCratesClasses,
 			null,
 			$this->resolvedCallSiteVarianceMap,
 			$this->finalByKeywordOverride,
@@ -1806,23 +1794,12 @@ final class ClassReflection
 	 */
 	public function withVariances(array $variances): self
 	{
-		return new self(
-			$this->reflectionProvider,
-			$this->initializerExprTypeResolver,
-			$this->fileTypeMapper,
-			$this->stubPhpDocProvider,
-			$this->phpDocInheritanceResolver,
-			$this->phpVersion,
-			$this->signatureMapProvider,
-			$this->deprecationProvider,
-			$this->attributeReflectionFactory,
-			$this->classReflectionExtensionRegistryProvider,
+		return $this->classReflectionFactory->create(
 			$this->displayName,
 			$this->reflection,
 			$this->anonymousFilename,
 			$this->resolvedTemplateTypeMap,
 			$this->stubPhpDocBlock,
-			$this->universalObjectCratesClasses,
 			null,
 			$this->varianceMapFromList($variances),
 			$this->finalByKeywordOverride,
@@ -1844,23 +1821,12 @@ final class ClassReflection
 			return $this;
 		}
 
-		return new self(
-			$this->reflectionProvider,
-			$this->initializerExprTypeResolver,
-			$this->fileTypeMapper,
-			$this->stubPhpDocProvider,
-			$this->phpDocInheritanceResolver,
-			$this->phpVersion,
-			$this->signatureMapProvider,
-			$this->deprecationProvider,
-			$this->attributeReflectionFactory,
-			$this->classReflectionExtensionRegistryProvider,
+		return $this->classReflectionFactory->create(
 			$this->displayName,
 			$this->reflection,
 			$this->anonymousFilename,
 			$this->resolvedTemplateTypeMap,
 			$this->stubPhpDocBlock,
-			$this->universalObjectCratesClasses,
 			null,
 			$this->resolvedCallSiteVarianceMap,
 			true,
@@ -1882,23 +1848,12 @@ final class ClassReflection
 			return $this;
 		}
 
-		return new self(
-			$this->reflectionProvider,
-			$this->initializerExprTypeResolver,
-			$this->fileTypeMapper,
-			$this->stubPhpDocProvider,
-			$this->phpDocInheritanceResolver,
-			$this->phpVersion,
-			$this->signatureMapProvider,
-			$this->deprecationProvider,
-			$this->attributeReflectionFactory,
-			$this->classReflectionExtensionRegistryProvider,
+		return $this->classReflectionFactory->create(
 			$this->displayName,
 			$this->reflection,
 			$this->anonymousFilename,
 			$this->resolvedTemplateTypeMap,
 			$this->stubPhpDocBlock,
-			$this->universalObjectCratesClasses,
 			null,
 			$this->resolvedCallSiteVarianceMap,
 			false,

@@ -23,17 +23,14 @@ use PHPStan\Parser\RichParser;
 use PHPStan\Php\PhpVersion;
 use PHPStan\PhpDoc\PhpDocInheritanceResolver;
 use PHPStan\PhpDoc\StubPhpDocProvider;
-use PHPStan\Reflection\AttributeReflectionFactory;
-use PHPStan\Reflection\Deprecation\DeprecationProvider;
+use PHPStan\Reflection\ClassReflectionFactory;
 use PHPStan\Reflection\InitializerExprTypeResolver;
-use PHPStan\Reflection\SignatureMap\SignatureMapProvider;
 use PHPStan\Rules\AlwaysFailRule;
 use PHPStan\Rules\DirectRegistry as DirectRuleRegistry;
 use PHPStan\Rules\Properties\ReadWritePropertiesExtensionProvider;
 use PHPStan\Testing\PHPStanTestCase;
 use PHPStan\Type\FileTypeMapper;
 use PHPUnit\Framework\Attributes\DataProvider;
-use stdClass;
 use function array_map;
 use function array_merge;
 use function assert;
@@ -811,15 +808,11 @@ class AnalyserTest extends PHPStanTestCase
 			$reflectionProvider,
 			self::getContainer()->getByType(InitializerExprTypeResolver::class),
 			self::getReflector(),
-			self::getClassReflectionExtensionRegistryProvider(),
+			self::getContainer()->getByType(ClassReflectionFactory::class),
 			self::getContainer()->getByType(ParameterOutTypeExtensionProvider::class),
 			$this->getParser(),
 			$fileTypeMapper,
-			self::getContainer()->getByType(StubPhpDocProvider::class),
 			self::getContainer()->getByType(PhpVersion::class),
-			self::getContainer()->getByType(SignatureMapProvider::class),
-			self::getContainer()->getByType(DeprecationProvider::class),
-			self::getContainer()->getByType(AttributeReflectionFactory::class),
 			$phpDocInheritanceResolver,
 			$fileHelper,
 			$typeSpecifier,
@@ -833,7 +826,6 @@ class AnalyserTest extends PHPStanTestCase
 			true,
 			[],
 			[],
-			[stdClass::class],
 			true,
 			$this->shouldTreatPhpDocTypesAsCertain(),
 			true,

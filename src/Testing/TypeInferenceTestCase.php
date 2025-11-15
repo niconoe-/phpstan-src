@@ -20,13 +20,10 @@ use PHPStan\File\SystemAgnosticSimpleRelativePathHelper;
 use PHPStan\Node\InClassNode;
 use PHPStan\Php\PhpVersion;
 use PHPStan\PhpDoc\PhpDocInheritanceResolver;
-use PHPStan\PhpDoc\StubPhpDocProvider;
 use PHPStan\PhpDoc\TypeStringResolver;
-use PHPStan\Reflection\AttributeReflectionFactory;
-use PHPStan\Reflection\Deprecation\DeprecationProvider;
+use PHPStan\Reflection\ClassReflectionFactory;
 use PHPStan\Reflection\InitializerExprTypeResolver;
 use PHPStan\Reflection\ReflectionProvider;
-use PHPStan\Reflection\SignatureMap\SignatureMapProvider;
 use PHPStan\Rules\Properties\ReadWritePropertiesExtensionProvider;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\TrinaryLogic;
@@ -65,15 +62,11 @@ abstract class TypeInferenceTestCase extends PHPStanTestCase
 			$reflectionProvider,
 			self::getContainer()->getByType(InitializerExprTypeResolver::class),
 			self::getReflector(),
-			self::getClassReflectionExtensionRegistryProvider(),
+			self::getContainer()->getByType(ClassReflectionFactory::class),
 			self::getContainer()->getByType(ParameterOutTypeExtensionProvider::class),
 			self::getParser(),
 			self::getContainer()->getByType(FileTypeMapper::class),
-			self::getContainer()->getByType(StubPhpDocProvider::class),
 			self::getContainer()->getByType(PhpVersion::class),
-			self::getContainer()->getByType(SignatureMapProvider::class),
-			self::getContainer()->getByType(DeprecationProvider::class),
-			self::getContainer()->getByType(AttributeReflectionFactory::class),
 			self::getContainer()->getByType(PhpDocInheritanceResolver::class),
 			self::getContainer()->getByType(FileHelper::class),
 			$typeSpecifier,
@@ -87,7 +80,6 @@ abstract class TypeInferenceTestCase extends PHPStanTestCase
 			self::getContainer()->getParameter('polluteScopeWithBlock'),
 			static::getEarlyTerminatingMethodCalls(),
 			static::getEarlyTerminatingFunctionCalls(),
-			self::getContainer()->getParameter('universalObjectCratesClasses'),
 			self::getContainer()->getParameter('exceptions')['implicitThrows'],
 			self::getContainer()->getParameter('treatPhpDocTypesAsCertain'),
 			true,

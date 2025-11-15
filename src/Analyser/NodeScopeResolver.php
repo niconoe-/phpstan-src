@@ -65,7 +65,6 @@ use PHPStan\BetterReflection\SourceLocator\Ast\Strategy\NodeToReflection;
 use PHPStan\BetterReflection\SourceLocator\Located\LocatedSource;
 use PHPStan\DependencyInjection\AutowiredParameter;
 use PHPStan\DependencyInjection\AutowiredService;
-use PHPStan\DependencyInjection\Reflection\ClassReflectionExtensionRegistryProvider;
 use PHPStan\DependencyInjection\Type\DynamicThrowTypeExtensionProvider;
 use PHPStan\DependencyInjection\Type\ParameterClosureThisExtensionProvider;
 use PHPStan\DependencyInjection\Type\ParameterClosureTypeExtensionProvider;
@@ -137,15 +136,13 @@ use PHPStan\Parser\ReversePipeTransformerVisitor;
 use PHPStan\Php\PhpVersion;
 use PHPStan\PhpDoc\PhpDocInheritanceResolver;
 use PHPStan\PhpDoc\ResolvedPhpDocBlock;
-use PHPStan\PhpDoc\StubPhpDocProvider;
 use PHPStan\PhpDoc\Tag\VarTag;
 use PHPStan\Reflection\Assertions;
-use PHPStan\Reflection\AttributeReflectionFactory;
 use PHPStan\Reflection\Callables\CallableParametersAcceptor;
 use PHPStan\Reflection\Callables\SimpleImpurePoint;
 use PHPStan\Reflection\Callables\SimpleThrowPoint;
 use PHPStan\Reflection\ClassReflection;
-use PHPStan\Reflection\Deprecation\DeprecationProvider;
+use PHPStan\Reflection\ClassReflectionFactory;
 use PHPStan\Reflection\ExtendedMethodReflection;
 use PHPStan\Reflection\ExtendedParameterReflection;
 use PHPStan\Reflection\ExtendedParametersAcceptor;
@@ -163,7 +160,6 @@ use PHPStan\Reflection\Php\PhpMethodFromParserNodeReflection;
 use PHPStan\Reflection\Php\PhpMethodReflection;
 use PHPStan\Reflection\Php\PhpPropertyReflection;
 use PHPStan\Reflection\ReflectionProvider;
-use PHPStan\Reflection\SignatureMap\SignatureMapProvider;
 use PHPStan\Rules\Properties\ReadWritePropertiesExtensionProvider;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\TrinaryLogic;
@@ -253,23 +249,18 @@ final class NodeScopeResolver
 	/**
 	 * @param string[][] $earlyTerminatingMethodCalls className(string) => methods(string[])
 	 * @param array<int, string> $earlyTerminatingFunctionCalls
-	 * @param string[] $universalObjectCratesClasses
 	 */
 	public function __construct(
 		private readonly ReflectionProvider $reflectionProvider,
 		private readonly InitializerExprTypeResolver $initializerExprTypeResolver,
 		#[AutowiredParameter(ref: '@nodeScopeResolverReflector')]
 		private readonly Reflector $reflector,
-		private readonly ClassReflectionExtensionRegistryProvider $classReflectionExtensionRegistryProvider,
+		private readonly ClassReflectionFactory $classReflectionFactory,
 		private readonly ParameterOutTypeExtensionProvider $parameterOutTypeExtensionProvider,
 		#[AutowiredParameter(ref: '@defaultAnalysisParser')]
 		private readonly Parser $parser,
 		private readonly FileTypeMapper $fileTypeMapper,
-		private readonly StubPhpDocProvider $stubPhpDocProvider,
 		private readonly PhpVersion $phpVersion,
-		private readonly SignatureMapProvider $signatureMapProvider,
-		private readonly DeprecationProvider $deprecationProvider,
-		private readonly AttributeReflectionFactory $attributeReflectionFactory,
 		private readonly PhpDocInheritanceResolver $phpDocInheritanceResolver,
 		private readonly FileHelper $fileHelper,
 		private readonly TypeSpecifier $typeSpecifier,
@@ -288,8 +279,6 @@ final class NodeScopeResolver
 		private readonly array $earlyTerminatingMethodCalls,
 		#[AutowiredParameter]
 		private readonly array $earlyTerminatingFunctionCalls,
-		#[AutowiredParameter]
-		private readonly array $universalObjectCratesClasses,
 		#[AutowiredParameter(ref: '%exceptions.implicitThrows%')]
 		private readonly bool $implicitThrows,
 		#[AutowiredParameter]
@@ -2326,23 +2315,12 @@ final class NodeScopeResolver
 
 		$enumAdapter = base64_decode('UEhQU3RhblxCZXR0ZXJSZWZsZWN0aW9uXFJlZmxlY3Rpb25cQWRhcHRlclxSZWZsZWN0aW9uRW51bQ==', true);
 
-		return new ClassReflection(
-			$this->reflectionProvider,
-			$this->initializerExprTypeResolver,
-			$this->fileTypeMapper,
-			$this->stubPhpDocProvider,
-			$this->phpDocInheritanceResolver,
-			$this->phpVersion,
-			$this->signatureMapProvider,
-			$this->deprecationProvider,
-			$this->attributeReflectionFactory,
-			$this->classReflectionExtensionRegistryProvider,
+		return $this->classReflectionFactory->create(
 			$betterReflectionClass->getName(),
 			$betterReflectionClass instanceof ReflectionEnum && PHP_VERSION_ID >= 80000 ? new $enumAdapter($betterReflectionClass) : new ReflectionClass($betterReflectionClass),
 			null,
 			null,
 			null,
-			$this->universalObjectCratesClasses,
 			sprintf('%s:%d', $scope->getFile(), $stmt->getStartLine()),
 		);
 	}

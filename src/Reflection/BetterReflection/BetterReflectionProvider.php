@@ -24,13 +24,11 @@ use PHPStan\Broker\ConstantNotFoundException;
 use PHPStan\Broker\FunctionNotFoundException;
 use PHPStan\DependencyInjection\AutowiredParameter;
 use PHPStan\DependencyInjection\NonAutowiredService;
-use PHPStan\DependencyInjection\Reflection\ClassReflectionExtensionRegistryProvider;
 use PHPStan\File\FileHelper;
 use PHPStan\File\FileReader;
 use PHPStan\File\RelativePathHelper;
 use PHPStan\Parser\AnonymousClassVisitor;
 use PHPStan\Php\PhpVersion;
-use PHPStan\PhpDoc\PhpDocInheritanceResolver;
 use PHPStan\PhpDoc\StubPhpDocProvider;
 use PHPStan\PhpDoc\Tag\ParamClosureThisTag;
 use PHPStan\PhpDoc\Tag\ParamOutTag;
@@ -38,6 +36,7 @@ use PHPStan\Reflection\Assertions;
 use PHPStan\Reflection\AttributeReflectionFactory;
 use PHPStan\Reflection\ClassNameHelper;
 use PHPStan\Reflection\ClassReflection;
+use PHPStan\Reflection\ClassReflectionFactory;
 use PHPStan\Reflection\Constant\RuntimeConstantReflection;
 use PHPStan\Reflection\ConstantReflection;
 use PHPStan\Reflection\Deprecation\DeprecationProvider;
@@ -50,7 +49,6 @@ use PHPStan\Reflection\Php\ExitFunctionReflection;
 use PHPStan\Reflection\Php\PhpFunctionReflection;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Reflection\SignatureMap\NativeFunctionReflectionProvider;
-use PHPStan\Reflection\SignatureMap\SignatureMapProvider;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\FileTypeMapper;
@@ -85,13 +83,11 @@ final class BetterReflectionProvider implements ReflectionProvider
 	 * @param list<string> $universalObjectCratesClasses
 	 */
 	public function __construct(
-		private ReflectionProvider\ReflectionProviderProvider $reflectionProviderProvider,
 		private InitializerExprTypeResolver $initializerExprTypeResolver,
-		private ClassReflectionExtensionRegistryProvider $classReflectionExtensionRegistryProvider,
+		private ClassReflectionFactory $classReflectionFactory,
 		#[AutowiredParameter(ref: '@betterReflectionReflector')]
 		private Reflector $reflector,
 		private FileTypeMapper $fileTypeMapper,
-		private PhpDocInheritanceResolver $phpDocInheritanceResolver,
 		private DeprecationProvider $deprecationProvider,
 		private PhpVersion $phpVersion,
 		private NativeFunctionReflectionProvider $nativeFunctionReflectionProvider,
@@ -101,7 +97,6 @@ final class BetterReflectionProvider implements ReflectionProvider
 		private AnonymousClassNameHelper $anonymousClassNameHelper,
 		private FileHelper $fileHelper,
 		private PhpStormStubsSourceStubber $phpstormStubsSourceStubber,
-		private SignatureMapProvider $signatureMapProvider,
 		private AttributeReflectionFactory $attributeReflectionFactory,
 		#[AutowiredParameter(ref: '%universalObjectCratesClasses%')]
 		private array $universalObjectCratesClasses,
@@ -149,28 +144,13 @@ final class BetterReflectionProvider implements ReflectionProvider
 
 		$enumAdapter = base64_decode('UEhQU3RhblxCZXR0ZXJSZWZsZWN0aW9uXFJlZmxlY3Rpb25cQWRhcHRlclxSZWZsZWN0aW9uRW51bQ==', true);
 
-		$classReflection = new ClassReflection(
-			$this->reflectionProviderProvider->getReflectionProvider(),
-			$this->initializerExprTypeResolver,
-			$this->fileTypeMapper,
-			$this->stubPhpDocProvider,
-			$this->phpDocInheritanceResolver,
-			$this->phpVersion,
-			$this->signatureMapProvider,
-			$this->deprecationProvider,
-			$this->attributeReflectionFactory,
-			$this->classReflectionExtensionRegistryProvider,
+		return $this->classReflections[$reflectionClassName] = $this->classReflectionFactory->create(
 			$reflectionClass->getName(),
 			$reflectionClass instanceof ReflectionEnum && PHP_VERSION_ID >= 80000 ? new $enumAdapter($reflectionClass) : new ReflectionClass($reflectionClass),
 			null,
 			null,
 			$this->stubPhpDocProvider->findClassPhpDoc($reflectionClass->getName()),
-			$this->universalObjectCratesClasses,
 		);
-
-		$this->classReflections[$reflectionClassName] = $classReflection;
-
-		return $classReflection;
 	}
 
 	public function getClassName(string $className): string
@@ -241,27 +221,13 @@ final class BetterReflectionProvider implements ReflectionProvider
 			$displayName = sprintf('%s@anonymous/%s:%s:%d', $displayParentName, $filename, $classNode->getStartLine(), $classLineIndex);
 		}
 
-		self::$anonymousClasses[$className] = new ClassReflection(
-			$this->reflectionProviderProvider->getReflectionProvider(),
-			$this->initializerExprTypeResolver,
-			$this->fileTypeMapper,
-			$this->stubPhpDocProvider,
-			$this->phpDocInheritanceResolver,
-			$this->phpVersion,
-			$this->signatureMapProvider,
-			$this->deprecationProvider,
-			$this->attributeReflectionFactory,
-			$this->classReflectionExtensionRegistryProvider,
+		return $this->classReflections[$className] = self::$anonymousClasses[$className] = $this->classReflectionFactory->create(
 			$displayName,
 			new ReflectionClass($reflectionClass),
 			$scopeFile,
 			null,
 			$this->stubPhpDocProvider->findClassPhpDoc($className),
-			$this->universalObjectCratesClasses,
 		);
-		$this->classReflections[$className] = self::$anonymousClasses[$className];
-
-		return self::$anonymousClasses[$className];
 	}
 
 	public function getUniversalObjectCratesClasses(): array
