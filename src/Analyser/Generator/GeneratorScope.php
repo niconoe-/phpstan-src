@@ -34,6 +34,8 @@ use PHPStan\Analyser\SpecifiedTypes;
 use PHPStan\Analyser\TypeSpecifier;
 use PHPStan\Analyser\TypeSpecifierContext;
 use PHPStan\Analyser\UndefinedVariableException;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\GenerateFactory;
 use PHPStan\Node\Expr\AlwaysRememberedExpr;
 use PHPStan\Node\Expr\IntertwinedVariableByReferenceWithExpr;
 use PHPStan\Node\Expr\ParameterVariableOriginalValueExpr;
@@ -127,6 +129,7 @@ use function usort;
 use const PHP_INT_MAX;
 use const PHP_INT_MIN;
 
+#[GenerateFactory(interface: InternalGeneratorScopeFactory::class)]
 final class GeneratorScope implements Scope, NodeCallbackInvoker
 {
 
@@ -150,11 +153,13 @@ final class GeneratorScope implements Scope, NodeCallbackInvoker
 		private TypeSpecifier $typeSpecifier,
 		private ExprPrinter $exprPrinter,
 		private PropertyReflectionFinder $propertyReflectionFinder,
+		#[AutowiredParameter(ref: '@currentPhpVersionSimpleParser')]
 		private Parser $parser,
 		private ConstantResolver $constantResolver,
 		private ScopeContext $context,
 		private PhpVersion $phpVersion,
 		private AttributeReflectionFactory $attributeReflectionFactory,
+		#[AutowiredParameter(ref: '%phpVersion%')]
 		private int|array|null $configPhpVersion,
 		private bool $declareStrictTypes = false,
 		private PhpFunctionFromParserNodeReflection|null $function = null,
