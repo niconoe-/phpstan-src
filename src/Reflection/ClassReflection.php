@@ -13,6 +13,7 @@ use PHPStan\BetterReflection\Reflection\Adapter\ReflectionClass;
 use PHPStan\BetterReflection\Reflection\Adapter\ReflectionEnum;
 use PHPStan\BetterReflection\Reflection\Adapter\ReflectionEnumBackedCase;
 use PHPStan\BetterReflection\Reflection\Adapter\ReflectionMethod;
+use PHPStan\DependencyInjection\Reflection\ClassReflectionExtensionRegistryProvider;
 use PHPStan\Php\PhpVersion;
 use PHPStan\PhpDoc\PhpDocInheritanceResolver;
 use PHPStan\PhpDoc\ResolvedPhpDocBlock;
@@ -29,11 +30,8 @@ use PHPStan\PhpDoc\Tag\TemplateTag;
 use PHPStan\PhpDoc\Tag\TypeAliasImportTag;
 use PHPStan\PhpDoc\Tag\TypeAliasTag;
 use PHPStan\Reflection\Deprecation\DeprecationProvider;
-use PHPStan\Reflection\Php\PhpClassReflectionExtension;
 use PHPStan\Reflection\Php\PhpPropertyReflection;
 use PHPStan\Reflection\Php\UniversalObjectCratesClassReflectionExtension;
-use PHPStan\Reflection\RequireExtension\RequireExtendsMethodsClassReflectionExtension;
-use PHPStan\Reflection\RequireExtension\RequireExtendsPropertiesClassReflectionExtension;
 use PHPStan\Reflection\SignatureMap\SignatureMapProvider;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\CircularTypeAliasDefinitionException;
@@ -163,9 +161,6 @@ final class ClassReflection
 	private array $hasStaticPropertyCache = [];
 
 	/**
-	 * @param PropertiesClassReflectionExtension[] $propertiesClassReflectionExtensions
-	 * @param MethodsClassReflectionExtension[] $methodsClassReflectionExtensions
-	 * @param AllowedSubTypesClassReflectionExtension[] $allowedSubTypesClassReflectionExtensions
 	 * @param string[] $universalObjectCratesClasses
 	 */
 	public function __construct(
@@ -178,12 +173,7 @@ final class ClassReflection
 		private SignatureMapProvider $signatureMapProvider,
 		private DeprecationProvider $deprecationProvider,
 		private AttributeReflectionFactory $attributeReflectionFactory,
-		private PhpClassReflectionExtension $phpClassReflectionExtension,
-		private array $propertiesClassReflectionExtensions,
-		private array $methodsClassReflectionExtensions,
-		private array $allowedSubTypesClassReflectionExtensions,
-		private RequireExtendsPropertiesClassReflectionExtension $requireExtendsPropertiesClassReflectionExtension,
-		private RequireExtendsMethodsClassReflectionExtension $requireExtendsMethodsClassReflectionExtension,
+		private ClassReflectionExtensionRegistryProvider $classReflectionExtensionRegistryProvider,
 		private string $displayName,
 		private ReflectionClass|ReflectionEnum $reflection,
 		private ?string $anonymousFilename,
@@ -476,19 +466,19 @@ final class ClassReflection
 			return $this->hasPropertyCache[$propertyName] = $this->hasNativeProperty($propertyName);
 		}
 
-		if ($this->phpClassReflectionExtension->hasProperty($this, $propertyName)) {
+		if ($this->classReflectionExtensionRegistryProvider->getRegistry()->getPhpClassReflectionExtension()->hasProperty($this, $propertyName)) {
 			return $this->hasPropertyCache[$propertyName] = true;
 		}
 
 		if ($this->allowsDynamicProperties()) {
-			foreach ($this->propertiesClassReflectionExtensions as $extension) {
+			foreach ($this->classReflectionExtensionRegistryProvider->getRegistry()->getPropertiesClassReflectionExtensions() as $extension) {
 				if ($extension->hasProperty($this, $propertyName)) {
 					return $this->hasPropertyCache[$propertyName] = true;
 				}
 			}
 		}
 
-		if ($this->requireExtendsPropertiesClassReflectionExtension->hasProperty($this, $propertyName)) {
+		if ($this->classReflectionExtensionRegistryProvider->getRegistry()->getRequireExtendsPropertyClassReflectionExtension()->hasProperty($this, $propertyName)) {
 			return $this->hasPropertyCache[$propertyName] = true;
 		}
 
@@ -505,15 +495,16 @@ final class ClassReflection
 			return $this->hasInstancePropertyCache[$propertyName] = $this->hasNativeProperty($propertyName);
 		}
 
-		if ($this->phpClassReflectionExtension->hasProperty($this, $propertyName)) {
-			$property = $this->phpClassReflectionExtension->getNativeProperty($this, $propertyName);
+		$phpClassReflectionExtension = $this->classReflectionExtensionRegistryProvider->getRegistry()->getPhpClassReflectionExtension();
+		if ($phpClassReflectionExtension->hasProperty($this, $propertyName)) {
+			$property = $phpClassReflectionExtension->getNativeProperty($this, $propertyName);
 			if (!$property->isStatic()) {
 				return $this->hasInstancePropertyCache[$propertyName] = true;
 			}
 		}
 
 		if ($this->allowsDynamicProperties()) {
-			foreach ($this->propertiesClassReflectionExtensions as $extension) {
+			foreach ($this->classReflectionExtensionRegistryProvider->getRegistry()->getPropertiesClassReflectionExtensions() as $extension) {
 				if ($extension->hasProperty($this, $propertyName)) {
 					$property = $extension->getProperty($this, $propertyName);
 					if ($property->isStatic()) {
@@ -524,7 +515,7 @@ final class ClassReflection
 			}
 		}
 
-		if ($this->requireExtendsPropertiesClassReflectionExtension->hasInstanceProperty($this, $propertyName)) {
+		if ($this->classReflectionExtensionRegistryProvider->getRegistry()->getRequireExtendsPropertyClassReflectionExtension()->hasInstanceProperty($this, $propertyName)) {
 			return $this->hasPropertyCache[$propertyName] = true;
 		}
 
@@ -537,14 +528,15 @@ final class ClassReflection
 			return $this->hasStaticPropertyCache[$propertyName];
 		}
 
-		if ($this->phpClassReflectionExtension->hasProperty($this, $propertyName)) {
-			$property = $this->phpClassReflectionExtension->getNativeProperty($this, $propertyName);
+		$phpClassReflectionExtension = $this->classReflectionExtensionRegistryProvider->getRegistry()->getPhpClassReflectionExtension();
+		if ($phpClassReflectionExtension->hasProperty($this, $propertyName)) {
+			$property = $phpClassReflectionExtension->getNativeProperty($this, $propertyName);
 			if ($property->isStatic()) {
 				return $this->hasStaticPropertyCache[$propertyName] = true;
 			}
 		}
 
-		if ($this->requireExtendsPropertiesClassReflectionExtension->hasStaticProperty($this, $propertyName)) {
+		if ($this->classReflectionExtensionRegistryProvider->getRegistry()->getRequireExtendsPropertyClassReflectionExtension()->hasStaticProperty($this, $propertyName)) {
 			return $this->hasStaticPropertyCache[$propertyName] = true;
 		}
 
@@ -557,17 +549,17 @@ final class ClassReflection
 			return $this->hasMethodCache[$methodName];
 		}
 
-		if ($this->phpClassReflectionExtension->hasMethod($this, $methodName)) {
+		if ($this->classReflectionExtensionRegistryProvider->getRegistry()->getPhpClassReflectionExtension()->hasMethod($this, $methodName)) {
 			return $this->hasMethodCache[$methodName] = true;
 		}
 
-		foreach ($this->methodsClassReflectionExtensions as $extension) {
+		foreach ($this->classReflectionExtensionRegistryProvider->getRegistry()->getMethodsClassReflectionExtensions() as $extension) {
 			if ($extension->hasMethod($this, $methodName)) {
 				return $this->hasMethodCache[$methodName] = true;
 			}
 		}
 
-		if ($this->requireExtendsMethodsClassReflectionExtension->hasMethod($this, $methodName)) {
+		if ($this->classReflectionExtensionRegistryProvider->getRegistry()->getRequireExtendsMethodsClassReflectionExtension()->hasMethod($this, $methodName)) {
 			return $this->hasMethodCache[$methodName] = true;
 		}
 
@@ -581,15 +573,16 @@ final class ClassReflection
 			$key = sprintf('%s-%s', $key, $scope->getClassReflection()->getCacheKey());
 		}
 
-		if ($this->phpClassReflectionExtension->hasMethod($this, $methodName)) {
-			$method = $this->phpClassReflectionExtension->getMethod($this, $methodName);
+		$phpClassReflectionExtension = $this->classReflectionExtensionRegistryProvider->getRegistry()->getPhpClassReflectionExtension();
+		if ($phpClassReflectionExtension->hasMethod($this, $methodName)) {
+			$method = $phpClassReflectionExtension->getMethod($this, $methodName);
 			if ($scope->canCallMethod($method)) {
 				return $this->methods[$key] = $method;
 			}
 			$this->methods[$key] = $method;
 		}
 
-		foreach ($this->methodsClassReflectionExtensions as $extension) {
+		foreach ($this->classReflectionExtensionRegistryProvider->getRegistry()->getMethodsClassReflectionExtensions() as $extension) {
 			if (!$extension->hasMethod($this, $methodName)) {
 				continue;
 			}
@@ -602,8 +595,9 @@ final class ClassReflection
 		}
 
 		if (!isset($this->methods[$key])) {
-			if ($this->requireExtendsMethodsClassReflectionExtension->hasMethod($this, $methodName)) {
-				$method = $this->requireExtendsMethodsClassReflectionExtension->getMethod($this, $methodName);
+			$requireExtendsMethodsClassReflectionExtension = $this->classReflectionExtensionRegistryProvider->getRegistry()->getRequireExtendsMethodsClassReflectionExtension();
+			if ($requireExtendsMethodsClassReflectionExtension->hasMethod($this, $methodName)) {
+				$method = $requireExtendsMethodsClassReflectionExtension->getMethod($this, $methodName);
 				$this->methods[$key] = $method;
 			}
 		}
@@ -635,7 +629,7 @@ final class ClassReflection
 
 	public function hasNativeMethod(string $methodName): bool
 	{
-		return $this->phpClassReflectionExtension->hasNativeMethod($this, $methodName);
+		return $this->classReflectionExtensionRegistryProvider->getRegistry()->getPhpClassReflectionExtension()->hasNativeMethod($this, $methodName);
 	}
 
 	public function getNativeMethod(string $methodName): ExtendedMethodReflection
@@ -643,7 +637,7 @@ final class ClassReflection
 		if (!$this->hasNativeMethod($methodName)) {
 			throw new MissingMethodFromReflectionException($this->getName(), $methodName);
 		}
-		return $this->phpClassReflectionExtension->getNativeMethod($this, $methodName);
+		return $this->classReflectionExtensionRegistryProvider->getRegistry()->getPhpClassReflectionExtension()->getNativeMethod($this, $methodName);
 	}
 
 	public function hasConstructor(): bool
@@ -716,7 +710,7 @@ final class ClassReflection
 
 			unset($this->methods[$name]);
 		}
-		$this->phpClassReflectionExtension->evictPrivateSymbols($this->getCacheKey());
+		$this->classReflectionExtensionRegistryProvider->getRegistry()->getPhpClassReflectionExtension()->evictPrivateSymbols($this->getCacheKey());
 	}
 
 	/** @deprecated Use getInstanceProperty or getStaticProperty */
@@ -731,9 +725,10 @@ final class ClassReflection
 			$key = sprintf('%s-%s', $key, $scope->getClassReflection()->getCacheKey());
 		}
 
+		$phpClassReflectionExtension = $this->classReflectionExtensionRegistryProvider->getRegistry()->getPhpClassReflectionExtension();
 		if (!isset($this->properties[$key])) {
-			if ($this->phpClassReflectionExtension->hasProperty($this, $propertyName)) {
-				$property = $this->phpClassReflectionExtension->getProperty($this, $propertyName, $scope);
+			if ($phpClassReflectionExtension->hasProperty($this, $propertyName)) {
+				$property = $this->classReflectionExtensionRegistryProvider->getRegistry()->getPhpClassReflectionExtension()->getProperty($this, $propertyName, $scope);
 				if ($scope->canReadProperty($property)) {
 					return $this->properties[$key] = $property;
 				}
@@ -741,7 +736,7 @@ final class ClassReflection
 			}
 
 			if ($this->allowsDynamicProperties()) {
-				foreach ($this->propertiesClassReflectionExtensions as $extension) {
+				foreach ($this->classReflectionExtensionRegistryProvider->getRegistry()->getPropertiesClassReflectionExtensions() as $extension) {
 					if (!$extension->hasProperty($this, $propertyName)) {
 						continue;
 					}
@@ -756,15 +751,16 @@ final class ClassReflection
 		}
 
 		// For BC purpose
-		if ($this->phpClassReflectionExtension->hasProperty($this, $propertyName)) {
-			$property = $this->phpClassReflectionExtension->getProperty($this, $propertyName, $scope);
+		if ($phpClassReflectionExtension->hasProperty($this, $propertyName)) {
+			$property = $phpClassReflectionExtension->getProperty($this, $propertyName, $scope);
 
 			return $this->properties[$key] = $property;
 		}
 
 		if (!isset($this->properties[$key])) {
-			if ($this->requireExtendsPropertiesClassReflectionExtension->hasProperty($this, $propertyName)) {
-				$property = $this->requireExtendsPropertiesClassReflectionExtension->getProperty($this, $propertyName);
+			$requireExtendsPropertiesClassReflectionExtension = $this->classReflectionExtensionRegistryProvider->getRegistry()->getRequireExtendsPropertyClassReflectionExtension();
+			if ($requireExtendsPropertiesClassReflectionExtension->hasProperty($this, $propertyName)) {
+				$property = $requireExtendsPropertiesClassReflectionExtension->getProperty($this, $propertyName);
 				$this->properties[$key] = $property;
 			}
 		}
@@ -788,8 +784,9 @@ final class ClassReflection
 		}
 
 		if (!isset($this->instanceProperties[$key])) {
-			if ($this->phpClassReflectionExtension->hasProperty($this, $propertyName)) {
-				$property = $this->phpClassReflectionExtension->getProperty($this, $propertyName, $scope);
+			$phpClassReflectionExtension = $this->classReflectionExtensionRegistryProvider->getRegistry()->getPhpClassReflectionExtension();
+			if ($phpClassReflectionExtension->hasProperty($this, $propertyName)) {
+				$property = $phpClassReflectionExtension->getProperty($this, $propertyName, $scope);
 				if (!$property->isStatic()) {
 					if ($scope->canReadProperty($property)) {
 						return $this->instanceProperties[$key] = $property;
@@ -799,7 +796,7 @@ final class ClassReflection
 			}
 
 			if ($this->allowsDynamicProperties()) {
-				foreach ($this->propertiesClassReflectionExtensions as $extension) {
+				foreach ($this->classReflectionExtensionRegistryProvider->getRegistry()->getPropertiesClassReflectionExtensions() as $extension) {
 					if (!$extension->hasProperty($this, $propertyName)) {
 						continue;
 					}
@@ -819,8 +816,9 @@ final class ClassReflection
 		}
 
 		if (!isset($this->instanceProperties[$key])) {
-			if ($this->requireExtendsPropertiesClassReflectionExtension->hasInstanceProperty($this, $propertyName)) {
-				$property = $this->requireExtendsPropertiesClassReflectionExtension->getInstanceProperty($this, $propertyName);
+			$requireExtendsPropertiesClassReflectionExtension = $this->classReflectionExtensionRegistryProvider->getRegistry()->getRequireExtendsPropertyClassReflectionExtension();
+			if ($requireExtendsPropertiesClassReflectionExtension->hasInstanceProperty($this, $propertyName)) {
+				$property = $requireExtendsPropertiesClassReflectionExtension->getInstanceProperty($this, $propertyName);
 				$this->instanceProperties[$key] = $property;
 			}
 		}
@@ -839,8 +837,9 @@ final class ClassReflection
 			return $this->staticProperties[$key];
 		}
 
-		if ($this->phpClassReflectionExtension->hasProperty($this, $propertyName)) {
-			$nakedProperty = $this->phpClassReflectionExtension->getProperty($this, $propertyName, new OutOfClassScope());
+		$phpClassReflectionExtension = $this->classReflectionExtensionRegistryProvider->getRegistry()->getPhpClassReflectionExtension();
+		if ($phpClassReflectionExtension->hasProperty($this, $propertyName)) {
+			$nakedProperty = $phpClassReflectionExtension->getProperty($this, $propertyName, new OutOfClassScope());
 			if ($nakedProperty->isStatic()) {
 				$property = $this->wrapExtendedProperty($propertyName, $nakedProperty);
 				if ($property->isStatic()) {
@@ -849,8 +848,9 @@ final class ClassReflection
 			}
 		}
 
-		if ($this->requireExtendsPropertiesClassReflectionExtension->hasStaticProperty($this, $propertyName)) {
-			$property = $this->requireExtendsPropertiesClassReflectionExtension->getStaticProperty($this, $propertyName);
+		$requireExtendsPropertiesClassReflectionExtension = $this->classReflectionExtensionRegistryProvider->getRegistry()->getRequireExtendsPropertyClassReflectionExtension();
+		if ($requireExtendsPropertiesClassReflectionExtension->hasStaticProperty($this, $propertyName)) {
+			$property = $requireExtendsPropertiesClassReflectionExtension->getStaticProperty($this, $propertyName);
 			return $this->staticProperties[$key] = $property;
 		}
 
@@ -859,7 +859,7 @@ final class ClassReflection
 
 	public function hasNativeProperty(string $propertyName): bool
 	{
-		return $this->phpClassReflectionExtension->hasProperty($this, $propertyName);
+		return $this->classReflectionExtensionRegistryProvider->getRegistry()->getPhpClassReflectionExtension()->hasProperty($this, $propertyName);
 	}
 
 	public function getNativeProperty(string $propertyName): PhpPropertyReflection
@@ -868,7 +868,7 @@ final class ClassReflection
 			throw new MissingPropertyFromReflectionException($this->getName(), $propertyName);
 		}
 
-		return $this->phpClassReflectionExtension->getNativeProperty($this, $propertyName);
+		return $this->classReflectionExtensionRegistryProvider->getRegistry()->getPhpClassReflectionExtension()->getNativeProperty($this, $propertyName);
 	}
 
 	public function isAbstract(): bool
@@ -1788,12 +1788,7 @@ final class ClassReflection
 			$this->signatureMapProvider,
 			$this->deprecationProvider,
 			$this->attributeReflectionFactory,
-			$this->phpClassReflectionExtension,
-			$this->propertiesClassReflectionExtensions,
-			$this->methodsClassReflectionExtensions,
-			$this->allowedSubTypesClassReflectionExtensions,
-			$this->requireExtendsPropertiesClassReflectionExtension,
-			$this->requireExtendsMethodsClassReflectionExtension,
+			$this->classReflectionExtensionRegistryProvider,
 			$this->displayName,
 			$this->reflection,
 			$this->anonymousFilename,
@@ -1821,12 +1816,7 @@ final class ClassReflection
 			$this->signatureMapProvider,
 			$this->deprecationProvider,
 			$this->attributeReflectionFactory,
-			$this->phpClassReflectionExtension,
-			$this->propertiesClassReflectionExtensions,
-			$this->methodsClassReflectionExtensions,
-			$this->allowedSubTypesClassReflectionExtensions,
-			$this->requireExtendsPropertiesClassReflectionExtension,
-			$this->requireExtendsMethodsClassReflectionExtension,
+			$this->classReflectionExtensionRegistryProvider,
 			$this->displayName,
 			$this->reflection,
 			$this->anonymousFilename,
@@ -1864,12 +1854,7 @@ final class ClassReflection
 			$this->signatureMapProvider,
 			$this->deprecationProvider,
 			$this->attributeReflectionFactory,
-			$this->phpClassReflectionExtension,
-			$this->propertiesClassReflectionExtensions,
-			$this->methodsClassReflectionExtensions,
-			$this->allowedSubTypesClassReflectionExtensions,
-			$this->requireExtendsPropertiesClassReflectionExtension,
-			$this->requireExtendsMethodsClassReflectionExtension,
+			$this->classReflectionExtensionRegistryProvider,
 			$this->displayName,
 			$this->reflection,
 			$this->anonymousFilename,
@@ -1907,12 +1892,7 @@ final class ClassReflection
 			$this->signatureMapProvider,
 			$this->deprecationProvider,
 			$this->attributeReflectionFactory,
-			$this->phpClassReflectionExtension,
-			$this->propertiesClassReflectionExtensions,
-			$this->methodsClassReflectionExtensions,
-			$this->allowedSubTypesClassReflectionExtensions,
-			$this->requireExtendsPropertiesClassReflectionExtension,
-			$this->requireExtendsMethodsClassReflectionExtension,
+			$this->classReflectionExtensionRegistryProvider,
 			$this->displayName,
 			$this->reflection,
 			$this->anonymousFilename,
@@ -2191,7 +2171,7 @@ final class ClassReflection
 	 */
 	public function getAllowedSubTypes(): ?array
 	{
-		foreach ($this->allowedSubTypesClassReflectionExtensions as $allowedSubTypesClassReflectionExtension) {
+		foreach ($this->classReflectionExtensionRegistryProvider->getRegistry()->getAllowedSubTypesClassReflectionExtensions() as $allowedSubTypesClassReflectionExtension) {
 			if ($allowedSubTypesClassReflectionExtension->supports($this)) {
 				return $allowedSubTypesClassReflectionExtension->getAllowedSubTypes($this);
 			}
