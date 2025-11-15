@@ -29,6 +29,7 @@ use PHPStan\Analyser\Generator\ExprHandler;
 use PHPStan\Analyser\Generator\GeneratorScope;
 use PHPStan\Analyser\Generator\InternalThrowPoint;
 use PHPStan\Analyser\Generator\NodeCallbackRequest;
+use PHPStan\Analyser\Generator\NoopNodeCallback;
 use PHPStan\Analyser\Generator\TypeExprRequest;
 use PHPStan\Analyser\Generator\TypeExprResult;
 use PHPStan\Analyser\ImpurePoint;
@@ -338,9 +339,7 @@ final class AssignHandler implements ExprHandler
 					yield new NodeCallbackRequest(new VarTagChangedExpressionTypeNode($varTag, $variableNode), $scope);
 				}
 
-				// todo NoopExprAnalysisRequest
-				$variableNodeResult = yield new ExprAnalysisRequest($stmt, $variableNode, $scope, ExpressionContext::createDeep(), static function () {
-				});
+				$variableNodeResult = yield new ExprAnalysisRequest($stmt, $variableNode, $scope, ExpressionContext::createDeep(), new NoopNodeCallback());
 
 				$assignVarGen = $scope->assignVariable(
 					$name,
@@ -640,14 +639,12 @@ final class AssignHandler implements ExprHandler
 			}
 
 			if (!$varType->isArray()->yes() && !(new ObjectType(ArrayAccess::class))->isSuperTypeOf($varType)->no()) {
-				// todo NoopExprAnalysisRequest
 				$throwPoints = array_merge($throwPoints, (yield new ExprAnalysisRequest(
 					$stmt,
 					new MethodCall($var, 'offsetSet'),
 					$scope,
 					$context,
-					static function (): void {
-					},
+					new NoopNodeCallback(),
 				))->throwPoints);
 			}
 
@@ -758,14 +755,12 @@ final class AssignHandler implements ExprHandler
 				$scope = $assignExprGen->getReturn();
 				// simulate dynamic property assign by __set to get throw points
 				if (!$propertyHolderType->hasMethod('__set')->no()) {
-					// todo NoopExprAnalysisRequest
 					$throwPoints = array_merge($throwPoints, (yield new ExprAnalysisRequest(
 						$stmt,
 						new MethodCall($var->var, '__set'),
 						$scope,
 						$context,
-						static function (): void {
-						},
+						new NoopNodeCallback(),
 					))->throwPoints);
 				}
 			}
@@ -975,8 +970,7 @@ final class AssignHandler implements ExprHandler
 			}
 
 			// 1. eval root expr
-			$varResult = yield new ExprAnalysisRequest($stmt, $var, $scope, $context->enterDeep(), static function () {
-			}); // todo Noop...
+			$varResult = yield new ExprAnalysisRequest($stmt, $var, $scope, $context->enterDeep(), new NoopNodeCallback());
 			$hasYield = $varResult->hasYield;
 			$throwPoints = $varResult->throwPoints;
 			$impurePoints = $varResult->impurePoints;

@@ -256,7 +256,7 @@ final class GeneratorNodeScopeResolver
 						throw new ShouldNotHappenException('Pending fibers with an empty stack should be about synthetic nodes');
 					}
 
-					// todo NoopExprAnalysisRequest
+					// todo problem with noop callback
 					$this->processStmtNodes(
 						$fibersStorage,
 						$exprAnalysisResultStorage,
@@ -352,7 +352,12 @@ final class GeneratorNodeScopeResolver
 	 */
 	private function analyseExpr(ExprAnalysisResultStorage $storage, Stmt $stmt, Expr $expr, GeneratorScope $scope, ExpressionContext $context, ?callable $alternativeNodeCallback): Generator
 	{
-		if ($storage->findExprAnalysisResult($expr) !== null) {
+		$foundExprAnalysisResult = $storage->findExprAnalysisResult($expr);
+		if ($foundExprAnalysisResult !== null) {
+			if ($alternativeNodeCallback instanceof NoopNodeCallback) {
+				return $foundExprAnalysisResult;
+			}
+
 			throw new ShouldNotHappenException(sprintf('Expr %s on line %d has already been analysed', $this->exprPrinter->printExpr($expr), $expr->getStartLine()));
 		}
 
