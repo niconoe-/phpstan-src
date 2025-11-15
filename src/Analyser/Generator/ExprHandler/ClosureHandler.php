@@ -38,7 +38,8 @@ final class ClosureHandler implements ExprHandler
 		?callable $alternativeNodeCallback,
 	): Generator
 	{
-		$result = yield new StmtsAnalysisRequest($expr->stmts, $scope, StatementContext::createTopLevel(), $alternativeNodeCallback); // @phpstan-ignore generator.valueType
+		// @phpstan-ignore generator.valueType
+		$result = yield new StmtsAnalysisRequest($expr->stmts, $scope, StatementContext::createTopLevel(), $alternativeNodeCallback);
 		$scope = $result->scope;
 
 		return new ExprAnalysisResult(

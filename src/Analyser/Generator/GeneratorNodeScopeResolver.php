@@ -151,7 +151,7 @@ final class GeneratorNodeScopeResolver
 			}
 
 			throw new TrampolineException(sprintf(
-				"Error ocurred in GNSR trampoline: %s\n\nAST processor stack trace:\n%s",
+				"Error occurred in GNSR trampoline: %s\n\nAST processor stack trace:\n%s",
 				$e->getMessage(),
 				implode("\n", $stackTrace),
 			), previous: $e);
