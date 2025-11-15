@@ -25,7 +25,7 @@ final class ExprAnalysisRequest
 		public readonly Expr $expr,
 		public readonly GeneratorScope $scope,
 		public readonly ExpressionContext $context,
-		public readonly mixed $alternativeNodeCallback = null,
+		public readonly mixed $alternativeNodeCallback,
 	)
 	{
 		$trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1);

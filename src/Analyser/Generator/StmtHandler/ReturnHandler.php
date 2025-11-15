@@ -26,10 +26,10 @@ final class ReturnHandler implements StmtHandler
 		return $stmt instanceof Return_;
 	}
 
-	public function analyseStmt(Stmt $stmt, GeneratorScope $scope, StatementContext $context): Generator
+	public function analyseStmt(Stmt $stmt, GeneratorScope $scope, StatementContext $context, ?callable $alternativeNodeCallback): Generator
 	{
 		if ($stmt->expr !== null) {
-			$result = yield new ExprAnalysisRequest($stmt, $stmt->expr, $scope, ExpressionContext::createDeep());
+			$result = yield new ExprAnalysisRequest($stmt, $stmt->expr, $scope, ExpressionContext::createDeep(), $alternativeNodeCallback);
 
 			return new StmtAnalysisResult(
 				$result->scope,

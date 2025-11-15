@@ -24,7 +24,7 @@ final class ClassMethodHandler implements StmtHandler
 		return $stmt instanceof ClassMethod;
 	}
 
-	public function analyseStmt(Stmt $stmt, GeneratorScope $scope, StatementContext $context): Generator
+	public function analyseStmt(Stmt $stmt, GeneratorScope $scope, StatementContext $context, ?callable $alternativeNodeCallback): Generator
 	{
 		//$scope = $scope->enterClassMethod();
 
@@ -39,7 +39,7 @@ final class ClassMethodHandler implements StmtHandler
 			);
 		}
 
-		return yield new StmtsAnalysisRequest($stmt->stmts, $scope, StatementContext::createTopLevel());
+		return yield new StmtsAnalysisRequest($stmt->stmts, $scope, StatementContext::createTopLevel(), $alternativeNodeCallback);
 	}
 
 }

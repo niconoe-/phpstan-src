@@ -30,7 +30,14 @@ final class ClassConstFetchHandler implements ExprHandler
 		return $expr instanceof ClassConstFetch;
 	}
 
-	public function analyseExpr(Stmt $stmt, Expr $expr, GeneratorScope $scope, ExprAnalysisResultStorage $storage, ExpressionContext $context): Generator
+	public function analyseExpr(
+		Stmt $stmt,
+		Expr $expr,
+		GeneratorScope $scope,
+		ExprAnalysisResultStorage $storage,
+		ExpressionContext $context,
+		?callable $alternativeNodeCallback,
+	): Generator
 	{
 		if (
 			$expr->class instanceof Name

@@ -28,11 +28,11 @@ final class DeclareHandler implements StmtHandler
 		return $stmt instanceof Declare_;
 	}
 
-	public function analyseStmt(Stmt $stmt, GeneratorScope $scope, StatementContext $context): Generator
+	public function analyseStmt(Stmt $stmt, GeneratorScope $scope, StatementContext $context, ?callable $alternativeNodeCallback): Generator
 	{
 		foreach ($stmt->declares as $declare) {
 			yield new NodeCallbackRequest($declare, $scope);
-			yield new ExprAnalysisRequest($stmt, $declare->value, $scope, ExpressionContext::createDeep());
+			yield new ExprAnalysisRequest($stmt, $declare->value, $scope, ExpressionContext::createDeep(), $alternativeNodeCallback);
 			if (
 				$declare->key->name !== 'strict_types'
 				|| !($declare->value instanceof Int_)
@@ -49,6 +49,7 @@ final class DeclareHandler implements StmtHandler
 				$stmt->stmts,
 				$scope,
 				$context,
+				$alternativeNodeCallback,
 			);
 
 		}

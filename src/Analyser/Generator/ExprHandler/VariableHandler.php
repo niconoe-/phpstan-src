@@ -30,7 +30,14 @@ final class VariableHandler implements ExprHandler
 		return $expr instanceof Variable;
 	}
 
-	public function analyseExpr(Stmt $stmt, Expr $expr, GeneratorScope $scope, ExprAnalysisResultStorage $storage, ExpressionContext $context): Generator
+	public function analyseExpr(
+		Stmt $stmt,
+		Expr $expr,
+		GeneratorScope $scope,
+		ExprAnalysisResultStorage $storage,
+		ExpressionContext $context,
+		?callable $alternativeNodeCallback,
+	): Generator
 	{
 		if (!is_string($expr->name)) {
 			throw new ShouldNotHappenException('Not implemented');

@@ -35,14 +35,21 @@ final class FuncCallHandler implements ExprHandler
 		return $expr instanceof FuncCall;
 	}
 
-	public function analyseExpr(Stmt $stmt, Expr $expr, GeneratorScope $scope, ExprAnalysisResultStorage $storage, ExpressionContext $context): Generator
+	public function analyseExpr(
+		Stmt $stmt,
+		Expr $expr,
+		GeneratorScope $scope,
+		ExprAnalysisResultStorage $storage,
+		ExpressionContext $context,
+		?callable $alternativeNodeCallback,
+	): Generator
 	{
 		$throwPoints = [];
 		$impurePoints = [];
 		$isAlwaysTerminating = false;
 		$hasYield = false;
 		if ($expr->name instanceof Expr) {
-			$nameResult = yield new ExprAnalysisRequest($stmt, $expr->name, $scope, $context->enterDeep());
+			$nameResult = yield new ExprAnalysisRequest($stmt, $expr->name, $scope, $context->enterDeep(), $alternativeNodeCallback);
 			$scope = $nameResult->scope;
 			$throwPoints = $nameResult->throwPoints;
 			$impurePoints = $nameResult->impurePoints;
@@ -53,7 +60,7 @@ final class FuncCallHandler implements ExprHandler
 		$argTypes = [];
 
 		foreach ($expr->getArgs() as $arg) {
-			$argResult = yield new ExprAnalysisRequest($stmt, $arg->value, $scope, $context->enterDeep());
+			$argResult = yield new ExprAnalysisRequest($stmt, $arg->value, $scope, $context->enterDeep(), $alternativeNodeCallback);
 			$argTypes[] = $argResult->type;
 			$scope = $argResult->scope;
 			$throwPoints = array_merge($throwPoints, $argResult->throwPoints);

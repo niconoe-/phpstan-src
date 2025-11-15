@@ -24,7 +24,7 @@ final class StmtsAnalysisRequest
 		public readonly array $stmts,
 		public readonly GeneratorScope $scope,
 		public readonly StatementContext $context,
-		public readonly mixed $alternativeNodeCallback = null,
+		public readonly mixed $alternativeNodeCallback,
 	)
 	{
 		$trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1);

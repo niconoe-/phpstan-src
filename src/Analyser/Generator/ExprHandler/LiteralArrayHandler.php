@@ -40,7 +40,14 @@ final class LiteralArrayHandler implements ExprHandler
 		return $expr instanceof Array_;
 	}
 
-	public function analyseExpr(Stmt $stmt, Expr $expr, GeneratorScope $scope, ExprAnalysisResultStorage $storage, ExpressionContext $context): Generator
+	public function analyseExpr(
+		Stmt $stmt,
+		Expr $expr,
+		GeneratorScope $scope,
+		ExprAnalysisResultStorage $storage,
+		ExpressionContext $context,
+		?callable $alternativeNodeCallback,
+	): Generator
 	{
 		// todo oversizedArrayBuilder
 		$arrayBuilder = ConstantArrayTypeBuilder::createEmpty();
@@ -56,7 +63,7 @@ final class LiteralArrayHandler implements ExprHandler
 			yield new NodeCallbackRequest($arrayItem, $scope);
 			$keyResult = null;
 			if ($arrayItem->key !== null) {
-				$keyResult = yield new ExprAnalysisRequest($stmt, $arrayItem->key, $scope, $context->enterDeep());
+				$keyResult = yield new ExprAnalysisRequest($stmt, $arrayItem->key, $scope, $context->enterDeep(), $alternativeNodeCallback);
 				$hasYield = $hasYield || $keyResult->hasYield;
 				$throwPoints = array_merge($throwPoints, $keyResult->throwPoints);
 				$impurePoints = array_merge($impurePoints, $keyResult->impurePoints);
@@ -64,7 +71,7 @@ final class LiteralArrayHandler implements ExprHandler
 				$scope = $keyResult->scope;
 			}
 
-			$valueResult = yield new ExprAnalysisRequest($stmt, $arrayItem->value, $scope, $context->enterDeep());
+			$valueResult = yield new ExprAnalysisRequest($stmt, $arrayItem->value, $scope, $context->enterDeep(), $alternativeNodeCallback);
 			$hasYield = $hasYield || $valueResult->hasYield;
 			$throwPoints = array_merge($throwPoints, $valueResult->throwPoints);
 			$impurePoints = array_merge($impurePoints, $valueResult->impurePoints);

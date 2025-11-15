@@ -3,9 +3,11 @@
 namespace PHPStan\Analyser\Generator;
 
 use Generator;
+use PhpParser\Node;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Stmt;
 use PHPStan\Analyser\ExpressionContext;
+use PHPStan\Analyser\Scope;
 
 /**
  * @template T of Expr
@@ -22,8 +24,16 @@ interface ExprHandler
 
 	/**
 	 * @param T $expr
+	 * @param (callable(Node, Scope, callable(Node, Scope): void): void)|null $alternativeNodeCallback
 	 * @return Generator<int, ExprAnalysisRequest|AlternativeNodeCallbackRequest|NodeCallbackRequest|TypeExprRequest, ExprAnalysisResult|TypeExprResult, ExprAnalysisResult>
 	 */
-	public function analyseExpr(Stmt $stmt, Expr $expr, GeneratorScope $scope, ExprAnalysisResultStorage $storage, ExpressionContext $context): Generator;
+	public function analyseExpr(
+		Stmt $stmt,
+		Expr $expr,
+		GeneratorScope $scope,
+		ExprAnalysisResultStorage $storage,
+		ExpressionContext $context,
+		?callable $alternativeNodeCallback,
+	): Generator;
 
 }

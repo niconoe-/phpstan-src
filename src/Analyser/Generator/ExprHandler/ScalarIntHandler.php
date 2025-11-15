@@ -27,7 +27,14 @@ final class ScalarIntHandler implements ExprHandler
 		return $expr instanceof Int_;
 	}
 
-	public function analyseExpr(Stmt $stmt, Expr $expr, GeneratorScope $scope, ExprAnalysisResultStorage $storage, ExpressionContext $context): Generator
+	public function analyseExpr(
+		Stmt $stmt,
+		Expr $expr,
+		GeneratorScope $scope,
+		ExprAnalysisResultStorage $storage,
+		ExpressionContext $context,
+		?callable $alternativeNodeCallback,
+	): Generator
 	{
 		yield from [];
 		$type = new ConstantIntegerType($expr->value);

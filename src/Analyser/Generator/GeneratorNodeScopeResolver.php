@@ -337,7 +337,7 @@ final class GeneratorNodeScopeResolver
 				continue;
 			}
 
-			$gen = $stmtHandler->analyseStmt($stmt, $scope, $context);
+			$gen = $stmtHandler->analyseStmt($stmt, $scope, $context, $alternativeNodeCallback);
 			yield from $gen;
 
 			return $gen->getReturn();
@@ -370,7 +370,7 @@ final class GeneratorNodeScopeResolver
 				continue;
 			}
 
-			$gen = $exprHandler->analyseExpr($stmt, $expr, $scope, $storage, $context);
+			$gen = $exprHandler->analyseExpr($stmt, $expr, $scope, $storage, $context, $alternativeNodeCallback);
 			yield from $gen;
 
 			$exprAnalysisResult = $gen->getReturn();

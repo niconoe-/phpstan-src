@@ -29,9 +29,16 @@ final class ClosureHandler implements ExprHandler
 		return $expr instanceof Closure;
 	}
 
-	public function analyseExpr(Stmt $stmt, Expr $expr, GeneratorScope $scope, ExprAnalysisResultStorage $storage, ExpressionContext $context): Generator
+	public function analyseExpr(
+		Stmt $stmt,
+		Expr $expr,
+		GeneratorScope $scope,
+		ExprAnalysisResultStorage $storage,
+		ExpressionContext $context,
+		?callable $alternativeNodeCallback,
+	): Generator
 	{
-		$result = yield new StmtsAnalysisRequest($expr->stmts, $scope, StatementContext::createTopLevel()); // @phpstan-ignore generator.valueType
+		$result = yield new StmtsAnalysisRequest($expr->stmts, $scope, StatementContext::createTopLevel(), $alternativeNodeCallback); // @phpstan-ignore generator.valueType
 		$scope = $result->scope;
 
 		return new ExprAnalysisResult(

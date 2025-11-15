@@ -23,7 +23,7 @@ final class NopHandler implements StmtHandler
 		return $stmt instanceof Nop;
 	}
 
-	public function analyseStmt(Stmt $stmt, GeneratorScope $scope, StatementContext $context): Generator
+	public function analyseStmt(Stmt $stmt, GeneratorScope $scope, StatementContext $context, ?callable $alternativeNodeCallback): Generator
 	{
 		yield from [];
 		return new StmtAnalysisResult(

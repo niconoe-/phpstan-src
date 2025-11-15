@@ -25,9 +25,9 @@ final class ExpressionHandler implements StmtHandler
 		return $stmt instanceof Expression;
 	}
 
-	public function analyseStmt(Stmt $stmt, GeneratorScope $scope, StatementContext $context): Generator
+	public function analyseStmt(Stmt $stmt, GeneratorScope $scope, StatementContext $context, ?callable $alternativeNodeCallback): Generator
 	{
-		$result = yield new ExprAnalysisRequest($stmt, $stmt->expr, $scope, ExpressionContext::createTopLevel());
+		$result = yield new ExprAnalysisRequest($stmt, $stmt->expr, $scope, ExpressionContext::createTopLevel(), $alternativeNodeCallback);
 
 		return new StmtAnalysisResult(
 			$result->scope,

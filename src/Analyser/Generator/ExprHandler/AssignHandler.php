@@ -97,7 +97,14 @@ final class AssignHandler implements ExprHandler
 		return $expr instanceof Assign || $expr instanceof Expr\AssignRef;
 	}
 
-	public function analyseExpr(Stmt $stmt, Expr $expr, GeneratorScope $scope, ExprAnalysisResultStorage $storage, ExpressionContext $context): Generator
+	public function analyseExpr(
+		Stmt $stmt,
+		Expr $expr,
+		GeneratorScope $scope,
+		ExprAnalysisResultStorage $storage,
+		ExpressionContext $context,
+		?callable $alternativeNodeCallback,
+	): Generator
 	{
 		$gen = $this->processAssignVar(
 			$scope,
@@ -106,7 +113,8 @@ final class AssignHandler implements ExprHandler
 			$expr->expr,
 			$storage,
 			$context,
-			static function (GeneratorScope $scope) use ($stmt, $expr, $context): Generator {
+			$alternativeNodeCallback,
+			static function (GeneratorScope $scope) use ($stmt, $expr, $context, $alternativeNodeCallback): Generator {
 				$impurePoints = [];
 				if ($expr instanceof AssignRef) {
 					$referencedExpr = $expr->expr;
@@ -134,7 +142,7 @@ final class AssignHandler implements ExprHandler
 					);
 				}
 
-				$result = yield new ExprAnalysisRequest($stmt, $expr->expr, $scope, $context->enterDeep());
+				$result = yield new ExprAnalysisRequest($stmt, $expr->expr, $scope, $context->enterDeep(), $alternativeNodeCallback);
 				$scope = $result->scope;
 
 				if ($expr instanceof AssignRef) {
@@ -360,6 +368,7 @@ final class AssignHandler implements ExprHandler
 	}
 
 	/**
+	 * @param (callable(Node, Scope, callable(Node, Scope): void): void)|null $alternativeNodeCallback
 	 * @param Closure(GeneratorScope $scope): Generator<int, ExprAnalysisRequest|NodeCallbackRequest|TypeExprRequest, ExprAnalysisResult|TypeExprResult, ExprAnalysisResult> $processExprCallback
 	 * @return Generator<int, ExprAnalysisRequest|NodeCallbackRequest|TypeExprRequest, ExprAnalysisResult|TypeExprResult, ExprAnalysisResult>
 	 */
@@ -370,6 +379,7 @@ final class AssignHandler implements ExprHandler
 		Expr $assignedExpr,
 		ExprAnalysisResultStorage $storage,
 		ExpressionContext $context,
+		?callable $alternativeNodeCallback,
 		Closure $processExprCallback,
 		bool $enterExpressionAssign,
 	): Generator
@@ -394,13 +404,13 @@ final class AssignHandler implements ExprHandler
 				if ($if === null) {
 					$if = $assignedExpr->cond;
 				}
-				$truthyResult = yield new ExprAnalysisRequest($stmt, $if, $scope, $context->enterDeep());
+				$truthyResult = yield new ExprAnalysisRequest($stmt, $if, $scope, $context->enterDeep(), $alternativeNodeCallback);
 				if ($assignedExpr->if === null) {
 					$condResult = $truthyResult;
 				} else {
-					$condResult = yield new ExprAnalysisRequest($stmt, $assignedExpr->cond, $scope, $context->enterDeep());
+					$condResult = yield new ExprAnalysisRequest($stmt, $assignedExpr->cond, $scope, $context->enterDeep(), $alternativeNodeCallback);
 				}
-				$falseyResult = yield new ExprAnalysisRequest($stmt, $assignedExpr->else, $scope, $context->enterDeep());
+				$falseyResult = yield new ExprAnalysisRequest($stmt, $assignedExpr->else, $scope, $context->enterDeep(), $alternativeNodeCallback);
 
 				if (
 					$truthyResult->type->isSuperTypeOf($falseyResult->type)->no()
@@ -479,7 +489,7 @@ final class AssignHandler implements ExprHandler
 			if ($enterExpressionAssign) {
 				$scope = $scope->enterExpressionAssign($var);
 			}
-			$varResult = yield new ExprAnalysisRequest($stmt, $var, $scope, $context->enterDeep());
+			$varResult = yield new ExprAnalysisRequest($stmt, $var, $scope, $context->enterDeep(), $alternativeNodeCallback);
 			$hasYield = $varResult->hasYield;
 			$throwPoints = $varResult->throwPoints;
 			$impurePoints = $varResult->impurePoints;
@@ -507,7 +517,7 @@ final class AssignHandler implements ExprHandler
 					$offsetNativeTypes[] = [null, $dimFetch];
 
 				} else {
-					$dimExprResult = yield new ExprAnalysisRequest($stmt, $dimExpr, $scope, $context->enterDeep());
+					$dimExprResult = yield new ExprAnalysisRequest($stmt, $dimExpr, $scope, $context->enterDeep(), $alternativeNodeCallback);
 					$offsetTypes[] = [$dimExprResult->type, $dimFetch];
 					$offsetNativeTypes[] = [$dimExprResult->nativeType, $dimFetch];
 
@@ -653,7 +663,7 @@ final class AssignHandler implements ExprHandler
 				specifiedFalseyTypes: new SpecifiedTypes(),
 			);
 		} elseif ($var instanceof PropertyFetch) {
-			$objectResult = yield new ExprAnalysisRequest($stmt, $var->var, $scope, $context);
+			$objectResult = yield new ExprAnalysisRequest($stmt, $var->var, $scope, $context, $alternativeNodeCallback);
 			$hasYield = $objectResult->hasYield;
 			$throwPoints = $objectResult->throwPoints;
 			$impurePoints = $objectResult->impurePoints;
@@ -664,7 +674,7 @@ final class AssignHandler implements ExprHandler
 			if ($var->name instanceof Node\Identifier) {
 				$propertyName = $var->name->name;
 			} else {
-				$propertyNameResult = yield new ExprAnalysisRequest($stmt, $var->name, $scope, $context);
+				$propertyNameResult = yield new ExprAnalysisRequest($stmt, $var->name, $scope, $context, $alternativeNodeCallback);
 				$hasYield = $hasYield || $propertyNameResult->hasYield;
 				$throwPoints = array_merge($throwPoints, $propertyNameResult->throwPoints);
 				$impurePoints = array_merge($impurePoints, $propertyNameResult->impurePoints);
@@ -775,7 +785,7 @@ final class AssignHandler implements ExprHandler
 			if ($var->class instanceof Node\Name) {
 				$propertyHolderType = $scope->resolveTypeByName($var->class);
 			} else {
-				$varClassResult = yield new ExprAnalysisRequest($stmt, $var->class, $scope, $context);
+				$varClassResult = yield new ExprAnalysisRequest($stmt, $var->class, $scope, $context, $alternativeNodeCallback);
 				$propertyHolderType = $varClassResult->type;
 			}
 
@@ -788,7 +798,7 @@ final class AssignHandler implements ExprHandler
 			if ($var->name instanceof Node\Identifier) {
 				$propertyName = $var->name->name;
 			} else {
-				$propertyNameResult = yield new ExprAnalysisRequest($stmt, $var->name, $scope, $context);
+				$propertyNameResult = yield new ExprAnalysisRequest($stmt, $var->name, $scope, $context, $alternativeNodeCallback);
 				$hasYield = $propertyNameResult->hasYield;
 				$throwPoints = $propertyNameResult->throwPoints;
 				$impurePoints = $propertyNameResult->impurePoints;
@@ -884,7 +894,7 @@ final class AssignHandler implements ExprHandler
 				$itemScope = $this->lookForSetAllowedUndefinedExpressions($itemScope, $arrayItem->value);
 				yield new NodeCallbackRequest($arrayItem, $itemScope);
 				if ($arrayItem->key !== null) {
-					$keyResult = yield new ExprAnalysisRequest($stmt, $arrayItem->key, $itemScope, $context->enterDeep());
+					$keyResult = yield new ExprAnalysisRequest($stmt, $arrayItem->key, $itemScope, $context->enterDeep(), $alternativeNodeCallback);
 					$hasYield = $hasYield || $keyResult->hasYield;
 					$throwPoints = array_merge($throwPoints, $keyResult->throwPoints);
 					$impurePoints = array_merge($impurePoints, $keyResult->impurePoints);
@@ -892,7 +902,7 @@ final class AssignHandler implements ExprHandler
 					$itemScope = $keyResult->scope;
 				}
 
-				$valueResult = yield new ExprAnalysisRequest($stmt, $arrayItem->value, $itemScope, $context->enterDeep());
+				$valueResult = yield new ExprAnalysisRequest($stmt, $arrayItem->value, $itemScope, $context->enterDeep(), $alternativeNodeCallback);
 				$hasYield = $hasYield || $valueResult->hasYield;
 				$throwPoints = array_merge($throwPoints, $valueResult->throwPoints);
 				$impurePoints = array_merge($impurePoints, $valueResult->impurePoints);
@@ -910,6 +920,7 @@ final class AssignHandler implements ExprHandler
 					new GetOffsetValueTypeExpr($assignedExpr, $dimExpr),
 					$storage,
 					$context,
+					$alternativeNodeCallback,
 					static function (GeneratorScope $scope): Generator {
 						yield from [];
 						return new ExprAnalysisResult(
@@ -964,7 +975,8 @@ final class AssignHandler implements ExprHandler
 			}
 
 			// 1. eval root expr
-			$varResult = yield new ExprAnalysisRequest($stmt, $var, $scope, $context->enterDeep());
+			$varResult = yield new ExprAnalysisRequest($stmt, $var, $scope, $context->enterDeep(), static function () {
+			}); // todo Noop...
 			$hasYield = $varResult->hasYield;
 			$throwPoints = $varResult->throwPoints;
 			$impurePoints = $varResult->impurePoints;

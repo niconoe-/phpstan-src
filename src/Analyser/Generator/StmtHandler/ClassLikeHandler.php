@@ -25,10 +25,10 @@ final class ClassLikeHandler implements StmtHandler
 		return $stmt instanceof Class_ || $stmt instanceof Interface_ || $stmt instanceof Enum_;
 	}
 
-	public function analyseStmt(Stmt $stmt, GeneratorScope $scope, StatementContext $context): Generator
+	public function analyseStmt(Stmt $stmt, GeneratorScope $scope, StatementContext $context, ?callable $alternativeNodeCallback): Generator
 	{
 		//$scope = $scope->enterClass();
-		return yield new StmtsAnalysisRequest($stmt->stmts, $scope, $context);
+		return yield new StmtsAnalysisRequest($stmt->stmts, $scope, $context, $alternativeNodeCallback);
 	}
 
 }

@@ -3,7 +3,9 @@
 namespace PHPStan\Analyser\Generator;
 
 use Generator;
+use PhpParser\Node;
 use PhpParser\Node\Stmt;
+use PHPStan\Analyser\Scope;
 use PHPStan\Analyser\StatementContext;
 
 /**
@@ -21,8 +23,14 @@ interface StmtHandler
 
 	/**
 	 * @param T $stmt
+	 * @param (callable(Node, Scope, callable(Node, Scope): void): void)|null $alternativeNodeCallback
 	 * @return Generator<int, ExprAnalysisRequest|StmtAnalysisRequest|StmtsAnalysisRequest|NodeCallbackRequest, ExprAnalysisResult|StmtAnalysisResult, StmtAnalysisResult>
 	 */
-	public function analyseStmt(Stmt $stmt, GeneratorScope $scope, StatementContext $context): Generator;
+	public function analyseStmt(
+		Stmt $stmt,
+		GeneratorScope $scope,
+		StatementContext $context,
+		?callable $alternativeNodeCallback,
+	): Generator;
 
 }
