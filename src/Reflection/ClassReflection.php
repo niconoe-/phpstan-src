@@ -52,6 +52,7 @@ use PHPStan\Type\Type;
 use PHPStan\Type\TypeAlias;
 use PHPStan\Type\TypehintHelper;
 use PHPStan\Type\VerbosityLevel;
+use ReflectionClass as CoreReflectionClass;
 use ReflectionException;
 use function array_diff;
 use function array_filter;
@@ -162,6 +163,9 @@ final class ClassReflection
 	/** @var array<string, bool> */
 	private array $hasStaticPropertyCache = [];
 
+	/**
+	 * @param ReflectionClass|ReflectionEnum $reflection
+	 */
 	public function __construct(
 		private ClassReflectionFactory $classReflectionFactory,
 		private ReflectionProvider $reflectionProvider,
@@ -175,7 +179,7 @@ final class ClassReflection
 		private AttributeReflectionFactory $attributeReflectionFactory,
 		private ClassReflectionExtensionRegistryProvider $classReflectionExtensionRegistryProvider,
 		private string $displayName,
-		private ReflectionClass|ReflectionEnum $reflection,
+		private CoreReflectionClass $reflection,
 		private ?string $anonymousFilename,
 		private ?TemplateTypeMap $resolvedTemplateTypeMap,
 		private ?ResolvedPhpDocBlock $stubPhpDocBlock,
