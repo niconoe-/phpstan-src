@@ -3686,7 +3686,7 @@ final class GeneratorScope implements Scope, NodeCallbackInvoker
 
 	public function invokeNodeCallback(Node $node): void
 	{
-		Fiber::suspend(new NodeCallbackRequest($node, $this));
+		Fiber::suspend(new NodeCallbackRequest($node, $this, null));
 	}
 
 }

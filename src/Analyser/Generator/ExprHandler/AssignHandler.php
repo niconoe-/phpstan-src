@@ -172,7 +172,7 @@ final class AssignHandler implements ExprHandler
 			yield from $processVarGen;
 			$scope = $processVarGen->getReturn();
 			if (!$varChangedScope) {
-				$stmtVarGen = $this->processStmtVarAnnotation($scope, $stmt, null);
+				$stmtVarGen = $this->processStmtVarAnnotation($scope, $stmt, null, $alternativeNodeCallback);
 				yield from $stmtVarGen;
 				$scope = $stmtVarGen->getReturn();
 			}
@@ -277,9 +277,10 @@ final class AssignHandler implements ExprHandler
 	}
 
 	/**
+	 * @param (callable(Node, Scope, callable(Node, Scope): void): void)|null $alternativeNodeCallback
 	 * @return Generator<int, ExprAnalysisRequest|NodeCallbackRequest|TypeExprRequest, ExprAnalysisResult|TypeExprResult, GeneratorScope>
 	 */
-	private function processStmtVarAnnotation(GeneratorScope $scope, Node\Stmt $stmt, ?Expr $defaultExpr): Generator
+	private function processStmtVarAnnotation(GeneratorScope $scope, Node\Stmt $stmt, ?Expr $defaultExpr, ?callable $alternativeNodeCallback): Generator
 	{
 		$function = $scope->getFunction();
 		$variableLessTags = [];
@@ -333,7 +334,7 @@ final class AssignHandler implements ExprHandler
 				$variableNode = new Variable($name, $stmt->getAttributes());
 				$originalType = $scope->getVariableType($name);
 				if (!$originalType->equals($varTag->getType())) {
-					yield new NodeCallbackRequest(new VarTagChangedExpressionTypeNode($varTag, $variableNode), $scope);
+					yield new NodeCallbackRequest(new VarTagChangedExpressionTypeNode($varTag, $variableNode), $scope, $alternativeNodeCallback);
 				}
 
 				$variableNodeResult = yield new ExprAnalysisRequest($stmt, $variableNode, $scope, ExpressionContext::createDeep(), new NoopNodeCallback());
@@ -379,7 +380,7 @@ final class AssignHandler implements ExprHandler
 		bool $enterExpressionAssign,
 	): Generator
 	{
-		yield new NodeCallbackRequest($var, $enterExpressionAssign ? $scope->enterExpressionAssign($var) : $scope);
+		yield new NodeCallbackRequest($var, $enterExpressionAssign ? $scope->enterExpressionAssign($var) : $scope, $alternativeNodeCallback);
 
 		$isAssignOp = $assignedExpr instanceof Expr\AssignOp && !$enterExpressionAssign;
 		if ($var instanceof Variable && is_string($var->name)) {
@@ -451,7 +452,7 @@ final class AssignHandler implements ExprHandler
 			yield from $sureTypesGen;
 			$conditionalExpressions = $sureTypesGen->getReturn();
 
-			yield new NodeCallbackRequest(new VariableAssignNode($var, $assignedExpr), $scopeBeforeAssignEval);
+			yield new NodeCallbackRequest(new VariableAssignNode($var, $assignedExpr), $scopeBeforeAssignEval, $alternativeNodeCallback);
 
 			$assignVarGen = $scope->assignVariable($var->name, $type, $result->nativeType, TrinaryLogic::createYes());
 			yield from $assignVarGen;
@@ -526,7 +527,7 @@ final class AssignHandler implements ExprHandler
 
 				// Callback was already called for last dim at the beginning of the method.
 				if ($key !== $lastDimKey) {
-					yield new NodeCallbackRequest($dimFetch, $enterExpressionAssign ? $scope->enterExpressionAssign($dimFetch) : $scope);
+					yield new NodeCallbackRequest($dimFetch, $enterExpressionAssign ? $scope->enterExpressionAssign($dimFetch) : $scope, $alternativeNodeCallback);
 				}
 
 				if ($dimExpr === null) {
@@ -620,13 +621,13 @@ final class AssignHandler implements ExprHandler
 
 			if ($varType->isArray()->yes() || !(new ObjectType(ArrayAccess::class))->isSuperTypeOf($varType)->yes()) {
 				if ($var instanceof Variable && is_string($var->name)) {
-					yield new NodeCallbackRequest(new VariableAssignNode($var, $assignedPropertyExpr), $scopeBeforeAssignEval);
+					yield new NodeCallbackRequest(new VariableAssignNode($var, $assignedPropertyExpr), $scopeBeforeAssignEval, $alternativeNodeCallback);
 					$assignVarGen = $scope->assignVariable($var->name, $valueToWrite, $nativeValueToWrite, TrinaryLogic::createYes());
 					yield from $assignVarGen;
 					$scope = $assignVarGen->getReturn();
 				} else {
 					if ($var instanceof PropertyFetch || $var instanceof StaticPropertyFetch) {
-						yield new NodeCallbackRequest(new PropertyAssignNode($var, $assignedPropertyExpr, $isAssignOp), $scopeBeforeAssignEval);
+						yield new NodeCallbackRequest(new PropertyAssignNode($var, $assignedPropertyExpr, $isAssignOp), $scopeBeforeAssignEval, $alternativeNodeCallback);
 						if ($var instanceof PropertyFetch && $var->name instanceof Node\Identifier && !$isAssignOp) {
 							$scope = $scope->assignInitializedProperty((yield new TypeExprRequest($var->var))->type, $var->name->toString());
 						}
@@ -641,9 +642,9 @@ final class AssignHandler implements ExprHandler
 				}
 			} else {
 				if ($var instanceof Variable) {
-					yield new NodeCallbackRequest(new VariableAssignNode($var, $assignedPropertyExpr), $scopeBeforeAssignEval);
+					yield new NodeCallbackRequest(new VariableAssignNode($var, $assignedPropertyExpr), $scopeBeforeAssignEval, $alternativeNodeCallback);
 				} elseif ($var instanceof PropertyFetch || $var instanceof StaticPropertyFetch) {
-					yield new NodeCallbackRequest(new PropertyAssignNode($var, $assignedPropertyExpr, $isAssignOp), $scopeBeforeAssignEval);
+					yield new NodeCallbackRequest(new PropertyAssignNode($var, $assignedPropertyExpr, $isAssignOp), $scopeBeforeAssignEval, $alternativeNodeCallback);
 					if ($var instanceof PropertyFetch && $var->name instanceof Node\Identifier && !$isAssignOp) {
 						$scope = $scope->assignInitializedProperty((yield new TypeExprRequest($var->var))->type, $var->name->toString());
 					}
@@ -721,7 +722,7 @@ final class AssignHandler implements ExprHandler
 			if ($propertyName !== null && $propertyHolderType->hasInstanceProperty($propertyName)->yes()) {
 				$propertyReflection = $propertyHolderType->getInstanceProperty($propertyName, $scope);
 				$assignedExprType = $result->type;
-				yield new NodeCallbackRequest(new PropertyAssignNode($var, $assignedExpr, $isAssignOp), $scopeBeforeAssignEval);
+				yield new NodeCallbackRequest(new PropertyAssignNode($var, $assignedExpr, $isAssignOp), $scopeBeforeAssignEval, $alternativeNodeCallback);
 				if ($propertyReflection->canChangeTypeAfterAssignment()) {
 					if ($propertyReflection->hasNativeType()) {
 						$propertyNativeType = $propertyReflection->getNativeType();
@@ -773,7 +774,7 @@ final class AssignHandler implements ExprHandler
 			} else {
 				// fallback
 				$assignedExprType = $result->type;
-				yield new NodeCallbackRequest(new PropertyAssignNode($var, $assignedExpr, $isAssignOp), $scopeBeforeAssignEval);
+				yield new NodeCallbackRequest(new PropertyAssignNode($var, $assignedExpr, $isAssignOp), $scopeBeforeAssignEval, $alternativeNodeCallback);
 				$assignExprGen = $scope->assignExpression($var, $assignedExprType, $result->nativeType);
 				yield from $assignExprGen;
 				$scope = $assignExprGen->getReturn();
@@ -838,7 +839,7 @@ final class AssignHandler implements ExprHandler
 			if ($propertyName !== null) {
 				$propertyReflection = $scope->getStaticPropertyReflection($propertyHolderType, $propertyName);
 				$assignedExprType = $result->type;
-				yield new NodeCallbackRequest(new PropertyAssignNode($var, $assignedExpr, $isAssignOp), $scopeBeforeAssignEval);
+				yield new NodeCallbackRequest(new PropertyAssignNode($var, $assignedExpr, $isAssignOp), $scopeBeforeAssignEval, $alternativeNodeCallback);
 				if ($propertyReflection !== null && $propertyReflection->canChangeTypeAfterAssignment()) {
 					if ($propertyReflection->hasNativeType()) {
 						$propertyNativeType = $propertyReflection->getNativeType();
@@ -875,7 +876,7 @@ final class AssignHandler implements ExprHandler
 			} else {
 				// fallback
 				$assignedExprType = $result->type;
-				yield new NodeCallbackRequest(new PropertyAssignNode($var, $assignedExpr, $isAssignOp), $scopeBeforeAssignEval);
+				yield new NodeCallbackRequest(new PropertyAssignNode($var, $assignedExpr, $isAssignOp), $scopeBeforeAssignEval, $alternativeNodeCallback);
 				$assignExprGen = $scope->assignExpression($var, $assignedExprType, $result->nativeType);
 				yield from $assignExprGen;
 				$scope = $assignExprGen->getReturn();
@@ -911,7 +912,7 @@ final class AssignHandler implements ExprHandler
 					$itemScope = $itemScope->enterExpressionAssign($arrayItem->value);
 				}
 				$itemScope = $this->lookForSetAllowedUndefinedExpressions($itemScope, $arrayItem->value);
-				yield new NodeCallbackRequest($arrayItem, $itemScope);
+				yield new NodeCallbackRequest($arrayItem, $itemScope, $alternativeNodeCallback);
 				if ($arrayItem->key !== null) {
 					$keyResult = yield new ExprAnalysisRequest($stmt, $arrayItem->key, $itemScope, $context->enterDeep(), $alternativeNodeCallback);
 					$hasYield = $hasYield || $keyResult->hasYield;
@@ -1051,13 +1052,13 @@ final class AssignHandler implements ExprHandler
 			}
 
 			if ($var instanceof Variable && is_string($var->name)) {
-				yield new NodeCallbackRequest(new VariableAssignNode($var, $assignedPropertyExpr), $scope);
+				yield new NodeCallbackRequest(new VariableAssignNode($var, $assignedPropertyExpr), $scope, $alternativeNodeCallback);
 				$assignVarGen = $scope->assignVariable($var->name, $valueToWrite, $nativeValueToWrite, TrinaryLogic::createYes());
 				yield from $assignVarGen;
 				$scope = $assignVarGen->getReturn();
 			} else {
 				if ($var instanceof PropertyFetch || $var instanceof StaticPropertyFetch) {
-					yield new NodeCallbackRequest(new PropertyAssignNode($var, $assignedPropertyExpr, $isAssignOp), $scope);
+					yield new NodeCallbackRequest(new PropertyAssignNode($var, $assignedPropertyExpr, $isAssignOp), $scope, $alternativeNodeCallback);
 				}
 				$assignExprGen = $scope->assignExpression(
 					$var,

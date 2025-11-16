@@ -25,7 +25,7 @@ interface ExprHandler
 	/**
 	 * @param T $expr
 	 * @param (callable(Node, Scope, callable(Node, Scope): void): void)|null $alternativeNodeCallback
-	 * @return Generator<int, ExprAnalysisRequest|AlternativeNodeCallbackRequest|NodeCallbackRequest|TypeExprRequest, ExprAnalysisResult|TypeExprResult, ExprAnalysisResult>
+	 * @return Generator<int, ExprAnalysisRequest|NodeCallbackRequest|TypeExprRequest, ExprAnalysisResult|TypeExprResult, ExprAnalysisResult>
 	 */
 	public function analyseExpr(
 		Stmt $stmt,

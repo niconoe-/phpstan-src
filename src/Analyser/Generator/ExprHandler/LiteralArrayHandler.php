@@ -58,7 +58,7 @@ final class LiteralArrayHandler implements ExprHandler
 		$isAlwaysTerminating = false;
 
 		foreach ($expr->items as $arrayItem) {
-			yield new NodeCallbackRequest($arrayItem, $scope);
+			yield new NodeCallbackRequest($arrayItem, $scope, $alternativeNodeCallback);
 			$keyResult = null;
 			if ($arrayItem->key !== null) {
 				$keyResult = yield new ExprAnalysisRequest($stmt, $arrayItem->key, $scope, $context->enterDeep(), $alternativeNodeCallback);

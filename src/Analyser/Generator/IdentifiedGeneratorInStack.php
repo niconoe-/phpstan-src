@@ -11,8 +11,8 @@ final class IdentifiedGeneratorInStack
 	/**
 	 * @param (
 	 *     Generator<int, StmtAnalysisRequest, StmtAnalysisResult, StmtAnalysisResult>| // analyseStmts
-	 *     Generator<int, ExprAnalysisRequest|StmtAnalysisRequest|StmtsAnalysisRequest|NodeCallbackRequest|AlternativeNodeCallbackRequest, ExprAnalysisResult|StmtAnalysisResult, StmtAnalysisResult>| // analyseStmt
-	 *     Generator<int, TypeExprRequest|ExprAnalysisRequest|NodeCallbackRequest|AlternativeNodeCallbackRequest, ExprAnalysisResult, TypeExprResult|ExprAnalysisResult>| // analyseExpr
+	 *     Generator<int, ExprAnalysisRequest|StmtAnalysisRequest|StmtsAnalysisRequest|NodeCallbackRequest, ExprAnalysisResult|StmtAnalysisResult, StmtAnalysisResult>| // analyseStmt
+	 *     Generator<int, TypeExprRequest|ExprAnalysisRequest|NodeCallbackRequest, ExprAnalysisResult, TypeExprResult|ExprAnalysisResult>| // analyseExpr
 	 *     Generator<int, TypeExprRequest, TypeExprResult, TypeExprResult> // analyseExprForType
 	 * ) $generator
 	 * @param Node|Node[] $node

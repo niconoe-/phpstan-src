@@ -31,7 +31,7 @@ final class DeclareHandler implements StmtHandler
 	public function analyseStmt(Stmt $stmt, GeneratorScope $scope, StatementContext $context, ?callable $alternativeNodeCallback): Generator
 	{
 		foreach ($stmt->declares as $declare) {
-			yield new NodeCallbackRequest($declare, $scope);
+			yield new NodeCallbackRequest($declare, $scope, $alternativeNodeCallback);
 			yield new ExprAnalysisRequest($stmt, $declare->value, $scope, ExpressionContext::createDeep(), $alternativeNodeCallback);
 			if (
 				$declare->key->name !== 'strict_types'

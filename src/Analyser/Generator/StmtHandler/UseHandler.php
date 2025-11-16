@@ -27,7 +27,7 @@ final class UseHandler implements StmtHandler
 	public function analyseStmt(Stmt $stmt, GeneratorScope $scope, StatementContext $context, ?callable $alternativeNodeCallback): Generator
 	{
 		foreach ($stmt->uses as $useItem) {
-			yield new NodeCallbackRequest($useItem, $scope);
+			yield new NodeCallbackRequest($useItem, $scope, $alternativeNodeCallback);
 		}
 
 		return new StmtAnalysisResult(
