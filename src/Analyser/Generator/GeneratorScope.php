@@ -1424,6 +1424,309 @@ final class GeneratorScope implements Scope, NodeCallbackInvoker
 	}
 
 	/**
+	 * This assumes enterAnonymousFunctionWithoutReflection() has already been called
+	 */
+	public function enterAnonymousFunction(
+		ClosureType $anonymousFunctionReflection,
+	): self
+	{
+		return $this->scopeFactory->create(
+			$this->context,
+			$this->isDeclareStrictTypes(),
+			$this->getFunction(),
+			$this->getNamespace(),
+			$this->expressionTypes,
+			$this->nativeExpressionTypes,
+			[],
+			$this->inClosureBindScopeClasses,
+			$anonymousFunctionReflection,
+			true,
+			[],
+			[],
+			$this->inFunctionCallsStack,
+			false,
+			$this,
+			$this->nativeTypesPromoted,
+		);
+	}
+
+	/**
+	 * @param ParameterReflection[]|null $callableParameters
+	 */
+	public function enterAnonymousFunctionWithoutReflection(
+		Expr\Closure $closure,
+		?array $callableParameters,
+	): self
+	{
+		$expressionTypes = [];
+		$nativeTypes = [];
+		foreach ($closure->params as $i => $parameter) {
+			if (!$parameter->var instanceof Variable || !is_string($parameter->var->name)) {
+				throw new ShouldNotHappenException();
+			}
+			$paramExprString = sprintf('$%s', $parameter->var->name);
+			$isNullable = $this->isParameterValueNullable($parameter);
+			$parameterType = $this->getFunctionType($parameter->type, $isNullable, $parameter->variadic);
+			if ($callableParameters !== null) {
+				if (isset($callableParameters[$i])) {
+					$parameterType = self::intersectButNotNever($parameterType, $callableParameters[$i]->getType());
+				} elseif (count($callableParameters) > 0) {
+					$lastParameter = array_last($callableParameters);
+					if ($lastParameter->isVariadic()) {
+						$parameterType = self::intersectButNotNever($parameterType, $lastParameter->getType());
+					} else {
+						$parameterType = self::intersectButNotNever($parameterType, new MixedType());
+					}
+				} else {
+					$parameterType = self::intersectButNotNever($parameterType, new MixedType());
+				}
+			}
+			$holder = ExpressionTypeHolder::createYes($parameter->var, $parameterType);
+			$expressionTypes[$paramExprString] = $holder;
+			$nativeTypes[$paramExprString] = $holder;
+		}
+
+		$nonRefVariableNames = [];
+		foreach ($closure->uses as $use) {
+			if (!is_string($use->var->name)) {
+				throw new ShouldNotHappenException();
+			}
+			$variableName = $use->var->name;
+			$paramExprString = '$' . $use->var->name;
+			if ($use->byRef) {
+				$holder = ExpressionTypeHolder::createYes($use->var, new MixedType());
+				$expressionTypes[$paramExprString] = $holder;
+				$nativeTypes[$paramExprString] = $holder;
+				continue;
+			}
+			$nonRefVariableNames[$variableName] = true;
+			if ($this->hasVariableType($variableName)->no()) {
+				$variableType = new ErrorType();
+				$variableNativeType = new ErrorType();
+			} else {
+				$variableType = $this->getVariableType($variableName);
+				$nativeExprHolder = $this->nativeExpressionTypes['$' . $variableName] ?? null;
+				if ($nativeExprHolder !== null) {
+					$variableNativeType = $nativeExprHolder->getType();
+				} else {
+					$variableNativeType = new ErrorType();
+				}
+			}
+			$expressionTypes[$paramExprString] = ExpressionTypeHolder::createYes($use->var, $variableType);
+			$nativeTypes[$paramExprString] = ExpressionTypeHolder::createYes($use->var, $variableNativeType);
+		}
+
+		$nonStaticExpressions = $this->invalidateStaticExpressions($this->expressionTypes);
+		foreach ($nonStaticExpressions as $exprString => $typeHolder) {
+			$expr = $typeHolder->getExpr();
+
+			if ($expr instanceof Variable) {
+				continue;
+			}
+
+			$variables = (new NodeFinder())->findInstanceOf([$expr], Variable::class);
+			if ($variables === [] && !$this->expressionTypeIsUnchangeable($typeHolder)) {
+				continue;
+			}
+
+			foreach ($variables as $variable) {
+				if (!is_string($variable->name)) {
+					continue 2;
+				}
+				if (!array_key_exists($variable->name, $nonRefVariableNames)) {
+					continue 2;
+				}
+			}
+
+			$expressionTypes[$exprString] = $typeHolder;
+		}
+
+		if ($this->hasVariableType('this')->yes() && !$closure->static) {
+			$node = new Variable('this');
+			$expressionTypes['$this'] = ExpressionTypeHolder::createYes($node, $this->getVariableType('this'));
+
+			$nativeExprHolder = $this->nativeExpressionTypes['$this'] ?? null;
+			if ($nativeExprHolder !== null) {
+				$variableNativeType = $nativeExprHolder->getType();
+			} else {
+				$variableNativeType = new ErrorType();
+			}
+			$nativeTypes['$this'] = ExpressionTypeHolder::createYes($node, $variableNativeType);
+
+			if ($this->phpVersion->supportsReadOnlyProperties()) {
+				foreach ($nonStaticExpressions as $exprString => $typeHolder) {
+					$expr = $typeHolder->getExpr();
+
+					if (!$expr instanceof PropertyFetch) {
+						continue;
+					}
+
+					if (!$this->isReadonlyPropertyFetch($expr, true)) {
+						continue;
+					}
+
+					$expressionTypes[$exprString] = $typeHolder;
+				}
+			}
+		}
+
+		return $this->scopeFactory->create(
+			$this->context,
+			$this->isDeclareStrictTypes(),
+			$this->getFunction(),
+			$this->getNamespace(),
+			array_merge($this->getConstantTypes(), $expressionTypes),
+			array_merge($this->getNativeConstantTypes(), $nativeTypes),
+			[],
+			$this->inClosureBindScopeClasses,
+			new ClosureType(),
+			true,
+			[],
+			[],
+			[],
+			false,
+			$this,
+			$this->nativeTypesPromoted,
+		);
+	}
+
+	/**
+	 * This assumes enterArrowFunctionWithoutReflection() has already been called
+	 */
+	public function enterArrowFunction(ClosureType $anonymousFunctionReflection): self
+	{
+		return $this->scopeFactory->create(
+			$this->context,
+			$this->isDeclareStrictTypes(),
+			$this->getFunction(),
+			$this->getNamespace(),
+			$this->expressionTypes,
+			$this->nativeExpressionTypes,
+			$this->conditionalExpressions,
+			$this->inClosureBindScopeClasses,
+			$anonymousFunctionReflection,
+			true,
+			[],
+			[],
+			$this->inFunctionCallsStack,
+			$this->afterExtractCall,
+			$this->parentScope,
+			$this->nativeTypesPromoted,
+		);
+	}
+
+	/**
+	 * @param ParameterReflection[]|null $callableParameters
+	 * @return Generator<int, ExprAnalysisRequest|TypeExprRequest, ExprAnalysisResult|TypeExprResult, GeneratorScope>
+	 */
+	public function enterArrowFunctionWithoutReflection(Expr\ArrowFunction $arrowFunction, ?array $callableParameters): Generator
+	{
+		$arrowFunctionScope = $this;
+		foreach ($arrowFunction->params as $i => $parameter) {
+			if ($parameter->type === null) {
+				$parameterType = new MixedType();
+			} else {
+				$isNullable = $this->isParameterValueNullable($parameter);
+				$parameterType = $this->getFunctionType($parameter->type, $isNullable, $parameter->variadic);
+			}
+
+			if ($callableParameters !== null) {
+				if (isset($callableParameters[$i])) {
+					$parameterType = self::intersectButNotNever($parameterType, $callableParameters[$i]->getType());
+				} elseif (count($callableParameters) > 0) {
+					$lastParameter = array_last($callableParameters);
+					if ($lastParameter->isVariadic()) {
+						$parameterType = self::intersectButNotNever($parameterType, $lastParameter->getType());
+					} else {
+						$parameterType = self::intersectButNotNever($parameterType, new MixedType());
+					}
+				} else {
+					$parameterType = self::intersectButNotNever($parameterType, new MixedType());
+				}
+			}
+
+			if (!$parameter->var instanceof Variable || !is_string($parameter->var->name)) {
+				throw new ShouldNotHappenException();
+			}
+			$arrowFunctionScopeGen = $arrowFunctionScope->assignVariable($parameter->var->name, $parameterType, $parameterType, TrinaryLogic::createYes());
+			yield from $arrowFunctionScopeGen;
+			$arrowFunctionScope = $arrowFunctionScopeGen->getReturn();
+		}
+
+		if ($arrowFunction->static) {
+			$arrowFunctionScope = $arrowFunctionScope->invalidateExpression(new Variable('this'));
+		}
+
+		return $this->scopeFactory->create(
+			$arrowFunctionScope->context,
+			$this->isDeclareStrictTypes(),
+			$arrowFunctionScope->getFunction(),
+			$arrowFunctionScope->getNamespace(),
+			$this->invalidateStaticExpressions($arrowFunctionScope->expressionTypes),
+			$arrowFunctionScope->nativeExpressionTypes,
+			$arrowFunctionScope->conditionalExpressions,
+			$arrowFunctionScope->inClosureBindScopeClasses,
+			new ClosureType(),
+			true,
+			[],
+			[],
+			[],
+			$arrowFunctionScope->afterExtractCall,
+			$arrowFunctionScope->parentScope,
+			$this->nativeTypesPromoted,
+		);
+	}
+
+	public static function intersectButNotNever(Type $nativeType, Type $inferredType): Type
+	{
+		if ($nativeType->isSuperTypeOf($inferredType)->no()) {
+			return $nativeType;
+		}
+
+		$result = TypeCombinator::intersect($nativeType, $inferredType);
+		if (TypeCombinator::containsNull($nativeType)) {
+			return TypeCombinator::addNull($result);
+		}
+
+		return $result;
+	}
+
+	/**
+	 * @param array<string, ExpressionTypeHolder> $expressionTypes
+	 * @return array<string, ExpressionTypeHolder>
+	 */
+	private function invalidateStaticExpressions(array $expressionTypes): array
+	{
+		$filteredExpressionTypes = [];
+		$nodeFinder = new NodeFinder();
+		foreach ($expressionTypes as $exprString => $expressionType) {
+			$staticExpression = $nodeFinder->findFirst(
+				[$expressionType->getExpr()],
+				static fn ($node) => $node instanceof Expr\StaticCall || $node instanceof Expr\StaticPropertyFetch,
+			);
+			if ($staticExpression !== null) {
+				continue;
+			}
+			$filteredExpressionTypes[$exprString] = $expressionType;
+		}
+		return $filteredExpressionTypes;
+	}
+
+	private function expressionTypeIsUnchangeable(ExpressionTypeHolder $typeHolder): bool
+	{
+		$expr = $typeHolder->getExpr();
+		//$type = $typeHolder->getType();
+
+		return $expr instanceof FuncCall
+			&& !$expr->isFirstClassCallable()
+			&& $expr->name instanceof FullyQualified
+			&& $expr->name->toLowerString() === 'function_exists';
+			/*&& isset($expr->getArgs()[0])
+			&& count($this->getType($expr->getArgs()[0]->value)->getConstantStrings()) === 1
+			&& $type->isTrue()->yes()*/
+	}
+
+	/**
 	 * @return Type[]
 	 */
 	private function getRealParameterTypes(Node\FunctionLike $functionLike): array
@@ -1534,32 +1837,6 @@ final class GeneratorScope implements Scope, NodeCallbackInvoker
 			$this->parentScope,
 			$this->nativeTypesPromoted,
 		);
-	}
-
-	/**
-	 * @api
-	 * @param ParameterReflection[]|null $callableParameters
-	 */
-	public function enterAnonymousFunction(
-		Expr\Closure $closure,
-		?array $callableParameters,
-	): self
-	{
-		// TODO: Implement enterAnonymousFunction() method.
-		throw new ShouldNotHappenException('Not implemented yet');
-	}
-
-	/**
-	 * @api
-	 * @param ParameterReflection[]|null $callableParameters
-	 */
-	public function enterArrowFunction(
-		Expr\Closure $closure,
-		?array $callableParameters,
-	): self
-	{
-		// TODO: Implement enterArrowFunction() method.
-		throw new ShouldNotHappenException('Not implemented yet');
 	}
 
 	/**

@@ -30,5 +30,31 @@ function (): void {
 
 function (): void {
 	$a['bla'] = 1;
-	//assertType('array{bla: 1}', $a);
+	assertType('array{bla: 1}', $a);
+};
+
+function (): void {
+	$cb = fn () => 1;
+	assertType('Closure(): 1', $cb);
+
+	$cb = fn (string $s) => (int) $s;
+	assertType('Closure(string): int', $cb);
+
+	$cb = function () {
+		return 1;
+	};
+	assertType('Closure(): 1', $cb);
+
+	$cb = function (string $s) {
+		return $s;
+	};
+	assertType('Closure(string): string', $cb);
+};
+
+function (): void {
+	$a = 0;
+	$cb = function () use (&$a): void {
+		$a = 's';
+	};
+	assertType('0|\'s\'', $a);
 };
