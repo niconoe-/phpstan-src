@@ -988,8 +988,26 @@ final class NodeScopeResolver
 				throw new ShouldNotHappenException();
 			}
 
-			$classStatementsGatherer = new ClassStatementsGatherer($classReflection, $nodeCallback);
-			$this->processAttributeGroups($stmt, $stmt->attrGroups, $classScope, $classStatementsGatherer);
+			$classStatementsGatherer = new ClassStatementsGatherer($classReflection);
+			$classStatementsGathererCallback = new class ($classStatementsGatherer, $nodeCallback) {
+
+				/**
+				 * @param callable(Node $node, Scope $scope): void $nodeCallback
+				 */
+				public function __construct(
+					private ClassStatementsGatherer $classStatementsGatherer,
+					private $nodeCallback,
+				)
+				{
+				}
+
+				public function __invoke(Node $node, Scope $scope): void
+				{
+					($this->classStatementsGatherer)($node, $scope, $this->nodeCallback);
+				}
+
+			};
+			$this->processAttributeGroups($stmt, $stmt->attrGroups, $classScope, $classStatementsGathererCallback);
 
 			$classLikeStatements = $stmt->stmts;
 			if ($this->narrowMethodScopeFromConstructor) {
@@ -1010,7 +1028,7 @@ final class NodeScopeResolver
 				});
 			}
 
-			$this->processStmtNodesInternal($stmt, $classLikeStatements, $classScope, $classStatementsGatherer, $context);
+			$this->processStmtNodesInternal($stmt, $classLikeStatements, $classScope, $classStatementsGathererCallback, $context);
 			$nodeCallback(new ClassPropertiesNode($stmt, $this->readWritePropertiesExtensionProvider, $classStatementsGatherer->getProperties(), $classStatementsGatherer->getPropertyUsages(), $classStatementsGatherer->getMethodCalls(), $classStatementsGatherer->getReturnStatementsNodes(), $classStatementsGatherer->getPropertyAssigns(), $classReflection), $classScope);
 			$nodeCallback(new ClassMethodsNode($stmt, $classStatementsGatherer->getMethods(), $classStatementsGatherer->getMethodCalls(), $classReflection), $classScope);
 			$nodeCallback(new ClassConstantsNode($stmt, $classStatementsGatherer->getConstants(), $classStatementsGatherer->getConstantFetches(), $classReflection), $classScope);
