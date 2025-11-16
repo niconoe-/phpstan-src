@@ -9,7 +9,6 @@ use PhpParser\Node\Name;
 use PhpParser\Node\Stmt;
 use PHPStan\Analyser\ExpressionContext;
 use PHPStan\Analyser\Generator\ExprAnalysisResult;
-use PHPStan\Analyser\Generator\ExprAnalysisResultStorage;
 use PHPStan\Analyser\Generator\ExprHandler;
 use PHPStan\Analyser\Generator\GeneratorScope;
 use PHPStan\Analyser\SpecifiedTypes;
@@ -33,7 +32,6 @@ final class NewHandler implements ExprHandler
 		Stmt $stmt,
 		Expr $expr,
 		GeneratorScope $scope,
-		ExprAnalysisResultStorage $storage,
 		ExpressionContext $context,
 		?callable $alternativeNodeCallback,
 	): Generator

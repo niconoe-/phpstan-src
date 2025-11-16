@@ -24,7 +24,6 @@ use PHPStan\Analyser\ExpressionContext;
 use PHPStan\Analyser\ExpressionTypeHolder;
 use PHPStan\Analyser\Generator\ExprAnalysisRequest;
 use PHPStan\Analyser\Generator\ExprAnalysisResult;
-use PHPStan\Analyser\Generator\ExprAnalysisResultStorage;
 use PHPStan\Analyser\Generator\ExprHandler;
 use PHPStan\Analyser\Generator\GeneratorScope;
 use PHPStan\Analyser\Generator\InternalThrowPoint;
@@ -102,7 +101,6 @@ final class AssignHandler implements ExprHandler
 		Stmt $stmt,
 		Expr $expr,
 		GeneratorScope $scope,
-		ExprAnalysisResultStorage $storage,
 		ExpressionContext $context,
 		?callable $alternativeNodeCallback,
 	): Generator
@@ -112,7 +110,6 @@ final class AssignHandler implements ExprHandler
 			$stmt,
 			$expr->var,
 			$expr->expr,
-			$storage,
 			$context,
 			$alternativeNodeCallback,
 			static function (GeneratorScope $scope) use ($stmt, $expr, $context, $alternativeNodeCallback): Generator {
@@ -376,7 +373,6 @@ final class AssignHandler implements ExprHandler
 		Node\Stmt $stmt,
 		Expr $var,
 		Expr $assignedExpr,
-		ExprAnalysisResultStorage $storage,
 		ExpressionContext $context,
 		?callable $alternativeNodeCallback,
 		Closure $processExprCallback,
@@ -415,10 +411,21 @@ final class AssignHandler implements ExprHandler
 					$truthyResult->type->isSuperTypeOf($falseyResult->type)->no()
 					&& $falseyResult->type->isSuperTypeOf($truthyResult->type)->no()
 				) {
-					$conditionalExpressions = $this->processSureTypesForConditionalExpressionsAfterAssign($storage, $var->name, $conditionalExpressions, $condResult->specifiedTruthyTypes, $truthyResult->type);
-					$conditionalExpressions = $this->processSureNotTypesForConditionalExpressionsAfterAssign($storage, $var->name, $conditionalExpressions, $condResult->specifiedTruthyTypes, $truthyResult->type);
-					$conditionalExpressions = $this->processSureTypesForConditionalExpressionsAfterAssign($storage, $var->name, $conditionalExpressions, $condResult->specifiedFalseyTypes, $falseyResult->type);
-					$conditionalExpressions = $this->processSureNotTypesForConditionalExpressionsAfterAssign($storage, $var->name, $conditionalExpressions, $condResult->specifiedFalseyTypes, $falseyResult->type);
+					$sureTypesGen = $this->processSureTypesForConditionalExpressionsAfterAssign($var->name, $conditionalExpressions, $condResult->specifiedTruthyTypes, $truthyResult->type);
+					yield from $sureTypesGen;
+					$conditionalExpressions = $sureTypesGen->getReturn();
+
+					$sureTypesGen = $this->processSureNotTypesForConditionalExpressionsAfterAssign($var->name, $conditionalExpressions, $condResult->specifiedTruthyTypes, $truthyResult->type);
+					yield from $sureTypesGen;
+					$conditionalExpressions = $sureTypesGen->getReturn();
+
+					$sureTypesGen = $this->processSureTypesForConditionalExpressionsAfterAssign($var->name, $conditionalExpressions, $condResult->specifiedFalseyTypes, $falseyResult->type);
+					yield from $sureTypesGen;
+					$conditionalExpressions = $sureTypesGen->getReturn();
+
+					$sureTypesGen = $this->processSureNotTypesForConditionalExpressionsAfterAssign($var->name, $conditionalExpressions, $condResult->specifiedFalseyTypes, $falseyResult->type);
+					yield from $sureTypesGen;
+					$conditionalExpressions = $sureTypesGen->getReturn();
 				}
 			}
 
@@ -428,10 +435,21 @@ final class AssignHandler implements ExprHandler
 			$truthyType = TypeCombinator::removeFalsey($type);
 			$falseyType = TypeCombinator::intersect($type, StaticTypeFactory::falsey());
 
-			$conditionalExpressions = $this->processSureTypesForConditionalExpressionsAfterAssign($storage, $var->name, $conditionalExpressions, $result->specifiedTruthyTypes, $truthyType);
-			$conditionalExpressions = $this->processSureNotTypesForConditionalExpressionsAfterAssign($storage, $var->name, $conditionalExpressions, $result->specifiedTruthyTypes, $truthyType);
-			$conditionalExpressions = $this->processSureTypesForConditionalExpressionsAfterAssign($storage, $var->name, $conditionalExpressions, $result->specifiedFalseyTypes, $falseyType);
-			$conditionalExpressions = $this->processSureNotTypesForConditionalExpressionsAfterAssign($storage, $var->name, $conditionalExpressions, $result->specifiedFalseyTypes, $falseyType);
+			$sureTypesGen = $this->processSureTypesForConditionalExpressionsAfterAssign($var->name, $conditionalExpressions, $result->specifiedTruthyTypes, $truthyType);
+			yield from $sureTypesGen;
+			$conditionalExpressions = $sureTypesGen->getReturn();
+
+			$sureTypesGen = $this->processSureNotTypesForConditionalExpressionsAfterAssign($var->name, $conditionalExpressions, $result->specifiedTruthyTypes, $truthyType);
+			yield from $sureTypesGen;
+			$conditionalExpressions = $sureTypesGen->getReturn();
+
+			$sureTypesGen = $this->processSureTypesForConditionalExpressionsAfterAssign($var->name, $conditionalExpressions, $result->specifiedFalseyTypes, $falseyType);
+			yield from $sureTypesGen;
+			$conditionalExpressions = $sureTypesGen->getReturn();
+
+			$sureTypesGen = $this->processSureNotTypesForConditionalExpressionsAfterAssign($var->name, $conditionalExpressions, $result->specifiedFalseyTypes, $falseyType);
+			yield from $sureTypesGen;
+			$conditionalExpressions = $sureTypesGen->getReturn();
 
 			yield new NodeCallbackRequest(new VariableAssignNode($var, $assignedExpr), $scopeBeforeAssignEval);
 
@@ -562,10 +580,14 @@ final class AssignHandler implements ExprHandler
 			$offsetValueType = $varType;
 			$offsetNativeValueType = $varNativeType;
 
-			[$valueToWrite, $additionalExpressions] = $this->produceArrayDimFetchAssignValueToWrite($dimFetchStack, $offsetTypes, $offsetValueType, $valueToWrite, $scope, $storage, false);
+			$produceArrayDimFetchAssignValueToWriteGen = $this->produceArrayDimFetchAssignValueToWrite($dimFetchStack, $offsetTypes, $offsetValueType, $valueToWrite, $scope, false);
+			yield from $produceArrayDimFetchAssignValueToWriteGen;
+			[$valueToWrite, $additionalExpressions] = $produceArrayDimFetchAssignValueToWriteGen->getReturn();
 
 			if (!$offsetValueType->equals($offsetNativeValueType) || !$valueToWrite->equals($nativeValueToWrite)) {
-				[$nativeValueToWrite, $additionalNativeExpressions] = $this->produceArrayDimFetchAssignValueToWrite($dimFetchStack, $offsetNativeTypes, $offsetNativeValueType, $nativeValueToWrite, $scope, $storage, true);
+				$produceArrayDimFetchAssignNativeValueToWriteGen = $this->produceArrayDimFetchAssignValueToWrite($dimFetchStack, $offsetNativeTypes, $offsetNativeValueType, $nativeValueToWrite, $scope, true);
+				yield from $produceArrayDimFetchAssignNativeValueToWriteGen;
+				[$nativeValueToWrite, $additionalNativeExpressions] = $produceArrayDimFetchAssignNativeValueToWriteGen->getReturn();
 			} else {
 				$rewritten = false;
 				foreach ($offsetTypes as $i => [$offsetType]) {
@@ -584,7 +606,9 @@ final class AssignHandler implements ExprHandler
 						continue;
 					}
 
-					[$nativeValueToWrite] = $this->produceArrayDimFetchAssignValueToWrite($dimFetchStack, $offsetNativeTypes, $offsetNativeValueType, $nativeValueToWrite, $scope, $storage, true);
+					$produceArrayDimFetchAssignNativeValueToWriteGen = $this->produceArrayDimFetchAssignValueToWrite($dimFetchStack, $offsetNativeTypes, $offsetNativeValueType, $nativeValueToWrite, $scope, true);
+					yield from $produceArrayDimFetchAssignNativeValueToWriteGen;
+					[$nativeValueToWrite] = $produceArrayDimFetchAssignNativeValueToWriteGen->getReturn();
 					$rewritten = true;
 					break;
 				}
@@ -604,7 +628,7 @@ final class AssignHandler implements ExprHandler
 					if ($var instanceof PropertyFetch || $var instanceof StaticPropertyFetch) {
 						yield new NodeCallbackRequest(new PropertyAssignNode($var, $assignedPropertyExpr, $isAssignOp), $scopeBeforeAssignEval);
 						if ($var instanceof PropertyFetch && $var->name instanceof Node\Identifier && !$isAssignOp) {
-							$scope = $scope->assignInitializedProperty($storage->getExprAnalysisResult($var->var)->type, $var->name->toString());
+							$scope = $scope->assignInitializedProperty((yield new TypeExprRequest($var->var))->type, $var->name->toString());
 						}
 					}
 					$assignExprGen = $scope->assignExpression(
@@ -621,7 +645,7 @@ final class AssignHandler implements ExprHandler
 				} elseif ($var instanceof PropertyFetch || $var instanceof StaticPropertyFetch) {
 					yield new NodeCallbackRequest(new PropertyAssignNode($var, $assignedPropertyExpr, $isAssignOp), $scopeBeforeAssignEval);
 					if ($var instanceof PropertyFetch && $var->name instanceof Node\Identifier && !$isAssignOp) {
-						$scope = $scope->assignInitializedProperty($storage->getExprAnalysisResult($var->var)->type, $var->name->toString());
+						$scope = $scope->assignInitializedProperty((yield new TypeExprRequest($var->var))->type, $var->name->toString());
 					}
 				}
 			}
@@ -913,7 +937,6 @@ final class AssignHandler implements ExprHandler
 					$stmt,
 					$arrayItem->value,
 					new GetOffsetValueTypeExpr($assignedExpr, $dimExpr),
-					$storage,
 					$context,
 					$alternativeNodeCallback,
 					static function (GeneratorScope $scope): Generator {
@@ -1077,9 +1100,9 @@ final class AssignHandler implements ExprHandler
 
 	/**
 	 * @param array<string, ConditionalExpressionHolder[]> $conditionalExpressions
-	 * @return array<string, ConditionalExpressionHolder[]>
+	 * @return Generator<int, ExprAnalysisRequest|TypeExprRequest, ExprAnalysisResult|TypeExprResult, array<string, ConditionalExpressionHolder[]>>
 	 */
-	private function processSureTypesForConditionalExpressionsAfterAssign(ExprAnalysisResultStorage $storage, string $variableName, array $conditionalExpressions, SpecifiedTypes $specifiedTypes, Type $variableType): array
+	private function processSureTypesForConditionalExpressionsAfterAssign(string $variableName, array $conditionalExpressions, SpecifiedTypes $specifiedTypes, Type $variableType): Generator
 	{
 		foreach ($specifiedTypes->getSureTypes() as $exprString => [$expr, $exprType]) {
 			if (!$expr instanceof Variable) {
@@ -1101,7 +1124,7 @@ final class AssignHandler implements ExprHandler
 				'$' . $variableName => ExpressionTypeHolder::createYes(new Variable($variableName), $variableType),
 			], ExpressionTypeHolder::createYes(
 				$expr,
-				TypeCombinator::intersect($storage->getExprAnalysisResult($expr)->type, $exprType),
+				TypeCombinator::intersect((yield new TypeExprRequest($expr))->type, $exprType),
 			));
 			$conditionalExpressions[$exprString][$holder->getKey()] = $holder;
 		}
@@ -1111,9 +1134,9 @@ final class AssignHandler implements ExprHandler
 
 	/**
 	 * @param array<string, ConditionalExpressionHolder[]> $conditionalExpressions
-	 * @return array<string, ConditionalExpressionHolder[]>
+	 * @return Generator<int, ExprAnalysisRequest|TypeExprRequest, ExprAnalysisResult|TypeExprResult, array<string, ConditionalExpressionHolder[]>>
 	 */
-	private function processSureNotTypesForConditionalExpressionsAfterAssign(ExprAnalysisResultStorage $storage, string $variableName, array $conditionalExpressions, SpecifiedTypes $specifiedTypes, Type $variableType): array
+	private function processSureNotTypesForConditionalExpressionsAfterAssign(string $variableName, array $conditionalExpressions, SpecifiedTypes $specifiedTypes, Type $variableType): Generator
 	{
 		foreach ($specifiedTypes->getSureNotTypes() as $exprString => [$expr, $exprType]) {
 			if (!$expr instanceof Variable) {
@@ -1135,7 +1158,7 @@ final class AssignHandler implements ExprHandler
 				'$' . $variableName => ExpressionTypeHolder::createYes(new Variable($variableName), $variableType),
 			], ExpressionTypeHolder::createYes(
 				$expr,
-				TypeCombinator::remove($storage->getExprAnalysisResult($expr)->type, $exprType),
+				TypeCombinator::remove((yield new TypeExprRequest($expr))->type, $exprType),
 			));
 			$conditionalExpressions[$exprString][$holder->getKey()] = $holder;
 		}
@@ -1210,9 +1233,9 @@ final class AssignHandler implements ExprHandler
 	 * @param list<ArrayDimFetch> $dimFetchStack
 	 * @param list<array{Type|null, ArrayDimFetch}> $offsetTypes
 	 *
-	 * @return array{Type, list<array{Expr, Type}>}
+	 * @return Generator<int, ExprAnalysisRequest|TypeExprRequest, ExprAnalysisResult|TypeExprResult, array{Type, list<array{Expr, Type}>}>
 	 */
-	private function produceArrayDimFetchAssignValueToWrite(array $dimFetchStack, array $offsetTypes, Type $offsetValueType, Type $valueToWrite, GeneratorScope $scope, ExprAnalysisResultStorage $storage, bool $native): array
+	private function produceArrayDimFetchAssignValueToWrite(array $dimFetchStack, array $offsetTypes, Type $offsetValueType, Type $valueToWrite, GeneratorScope $scope, bool $native): Generator
 	{
 		$originalValueToWrite = $valueToWrite;
 
@@ -1323,7 +1346,7 @@ final class AssignHandler implements ExprHandler
 			if ($key === $lastDimKey) {
 				$offsetValueType = $originalValueToWrite;
 			} else {
-				$dimExprAnalysisResult = $storage->getExprAnalysisResult($dimFetch->dim);
+				$dimExprAnalysisResult = yield new TypeExprRequest($dimFetch->dim);
 				$offsetType = $native ? $dimExprAnalysisResult->nativeType : $dimExprAnalysisResult->type;
 				$offsetValueType = $offsetValueType->getOffsetValueType($offsetType);
 			}

@@ -31,7 +31,6 @@ interface ExprHandler
 		Stmt $stmt,
 		Expr $expr,
 		GeneratorScope $scope,
-		ExprAnalysisResultStorage $storage,
 		ExpressionContext $context,
 		?callable $alternativeNodeCallback,
 	): Generator;
