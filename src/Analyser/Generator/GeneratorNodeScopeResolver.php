@@ -62,8 +62,8 @@ use function sprintf;
  *   a hypothetical method call) are analyzed on-demand when requested, with the Fiber
  *   suspending until analysis completes
  *
- * @phpstan-type GeneratorTValueType = ExprAnalysisRequest|StmtAnalysisRequest|StmtsAnalysisRequest|NodeCallbackRequest|AttrGroupsAnalysisRequest|TypeExprRequest
- * @phpstan-type GeneratorTSendType = ExprAnalysisResult|StmtAnalysisResult|TypeExprResult|null
+ * @phpstan-type GeneratorTValueType = ExprAnalysisRequest|StmtAnalysisRequest|StmtsAnalysisRequest|NodeCallbackRequest|AttrGroupsAnalysisRequest|TypeExprRequest|PersistStorageRequest|RestoreStorageRequest
+ * @phpstan-type GeneratorTSendType = ExprAnalysisResult|StmtAnalysisResult|TypeExprResult|ExprAnalysisResultStorage|null
  */
 final class GeneratorNodeScopeResolver
 {
@@ -80,6 +80,7 @@ final class GeneratorNodeScopeResolver
 	 */
 	public function setAnalysedFiles(array $files): void
 	{
+		// todo
 	}
 
 	/**
@@ -246,6 +247,20 @@ final class GeneratorNodeScopeResolver
 					);
 					$gen->generator->current();
 					continue;
+				} elseif ($yielded instanceof PersistStorageRequest) {
+					$stack[] = $gen;
+					$gen = new IdentifiedGeneratorInStack(
+						$this->persistStorage($exprAnalysisResultStorage),
+						new Stmt\Expression(new Node\Scalar\String_('fake')),
+						$yielded->originFile,
+						$yielded->originLine,
+					);
+					$gen->generator->current();
+					continue;
+				} elseif ($yielded instanceof RestoreStorageRequest) {
+					$exprAnalysisResultStorage = $yielded->storage;
+					$gen->generator->next();
+					continue;
 				} else { // phpcs:ignore
 					throw new NeverException($yielded);
 				}
@@ -357,6 +372,15 @@ final class GeneratorNodeScopeResolver
 		/** @var AttrGroupsHandler $handler */
 		$handler = $this->container->getByType(AttrGroupsHandler::class);
 		yield from $handler->processAttributeGroups($stmt, $attrGroups, $scope, $alternativeNodeCallback);
+	}
+
+	/**
+	 * @return Generator<int, GeneratorTValueType, GeneratorTSendType, ExprAnalysisResultStorage>
+	 */
+	private function persistStorage(ExprAnalysisResultStorage $storage): Generator
+	{
+		yield from [];
+		return $storage;
 	}
 
 	/**

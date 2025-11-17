@@ -18,7 +18,8 @@ final class IdentifiedGeneratorInStack
 	 *     Generator<int, GeneratorTValueType, GeneratorTSendType, StmtAnalysisResult>| // analyseStmts
 	 *     Generator<int, GeneratorTValueType, GeneratorTSendType, void>| // analyseAttrGroups
 	 *     Generator<int, GeneratorTValueType, GeneratorTSendType, ExprAnalysisResult>| // analyseExpr
-	 *     Generator<int, GeneratorTValueType, GeneratorTSendType, TypeExprResult> // analyseExprForType
+	 *     Generator<int, GeneratorTValueType, GeneratorTSendType, TypeExprResult>| // analyseExprForType
+	 *     Generator<int, GeneratorTValueType, GeneratorTSendType, ExprAnalysisResultStorage> // persistStorage
 	 * ) $generator
 	 * @param Node|Node[] $node
 	 */

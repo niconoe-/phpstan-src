@@ -6,7 +6,10 @@ use PhpParser\Node\Expr;
 use PHPStan\Analyser\Generator\AttrGroupsAnalysisRequest;
 use PHPStan\Analyser\Generator\ExprAnalysisRequest;
 use PHPStan\Analyser\Generator\ExprAnalysisResult;
+use PHPStan\Analyser\Generator\ExprAnalysisResultStorage;
 use PHPStan\Analyser\Generator\NodeCallbackRequest;
+use PHPStan\Analyser\Generator\PersistStorageRequest;
+use PHPStan\Analyser\Generator\RestoreStorageRequest;
 use PHPStan\Analyser\Generator\StmtAnalysisRequest;
 use PHPStan\Analyser\Generator\StmtAnalysisResult;
 use PHPStan\Analyser\Generator\StmtsAnalysisRequest;
@@ -55,6 +58,12 @@ final class GeneratorYieldSendTypeExtension implements ExpressionTypeResolverExt
 			return new NullType();
 		}
 		if ((new ObjectType(AttrGroupsAnalysisRequest::class))->isSuperTypeOf($valueType)->yes()) {
+			return new NullType();
+		}
+		if ((new ObjectType(PersistStorageRequest::class))->isSuperTypeOf($valueType)->yes()) {
+			return new ObjectType(ExprAnalysisResultStorage::class);
+		}
+		if ((new ObjectType(RestoreStorageRequest::class))->isSuperTypeOf($valueType)->yes()) {
 			return new NullType();
 		}
 		if ((new ObjectType(TypeExprRequest::class))->isSuperTypeOf($valueType)->yes()) {

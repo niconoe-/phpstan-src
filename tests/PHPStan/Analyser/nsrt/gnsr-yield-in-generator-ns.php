@@ -19,6 +19,8 @@ class FooTestYield
 		assertType(StmtAnalysisResult::class, yield new StmtsAnalysisRequest());
 		assertType('null', yield new NodeCallbackRequest());
 		assertType('null', yield new AttrGroupsAnalysisRequest());
+		assertType(ExprAnalysisResultStorage::class, yield new PersistStorageRequest());
+		assertType('null', yield new RestoreStorageRequest());
 	}
 
 }

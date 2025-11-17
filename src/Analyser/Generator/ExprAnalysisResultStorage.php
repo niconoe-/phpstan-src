@@ -19,6 +19,13 @@ final class ExprAnalysisResultStorage
 		$this->expressionAnalysisResults = new SplObjectStorage();
 	}
 
+	public function duplicate(): self
+	{
+		$new = new self();
+		$new->expressionAnalysisResults->addAll($this->expressionAnalysisResults);
+		return $new;
+	}
+
 	public function storeExprAnalysisResult(Expr $expr, ExprAnalysisResult $result): void
 	{
 		$this->expressionAnalysisResults[$expr] = $result;

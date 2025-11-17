@@ -15,6 +15,9 @@ use PHPStan\Analyser\Generator\GeneratorNodeScopeResolver;
 use PHPStan\Analyser\Generator\GeneratorScope;
 use PHPStan\Analyser\Generator\NodeCallbackRequest;
 use PHPStan\Analyser\Generator\NodeHandler\ParamHandler;
+use PHPStan\Analyser\Generator\NoopNodeCallback;
+use PHPStan\Analyser\Generator\PersistStorageRequest;
+use PHPStan\Analyser\Generator\RestoreStorageRequest;
 use PHPStan\Analyser\Generator\StmtAnalysisResult;
 use PHPStan\Analyser\Generator\StmtsAnalysisRequest;
 use PHPStan\Analyser\Generator\TypeExprRequest;
@@ -29,6 +32,7 @@ use PHPStan\Node\InClosureNode;
 use PHPStan\Node\InvalidateExprNode;
 use PHPStan\Node\PropertyAssignNode;
 use PHPStan\Node\ReturnStatement;
+use PHPStan\Parser\ImmediatelyInvokedClosureVisitor;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\ClosureType;
@@ -85,7 +89,7 @@ final class ClosureHandler implements ExprHandler
 		return new ExprAnalysisResult(
 			$result->type,
 			$result->nativeType,
-			$result->scope,
+			$closureScope,
 			hasYield: false,
 			isAlwaysTerminating: false,
 			throwPoints: [],
@@ -170,6 +174,7 @@ final class ClosureHandler implements ExprHandler
 		}
 
 		$closureScope = $scope->enterAnonymousFunctionWithoutReflection($expr, $callableParameters);
+		$closureScope = $closureScope->processClosureScope($scope, null, $byRefUses);
 		$gatheredReturnStatements = [];
 		$gatheredYieldStatements = [];
 		$onlyNeverExecutionEnds = null;
@@ -177,7 +182,7 @@ final class ClosureHandler implements ExprHandler
 		$invalidateExpressions = [];
 		$executionEnds = [];
 
-		$closureStmtsCallback = static function (Node $node, Scope $scope, callable $nodeCallback) use ($closureScope, &$gatheredReturnStatements, &$gatheredYieldStatements, &$onlyNeverExecutionEnds, &$closureImpurePoints, &$invalidateExpressions, &$executionEnds): void {
+		$closureStmtsCallback = static function (Node $node, Scope $scope, callable $nodeCallback) use (&$closureScope, &$gatheredReturnStatements, &$gatheredYieldStatements, &$onlyNeverExecutionEnds, &$closureImpurePoints, &$invalidateExpressions, &$executionEnds): void {
 			$nodeCallback($node, $scope);
 			if ($scope->getAnonymousFunctionReflection() !== $closureScope->getAnonymousFunctionReflection()) {
 				return;
@@ -241,15 +246,44 @@ final class ClosureHandler implements ExprHandler
 		if (count($byRefUses) === 0) {
 			$closureStatementResult = yield new StmtsAnalysisRequest($expr->stmts, $closureScope, StatementContext::createTopLevel(), $closureStmtsCallback);
 		} else {
-			// todo
-			$closureStatementResultGen = $this->processClosureNodeAndStabilizeScope(
-				$expr,
-				$closureScope,
-				$closureStmtsCallback,
-			);
-			yield from $closureStatementResultGen;
-			$closureStatementResult = $closureStatementResultGen->getReturn();
-			$scope = $closureScope->processClosureScope($closureStatementResult->scope, $scope, $byRefUses);
+			$count = 0;
+			$closureResultScope = null;
+
+			$storage = yield new PersistStorageRequest();
+			do {
+				yield new RestoreStorageRequest($storage->duplicate());
+				$prevScope = $closureScope;
+
+				$intermediaryClosureScopeResult = yield new StmtsAnalysisRequest($expr->stmts, $closureScope, StatementContext::createTopLevel(), new NoopNodeCallback());
+				$intermediaryClosureScope = $intermediaryClosureScopeResult->scope;
+				foreach ($intermediaryClosureScopeResult->exitPoints as $exitPoint) {
+					$intermediaryClosureScope = $intermediaryClosureScope->mergeWith($exitPoint->getScope());
+				}
+
+				if ($expr->getAttribute(ImmediatelyInvokedClosureVisitor::ATTRIBUTE_NAME) === true) {
+					$closureResultScope = $intermediaryClosureScope;
+					break;
+				}
+
+				$closureScope = $scope->enterAnonymousFunctionWithoutReflection($expr, $callableParameters);
+				$closureScope = $closureScope->processClosureScope($intermediaryClosureScope, $prevScope, $byRefUses);
+
+				if ($closureScope->equals($prevScope)) {
+					break;
+				}
+				if ($count >= 1) {
+					$closureScope = $prevScope->generalizeWith($closureScope);
+				}
+				$count++;
+			} while ($count < 3);
+
+			if ($closureResultScope === null) {
+				$closureResultScope = $closureScope;
+			}
+
+			yield new RestoreStorageRequest($storage->duplicate());
+			$closureStatementResult = yield new StmtsAnalysisRequest($expr->stmts, $closureScope, StatementContext::createTopLevel(), $closureStmtsCallback);
+			$closureScope = $scope->processClosureScope($closureResultScope, null, $byRefUses);
 		}
 
 		$resultGen = $this->processClosureStatementResult(
@@ -289,7 +323,7 @@ final class ClosureHandler implements ExprHandler
 			$alternativeNodeCallback,
 		);
 
-		return $resultGen->getReturn();
+		return [$result, $closureScope];
 	}
 
 	/**
@@ -428,19 +462,6 @@ final class ClosureHandler implements ExprHandler
 			),
 			$closureScope,
 		];
-	}
-
-	/**
-	 * @param callable(Node, Scope, callable(Node, Scope): void): void $closureStmtsCallback
-	 * @return Generator<int, GeneratorTValueType, GeneratorTSendType, StmtAnalysisResult>
-	 */
-	private function processClosureNodeAndStabilizeScope(
-		Closure $expr,
-		GeneratorScope $closureScope,
-		callable $closureStmtsCallback,
-	): Generator
-	{
-		return yield new StmtsAnalysisRequest($expr->stmts, $closureScope, StatementContext::createTopLevel(), $closureStmtsCallback);
 	}
 
 }
