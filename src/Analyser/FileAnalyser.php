@@ -26,6 +26,7 @@ use function array_values;
 use function count;
 use function error_reporting;
 use function get_class;
+use function hash;
 use function is_dir;
 use function is_file;
 use function restore_error_handler;
@@ -49,10 +50,10 @@ use const E_WARNING;
 final class FileAnalyser
 {
 
-	/** @var list<Error> */
+	/** @var array<string, Error> */
 	private array $allPhpErrors = [];
 
-	/** @var list<Error> */
+	/** @var array<string, Error> */
 	private array $filteredPhpErrors = [];
 
 	public function __construct(
@@ -326,8 +327,8 @@ final class FileAnalyser
 
 		return new FileAnalyserResult(
 			$fileErrors,
-			$this->filteredPhpErrors,
-			$this->allPhpErrors,
+			array_values($this->filteredPhpErrors),
+			array_values($this->allPhpErrors),
 			$locallyIgnoredErrors,
 			$fileCollectedData,
 			array_values(array_unique($fileDependencies)),
@@ -366,8 +367,9 @@ final class FileAnalyser
 			}
 
 			$errorMessage = sprintf('%s: %s', $this->getErrorLabel($errno), $errstr);
+			$errorSignature = hash('sha256', sprintf('%s:%s::%s', $errfile, $errline, $errorMessage));
 
-			$this->allPhpErrors[] = (new Error($errorMessage, $errfile, $errline, false))->withIdentifier('phpstan.php');
+			$this->allPhpErrors[$errorSignature] = (new Error($errorMessage, $errfile, $errline, false))->withIdentifier('phpstan.php');
 
 			if ($errno === E_DEPRECATED) {
 				return true;
@@ -377,7 +379,7 @@ final class FileAnalyser
 				return true;
 			}
 
-			$this->filteredPhpErrors[] = (new Error($errorMessage, $errfile, $errline, $errno === E_USER_DEPRECATED))->withIdentifier('phpstan.php');
+			$this->filteredPhpErrors[$errorSignature] = (new Error($errorMessage, $errfile, $errline, $errno === E_USER_DEPRECATED))->withIdentifier('phpstan.php');
 
 			return true;
 		});
