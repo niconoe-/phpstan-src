@@ -3,6 +3,7 @@
 namespace PHPStan\Build;
 
 use PhpParser\Node\Expr;
+use PHPStan\Analyser\Generator\AttrGroupsAnalysisRequest;
 use PHPStan\Analyser\Generator\ExprAnalysisRequest;
 use PHPStan\Analyser\Generator\ExprAnalysisResult;
 use PHPStan\Analyser\Generator\NodeCallbackRequest;
@@ -51,6 +52,9 @@ final class GeneratorYieldSendTypeExtension implements ExpressionTypeResolverExt
 			return new ObjectType(StmtAnalysisResult::class);
 		}
 		if ((new ObjectType(NodeCallbackRequest::class))->isSuperTypeOf($valueType)->yes()) {
+			return new NullType();
+		}
+		if ((new ObjectType(AttrGroupsAnalysisRequest::class))->isSuperTypeOf($valueType)->yes()) {
 			return new NullType();
 		}
 		if ((new ObjectType(TypeExprRequest::class))->isSuperTypeOf($valueType)->yes()) {
