@@ -2,6 +2,7 @@
 
 namespace GeneratorNodeScopeResolverTest;
 
+use function PHPStan\Testing\assertNativeType;
 use function PHPStan\Testing\assertType;
 
 class Foo
@@ -16,6 +17,21 @@ class Foo
 	{
 		$a['bla'] = 1;
 		assertType('array{bla: 1}', $a);
+	}
+
+	/**
+	 * @param int $a
+	 * @param int $b
+	 * @return void
+	 */
+	public function doPlus($a, $b, int $c, int $d): void
+	{
+		assertType('int', $a + $b);
+		assertNativeType('(array|float|int)', $a + $b);
+		assertType('2', 1 + 1);
+		assertNativeType('2', 1 + 1);
+		assertType('int', $c + $d);
+		assertNativeType('int', $c + $d);
 	}
 
 }

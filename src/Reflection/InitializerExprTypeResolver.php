@@ -1337,6 +1337,11 @@ final class InitializerExprTypeResolver
 		$leftType = $getTypeCallback($left);
 		$rightType = $getTypeCallback($right);
 
+		return $this->getPlusTypeFromTypes($left, $right, $leftType, $rightType);
+	}
+
+	public function getPlusTypeFromTypes(Expr $left, Expr $right, Type $leftType, Type $rightType): Type
+	{
 		if ($leftType instanceof NeverType || $rightType instanceof NeverType) {
 			return $this->getNeverType($leftType, $rightType);
 		}
