@@ -36,11 +36,11 @@ class Bug13813IntegrationTest extends PHPStanTestCase
 			);
 		} else {
 			$this->assertSame(
-				'Notice: Undefined variable $x',
+				'Notice: Undefined variable: x',
 				$analyzerResult->getAllPhpErrors()[0]->getMessage(),
 			);
 			$this->assertSame(
-				'Notice: Undefined variable $x',
+				'Notice: Undefined variable: x',
 				$analyzerResult->getAllPhpErrors()[1]->getMessage(),
 			);
 		}
