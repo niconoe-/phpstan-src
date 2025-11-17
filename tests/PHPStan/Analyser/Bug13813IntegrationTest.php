@@ -9,6 +9,7 @@ use function array_merge;
 use function array_unique;
 use function error_reporting;
 use const E_ALL;
+use const PHP_VERSION_ID;
 
 #[CoversNothing]
 class Bug13813IntegrationTest extends PHPStanTestCase
