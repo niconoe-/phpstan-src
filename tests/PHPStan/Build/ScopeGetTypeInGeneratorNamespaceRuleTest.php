@@ -22,22 +22,22 @@ class ScopeGetTypeInGeneratorNamespaceRuleTest extends RuleTestCase
 			[
 				'Scope::getType() cannot be called in PHPStan\Analyser\Generator namespace.',
 				27,
-				'Use yield new ExprAnalysisRequest or query the ExprAnalysisResultStorage instead.',
+				'Use yield new TypeExprRequest instead.',
 			],
 			[
 				'Scope::getType() cannot be called in PHPStan\Analyser\Generator namespace.',
 				43,
-				'Use yield new ExprAnalysisRequest or query the ExprAnalysisResultStorage instead.',
+				'Use yield new TypeExprRequest instead.',
 			],
 			[
 				'Scope::getType() cannot be called in PHPStan\Analyser\Generator namespace.',
 				48,
-				'Use yield new ExprAnalysisRequest or query the ExprAnalysisResultStorage instead.',
+				'Use yield new TypeExprRequest instead.',
 			],
 			[
 				'Scope::getNativeType() cannot be called in PHPStan\Analyser\Generator namespace.',
 				49,
-				'Use yield new ExprAnalysisRequest or query the ExprAnalysisResultStorage instead.',
+				'Use yield new TypeExprRequest instead.',
 			],
 			[
 				'Scope::filterByTruthyValue() cannot be called in PHPStan\Analyser\Generator namespace.',
