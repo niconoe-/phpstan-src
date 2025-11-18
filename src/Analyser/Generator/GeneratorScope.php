@@ -2425,7 +2425,7 @@ final class GeneratorScope implements Scope, NodeCallbackInvoker
 	{
 		return TypeUtils::resolveLateResolvableTypes(
 			Fiber::suspend(
-				new ExprAnalysisRequest(new Node\Stmt\Expression($node), $node, $this, ExpressionContext::createTopLevel(), null),
+				new ExprAnalysisRequest(new Node\Stmt\Expression($node), $node, $this, ExpressionContext::createTopLevel(), new NoopNodeCallback()),
 			)->type,
 		);
 	}
@@ -2435,7 +2435,7 @@ final class GeneratorScope implements Scope, NodeCallbackInvoker
 	{
 		return TypeUtils::resolveLateResolvableTypes(
 			Fiber::suspend(
-				new ExprAnalysisRequest(new Node\Stmt\Expression($expr), $expr, $this, ExpressionContext::createTopLevel(), null),
+				new ExprAnalysisRequest(new Node\Stmt\Expression($expr), $expr, $this, ExpressionContext::createTopLevel(), new NoopNodeCallback()),
 			)->nativeType,
 		);
 	}
