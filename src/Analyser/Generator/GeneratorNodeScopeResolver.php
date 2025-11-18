@@ -23,7 +23,6 @@ use function count;
 use function get_class;
 use function get_debug_type;
 use function implode;
-use function is_array;
 use function sprintf;
 
 /**
@@ -134,25 +133,12 @@ final class GeneratorNodeScopeResolver
 		} catch (Throwable $e) {
 			$stackTrace = [];
 			foreach (array_merge($stack, [$gen]) as $identifiedGenerator) {
-				if ($identifiedGenerator->file === null && $identifiedGenerator->line === null) {
-					continue;
-				}
-				if (is_array($identifiedGenerator->node)) {
-					$stackTrace[] = sprintf(
-						"Stmts\n    -> %s on line %d",
-						$identifiedGenerator->file,
-						$identifiedGenerator->line,
-					);
+				$string = (string) $identifiedGenerator;
+				if ($string === '') {
 					continue;
 				}
 
-				$stackTrace[] = sprintf(
-					"%s:%d\n    -> %s on line %d",
-					$identifiedGenerator->file,
-					$identifiedGenerator->line,
-					get_class($identifiedGenerator->node),
-					$identifiedGenerator->node->getStartLine(),
-				);
+				$stackTrace[] = $string;
 			}
 
 			throw new TrampolineException(sprintf(

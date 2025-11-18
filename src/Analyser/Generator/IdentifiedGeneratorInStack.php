@@ -3,7 +3,11 @@
 namespace PHPStan\Analyser\Generator;
 
 use Generator;
+use Override;
 use PhpParser\Node;
+use function get_class;
+use function is_array;
+use function sprintf;
 
 /**
  * @phpstan-import-type GeneratorTValueType from GeneratorNodeScopeResolver
@@ -31,6 +35,30 @@ final class IdentifiedGeneratorInStack
 		public ?int $line,
 	)
 	{
+	}
+
+	#[Override]
+	public function __toString(): string
+	{
+		if ($this->file === null || $this->line === null) {
+			return '';
+		}
+
+		if (is_array($this->node)) {
+			return sprintf(
+				"Stmts\n    -> %s on line %d",
+				$this->file,
+				$this->line,
+			);
+		}
+
+		return sprintf(
+			"%s:%d\n    -> %s on line %d",
+			$this->file,
+			$this->line,
+			get_class($this->node),
+			$this->node->getStartLine(),
+		);
 	}
 
 }
