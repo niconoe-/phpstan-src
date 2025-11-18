@@ -7,7 +7,7 @@ use Fiber;
 final class PendingFibersStorage
 {
 
-	/** @var array<array{fiber: Fiber<mixed, ExprAnalysisResult, null, ExprAnalysisRequest>, request: ExprAnalysisRequest}> */
+	/** @var array<array{fiber: Fiber<mixed, ExprAnalysisResult|null, null, ExprAnalysisRequest|NodeCallbackRequest>, request: ExprAnalysisRequest}> */
 	public array $pendingFibers = [];
 
 }

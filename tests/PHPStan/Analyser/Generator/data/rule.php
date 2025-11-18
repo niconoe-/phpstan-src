@@ -19,4 +19,6 @@ class Foo
 
 function (Foo $foo): void {
 	$foo->doFoo(1, 2, 3);
+
+	echo 'foo';
 };

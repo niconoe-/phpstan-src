@@ -16,7 +16,6 @@ use PHPStan\NeverException;
 use PHPStan\Node\Printer\ExprPrinter;
 use PHPStan\ShouldNotHappenException;
 use Throwable;
-use function array_map;
 use function array_merge;
 use function array_pop;
 use function count;
@@ -162,26 +161,35 @@ final class GeneratorNodeScopeResolver
 	): StmtAnalysisResult
 	{
 		while (true) {
-			$this->processPendingFibers($fibersStorage, $exprAnalysisResultStorage);
+			$pendingFibersGen = $this->processPendingFibers($fibersStorage, $exprAnalysisResultStorage);
+			if ($pendingFibersGen->valid()) {
+				$stack[] = $gen;
+				$gen = new IdentifiedGeneratorInStack($pendingFibersGen, new Stmt\Expression(new Node\Scalar\String_('pendingFibers')), null, null);
+			}
 
 			if ($gen->generator->valid()) {
 				$yielded = $gen->generator->current();
 
 				if ($yielded instanceof NodeCallbackRequest) {
 					$alternativeNodeCallback = $yielded->alternativeNodeCallback;
-					$this->invokeNodeCallback(
-						$fibersStorage,
-						$exprAnalysisResultStorage,
+					$stack[] = $gen;
+					$gen = new IdentifiedGeneratorInStack(
+						$this->invokeNodeCallback(
+							$fibersStorage,
+							$exprAnalysisResultStorage,
+							$yielded->node,
+							$yielded->scope,
+							$alternativeNodeCallback !== null
+								? static function (Node $node, Scope $scope) use ($alternativeNodeCallback, $nodeCallback): void {
+									$alternativeNodeCallback($node, $scope, $nodeCallback);
+								}
+								: $nodeCallback,
+						),
 						$yielded->node,
-						$yielded->scope,
-						$alternativeNodeCallback !== null
-							? static function (Node $node, Scope $scope) use ($alternativeNodeCallback, $nodeCallback): void {
-								$alternativeNodeCallback($node, $scope, $nodeCallback);
-							}
-							: $nodeCallback,
+						$yielded->originFile,
+						$yielded->originLine,
 					);
-
-					$gen->generator->next();
+					$gen->generator->current();
 					continue;
 				} elseif ($yielded instanceof ExprAnalysisRequest) {
 					$stack[] = $gen;
@@ -272,26 +280,21 @@ final class GeneratorNodeScopeResolver
 						throw new ShouldNotHappenException('Pending fibers with an empty stack should be about synthetic nodes');
 					}
 
-					// todo problem with noop callback
-					$this->processStmtNodes(
-						$fibersStorage,
-						$exprAnalysisResultStorage,
-						[new Stmt\Expression($request->expr)],
-						$request->scope,
-						static function () {
-						},
-						StatementContext::createTopLevel(),
+					$stack[] = $gen;
+					$gen = new IdentifiedGeneratorInStack(
+						$this->analyseExpr($exprAnalysisResultStorage, $request->stmt, $request->expr, $request->scope, $request->context, $request->alternativeNodeCallback),
+						$request->expr,
+						$request->originFile,
+						$request->originLine,
 					);
+					$gen->generator->current();
+					continue 2;
 				}
 
-				if (count($fibersStorage->pendingFibers) === 0) {
-					if (!$result instanceof StmtAnalysisResult) {
-						throw new ShouldNotHappenException('Top node should be Stmt');
-					}
-					return $result;
+				if (!$result instanceof StmtAnalysisResult) {
+					throw new ShouldNotHappenException('Top node should be Stmt');
 				}
-
-				throw new ShouldNotHappenException(sprintf('Cannot finish analysis, pending fibers about: %s', implode(', ', array_map(static fn (array $fiber) => get_class($fiber['request']->expr), $fibersStorage->pendingFibers))));
+				return $result;
 			}
 
 			$gen = array_pop($stack);
@@ -391,8 +394,7 @@ final class GeneratorNodeScopeResolver
 
 		while (!$fiber->isTerminated()) {
 			if ($request instanceof ExprAnalysisRequest) {
-				$result = yield $request;
-				$request = $fiber->resume($result);
+				$request = $fiber->resume(yield $request);
 				continue;
 			}
 
@@ -463,6 +465,7 @@ final class GeneratorNodeScopeResolver
 
 	/**
 	 * @param callable(Node, Scope): void $nodeCallback
+	 * @return Generator<int, GeneratorTValueType, GeneratorTSendType, null>
 	 */
 	private function invokeNodeCallback(
 		PendingFibersStorage $fibersStorage,
@@ -470,24 +473,27 @@ final class GeneratorNodeScopeResolver
 		Node $node,
 		Scope $scope,
 		callable $nodeCallback,
-	): void
+	): Generator
 	{
 		$fiber = new Fiber(static function () use ($node, $scope, $nodeCallback) {
 			$nodeCallback($node, $scope);
 		});
 		$request = $fiber->start();
-		$this->runFiberForNodeCallback($fibersStorage, $exprAnalysisResultStorage, $fiber, $request);
+		yield from $this->runFiberForNodeCallback($fibersStorage, $exprAnalysisResultStorage, $fiber, $request);
+
+		return null;
 	}
 
 	/**
-	 * @param Fiber<mixed, ExprAnalysisResult, null, ExprAnalysisRequest> $fiber
+	 * @param Fiber<mixed, ExprAnalysisResult|null, null, ExprAnalysisRequest|NodeCallbackRequest> $fiber
+	 * @return Generator<int, GeneratorTValueType, GeneratorTSendType, void>
 	 */
 	private function runFiberForNodeCallback(
 		PendingFibersStorage $fibersStorage,
 		ExprAnalysisResultStorage $exprAnalysisResultStorage,
 		Fiber $fiber,
-		?ExprAnalysisRequest $request,
-	): void
+		ExprAnalysisRequest|NodeCallbackRequest|null $request,
+	): Generator
 	{
 		while (!$fiber->isTerminated()) {
 			if ($request instanceof ExprAnalysisRequest) {
@@ -506,6 +512,10 @@ final class GeneratorNodeScopeResolver
 				];
 				return;
 			}
+			if ($request instanceof NodeCallbackRequest) {
+				$request = $fiber->resume(yield $request);
+				continue;
+			}
 
 			throw new ShouldNotHappenException(
 				'Unknown fiber suspension: ' . get_debug_type($request),
@@ -519,21 +529,34 @@ final class GeneratorNodeScopeResolver
 		}
 	}
 
-	private function processPendingFibers(PendingFibersStorage $fibersStorage, ExprAnalysisResultStorage $exprAnalysisResultStorage): void
+	/**
+	 * @return Generator<int, GeneratorTValueType, GeneratorTSendType, void>
+	 */
+	private function processPendingFibers(PendingFibersStorage $fibersStorage, ExprAnalysisResultStorage $exprAnalysisResultStorage): Generator
 	{
-		foreach ($fibersStorage->pendingFibers as $key => $pending) {
-			$request = $pending['request'];
-			$exprAnalysisResult = $exprAnalysisResultStorage->findExprAnalysisResult($request->expr);
+		$restartLoop = true;
 
-			if ($exprAnalysisResult === null) {
-				continue;
+		while ($restartLoop) {
+			$restartLoop = false;
+
+			foreach ($fibersStorage->pendingFibers as $key => $pending) {
+				$request = $pending['request'];
+				$exprAnalysisResult = $exprAnalysisResultStorage->findExprAnalysisResult($request->expr);
+
+				if ($exprAnalysisResult === null) {
+					continue;
+				}
+
+				unset($fibersStorage->pendingFibers[$key]);
+				$restartLoop = true;
+
+				$fiber = $pending['fiber'];
+				$request = $fiber->resume($exprAnalysisResult);
+				yield from $this->runFiberForNodeCallback($fibersStorage, $exprAnalysisResultStorage, $fiber, $request);
+
+				// Break and restart the loop since the array may have been modified
+				break;
 			}
-
-			unset($fibersStorage->pendingFibers[$key]);
-
-			$fiber = $pending['fiber'];
-			$request = $fiber->resume($exprAnalysisResult);
-			$this->runFiberForNodeCallback($fibersStorage, $exprAnalysisResultStorage, $fiber, $request);
 		}
 	}
 
