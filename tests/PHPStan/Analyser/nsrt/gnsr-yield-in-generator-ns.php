@@ -21,6 +21,10 @@ class FooTestYield
 		assertType('null', yield new AttrGroupsAnalysisRequest());
 		assertType(ExprAnalysisResultStorage::class, yield new PersistStorageRequest());
 		assertType('null', yield new RestoreStorageRequest());
+		assertType(RunInFiberResult::class . '<1>', yield new RunInFiberRequest(fn () => 1));
+
+		$a = 's';
+		assertType(RunInFiberResult::class . '<\'s\'>', yield new RunInFiberRequest(fn () => $a));
 	}
 
 }

@@ -10,6 +10,8 @@ use PHPStan\Analyser\Generator\ExprAnalysisResultStorage;
 use PHPStan\Analyser\Generator\NodeCallbackRequest;
 use PHPStan\Analyser\Generator\PersistStorageRequest;
 use PHPStan\Analyser\Generator\RestoreStorageRequest;
+use PHPStan\Analyser\Generator\RunInFiberRequest;
+use PHPStan\Analyser\Generator\RunInFiberResult;
 use PHPStan\Analyser\Generator\StmtAnalysisRequest;
 use PHPStan\Analyser\Generator\StmtAnalysisResult;
 use PHPStan\Analyser\Generator\StmtsAnalysisRequest;
@@ -17,6 +19,7 @@ use PHPStan\Analyser\Generator\TypeExprRequest;
 use PHPStan\Analyser\Generator\TypeExprResult;
 use PHPStan\Analyser\Scope;
 use PHPStan\Type\ExpressionTypeResolverExtension;
+use PHPStan\Type\Generic\GenericObjectType;
 use PHPStan\Type\NullType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
@@ -68,6 +71,9 @@ final class GeneratorYieldSendTypeExtension implements ExpressionTypeResolverExt
 		}
 		if ((new ObjectType(TypeExprRequest::class))->isSuperTypeOf($valueType)->yes()) {
 			return new ObjectType(TypeExprResult::class);
+		}
+		if ((new ObjectType(RunInFiberRequest::class))->isSuperTypeOf($valueType)->yes()) {
+			return new GenericObjectType(RunInFiberResult::class, [$valueType->getTemplateType(RunInFiberRequest::class, 'T')]);
 		}
 
 		return null;

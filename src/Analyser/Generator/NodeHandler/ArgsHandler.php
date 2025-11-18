@@ -21,6 +21,7 @@ use PHPStan\Analyser\Generator\GeneratorNodeScopeResolver;
 use PHPStan\Analyser\Generator\GeneratorScope;
 use PHPStan\Analyser\Generator\InternalThrowPoint;
 use PHPStan\Analyser\Generator\NodeCallbackRequest;
+use PHPStan\Analyser\Generator\RunInFiberRequest;
 use PHPStan\Analyser\Generator\StmtAnalysisResult;
 use PHPStan\Analyser\Generator\TypeExprRequest;
 use PHPStan\Analyser\Generator\VirtualAssignHelper;
@@ -189,7 +190,9 @@ final class ArgsHandler
 					&& $parameter instanceof ExtendedParameterReflection
 					&& !$arg->value->static
 				) {
-					$closureThisType = $this->resolveClosureThisType($callLike, $calleeReflection, $parameter, $scopeToPass);
+					$closureThisTypeGen = $this->resolveClosureThisType($callLike, $calleeReflection, $parameter, $scopeToPass);
+					yield from $closureThisTypeGen;
+					$closureThisType = $closureThisTypeGen->getReturn();
 					if ($closureThisType !== null) {
 						$restoreThisScope = $scopeToPass;
 						$scopeToPassGen = $scopeToPass->assignVariable('this', $closureThisType, new ObjectWithoutClassType(), TrinaryLogic::createYes());
@@ -200,7 +203,9 @@ final class ArgsHandler
 
 				if ($parameter !== null) {
 					// todo should be already baked into $parameter when calling pushInFunctionCall
-					$overwritingParameterType = $this->getParameterTypeFromParameterClosureTypeExtension($callLike, $calleeReflection, $parameter, $scopeToPass);
+					$overwritingParameterTypeGen = $this->getParameterTypeFromParameterClosureTypeExtension($callLike, $calleeReflection, $parameter, $scopeToPass);
+					yield from $overwritingParameterTypeGen;
+					$overwritingParameterType = $overwritingParameterTypeGen->getReturn();
 
 					if ($overwritingParameterType !== null) {
 						$parameterType = $overwritingParameterType;
@@ -254,7 +259,9 @@ final class ArgsHandler
 					&& $parameter instanceof ExtendedParameterReflection
 					&& !$arg->value->static
 				) {
-					$closureThisType = $this->resolveClosureThisType($callLike, $calleeReflection, $parameter, $scopeToPass);
+					$closureThisTypeGen = $this->resolveClosureThisType($callLike, $calleeReflection, $parameter, $scopeToPass);
+					yield from $closureThisTypeGen;
+					$closureThisType = $closureThisTypeGen->getReturn();
 					if ($closureThisType !== null) {
 						$scopeToPassGen = $scopeToPass->assignVariable('this', $closureThisType, new ObjectWithoutClassType(), TrinaryLogic::createYes());
 						yield from $scopeToPassGen;
@@ -264,7 +271,9 @@ final class ArgsHandler
 
 				if ($parameter !== null) {
 					// todo should be already baked into $parameter when calling pushInFunctionCall
-					$overwritingParameterType = $this->getParameterTypeFromParameterClosureTypeExtension($callLike, $calleeReflection, $parameter, $scopeToPass);
+					$overwritingParameterTypeGen = $this->getParameterTypeFromParameterClosureTypeExtension($callLike, $calleeReflection, $parameter, $scopeToPass);
+					yield from $overwritingParameterTypeGen;
+					$overwritingParameterType = $overwritingParameterTypeGen->getReturn();
 
 					if ($overwritingParameterType !== null) {
 						$parameterType = $overwritingParameterType;
@@ -361,7 +370,9 @@ final class ArgsHandler
 
 				$argValue = $arg->value;
 				if (!$argValue instanceof Variable || $argValue->name !== 'this') {
-					$paramOutType = $this->getParameterOutExtensionsType($callLike, $calleeReflection, $currentParameter, $scope);
+					$paramOutTypeGen = $this->getParameterOutExtensionsType($callLike, $calleeReflection, $currentParameter, $scope);
+					yield from $paramOutTypeGen;
+					$paramOutType = $paramOutTypeGen->getReturn();
 					if ($paramOutType !== null) {
 						$byRefType = $paramOutType;
 					}
@@ -380,12 +391,12 @@ final class ArgsHandler
 				if (!$argType->isObject()->no()) {
 					$nakedReturnType = null;
 					if ($nakedMethodReflection !== null) {
-						$nakedParametersAcceptor = ParametersAcceptorSelector::selectFromArgs(
+						$nakedParametersAcceptor = (yield new RunInFiberRequest(static fn () => ParametersAcceptorSelector::selectFromArgs(
 							$scope,
 							$args,
 							$nakedMethodReflection->getVariants(),
 							$nakedMethodReflection->getNamedArgumentsVariants(),
-						);
+						)))->value;
 						$nakedReturnType = $nakedParametersAcceptor->getReturnType();
 					}
 					if (
@@ -415,26 +426,27 @@ final class ArgsHandler
 
 	/**
 	 * @param MethodReflection|FunctionReflection|null $calleeReflection
+	 * @return Generator<int, GeneratorTValueType, GeneratorTSendType, ?Type>
 	 */
-	private function getParameterTypeFromParameterClosureTypeExtension(CallLike $callLike, $calleeReflection, ParameterReflection $parameter, GeneratorScope $scope): ?Type
+	private function getParameterTypeFromParameterClosureTypeExtension(CallLike $callLike, $calleeReflection, ParameterReflection $parameter, GeneratorScope $scope): Generator
 	{
 		if ($callLike instanceof FuncCall && $calleeReflection instanceof FunctionReflection) {
 			foreach ($this->parameterClosureTypeExtensionProvider->getFunctionParameterClosureTypeExtensions() as $functionParameterClosureTypeExtension) {
 				if ($functionParameterClosureTypeExtension->isFunctionSupported($calleeReflection, $parameter)) {
-					return $functionParameterClosureTypeExtension->getTypeFromFunctionCall($calleeReflection, $callLike, $parameter, $scope);
+					return (yield new RunInFiberRequest(static fn () => $functionParameterClosureTypeExtension->getTypeFromFunctionCall($calleeReflection, $callLike, $parameter, $scope)))->value;
 				}
 			}
 		} elseif ($calleeReflection instanceof MethodReflection) {
 			if ($callLike instanceof StaticCall) {
 				foreach ($this->parameterClosureTypeExtensionProvider->getStaticMethodParameterClosureTypeExtensions() as $staticMethodParameterClosureTypeExtension) {
 					if ($staticMethodParameterClosureTypeExtension->isStaticMethodSupported($calleeReflection, $parameter)) {
-						return $staticMethodParameterClosureTypeExtension->getTypeFromStaticMethodCall($calleeReflection, $callLike, $parameter, $scope);
+						return (yield new RunInFiberRequest(static fn () => $staticMethodParameterClosureTypeExtension->getTypeFromStaticMethodCall($calleeReflection, $callLike, $parameter, $scope)))->value;
 					}
 				}
 			} elseif ($callLike instanceof MethodCall) {
 				foreach ($this->parameterClosureTypeExtensionProvider->getMethodParameterClosureTypeExtensions() as $methodParameterClosureTypeExtension) {
 					if ($methodParameterClosureTypeExtension->isMethodSupported($calleeReflection, $parameter)) {
-						return $methodParameterClosureTypeExtension->getTypeFromMethodCall($calleeReflection, $callLike, $parameter, $scope);
+						return (yield new RunInFiberRequest(static fn () => $methodParameterClosureTypeExtension->getTypeFromMethodCall($calleeReflection, $callLike, $parameter, $scope)))->value;
 					}
 				}
 			}
@@ -445,20 +457,21 @@ final class ArgsHandler
 
 	/**
 	 * @param FunctionReflection|MethodReflection|null $calleeReflection
+	 * @return Generator<int, GeneratorTValueType, GeneratorTSendType, ?Type>
 	 */
 	private function resolveClosureThisType(
 		?CallLike $call,
 		$calleeReflection,
 		ParameterReflection $parameter,
 		GeneratorScope $scope,
-	): ?Type
+	): Generator
 	{
 		if ($call instanceof FuncCall && $calleeReflection instanceof FunctionReflection) {
 			foreach ($this->parameterClosureThisExtensionProvider->getFunctionParameterClosureThisExtensions() as $extension) {
 				if (!$extension->isFunctionSupported($calleeReflection, $parameter)) {
 					continue;
 				}
-				$type = $extension->getClosureThisTypeFromFunctionCall($calleeReflection, $call, $parameter, $scope);
+				$type = (yield new RunInFiberRequest(static fn () => $extension->getClosureThisTypeFromFunctionCall($calleeReflection, $call, $parameter, $scope)))->value;
 				if ($type !== null) {
 					return $type;
 				}
@@ -468,7 +481,7 @@ final class ArgsHandler
 				if (!$extension->isStaticMethodSupported($calleeReflection, $parameter)) {
 					continue;
 				}
-				$type = $extension->getClosureThisTypeFromStaticMethodCall($calleeReflection, $call, $parameter, $scope);
+				$type = (yield new RunInFiberRequest(static fn () => $extension->getClosureThisTypeFromStaticMethodCall($calleeReflection, $call, $parameter, $scope)))->value;
 				if ($type !== null) {
 					return $type;
 				}
@@ -478,7 +491,7 @@ final class ArgsHandler
 				if (!$extension->isMethodSupported($calleeReflection, $parameter)) {
 					continue;
 				}
-				$type = $extension->getClosureThisTypeFromMethodCall($calleeReflection, $call, $parameter, $scope);
+				$type = (yield new RunInFiberRequest(static fn () => $extension->getClosureThisTypeFromMethodCall($calleeReflection, $call, $parameter, $scope)))->value;
 				if ($type !== null) {
 					return $type;
 				}
@@ -494,8 +507,9 @@ final class ArgsHandler
 
 	/**
 	 * @param MethodReflection|FunctionReflection|null $calleeReflection
+	 * @return Generator<int, GeneratorTValueType, GeneratorTSendType, ?Type>
 	 */
-	private function getParameterOutExtensionsType(CallLike $callLike, $calleeReflection, ParameterReflection $currentParameter, GeneratorScope $scope): ?Type
+	private function getParameterOutExtensionsType(CallLike $callLike, $calleeReflection, ParameterReflection $currentParameter, GeneratorScope $scope): Generator
 	{
 		$paramOutTypes = [];
 		if ($callLike instanceof FuncCall && $calleeReflection instanceof FunctionReflection) {
@@ -504,7 +518,7 @@ final class ArgsHandler
 					continue;
 				}
 
-				$resolvedType = $functionParameterOutTypeExtension->getParameterOutTypeFromFunctionCall($calleeReflection, $callLike, $currentParameter, $scope);
+				$resolvedType = (yield new RunInFiberRequest(static fn () => $functionParameterOutTypeExtension->getParameterOutTypeFromFunctionCall($calleeReflection, $callLike, $currentParameter, $scope)))->value;
 				if ($resolvedType === null) {
 					continue;
 				}
@@ -516,7 +530,7 @@ final class ArgsHandler
 					continue;
 				}
 
-				$resolvedType = $methodParameterOutTypeExtension->getParameterOutTypeFromMethodCall($calleeReflection, $callLike, $currentParameter, $scope);
+				$resolvedType = (yield new RunInFiberRequest(static fn () => $methodParameterOutTypeExtension->getParameterOutTypeFromMethodCall($calleeReflection, $callLike, $currentParameter, $scope)))->value;
 				if ($resolvedType === null) {
 					continue;
 				}
@@ -528,7 +542,7 @@ final class ArgsHandler
 					continue;
 				}
 
-				$resolvedType = $staticMethodParameterOutTypeExtension->getParameterOutTypeFromStaticMethodCall($calleeReflection, $callLike, $currentParameter, $scope);
+				$resolvedType = (yield new RunInFiberRequest(static fn () => $staticMethodParameterOutTypeExtension->getParameterOutTypeFromStaticMethodCall($calleeReflection, $callLike, $currentParameter, $scope)))->value;
 				if ($resolvedType === null) {
 					continue;
 				}

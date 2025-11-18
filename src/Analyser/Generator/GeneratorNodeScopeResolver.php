@@ -62,8 +62,8 @@ use function sprintf;
  *   a hypothetical method call) are analyzed on-demand when requested, with the Fiber
  *   suspending until analysis completes
  *
- * @phpstan-type GeneratorTValueType = ExprAnalysisRequest|StmtAnalysisRequest|StmtsAnalysisRequest|NodeCallbackRequest|AttrGroupsAnalysisRequest|TypeExprRequest|PersistStorageRequest|RestoreStorageRequest
- * @phpstan-type GeneratorTSendType = ExprAnalysisResult|StmtAnalysisResult|TypeExprResult|ExprAnalysisResultStorage|null
+ * @phpstan-type GeneratorTValueType = ExprAnalysisRequest|StmtAnalysisRequest|StmtsAnalysisRequest|NodeCallbackRequest|AttrGroupsAnalysisRequest|TypeExprRequest|PersistStorageRequest|RestoreStorageRequest|RunInFiberRequest<mixed>
+ * @phpstan-type GeneratorTSendType = ExprAnalysisResult|StmtAnalysisResult|TypeExprResult|ExprAnalysisResultStorage|RunInFiberResult<mixed>|null
  */
 final class GeneratorNodeScopeResolver
 {
@@ -261,6 +261,16 @@ final class GeneratorNodeScopeResolver
 					$exprAnalysisResultStorage = $yielded->storage;
 					$gen->generator->next();
 					continue;
+				} elseif ($yielded instanceof RunInFiberRequest) {
+					$stack[] = $gen;
+					$gen = new IdentifiedGeneratorInStack(
+						$this->runInFiber($yielded->callback),
+						new Stmt\Expression(new Node\Scalar\String_('runInFiber')),
+						$yielded->originFile,
+						$yielded->originLine,
+					);
+					$gen->generator->current();
+					continue;
 				} else { // phpcs:ignore
 					throw new NeverException($yielded);
 				}
@@ -381,6 +391,37 @@ final class GeneratorNodeScopeResolver
 	{
 		yield from [];
 		return $storage;
+	}
+
+	/**
+	 * @template T
+	 * @param callable(): T $callback
+	 * @return Generator<int, GeneratorTValueType, GeneratorTSendType, RunInFiberResult<T>>
+	 */
+	private function runInFiber(callable $callback): Generator
+	{
+		$fiber = new Fiber($callback);
+		$request = $fiber->start();
+
+		while (!$fiber->isTerminated()) {
+			if ($request instanceof ExprAnalysisRequest) {
+				$result = yield $request;
+				$request = $fiber->resume($result);
+				continue;
+			}
+
+			throw new ShouldNotHappenException(
+				'Unknown fiber suspension: ' . get_debug_type($request),
+			);
+		}
+
+		if ($request !== null) {
+			throw new ShouldNotHappenException(
+				'Fiber terminated but we did not handle its request ' . get_debug_type($request),
+			);
+		}
+
+		return $fiber->getReturn();
 	}
 
 	/**

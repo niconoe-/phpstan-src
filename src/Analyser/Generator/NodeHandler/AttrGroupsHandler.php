@@ -12,6 +12,7 @@ use PHPStan\Analyser\Generator\ExprAnalysisRequest;
 use PHPStan\Analyser\Generator\GeneratorNodeScopeResolver;
 use PHPStan\Analyser\Generator\GeneratorScope;
 use PHPStan\Analyser\Generator\NodeCallbackRequest;
+use PHPStan\Analyser\Generator\RunInFiberRequest;
 use PHPStan\Analyser\Scope;
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\ParametersAcceptorSelector;
@@ -51,12 +52,12 @@ final class AttrGroupsHandler
 					$classReflection = $this->reflectionProvider->getClass($className);
 					if ($classReflection->hasConstructor()) {
 						$constructorReflection = $classReflection->getConstructor();
-						$parametersAcceptor = ParametersAcceptorSelector::selectFromArgs(
+						$parametersAcceptor = (yield new RunInFiberRequest(static fn () => ParametersAcceptorSelector::selectFromArgs(
 							$scope,
 							$attr->args,
 							$constructorReflection->getVariants(),
 							$constructorReflection->getNamedArgumentsVariants(),
-						);
+						)))->value;
 						$expr = new New_($attr->name, $attr->args);
 						$expr = ArgumentsNormalizer::reorderNewArguments($parametersAcceptor, $expr) ?? $expr;
 
