@@ -449,13 +449,13 @@ final class GeneratorNodeScopeResolver
 			$nodeCallback($node, $scope);
 		});
 		$request = $fiber->start();
-		$this->runFiber($fibersStorage, $exprAnalysisResultStorage, $fiber, $request);
+		$this->runFiberForNodeCallback($fibersStorage, $exprAnalysisResultStorage, $fiber, $request);
 	}
 
 	/**
 	 * @param Fiber<mixed, ExprAnalysisResult, null, ExprAnalysisRequest> $fiber
 	 */
-	private function runFiber(
+	private function runFiberForNodeCallback(
 		PendingFibersStorage $fibersStorage,
 		ExprAnalysisResultStorage $exprAnalysisResultStorage,
 		Fiber $fiber,
@@ -506,7 +506,7 @@ final class GeneratorNodeScopeResolver
 
 			$fiber = $pending['fiber'];
 			$request = $fiber->resume($exprAnalysisResult);
-			$this->runFiber($fibersStorage, $exprAnalysisResultStorage, $fiber, $request);
+			$this->runFiberForNodeCallback($fibersStorage, $exprAnalysisResultStorage, $fiber, $request);
 		}
 	}
 
