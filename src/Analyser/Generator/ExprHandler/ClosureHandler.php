@@ -251,7 +251,7 @@ final class ClosureHandler implements ExprHandler
 
 			$storage = yield new PersistStorageRequest();
 			do {
-				yield new RestoreStorageRequest($storage->duplicate());
+				yield new RestoreStorageRequest($storage);
 				$prevScope = $closureScope;
 
 				$intermediaryClosureScopeResult = yield new StmtsAnalysisRequest($expr->stmts, $closureScope, StatementContext::createTopLevel(), new NoopNodeCallback());
@@ -281,7 +281,7 @@ final class ClosureHandler implements ExprHandler
 				$closureResultScope = $closureScope;
 			}
 
-			yield new RestoreStorageRequest($storage->duplicate());
+			yield new RestoreStorageRequest($storage);
 			$closureStatementResult = yield new StmtsAnalysisRequest($expr->stmts, $closureScope, StatementContext::createTopLevel(), $closureStmtsCallback);
 			$closureScope = $scope->processClosureScope($closureResultScope, null, $byRefUses);
 		}

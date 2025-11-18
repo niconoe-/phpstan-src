@@ -258,7 +258,7 @@ final class GeneratorNodeScopeResolver
 					$gen->generator->current();
 					continue;
 				} elseif ($yielded instanceof RestoreStorageRequest) {
-					$exprAnalysisResultStorage = $yielded->storage;
+					$exprAnalysisResultStorage = $yielded->storage->duplicate();
 					$gen->generator->next();
 					continue;
 				} elseif ($yielded instanceof RunInFiberRequest) {
