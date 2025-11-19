@@ -52,7 +52,8 @@ final class ClassLikeHandler implements StmtHandler
 		private readonly ClassReflectionFactory $classReflectionFactory,
 		#[AutowiredParameter(ref: '@nodeScopeResolverReflector')]
 		private readonly Reflector $reflector,
-		private readonly bool $narrowMethodScopeFromConstructor = true,
+		#[AutowiredParameter]
+		private readonly bool $narrowMethodScopeFromConstructor,
 	)
 	{
 	}

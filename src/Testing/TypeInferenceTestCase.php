@@ -82,7 +82,7 @@ abstract class TypeInferenceTestCase extends PHPStanTestCase
 			static::getEarlyTerminatingFunctionCalls(),
 			self::getContainer()->getParameter('exceptions')['implicitThrows'],
 			self::getContainer()->getParameter('treatPhpDocTypesAsCertain'),
-			true,
+			self::getContainer()->getParameter('narrowMethodScopeFromConstructor'),
 		);
 	}
 
@@ -457,6 +457,16 @@ abstract class TypeInferenceTestCase extends PHPStanTestCase
 		}
 
 		return false;
+	}
+
+	public static function getAdditionalConfigFiles(): array
+	{
+		return array_merge(
+			parent::getAdditionalConfigFiles(),
+			[
+				__DIR__ . '/narrowMethodScopeFromConstructor.neon',
+			],
+		);
 	}
 
 	/** @return string[] */

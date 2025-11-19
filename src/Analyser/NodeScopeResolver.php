@@ -283,7 +283,8 @@ final class NodeScopeResolver
 		private readonly bool $implicitThrows,
 		#[AutowiredParameter]
 		private readonly bool $treatPhpDocTypesAsCertain,
-		private readonly bool $narrowMethodScopeFromConstructor = true,
+		#[AutowiredParameter]
+		private readonly bool $narrowMethodScopeFromConstructor,
 	)
 	{
 		$earlyTerminatingMethodNames = [];

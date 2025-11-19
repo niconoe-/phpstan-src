@@ -17,11 +17,6 @@ class InstanceMethodsParameterScopeFunctionTest extends RuleTestCase
 		return new InstanceMethodsParameterScopeFunctionRule();
 	}
 
-	protected function shouldNarrowMethodScopeFromConstructor(): bool
-	{
-		return true;
-	}
-
 	#[RequiresPhp('>= 8.0')]
 	public function testRule(): void
 	{

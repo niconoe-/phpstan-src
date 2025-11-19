@@ -108,7 +108,7 @@ abstract class RuleTestCase extends PHPStanTestCase
 			[],
 			self::getContainer()->getParameter('exceptions')['implicitThrows'],
 			$this->shouldTreatPhpDocTypesAsCertain(),
-			$this->shouldNarrowMethodScopeFromConstructor(),
+			self::getContainer()->getParameter('narrowMethodScopeFromConstructor'),
 		);
 	}
 
@@ -295,11 +295,6 @@ abstract class RuleTestCase extends PHPStanTestCase
 	protected function shouldFailOnPhpErrors(): bool
 	{
 		return true;
-	}
-
-	protected function shouldNarrowMethodScopeFromConstructor(): bool
-	{
-		return false;
 	}
 
 	public static function getAdditionalConfigFiles(): array

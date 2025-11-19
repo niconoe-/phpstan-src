@@ -55,8 +55,10 @@ abstract class PHPStanTestCase extends TestCase
 	/** @api */
 	public static function getContainer(): Container
 	{
-		$additionalConfigFiles = static::getAdditionalConfigFiles();
-		$additionalConfigFiles[] = __DIR__ . '/TestCase.neon';
+		$additionalConfigFiles = [__DIR__ . '/TestCase.neon'];
+		foreach (static::getAdditionalConfigFiles() as $configFile) {
+			$additionalConfigFiles[] = $configFile;
+		}
 		$cacheKey = sha1(implode("\n", $additionalConfigFiles));
 
 		if (!isset(self::$containers[$cacheKey])) {

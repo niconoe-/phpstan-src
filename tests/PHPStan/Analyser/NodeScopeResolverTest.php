@@ -7,6 +7,7 @@ use PHPStan\File\FileHelper;
 use PHPStan\Testing\TypeInferenceTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use stdClass;
+use function array_merge;
 use function array_shift;
 use function define;
 use function dirname;
@@ -299,11 +300,14 @@ class NodeScopeResolverTest extends TypeInferenceTestCase
 
 	public static function getAdditionalConfigFiles(): array
 	{
-		return [
-			__DIR__ . '/../../../conf/bleedingEdge.neon',
-			__DIR__ . '/typeAliases.neon',
-			__DIR__ . '/gnsr-extensions.neon',
-		];
+		return array_merge(
+			parent::getAdditionalConfigFiles(),
+			[
+				__DIR__ . '/../../../conf/bleedingEdge.neon',
+				__DIR__ . '/typeAliases.neon',
+				__DIR__ . '/gnsr-extensions.neon',
+			],
+		);
 	}
 
 }

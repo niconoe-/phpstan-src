@@ -21,6 +21,7 @@ use PHPStan\Analyser\Generator\StmtsAnalysisRequest;
 use PHPStan\Analyser\ImpurePoint;
 use PHPStan\Analyser\Scope;
 use PHPStan\Analyser\StatementContext;
+use PHPStan\DependencyInjection\AutowiredParameter;
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Node\ClassPropertyNode;
 use PHPStan\Node\ExecutionEndNode;
@@ -49,7 +50,8 @@ final class ClassMethodHandler implements StmtHandler
 		private ParamHandler $paramHandler,
 		private DeprecatedAttributeHelper $deprecatedAttributeHelper,
 		private PropertyHooksHandler $propertyHooksHandler,
-		private readonly bool $narrowMethodScopeFromConstructor = true,
+		#[AutowiredParameter]
+		private readonly bool $narrowMethodScopeFromConstructor,
 	)
 	{
 	}
