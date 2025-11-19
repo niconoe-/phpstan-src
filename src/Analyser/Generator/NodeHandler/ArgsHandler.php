@@ -217,7 +217,7 @@ final class ArgsHandler
 				yield from $closureResultGen;
 				[$closureResult] = $closureResultGen->getReturn();
 				if ($callCallbackImmediately) {
-					$throwPoints = array_merge($throwPoints, array_map(static fn (InternalThrowPoint $throwPoint) => $throwPoint->isExplicit() ? InternalThrowPoint::createExplicit($scope, $throwPoint->getType(), $arg->value, $throwPoint->canContainAnyThrowable()) : InternalThrowPoint::createImplicit($scope, $arg->value), $closureResult->throwPoints));
+					$throwPoints = array_merge($throwPoints, array_map(static fn (InternalThrowPoint $throwPoint) => $throwPoint->explicit ? InternalThrowPoint::createExplicit($scope, $throwPoint->type, $arg->value, $throwPoint->canContainAnyThrowable) : InternalThrowPoint::createImplicit($scope, $arg->value), $closureResult->throwPoints));
 					$impurePoints = array_merge($impurePoints, $closureResult->impurePoints);
 					$isAlwaysTerminating = $isAlwaysTerminating || $closureResult->isAlwaysTerminating;
 				}
@@ -285,7 +285,7 @@ final class ArgsHandler
 				yield from $arrowFunctionResultGen;
 				$arrowFunctionResult = $arrowFunctionResultGen->getReturn();
 				if ($callCallbackImmediately) {
-					$throwPoints = array_merge($throwPoints, array_map(static fn (InternalThrowPoint $throwPoint) => $throwPoint->isExplicit() ? InternalThrowPoint::createExplicit($scope, $throwPoint->getType(), $arg->value, $throwPoint->canContainAnyThrowable()) : InternalThrowPoint::createImplicit($scope, $arg->value), $arrowFunctionResult->throwPoints));
+					$throwPoints = array_merge($throwPoints, array_map(static fn (InternalThrowPoint $throwPoint) => $throwPoint->explicit ? InternalThrowPoint::createExplicit($scope, $throwPoint->type, $arg->value, $throwPoint->canContainAnyThrowable) : InternalThrowPoint::createImplicit($scope, $arg->value), $arrowFunctionResult->throwPoints));
 					$impurePoints = array_merge($impurePoints, $arrowFunctionResult->impurePoints);
 					$isAlwaysTerminating = $isAlwaysTerminating || $arrowFunctionResult->isAlwaysTerminating;
 				}
@@ -305,7 +305,7 @@ final class ArgsHandler
 						if ($callCallbackImmediately) {
 							$callableThrowPoints = array_map(static fn (SimpleThrowPoint $throwPoint) => $throwPoint->isExplicit() ? InternalThrowPoint::createExplicit($scope, $throwPoint->getType(), $arg->value, $throwPoint->canContainAnyThrowable()) : InternalThrowPoint::createImplicit($scope, $arg->value), $acceptors[0]->getThrowPoints());
 							if (!$this->implicitThrows) {
-								$callableThrowPoints = array_values(array_filter($callableThrowPoints, static fn (InternalThrowPoint $throwPoint) => $throwPoint->isExplicit()));
+								$callableThrowPoints = array_values(array_filter($callableThrowPoints, static fn (InternalThrowPoint $throwPoint) => $throwPoint->explicit));
 							}
 							$throwPoints = array_merge($throwPoints, $callableThrowPoints);
 							$impurePoints = array_merge($impurePoints, array_map(static fn (SimpleImpurePoint $impurePoint) => new ImpurePoint($scope, $arg->value, $impurePoint->getIdentifier(), $impurePoint->getDescription(), $impurePoint->isCertain()), $acceptors[0]->getImpurePoints()));

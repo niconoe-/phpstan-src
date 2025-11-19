@@ -111,7 +111,7 @@ final class ClosureHelper
 			);
 		}
 
-		$throwPointsForClosureType = array_map(static fn (InternalThrowPoint $throwPoint) => $throwPoint->isExplicit() ? SimpleThrowPoint::createExplicit($throwPoint->getType(), $throwPoint->canContainAnyThrowable()) : SimpleThrowPoint::createImplicit(), $throwPoints);
+		$throwPointsForClosureType = array_map(static fn (InternalThrowPoint $throwPoint) => $throwPoint->explicit ? SimpleThrowPoint::createExplicit($throwPoint->type, $throwPoint->canContainAnyThrowable) : SimpleThrowPoint::createImplicit(), $throwPoints);
 		$impurePointsForClosureType = array_map(static fn (ImpurePoint $impurePoint) => new SimpleImpurePoint($impurePoint->getIdentifier(), $impurePoint->getDescription(), $impurePoint->isCertain()), $impurePoints);
 
 		$mustUseReturnValue = TrinaryLogic::createNo();

@@ -17,11 +17,11 @@ final class InternalThrowPoint
 	 * @param Node\Expr|Node\Stmt $node
 	 */
 	private function __construct(
-		private GeneratorScope $scope,
-		private Type $type,
-		private Node $node,
-		private bool $explicit,
-		private bool $canContainAnyThrowable,
+		public readonly GeneratorScope $scope,
+		public readonly Type $type,
+		public readonly Node $node,
+		public readonly bool $explicit,
+		public readonly bool $canContainAnyThrowable,
 	)
 	{
 	}
@@ -59,34 +59,6 @@ final class InternalThrowPoint
 		}
 
 		return new self($scope, $throwPoint->getType(), $throwPoint->getNode(), $throwPoint->isExplicit(), $throwPoint->canContainAnyThrowable());
-	}
-
-	public function getScope(): GeneratorScope
-	{
-		return $this->scope;
-	}
-
-	public function getType(): Type
-	{
-		return $this->type;
-	}
-
-	/**
-	 * @return Node\Expr|Node\Stmt
-	 */
-	public function getNode()
-	{
-		return $this->node;
-	}
-
-	public function isExplicit(): bool
-	{
-		return $this->explicit;
-	}
-
-	public function canContainAnyThrowable(): bool
-	{
-		return $this->canContainAnyThrowable;
 	}
 
 	public function subtractCatchType(Type $catchType): self
