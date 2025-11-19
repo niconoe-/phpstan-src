@@ -21,6 +21,7 @@ final class StmtsAnalysisRequest
 	 * @param (callable(Node, Scope, callable(Node, Scope): void): void)|null $alternativeNodeCallback
 	 */
 	public function __construct(
+		public readonly Node $parentNode,
 		public readonly array $stmts,
 		public readonly GeneratorScope $scope,
 		public readonly StatementContext $context,

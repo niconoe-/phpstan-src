@@ -110,7 +110,7 @@ final class ClassLikeHandler implements StmtHandler
 			});
 		}
 
-		yield new StmtsAnalysisRequest($classLikeStatements, $classScope, $context, $classStatementsGatherer);
+		yield new StmtsAnalysisRequest($stmt, $classLikeStatements, $classScope, $context, $classStatementsGatherer);
 		yield new NodeCallbackRequest(new ClassPropertiesNode($stmt, $this->readWritePropertiesExtensionProvider, $classStatementsGatherer->getProperties(), $classStatementsGatherer->getPropertyUsages(), $classStatementsGatherer->getMethodCalls(), $classStatementsGatherer->getReturnStatementsNodes(), $classStatementsGatherer->getPropertyAssigns(), $classReflection), $classScope, $alternativeNodeCallback);
 		yield new NodeCallbackRequest(new ClassMethodsNode($stmt, $classStatementsGatherer->getMethods(), $classStatementsGatherer->getMethodCalls(), $classReflection), $classScope, $alternativeNodeCallback);
 		yield new NodeCallbackRequest(new ClassConstantsNode($stmt, $classStatementsGatherer->getConstants(), $classStatementsGatherer->getConstantFetches(), $classReflection), $classScope, $alternativeNodeCallback);

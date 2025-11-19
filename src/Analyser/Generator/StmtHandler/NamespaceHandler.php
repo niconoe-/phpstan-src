@@ -30,7 +30,7 @@ final class NamespaceHandler implements StmtHandler
 			$scope = $scope->enterNamespace($stmt->name->toString());
 		}*/
 
-		$result = yield new StmtsAnalysisRequest($stmt->stmts, $scope, $context, $alternativeNodeCallback);
+		$result = yield new StmtsAnalysisRequest($stmt, $stmt->stmts, $scope, $context, $alternativeNodeCallback);
 
 		return new StmtAnalysisResult(
 			$result->scope,

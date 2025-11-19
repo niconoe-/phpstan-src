@@ -9,6 +9,7 @@ use PhpParser\Node\Expr;
 use PhpParser\Node\Stmt;
 use PHPStan\Analyser\ExpressionContext;
 use PHPStan\Analyser\Generator\NodeHandler\AttrGroupsHandler;
+use PHPStan\Analyser\Generator\NodeHandler\StmtsHandler;
 use PHPStan\Analyser\Scope;
 use PHPStan\Analyser\StatementContext;
 use PHPStan\DependencyInjection\Container;
@@ -114,15 +115,15 @@ final class GeneratorNodeScopeResolver
 		GeneratorScope $scope,
 		callable $nodeCallback,
 		StatementContext $context,
-	): StmtAnalysisResult
+	): void
 	{
-		$gen = new IdentifiedGeneratorInStack($this->analyseStmts($stmts, $scope, $context, null), $stmts, null, null);
+		$gen = new IdentifiedGeneratorInStack($this->analyseInitialStmts($stmts, $scope, $context, null), $stmts, null, null);
 		$gen->generator->current();
 
 		$stack = [];
 
 		try {
-			return $this->runTrampoline(
+			$this->runTrampoline(
 				$fibersStorage,
 				$exprAnalysisResultStorage,
 				$gen,
@@ -158,7 +159,7 @@ final class GeneratorNodeScopeResolver
 		IdentifiedGeneratorInStack &$gen,
 		callable $nodeCallback,
 		array &$stack,
-	): StmtAnalysisResult
+	): void
 	{
 		while (true) {
 			$pendingFibersGen = $this->processPendingFibers($fibersStorage, $exprAnalysisResultStorage);
@@ -224,7 +225,7 @@ final class GeneratorNodeScopeResolver
 				} elseif ($yielded instanceof StmtsAnalysisRequest) {
 					$stack[] = $gen;
 					$gen = new IdentifiedGeneratorInStack(
-						$this->analyseStmts($yielded->stmts, $yielded->scope, $yielded->context, $yielded->alternativeNodeCallback),
+						$this->analyseStmts($yielded->parentNode, $yielded->stmts, $yielded->scope, $yielded->context, $yielded->alternativeNodeCallback),
 						$yielded->stmts,
 						$yielded->originFile,
 						$yielded->originLine,
@@ -291,10 +292,10 @@ final class GeneratorNodeScopeResolver
 					continue 2;
 				}
 
-				if (!$result instanceof StmtAnalysisResult) {
-					throw new ShouldNotHappenException('Top node should be Stmt');
+				if ($result !== null) {
+					throw new ShouldNotHappenException(sprintf('Null result is expected from analyseInitialStmts, given %s', get_debug_type($result)));
 				}
-				return $result;
+				return;
 			}
 
 			$gen = array_pop($stack);
@@ -306,34 +307,28 @@ final class GeneratorNodeScopeResolver
 	 * @param array<Stmt> $stmts
 	 * @param (callable(Node, Scope, callable(Node, Scope): void): void)|null $alternativeNodeCallback
 	 *
+	 * @return Generator<int, GeneratorTValueType, GeneratorTSendType, void>
+	 */
+	private function analyseInitialStmts(array $stmts, GeneratorScope $scope, StatementContext $context, ?callable $alternativeNodeCallback): Generator
+	{
+		$handler = $this->container->getByType(StmtsHandler::class);
+		$gen = $handler->analyseInitialStmts($stmts, $scope, $context, $alternativeNodeCallback);
+		yield from $gen;
+	}
+
+	/**
+	 * @param array<Stmt> $stmts
+	 * @param (callable(Node, Scope, callable(Node, Scope): void): void)|null $alternativeNodeCallback
+	 *
 	 * @return Generator<int, GeneratorTValueType, GeneratorTSendType, StmtAnalysisResult>
 	 */
-	private function analyseStmts(array $stmts, GeneratorScope $scope, StatementContext $context, ?callable $alternativeNodeCallback): Generator
+	private function analyseStmts(Node $parentNode, array $stmts, GeneratorScope $scope, StatementContext $context, ?callable $alternativeNodeCallback): Generator
 	{
-		$exitPoints = [];
-		$throwPoints = [];
-		$impurePoints = [];
-		$alreadyTerminated = false;
-		$hasYield = false;
+		$handler = $this->container->getByType(StmtsHandler::class);
+		$gen = $handler->analyseStmts($parentNode, $stmts, $scope, $context, $alternativeNodeCallback);
+		yield from $gen;
 
-		foreach ($stmts as $stmt) {
-			$result = yield new StmtAnalysisRequest($stmt, $scope, $context, $alternativeNodeCallback);
-			$scope = $result->scope;
-			$hasYield = $hasYield || $result->hasYield;
-			$exitPoints = array_merge($exitPoints, $result->exitPoints);
-			$throwPoints = array_merge($throwPoints, $result->throwPoints);
-			$impurePoints = array_merge($impurePoints, $result->impurePoints);
-			$alreadyTerminated = $alreadyTerminated || $result->isAlwaysTerminating;
-		}
-
-		return new StmtAnalysisResult(
-			$scope,
-			hasYield: $hasYield,
-			isAlwaysTerminating: $alreadyTerminated,
-			exitPoints: $exitPoints,
-			throwPoints: $throwPoints,
-			impurePoints: $impurePoints,
-		);
+		return $gen->getReturn();
 	}
 
 	/**

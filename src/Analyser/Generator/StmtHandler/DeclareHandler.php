@@ -46,6 +46,7 @@ final class DeclareHandler implements StmtHandler
 
 		if ($stmt->stmts !== null) {
 			return yield new StmtsAnalysisRequest(
+				$stmt,
 				$stmt->stmts,
 				$scope,
 				$context,

@@ -8,23 +8,13 @@ use PHPStan\Analyser\StatementExitPoint;
 final class InternalStatementExitPoint
 {
 
-	public function __construct(private Stmt $statement, private GeneratorScope $scope)
+	public function __construct(public readonly Stmt $statement, public readonly GeneratorScope $scope)
 	{
 	}
 
 	public function toPublic(): StatementExitPoint
 	{
 		return new StatementExitPoint($this->statement, $this->scope);
-	}
-
-	public function getStatement(): Stmt
-	{
-		return $this->statement;
-	}
-
-	public function getScope(): GeneratorScope
-	{
-		return $this->scope;
 	}
 
 }

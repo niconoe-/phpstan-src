@@ -163,7 +163,7 @@ final class ClassMethodHandler implements StmtHandler
 			$gatheredYieldStatements = [];
 			$executionEnds = [];
 			$methodImpurePoints = [];
-			$statementResult = (yield new StmtsAnalysisRequest($stmt->stmts, $methodScope, StatementContext::createTopLevel(), static function (Node $node, Scope $scope, callable $nodeCallback) use ($methodScope, &$gatheredReturnStatements, &$gatheredYieldStatements, &$executionEnds, &$methodImpurePoints): void {
+			$statementResult = (yield new StmtsAnalysisRequest($stmt, $stmt->stmts, $methodScope, StatementContext::createTopLevel(), static function (Node $node, Scope $scope, callable $nodeCallback) use ($methodScope, &$gatheredReturnStatements, &$gatheredYieldStatements, &$executionEnds, &$methodImpurePoints): void {
 				$nodeCallback($node, $scope);
 				if ($scope->getFunction() !== $methodScope->getFunction()) {
 					return;

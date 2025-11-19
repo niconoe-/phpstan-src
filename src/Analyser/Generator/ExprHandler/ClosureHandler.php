@@ -244,7 +244,7 @@ final class ClosureHandler implements ExprHandler
 		};
 
 		if (count($byRefUses) === 0) {
-			$closureStatementResult = yield new StmtsAnalysisRequest($expr->stmts, $closureScope, StatementContext::createTopLevel(), $closureStmtsCallback);
+			$closureStatementResult = yield new StmtsAnalysisRequest($expr, $expr->stmts, $closureScope, StatementContext::createTopLevel(), $closureStmtsCallback);
 		} else {
 			$count = 0;
 			$closureResultScope = null;
@@ -254,10 +254,10 @@ final class ClosureHandler implements ExprHandler
 				yield new RestoreStorageRequest($storage);
 				$prevScope = $closureScope;
 
-				$intermediaryClosureScopeResult = yield new StmtsAnalysisRequest($expr->stmts, $closureScope, StatementContext::createTopLevel(), new NoopNodeCallback());
+				$intermediaryClosureScopeResult = yield new StmtsAnalysisRequest($expr, $expr->stmts, $closureScope, StatementContext::createTopLevel(), new NoopNodeCallback());
 				$intermediaryClosureScope = $intermediaryClosureScopeResult->scope;
 				foreach ($intermediaryClosureScopeResult->exitPoints as $exitPoint) {
-					$intermediaryClosureScope = $intermediaryClosureScope->mergeWith($exitPoint->getScope());
+					$intermediaryClosureScope = $intermediaryClosureScope->mergeWith($exitPoint->scope);
 				}
 
 				if ($expr->getAttribute(ImmediatelyInvokedClosureVisitor::ATTRIBUTE_NAME) === true) {
@@ -282,7 +282,7 @@ final class ClosureHandler implements ExprHandler
 			}
 
 			yield new RestoreStorageRequest($storage);
-			$closureStatementResult = yield new StmtsAnalysisRequest($expr->stmts, $closureScope, StatementContext::createTopLevel(), $closureStmtsCallback);
+			$closureStatementResult = yield new StmtsAnalysisRequest($expr, $expr->stmts, $closureScope, StatementContext::createTopLevel(), $closureStmtsCallback);
 			$closureScope = $scope->processClosureScope($closureResultScope, null, $byRefUses);
 		}
 

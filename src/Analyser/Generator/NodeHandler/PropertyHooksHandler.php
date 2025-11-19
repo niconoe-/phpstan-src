@@ -23,6 +23,7 @@ use PHPStan\Node\ExecutionEndNode;
 use PHPStan\Node\InPropertyHookNode;
 use PHPStan\Node\PropertyAssignNode;
 use PHPStan\Node\PropertyHookReturnStatementsNode;
+use PHPStan\Node\PropertyHookStatementNode;
 use PHPStan\Node\ReturnStatement;
 use PHPStan\Parser\LineAttributesVisitor;
 use PHPStan\Reflection\Php\PhpMethodFromParserNodeReflection;
@@ -125,7 +126,7 @@ final class PropertyHooksHandler
 			$gatheredReturnStatements = [];
 			$executionEnds = [];
 			$methodImpurePoints = [];
-			$statementResult = (yield new StmtsAnalysisRequest($stmts, $hookScope, StatementContext::createTopLevel(), static function (Node $node, Scope $scope, $nodeCallback) use ($hookScope, &$gatheredReturnStatements, &$executionEnds, &$hookImpurePoints): void {
+			$statementResult = (yield new StmtsAnalysisRequest(new PropertyHookStatementNode($hook), $stmts, $hookScope, StatementContext::createTopLevel(), static function (Node $node, Scope $scope, $nodeCallback) use ($hookScope, &$gatheredReturnStatements, &$executionEnds, &$hookImpurePoints): void {
 				$nodeCallback($node, $scope);
 				if ($scope->getFunction() !== $hookScope->getFunction()) {
 					return;

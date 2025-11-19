@@ -101,6 +101,7 @@ final class FunctionHandler implements StmtHandler
 		$functionImpurePoints = [];
 
 		$statementResult = (yield new StmtsAnalysisRequest(
+			$stmt,
 			$stmt->stmts,
 			$functionScope,
 			StatementContext::createTopLevel(),
