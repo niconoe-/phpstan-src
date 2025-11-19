@@ -6,7 +6,12 @@ use Fiber;
 use Generator;
 use PhpParser\Node;
 use PhpParser\Node\Expr;
+use PhpParser\Node\Expr\FuncCall;
+use PhpParser\Node\Expr\MethodCall;
+use PhpParser\Node\Expr\New_;
+use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Stmt;
+use PhpParser\Node\Stmt\Class_;
 use PHPStan\Analyser\ExpressionContext;
 use PHPStan\Analyser\Generator\NodeHandler\AttrGroupsHandler;
 use PHPStan\Analyser\Generator\NodeHandler\StmtsHandler;
@@ -14,7 +19,11 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Analyser\StatementContext;
 use PHPStan\DependencyInjection\Container;
 use PHPStan\NeverException;
+use PHPStan\Node\FunctionCallableNode;
+use PHPStan\Node\InstantiationCallableNode;
+use PHPStan\Node\MethodCallableNode;
 use PHPStan\Node\Printer\ExprPrinter;
+use PHPStan\Node\StaticMethodCallableNode;
 use PHPStan\ShouldNotHappenException;
 use Throwable;
 use function array_merge;
@@ -420,6 +429,25 @@ final class GeneratorNodeScopeResolver
 			}
 
 			throw new ShouldNotHappenException(sprintf('Expr %s on line %d has already been analysed', $this->exprPrinter->printExpr($expr), $expr->getStartLine()));
+		}
+
+		if ($expr instanceof Expr\CallLike && $expr->isFirstClassCallable()) {
+			if ($expr instanceof FuncCall) {
+				$newExpr = new FunctionCallableNode($expr->name, $expr);
+			} elseif ($expr instanceof MethodCall) {
+				$newExpr = new MethodCallableNode($expr->var, $expr->name, $expr);
+			} elseif ($expr instanceof StaticCall) {
+				$newExpr = new StaticMethodCallableNode($expr->class, $expr->name, $expr);
+			} elseif ($expr instanceof New_ && !$expr->class instanceof Class_) {
+				$newExpr = new InstantiationCallableNode($expr->class, $expr);
+			} else {
+				throw new ShouldNotHappenException();
+			}
+
+			$exprGen = $this->analyseExpr($storage, $stmt, $newExpr, $scope, $context, $alternativeNodeCallback);
+			yield from $exprGen;
+
+			return $exprGen->getReturn();
 		}
 
 		yield new NodeCallbackRequest($expr, $context->isDeep() ? $scope->exitFirstLevelStatements() : $scope, $alternativeNodeCallback);
