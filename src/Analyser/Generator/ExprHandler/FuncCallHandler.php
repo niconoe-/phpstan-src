@@ -31,7 +31,7 @@ final class FuncCallHandler implements ExprHandler
 
 	public function supports(Expr $expr): bool
 	{
-		return $expr instanceof FuncCall;
+		return $expr instanceof FuncCall && !$expr->isFirstClassCallable();
 	}
 
 	public function analyseExpr(

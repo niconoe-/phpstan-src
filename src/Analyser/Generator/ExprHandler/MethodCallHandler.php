@@ -26,7 +26,7 @@ final class MethodCallHandler implements ExprHandler
 
 	public function supports(Expr $expr): bool
 	{
-		return $expr instanceof MethodCall;
+		return $expr instanceof MethodCall && !$expr->isFirstClassCallable();
 	}
 
 	public function analyseExpr(

@@ -25,7 +25,7 @@ final class NewHandler implements ExprHandler
 
 	public function supports(Expr $expr): bool
 	{
-		return $expr instanceof New_;
+		return $expr instanceof New_ && !$expr->isFirstClassCallable();
 	}
 
 	public function analyseExpr(
