@@ -204,7 +204,7 @@ final class GeneratorNodeScopeResolver
 				} elseif ($yielded instanceof ExprAnalysisRequest) {
 					$stack[] = $gen;
 					$gen = new IdentifiedGeneratorInStack(
-						$this->analyseExpr($exprAnalysisResultStorage, $yielded->stmt, $yielded->expr, $yielded->scope, $yielded->context, $yielded->alternativeNodeCallback),
+						$this->analyseExpr($exprAnalysisResultStorage, $yielded->stmt, $yielded->expr, $yielded->scope, $yielded->context, $yielded->alternativeNodeCallback, $stack, $yielded->originFile, $yielded->originLine),
 						$yielded->expr,
 						$yielded->originFile,
 						$yielded->originLine,
@@ -292,7 +292,7 @@ final class GeneratorNodeScopeResolver
 
 					$stack[] = $gen;
 					$gen = new IdentifiedGeneratorInStack(
-						$this->analyseExpr($exprAnalysisResultStorage, $request->stmt, $request->expr, $request->scope, $request->context, $request->alternativeNodeCallback),
+						$this->analyseExpr($exprAnalysisResultStorage, $request->stmt, $request->expr, $request->scope, $request->context, $request->alternativeNodeCallback, $stack, $request->originFile, $request->originLine),
 						$request->expr,
 						$request->originFile,
 						$request->originLine,
@@ -418,9 +418,10 @@ final class GeneratorNodeScopeResolver
 
 	/**
 	 * @param (callable(Node, Scope, callable(Node, Scope): void): void)|null $alternativeNodeCallback
+	 * @param list<IdentifiedGeneratorInStack> $stack
 	 * @return Generator<int, GeneratorTValueType, GeneratorTSendType, ExprAnalysisResult>
 	 */
-	private function analyseExpr(ExprAnalysisResultStorage $storage, Stmt $stmt, Expr $expr, GeneratorScope $scope, ExpressionContext $context, ?callable $alternativeNodeCallback): Generator
+	private function analyseExpr(ExprAnalysisResultStorage $storage, Stmt $stmt, Expr $expr, GeneratorScope $scope, ExpressionContext $context, ?callable $alternativeNodeCallback, array $stack, ?string $file, ?int $line): Generator
 	{
 		$foundExprAnalysisResult = $storage->findExprAnalysisResult($expr);
 		if ($foundExprAnalysisResult !== null) {
@@ -428,7 +429,21 @@ final class GeneratorNodeScopeResolver
 				return $foundExprAnalysisResult;
 			}
 
-			throw new ShouldNotHappenException(sprintf('Expr %s on line %d has already been analysed', $this->exprPrinter->printExpr($expr), $expr->getStartLine()));
+			$where = "\n";
+			$origin = $storage->findExprAnalysisResultOrigin($expr);
+			if ($origin !== null) {
+				[$originStack, $originFile, $originLine] = $origin;
+				foreach ($originStack as $originStackItem) {
+					$where .= (string) $originStackItem . "\n";
+				}
+
+				if ($originFile !== null && $originLine !== null) {
+					$where .= $originFile . ':' . $originLine;
+					$where .= "\n";
+				}
+			}
+
+			throw new ShouldNotHappenException(sprintf('Expr %s on line %d has already been analysed in:%s', $this->exprPrinter->printExpr($expr), $expr->getStartLine(), $where));
 		}
 
 		if ($expr instanceof Expr\CallLike && $expr->isFirstClassCallable()) {
@@ -444,7 +459,7 @@ final class GeneratorNodeScopeResolver
 				throw new ShouldNotHappenException();
 			}
 
-			$exprGen = $this->analyseExpr($storage, $stmt, $newExpr, $scope, $context, $alternativeNodeCallback);
+			$exprGen = $this->analyseExpr($storage, $stmt, $newExpr, $scope, $context, $alternativeNodeCallback, $stack, $file, $line);
 			yield from $exprGen;
 
 			return $exprGen->getReturn();
@@ -464,7 +479,7 @@ final class GeneratorNodeScopeResolver
 			yield from $gen;
 
 			$exprAnalysisResult = $gen->getReturn();
-			$storage->storeExprAnalysisResult($expr, $exprAnalysisResult);
+			$storage->storeExprAnalysisResult($expr, $exprAnalysisResult, $stack, $file, $line);
 
 			return $exprAnalysisResult;
 		}
